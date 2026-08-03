@@ -1,0 +1,208 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "@fontsource-variable/inter";
+@import "@fontsource-variable/space-grotesk";
+
+/* ------------------------------------------------------------------ */
+/*  Zapsters design system — F0                                        */
+/*  Dark-first, gamified learning platform. Shared @theme tokens that  */
+/*  every subsystem surface (Content, Judge, Lab, Assessment,          */
+/*  Gamification, Commerce, Admin) consumes. Per build.md §1.          */
+/* ------------------------------------------------------------------ */
+
+@theme {
+  /* Typography — Inter (body) + Space Grotesk (display), bundled locally */
+  --font-sans:
+    "Inter Variable", ui-sans-serif, system-ui, -apple-system, "Segoe UI",
+    Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji",
+    "Segoe UI Emoji", "Segoe UI Symbol";
+  --font-display:
+    "Space Grotesk Variable", "Inter Variable", ui-sans-serif, system-ui,
+    sans-serif;
+  --font-mono:
+    ui-monospace, "Cascadia Code", "SF Mono", "JetBrains Mono", Menlo, Consolas,
+    "Liberation Mono", monospace;
+
+  /* Core surface tokens */
+  --color-background: oklch(0.145 0.017 262);
+  --color-foreground: oklch(0.955 0.008 262);
+  --color-card: oklch(0.175 0.018 262);
+  --color-card-foreground: oklch(0.955 0.008 262);
+  --color-popover: oklch(0.195 0.02 262);
+  --color-popover-foreground: oklch(0.955 0.008 262);
+  --color-muted: oklch(0.215 0.02 262);
+  --color-muted-foreground: oklch(0.645 0.022 262);
+  --color-secondary: oklch(0.235 0.02 262);
+  --color-secondary-foreground: oklch(0.955 0.008 262);
+  --color-accent: oklch(0.26 0.035 280);
+  --color-accent-foreground: oklch(0.955 0.008 262);
+  --color-border: oklch(0.245 0.022 262);
+  --color-input: oklch(0.27 0.022 262);
+  --color-ring: oklch(0.62 0.21 285);
+
+  /* Brand / action */
+  --color-primary: oklch(0.623 0.214 285);
+  --color-primary-foreground: oklch(0.99 0 0);
+  --color-destructive: oklch(0.64 0.23 22);
+  --color-destructive-foreground: oklch(0.99 0 0);
+
+  /* Semantic status (shared across surfaces) */
+  --color-success: oklch(0.72 0.18 160);
+  --color-warning: oklch(0.78 0.16 85);
+  --color-info: oklch(0.72 0.15 200);
+
+  /* Dual XP tracks — NEVER blended (gamification §5.2) */
+  --color-xp-completion: oklch(0.74 0.14 210);
+  --color-xp-mastery: oklch(0.7 0.2 325);
+
+  /* Verdict literals — F2 Judge Engine (platform §4.3, verbatim) */
+  --color-verdict-accepted: oklch(0.72 0.18 160);
+  --color-verdict-wrong-answer: oklch(0.68 0.2 5);
+  --color-verdict-time-limit-exceeded: oklch(0.78 0.16 85);
+  --color-verdict-runtime-error: oklch(0.72 0.17 45);
+  --color-verdict-compile-error: oklch(0.68 0.18 300);
+
+  /* League tiers — F5 (gamification §5.3, verbatim) */
+  --color-tier-bronze: oklch(0.62 0.11 55);
+  --color-tier-silver: oklch(0.8 0.02 260);
+  --color-tier-gold: oklch(0.82 0.16 95);
+  --color-tier-platinum: oklch(0.78 0.1 220);
+  --color-tier-obsidian: oklch(0.68 0.19 300);
+
+  /* Ledger integrity statuses — F5 (gamification §5.3, verbatim) */
+  --color-status-verified: oklch(0.72 0.18 160);
+  --color-status-flagged: oklch(0.78 0.16 85);
+  --color-status-reversed: oklch(0.68 0.2 5);
+  --color-status-revoked: oklch(0.68 0.2 5);
+
+  /* Radius scale */
+  --radius-sm: 0.5rem;
+  --radius-md: 0.625rem;
+  --radius-lg: 0.75rem;
+  --radius-xl: 1rem;
+  --radius-2xl: 1.25rem;
+
+  /* Motion */
+  --animate-fade-up: fade-up 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+  --animate-fade-in: fade-in 0.4s ease-out both;
+  --animate-scale-in: scale-in 0.25s cubic-bezier(0.22, 1, 0.36, 1) both;
+  --animate-shimmer: shimmer 2.2s linear infinite;
+  --animate-glow-pulse: glow-pulse 3s ease-in-out infinite;
+
+  @keyframes fade-up {
+    from {
+      opacity: 0;
+      transform: translateY(14px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  @keyframes fade-in {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+  @keyframes scale-in {
+    from {
+      opacity: 0;
+      transform: scale(0.96);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+  @keyframes shimmer {
+    from {
+      background-position: 200% 0;
+    }
+    to {
+      background-position: -200% 0;
+    }
+  }
+  @keyframes glow-pulse {
+    0%,
+    100% {
+      opacity: 0.55;
+    }
+    50% {
+      opacity: 1;
+    }
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-background font-sans text-foreground antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  ::selection {
+    @apply bg-violet-500/30 text-foreground;
+  }
+
+  /* Slim, theme-aware scrollbars */
+  *::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  *::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  *::-webkit-scrollbar-thumb {
+    background: color-mix(in oklab, var(--color-border) 75%, transparent);
+    border-radius: 999px;
+    border: 2px solid transparent;
+    background-clip: padding-box;
+  }
+  *::-webkit-scrollbar-thumb:hover {
+    background: color-mix(in oklab, var(--color-muted-foreground) 45%, transparent);
+    border-radius: 999px;
+    border: 2px solid transparent;
+    background-clip: padding-box;
+  }
+}
+
+@utility text-gradient-zap {
+  background-image: linear-gradient(
+    100deg,
+    var(--color-primary),
+    var(--color-xp-mastery) 55%,
+    var(--color-xp-completion)
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+@utility bg-grid {
+  background-image:
+    linear-gradient(
+      to right,
+      color-mix(in oklab, var(--color-border) 45%, transparent) 1px,
+      transparent 1px
+    ),
+    linear-gradient(
+      to bottom,
+      color-mix(in oklab, var(--color-border) 45%, transparent) 1px,
+      transparent 1px
+    );
+  background-size: 44px 44px;
+}
+
+@utility bg-noise {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120' viewBox='0 0 120 120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E");
+}
