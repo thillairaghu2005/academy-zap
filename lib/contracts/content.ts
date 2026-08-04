@@ -1,0 +1,134 @@
+/**
+ * Content Engine contracts (platform doc §4.1, §4.4).
+ *
+ * The source doc locks the ContentProvider Protocol method shapes
+ * (get_course, get_playback_manifest) but NOT the full Course /
+ * SignedManifest / Enrollment field lists — those come from the `courses`,
+ * `lessons`, `enrollments` table references. Field choices here are
+ * reasonable decisions, logged in the assumption register (index.ts).
+ */
+
+export type CourseLevel = "beginner" | "intermediate" | "advanced";
+export type LessonKind = "video" | "article";
+/** §4.4 — courses are versioned like code: draft vs published */
+export type ContentStatus = "draft" | "published";
+export type EnrollmentStatus = "active" | "completed";
+
+export interface CourseInstructor {
+  id: string;
+  display_name: string;
+  title: string;
+}
+
+export interface CourseLesson {
+  id: string;
+  title: string;
+  kind: LessonKind;
+  /** Seconds of video; 0 for articles */
+  duration_seconds: number;
+  position: number;
+}
+
+export interface CourseSection {
+  id: string;
+  title: string;
+  position: number;
+  lessons: CourseLesson[];
+}
+
+export interface Course {
+  id: string;
+  title: string;
+  subtitle: string;
+  description: string;
+  category: string;
+  level: CourseLevel;
+  language: string;
+  /** §4.4 draft vs published */
+  status: ContentStatus;
+  instructor: CourseInstructor;
+  rating: number;
+  review_count: number;
+  /** 0 = free */
+  price_cents: number;
+  enrolled_count: number;
+  estimated_hours: number;
+  syllabus: CourseSection[];
+  created_at: string;
+  updated_at: string;
+}
+
+/** Lightweight card shape for catalog hits */
+export interface CourseSummary {
+  id: string;
+  title: string;
+  subtitle: string;
+  category: string;
+  level: CourseLevel;
+  rating: number;
+  review_count: number;
+  price_cents: number;
+  enrolled_count: number;
+  estimated_hours: number;
+  instructor_name: string;
+  language: string;
+  /** Seed for the gradient cover art (mock stand-in for poster art) */
+  cover_hue: number;
+}
+
+/**
+ * SignedManifest — signed, short-TTL HLS URL (platform §2.3/§4.1).
+ * In mock mode `signature` is a deterministic stand-in; the real backend
+ * signs with a server-held key and enforces expiry (a fetch after
+ * `expires_at` must 403).
+ */
+export interface SignedManifest {
+  lesson_id: string;
+  user_id: string;
+  manifest_url: string;
+  expires_at: string;
+  signature: string;
+  /** WebVTT captions URL, null when the lesson has none */
+  captions_url: string | null;
+}
+
+export interface Enrollment {
+  course_id: string;
+  user_id: string;
+  status: EnrollmentStatus;
+  /** 0-100 across all lessons */
+  progress_pct: number;
+  /** Resume position */
+  last_lesson_id: string | null;
+  last_position_seconds: number;
+  enrolled_at: string;
+  updated_at: string;
+}
+
+/* ------------------------------------------------------------------ */
+/*  Catalog search — mock Meilisearch response shape                    */
+/*  (mirrors the real Meilisearch JSON API field names so the later     */
+/*  swap to the self-hosted Meilisearch instance is field-identical)    */
+/* ------------------------------------------------------------------ */
+
+export interface CatalogFacet {
+  category: string;
+  count: number;
+}
+
+export interface MeilisearchCatalogResponse {
+  hits: CourseSummary[];
+  query: string;
+  processingTimeMs: number;
+  limit: number;
+  offset: number;
+  estimatedTotalHits: number;
+}
+
+export interface CatalogQuery {
+  query?: string;
+  category?: string;
+  level?: CourseLevel | "all";
+  page?: number;
+  pageSize?: number;
+}

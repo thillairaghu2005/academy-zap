@@ -1,0 +1,251 @@
+import type {
+  CatalogQuery,
+  Course,
+  Enrollment,
+  MeilisearchCatalogResponse,
+  SignedManifest,
+} from "@/lib/contracts/content";
+import {
+  courseToSummary,
+  MOCK_COURSES_BY_ID,
+  MOCK_COURSES,
+  MOCK_EXPIRED_MANIFEST_LESSON_ID,
+} from "@/lib/mocks/courses";
+import { mockCompletedLessons, mockEnrollments } from "@/lib/mocks/store";
+import { MockApiError } from "@/lib/api/errors";
+import { delay, jitter } from "@/lib/api/helpers";
+
+export interface CourseProgress {
+  enrollment: Enrollment | null;
+  completed_lesson_ids: string[];
+}
+
+/** Lesson completion + progress snapshot for a course (server-derived). */
+export async function getCourseProgress(
+  courseId: string,
+  userId: string,
+): Promise<CourseProgress> {
+  await delay(jitter(200));
+  const enrollment = mockEnrollments.get(courseId);
+  if (!enrollment || enrollment.user_id !== userId) {
+    return { enrollment: null, completed_lesson_ids: [] };
+  }
+  const completed =
+    mockCompletedLessons.get(`${userId}:${courseId}`) ?? new Set<string>();
+  return {
+    enrollment: withDerivedProgress(enrollment, userId),
+    completed_lesson_ids: [...completed],
+  };
+}
+
+/**
+ * Mock Content Engine API.
+ *
+ * Signatures mirror the ContentProvider Protocol (platform §4.1):
+ *   get_course(course_id) -> Course
+ *   get_playback_manifest(lesson_id, user_id) -> SignedManifest
+ * plus the catalog/enrollment surface the frontend needs. Everything below
+ * is what the real Content Engine will do server-side — the component layer
+ * only consumes the results (no client-side progress math).
+ *
+ * Mock rules (deterministic, demoable):
+ *  - catalog query "zzzz" → empty hits (empty state)
+ *  - catalog query "boom" → 500 MockApiError (error state)
+ *  - course id "missing-course" → 404 (detail error state)
+ *  - the capstone lesson of the demo course has an EXPIRED signed manifest
+ *    → player error state
+ */
+
+const PUBLISHED_COURSES = MOCK_COURSES.filter((c) => c.status === "published");
+
+export async function getCourse(courseId: string): Promise<Course> {
+  await delay(jitter(320));
+  const course = MOCK_COURSES_BY_ID.get(courseId);
+  if (!course) {
+    throw new MockApiError(
+      "course_not_found",
+      `Course ${courseId} was not found.`,
+      404,
+    );
+  }
+  return course;
+}
+
+export async function getPlaybackManifest(
+  lessonId: string,
+  userId: string,
+): Promise<SignedManifest> {
+  await delay(jitter(220));
+
+  const baseUrl = "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8";
+  const expired = lessonId === MOCK_EXPIRED_MANIFEST_LESSON_ID;
+
+  const expiresAt = new Date(
+    Date.now() + (expired ? -5 * 60_000 : 15 * 60_000),
+  ).toISOString();
+
+  return {
+    lesson_id: lessonId,
+    user_id: userId,
+    // Mock stand-in: real manifests come from the CDN with short-TTL signed
+    // URLs. Public HLS test stream until the Content backend lands.
+    manifest_url: expired
+      ? "https://test-streams.mux.dev/does-not-exist/playlist.m3u8"
+      : baseUrl,
+    expires_at: expiresAt,
+    signature: `mock-ed25519:${lessonId}:${expiresAt}`,
+    captions_url: null,
+  };
+}
+
+/** Catalog search — mock Meilisearch response shape (field-identical to the real API). */
+export async function searchCatalog(
+  params: CatalogQuery = {},
+): Promise<MeilisearchCatalogResponse> {
+  const started = Date.now();
+  await delay(jitter(180));
+
+  const query = (params.query ?? "").trim().toLowerCase();
+  const page = Math.max(1, params.page ?? 1);
+  const pageSize = params.pageSize ?? 6;
+
+  if (query === "boom") {
+    throw new MockApiError(
+      "search_down",
+      "Search backend unreachable (simulated).",
+      503,
+    );
+  }
+
+  const filtered = PUBLISHED_COURSES.filter((course) => {
+    const summary = courseToSummary(course);
+    const haystack = [
+      course.title,
+      course.subtitle,
+      course.category,
+      course.instructor.display_name,
+    ]
+      .join(" ")
+      .toLowerCase();
+    if (query && !haystack.includes(query)) return false;
+    if (params.category && course.category !== params.category) return false;
+    if (params.level && params.level !== "all" && course.level !== params.level)
+      return false;
+    return summary;
+  });
+
+  const offset = (page - 1) * pageSize;
+  const hits = filtered.slice(offset, offset + pageSize).map(courseToSummary);
+
+  return {
+    hits,
+    query: params.query ?? "",
+    processingTimeMs: Math.max(1, Date.now() - started + 8),
+    limit: pageSize,
+    offset,
+    estimatedTotalHits: filtered.length,
+  };
+}
+
+export async function getEnrollment(
+  courseId: string,
+  userId: string,
+): Promise<Enrollment | null> {
+  await delay(jitter(220));
+  const enrollment = mockEnrollments.get(courseId);
+  if (!enrollment || enrollment.user_id !== userId) return null;
+  return withDerivedProgress(enrollment, userId);
+}
+
+export async function enroll(courseId: string, userId: string): Promise<Enrollment> {
+  await delay(jitter(450));
+  const course = MOCK_COURSES_BY_ID.get(courseId);
+  if (!course) {
+    throw new MockApiError("course_not_found", "Course was not found.", 404);
+  }
+  const existing = mockEnrollments.get(courseId);
+  if (existing && existing.user_id === userId) return existing;
+
+  const now = new Date().toISOString();
+  const enrollment: Enrollment = {
+    course_id: courseId,
+    user_id: userId,
+    status: "active",
+    progress_pct: 0,
+    last_lesson_id: course.syllabus[0]?.lessons[0]?.id ?? null,
+    last_position_seconds: 0,
+    enrolled_at: now,
+    updated_at: now,
+  };
+  mockEnrollments.set(courseId, enrollment);
+  mockCompletedLessons.set(`${userId}:${courseId}`, new Set());
+  return enrollment;
+}
+
+export interface ProgressInput {
+  courseId: string;
+  lessonId: string;
+  userId: string;
+  /** Seconds of playback for resume tracking (video lessons) */
+  position_seconds?: number;
+  completed: boolean;
+}
+
+/** "Server-side" progress write — derives progress from the completed-lesson set. */
+export async function recordProgress(
+  input: ProgressInput,
+): Promise<Enrollment> {
+  await delay(jitter(260));
+
+  const course = MOCK_COURSES_BY_ID.get(input.courseId);
+  if (!course) {
+    throw new MockApiError("course_not_found", "Course was not found.", 404);
+  }
+  const key = `${input.userId}:${input.courseId}`;
+  let completed = mockCompletedLessons.get(key) ?? new Set<string>();
+
+  if (input.completed) {
+    completed.add(input.lessonId);
+  } else {
+    completed.delete(input.lessonId);
+  }
+  mockCompletedLessons.set(key, completed);
+
+  let enrollment = mockEnrollments.get(input.courseId);
+  if (!enrollment || enrollment.user_id !== input.userId) {
+    enrollment = await enroll(input.courseId, input.userId);
+  }
+  enrollment = {
+    ...enrollment,
+    last_lesson_id: input.lessonId,
+    last_position_seconds: input.position_seconds ?? 0,
+    updated_at: new Date().toISOString(),
+  };
+  mockEnrollments.set(input.courseId, enrollment);
+
+  return withDerivedProgress(enrollment, input.userId);
+}
+
+/**
+ * Progress is derived from the completed-lesson set — never computed by
+ * components (same "server always wins" law as XP/ranks).
+ */
+function withDerivedProgress(
+  enrollment: Enrollment,
+  userId: string,
+): Enrollment {
+  const course = MOCK_COURSES_BY_ID.get(enrollment.course_id);
+  if (!course) return enrollment;
+
+  const completed = mockCompletedLessons.get(`${userId}:${enrollment.course_id}`);
+  const allLessons = course.syllabus.flatMap((section) => section.lessons);
+  const done = allLessons.filter((lesson) => completed?.has(lesson.id)).length;
+  const progressPct =
+    allLessons.length === 0 ? 0 : Math.round((done / allLessons.length) * 100);
+
+  return {
+    ...enrollment,
+    progress_pct: progressPct,
+    status: progressPct === 100 ? "completed" : "active",
+  };
+}
