@@ -84,7 +84,7 @@ export function Dashboard() {
         <div className="pointer-events-none absolute -bottom-20 -left-16 size-72 rounded-full bg-primary-light/60 blur-3xl" />
 
         <div className="relative z-10 px-6 py-14 sm:px-10 sm:py-16">
-          <h1 className="max-w-2xl font-display text-4xl font-bold leading-tight tracking-tight sm:text-5xl">
+          <h1 className="max-w-2xl font-display text-h1">
             Learn. Build. <span className="text-gradient-zap">Climb.</span>
           </h1>
           <p className="mt-4 max-w-xl text-base leading-relaxed text-muted-foreground">
@@ -112,7 +112,7 @@ export function Dashboard() {
       <section className="mt-12">
         <div className="flex flex-wrap items-end justify-between gap-3">
           <div>
-            <h2 className="font-display text-xl font-bold tracking-tight">
+            <h2 className="font-display text-h2">
               Explore the platform
             </h2>
             <p className="mt-1 text-sm text-muted-foreground">
@@ -138,7 +138,7 @@ export function Dashboard() {
 
       {/* How the climb works */}
       <section className="mt-12">
-        <h2 className="font-display text-xl font-bold tracking-tight">
+        <h2 className="font-display text-h2">
           How the climb works
         </h2>
         <div className="mt-5 grid gap-4 md:grid-cols-3">

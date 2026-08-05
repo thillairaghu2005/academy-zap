@@ -63,7 +63,7 @@ function LessonRow({
     <div className="flex items-center gap-3 rounded-md px-2 py-2 transition-colors hover:bg-accent/60">
       <span
         className={cn(
-          "grid size-6 shrink-0 place-items-center rounded-full border text-[11px] font-medium",
+          "grid size-6 shrink-0 place-items-center rounded-full border text-caption font-medium",
           completed
             ? "border-transparent bg-success/15 text-success-strong"
             : "border-border text-muted-foreground",
@@ -202,7 +202,7 @@ export function CourseDetailClient({
             </Badge>
           </div>
 
-          <h1 className="font-display text-3xl font-bold tracking-tight sm:text-4xl">
+          <h1 className="font-display text-h1">
             {course.title}
           </h1>
           <p className="text-lg text-muted-foreground">{course.subtitle}</p>
@@ -233,7 +233,7 @@ export function CourseDetailClient({
 
           {/* Instructor */}
           <div className="flex items-center gap-3">
-            <div className="grid size-10 place-items-center rounded-full bg-gradient-to-br from-violet-500 to-fuchsia-500 font-display text-sm font-bold text-white">
+            <div className="grid size-10 place-items-center rounded-full bg-gradient-to-br from-violet-500 to-fuchsia-500 font-display text-small font-bold text-white">
               {course.instructor.display_name
                 .split(" ")
                 .map((n) => n[0])
@@ -249,7 +249,7 @@ export function CourseDetailClient({
 
           {/* Description */}
           <div className="mt-2">
-            <h2 className="font-display text-lg font-semibold tracking-tight">
+            <h2 className="font-display text-h2">
               About this course
             </h2>
             <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
@@ -285,7 +285,7 @@ export function CourseDetailClient({
 
             <CardContent className="flex flex-col gap-4 p-5">
               <div className="flex items-baseline justify-between">
-                <span className="font-display text-3xl font-bold">
+                <span className="font-display text-h2">
                   {isFree ? "Free" : `$${(course.price_cents / 100).toFixed(0)}`}
                 </span>
                 {!isFree ? (
@@ -405,7 +405,7 @@ export function CourseDetailClient({
 
       {/* Syllabus */}
       <div className="mt-12">
-        <h2 className="font-display text-xl font-semibold tracking-tight">
+        <h2 className="font-display text-h2">
           Course content
         </h2>
         <p className="mt-1 text-sm text-muted-foreground">
@@ -424,11 +424,11 @@ export function CourseDetailClient({
               <Card key={section.id}>
                 <CardHeader className="flex flex-row items-center justify-between gap-3 p-4">
                   <div className="flex items-center gap-3">
-                    <span className="grid size-7 place-items-center rounded-md bg-primary/10 font-display text-sm font-bold text-primary">
+                    <span className="grid size-7 place-items-center rounded-md bg-primary/10 font-display text-small font-bold text-primary">
                       {si + 1}
                     </span>
                     <div>
-                      <h3 className="font-display text-sm font-semibold">
+                      <h3 className="font-display text-h3">
                         {section.title}
                       </h3>
                       <p className="text-xs text-muted-foreground">
@@ -437,7 +437,7 @@ export function CourseDetailClient({
                     </div>
                   </div>
                   {enrollment && sectionCompleted > 0 ? (
-                    <Badge variant="success" className="text-[10px]">
+                    <Badge variant="success" className="text-caption">
                       {sectionCompleted}/{section.lessons.length}
                     </Badge>
                   ) : null}
@@ -460,12 +460,12 @@ export function CourseDetailClient({
 
       {/* Reviews placeholder — real reviews land with the Content backend */}
       <div className="mt-12">
-        <h2 className="font-display text-xl font-semibold tracking-tight">
+        <h2 className="font-display text-h2">
           Reviews
         </h2>
         <div className="mt-4 flex flex-col items-start gap-6 rounded-xl border border-dashed border-border bg-card/40 p-6 sm:flex-row sm:items-center">
           <div className="text-center sm:text-left">
-            <p className="font-display text-5xl font-bold">
+            <p className="font-display text-h1">
               {course.rating > 0 ? course.rating.toFixed(1) : "—"}
             </p>
             <div className="mt-1 flex items-center justify-center gap-0.5 sm:justify-start">

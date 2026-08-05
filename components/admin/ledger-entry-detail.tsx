@@ -64,7 +64,7 @@ export function LedgerEntryDetail({ ledgerEntryId }: { ledgerEntryId: string }) 
           )}
           <span
             className={cn(
-              "font-display text-lg font-bold",
+              "font-display text-h3",
               positive ? "text-emerald-700" : "text-rose-700",
             )}
           >
@@ -78,7 +78,7 @@ export function LedgerEntryDetail({ ledgerEntryId }: { ledgerEntryId: string }) 
         </span>
         <span
           className={cn(
-            "inline-flex items-center rounded-full border px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide",
+            "inline-flex items-center rounded-full border px-2 py-0.5 text-caption font-semibold uppercase tracking-wide",
             INTEGRITY_STYLES[entry.integrity_status],
           )}
         >
@@ -107,13 +107,13 @@ export function LedgerEntryDetail({ ledgerEntryId }: { ledgerEntryId: string }) 
             <Hash className="size-3" />
             Entry hash
           </dt>
-          <dd className="font-mono text-[11px] text-muted-foreground">
+          <dd className="font-mono text-caption text-muted-foreground">
             {entry.entry_hash.slice(0, 18)}…
           </dd>
         </div>
         <div className="flex items-center justify-between gap-3 sm:block">
           <dt className="text-muted-foreground">Event</dt>
-          <dd className="font-mono text-[11px] text-muted-foreground">
+          <dd className="font-mono text-caption text-muted-foreground">
             {entry.event_id.slice(0, 18)}…
           </dd>
         </div>

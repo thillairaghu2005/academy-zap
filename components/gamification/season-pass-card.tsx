@@ -58,7 +58,7 @@ export function SeasonPassCard() {
             <Ticket className="size-4" />
           </span>
           <div>
-            <p className="font-display text-sm font-bold tracking-tight">
+            <p className="font-display text-small font-bold">
               {data.season_name}
             </p>
             <p className="font-mono text-[10px] text-muted-foreground">
@@ -71,7 +71,7 @@ export function SeasonPassCard() {
             <Crown className="size-3" /> Premium track
           </Badge>
         ) : (
-          <Badge variant="outline" className="text-[10px]">
+          <Badge variant="outline" className="text-caption">
             Free track
           </Badge>
         )}
@@ -106,12 +106,12 @@ export function SeasonPassCard() {
                   ) : m.premium ? (
                     <Gem className="size-3.5" />
                   ) : (
-                    <span className="text-[10px] font-bold">{m.milestone}</span>
+                    <span className="text-caption font-bold">{m.milestone}</span>
                   )}
                 </span>
                 <span
                   className={cn(
-                    "text-center text-[9px] font-medium leading-tight",
+                    "text-center text-caption font-medium leading-tight",
                     reached
                       ? "text-violet-600"
                       : "text-muted-foreground",
@@ -133,7 +133,7 @@ export function SeasonPassCard() {
           })}
         </div>
 
-        <p className="mt-4 text-[11px] leading-relaxed text-muted-foreground">
+        <p className="mt-4 text-caption leading-relaxed text-muted-foreground">
           Milestones unlock by season XP — the engine only reports progress;
           premium-track billing is a separate platform concern.
         </p>

@@ -145,7 +145,7 @@ export function BillingClient() {
     <PageContainer>
       <div className="flex items-end justify-between gap-4">
         <div>
-          <h1 className="font-display text-2xl font-bold tracking-tight">
+          <h1 className="font-display text-h1">
             Subscription & seats
           </h1>
           <p className="mt-1 text-sm text-muted-foreground">
@@ -178,7 +178,7 @@ export function BillingClient() {
       <div className="mt-10">
         <div className="flex items-center justify-between gap-3">
           <div>
-            <h2 className="font-display text-lg font-semibold tracking-tight">
+            <h2 className="font-display text-h2">
               Seats
             </h2>
             <p className="mt-0.5 text-xs text-muted-foreground">
@@ -196,7 +196,7 @@ export function BillingClient() {
           <div className="overflow-x-auto">
             <table className="w-full text-left text-sm">
               <thead>
-                <tr className="border-b border-border bg-muted/40 text-[11px] uppercase tracking-widest text-muted-foreground/70">
+                <tr className="border-b border-border bg-muted/40 text-caption uppercase tracking-widest text-muted-foreground/70">
                   <th className="px-4 py-2.5 font-semibold">Member</th>
                   <th className="px-4 py-2.5 font-semibold">Status</th>
                   <th className="px-4 py-2.5 font-semibold">Assigned course</th>
@@ -223,7 +223,7 @@ export function BillingClient() {
                       <td className="px-4 py-3">
                         <span
                           className={cn(
-                            "inline-flex items-center gap-1.5 rounded-full border px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide",
+                            "inline-flex items-center gap-1.5 rounded-full border px-2 py-0.5 text-caption font-semibold uppercase tracking-wide",
                             style.className,
                           )}
                         >
@@ -265,7 +265,7 @@ export function BillingClient() {
               </div>
             </div>
             <div className="text-right">
-              <p className="font-display text-2xl font-bold">
+              <p className="font-display text-h2">
                 {formatMoney(subscription.next_invoice_cents)}
               </p>
               <p className="text-xs text-muted-foreground">
@@ -277,7 +277,7 @@ export function BillingClient() {
           </CardContent>
         </Card>
 
-        <p className="mt-4 flex items-start gap-1.5 text-[11px] leading-relaxed text-muted-foreground">
+        <p className="mt-4 flex items-start gap-1.5 text-caption leading-relaxed text-muted-foreground">
           <CheckCircle2 className="mt-0.5 size-3 shrink-0" />
           Mock-only read model until the Commerce backend lands. Seat
           provisioning, invites and reassignment are deferred — the docs leave
@@ -293,7 +293,7 @@ export function BillingClient() {
 function renderPlans(plans: Plan[], currentPlanId?: string) {
   return (
     <div>
-      <h2 className="font-display text-lg font-semibold tracking-tight">
+      <h2 className="font-display text-h2">
         Plans
       </h2>
       <div className="mt-3 grid gap-4 md:grid-cols-2">
@@ -315,13 +315,13 @@ function renderPlans(plans: Plan[], currentPlanId?: string) {
                   <Building2 className="size-4" />
                 </div>
                 <div>
-                  <p className="font-display text-sm font-semibold">{plan.name}</p>
+                  <p className="font-display text-small font-semibold">{plan.name}</p>
                   <p className="text-xs text-muted-foreground capitalize">
                     {plan.billing_cycle}
                   </p>
                 </div>
               </div>
-              <p className="font-display text-2xl font-bold">
+              <p className="font-display text-h2">
                 {formatMoney(plan.price_per_seat_cents)}
                 <span className="text-xs font-normal text-muted-foreground">
                   {" "}

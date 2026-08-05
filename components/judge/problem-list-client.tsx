@@ -69,12 +69,12 @@ function ProblemRow({ problem, index }: { problem: Problem; index: number }) {
 
           <div className="min-w-0 flex-1">
             <div className="flex flex-wrap items-center gap-2">
-              <h3 className="truncate font-display text-base font-semibold group-hover:text-primary">
+              <h3 className="truncate font-display text-h3 group-hover:text-primary">
                 {problem.title}
               </h3>
               <span
                 className={cn(
-                  "rounded-full border px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide",
+                  "rounded-full border px-2 py-0.5 text-caption font-semibold uppercase tracking-wide",
                   diff.badge,
                 )}
               >
@@ -146,7 +146,7 @@ export function ProblemListClient() {
     <PageContainer>
       {/* Header */}
       <div className="flex flex-col gap-2">
-        <h1 className="font-display text-3xl font-bold tracking-tight">
+        <h1 className="font-display text-h1">
           Judge Engine
         </h1>
         <p className="text-sm text-muted-foreground">
@@ -183,7 +183,7 @@ export function ProblemListClient() {
               {count !== undefined ? (
                 <span
                   className={cn(
-                    "ml-1.5 rounded-full px-1.5 text-[10px] font-semibold",
+                    "ml-1.5 rounded-full px-1.5 text-caption font-semibold",
                     active
                       ? "bg-white/20 text-white"
                       : "bg-muted text-muted-foreground",

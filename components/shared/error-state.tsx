@@ -37,7 +37,7 @@ export function ErrorState({
       <div className="mb-4 grid size-12 place-items-center rounded-full border border-destructive/25 bg-destructive/10 text-destructive">
         <TriangleAlert className="size-5" />
       </div>
-      <h3 className="font-display text-base font-semibold tracking-tight">
+      <h3 className="font-display text-h3">
         {title}
       </h3>
       {message ? (
@@ -46,7 +46,7 @@ export function ErrorState({
         </p>
       ) : null}
       {code ? (
-        <code className="mt-3 rounded-md bg-secondary px-2 py-1 font-mono text-[11px] text-muted-foreground">
+        <code className="mt-3 rounded-md bg-secondary px-2 py-1 font-mono text-caption text-muted-foreground">
           {code}
         </code>
       ) : null}

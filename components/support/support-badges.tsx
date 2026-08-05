@@ -24,7 +24,7 @@ const PRIORITY_STYLES: Record<TicketPriority, string> = {
 
 function badgeClass(styles: string): string {
   return cn(
-    "inline-flex items-center rounded-full border px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide",
+    "inline-flex items-center rounded-full border px-2 py-0.5 text-caption font-semibold uppercase tracking-wide",
     styles,
   );
 }
@@ -43,7 +43,7 @@ export function TicketPriorityBadge({ priority }: { priority: TicketPriority }) 
 
 export function TicketCategoryBadge({ category }: { category: TicketCategory }) {
   return (
-    <span className="inline-flex items-center rounded-full border border-border bg-secondary px-2 py-0.5 text-[10px] font-medium uppercase tracking-wide text-muted-foreground">
+    <span className="inline-flex items-center rounded-full border border-border bg-secondary px-2 py-0.5 text-caption font-medium uppercase tracking-wide text-muted-foreground">
       {category}
     </span>
   );

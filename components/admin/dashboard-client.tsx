@@ -48,7 +48,7 @@ export function AdminDashboardClient() {
   return (
     <PageContainer>
       <div className="flex flex-col gap-2">
-        <h1 className="font-display text-2xl font-bold tracking-tight">
+        <h1 className="font-display text-h1">
           Admin console
         </h1>
         <p className="text-sm text-muted-foreground">
@@ -93,7 +93,7 @@ export function AdminDashboardClient() {
                         <Icon className="size-4" />
                       </div>
                       <div>
-                        <p className="font-display text-2xl font-bold leading-none">
+                        <p className="font-display text-h2">
                           {count}
                         </p>
                         <p className="mt-1 text-xs text-muted-foreground">
@@ -113,7 +113,7 @@ export function AdminDashboardClient() {
               <CardContent className="p-5">
                 <div className="flex items-center justify-between gap-3">
                   <div>
-                    <h2 className="font-display text-sm font-semibold">
+                    <h2 className="font-display text-h2">
                       Recent audit activity
                     </h2>
                     <p className="text-xs text-muted-foreground">
@@ -142,7 +142,7 @@ export function AdminDashboardClient() {
                           {entry.detail}
                         </p>
                       </div>
-                      <span className="shrink-0 font-mono text-[10px] text-muted-foreground/60">
+                        <span className="shrink-0 font-mono text-caption text-muted-foreground/60">
                         {formatDate(entry.created_at)}
                       </span>
                     </li>
@@ -155,7 +155,7 @@ export function AdminDashboardClient() {
             <div className="flex flex-col gap-3">
               <Card>
                 <CardContent className="flex flex-col gap-2.5 p-5">
-                  <p className="font-display text-sm font-semibold">
+                  <p className="font-display text-small font-semibold">
                     Quick actions
                   </p>
                   <Button variant="gradient" asChild>
@@ -175,7 +175,7 @@ export function AdminDashboardClient() {
 
               <Card>
                 <CardContent className="flex flex-col gap-2 p-5">
-                  <p className="font-display text-sm font-semibold">Signed in as</p>
+                  <p className="font-display text-small font-semibold">Signed in as</p>
                   <div className="flex items-center gap-3">
                     <div className="grid size-9 place-items-center rounded-full bg-gradient-to-br from-primary to-fuchsia-500 text-xs font-bold text-white">
                       {user?.display_name
@@ -199,7 +199,7 @@ export function AdminDashboardClient() {
               </Card>
 
               {DEMO_MODE ? (
-                <p className="flex items-center gap-1.5 text-[11px] leading-relaxed text-muted-foreground">
+                <p className="flex items-center gap-1.5 text-caption leading-relaxed text-muted-foreground">
                   <LoaderCircle className="size-3 shrink-0" />
                   Mock note: counts come from the fixture stores — the real
                   CMS reads live tables.

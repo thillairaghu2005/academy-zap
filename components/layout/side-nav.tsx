@@ -61,7 +61,7 @@ export function NavLinks({ onNavigate }: { onNavigate?: () => void }) {
     <nav className="flex flex-col gap-1">
       {sideNavGroups.map((group) => (
         <div key={group.label}>
-          <p className="px-3 pb-1.5 pt-5 text-[11px] font-semibold uppercase tracking-widest text-muted-foreground/60">
+            <p className="px-3 pb-1.5 pt-5 text-caption font-semibold uppercase tracking-widest text-muted-foreground/60">
             {group.label}
           </p>
           {group.items.map((item) => {
@@ -134,7 +134,7 @@ export function MobileNav() {
             ) : user ? (
               <div className="flex items-center gap-3">
                 <Avatar className="size-8">
-                  <AvatarFallback className="text-[10px]">
+                  <AvatarFallback className="text-caption">
                     {getInitials(user.display_name)}
                   </AvatarFallback>
                 </Avatar>

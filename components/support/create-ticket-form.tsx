@@ -127,7 +127,7 @@ export function CreateTicketForm() {
       </Link>
 
       <div className="mt-4">
-        <h1 className="font-display text-3xl font-bold tracking-tight">
+        <h1 className="font-display text-h1">
           Open a ticket
         </h1>
         <p className="mt-1 text-sm text-muted-foreground">
@@ -271,7 +271,7 @@ export function CreateTicketForm() {
               />
 
               <div className="flex flex-wrap items-center justify-between gap-3">
-                <p className="flex items-center gap-1.5 text-[11px] text-muted-foreground">
+                <p className="flex items-center gap-1.5 text-caption text-muted-foreground">
                   <Lock className="size-3" />
                   Internal notes are only visible to agents — never to you.
                 </p>

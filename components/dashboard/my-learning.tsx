@@ -53,7 +53,7 @@ function MyLearningRow({ item }: { item: MyLearningItem }) {
             style={{ background: coverGradient(hueForId(course.id)) }}
           >
             <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
-            <span className="absolute bottom-1.5 left-2 right-2 truncate text-[10px] font-semibold text-white">
+            <span className="absolute bottom-1.5 left-2 right-2 truncate text-caption font-semibold text-white">
               {course.category}
             </span>
           </div>
@@ -61,11 +61,11 @@ function MyLearningRow({ item }: { item: MyLearningItem }) {
           {/* Title + meta */}
           <div className="min-w-0 flex-1">
             <div className="flex flex-wrap items-center gap-2">
-              <h3 className="truncate font-display text-sm font-semibold tracking-tight sm:text-base">
+              <h3 className="truncate font-display text-h3">
                 {course.title}
               </h3>
               {completed ? (
-                <Badge variant="success" className="shrink-0 text-[10px]">
+                <Badge variant="success" className="shrink-0 text-caption">
                   <CheckCircle2 className="size-3" />
                   Completed
                 </Badge>
@@ -157,7 +157,7 @@ export function MyLearning() {
     <section className="mt-12">
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
-          <h2 className="font-display text-xl font-bold tracking-tight">
+          <h2 className="font-display text-h2">
             My learning
           </h2>
           <p className="mt-1 text-sm text-muted-foreground">

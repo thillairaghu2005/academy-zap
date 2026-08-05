@@ -37,7 +37,7 @@ export function FeaturedCourseCard({ course, visualClass, index }: FeaturedCours
             <Badge className="border-primary-foreground/20 bg-foreground/20 font-mono text-[10px] uppercase text-primary-foreground backdrop-blur-sm">
               {course.category}
             </Badge>
-            <h3 className="mt-3 font-display text-xl font-semibold leading-tight text-primary-foreground">
+            <h3 className="mt-3 font-display text-h3 text-primary-foreground">
               {course.title}
             </h3>
           </div>

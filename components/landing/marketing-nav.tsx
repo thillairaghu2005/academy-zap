@@ -57,7 +57,7 @@ export function MarketingNav() {
           </SheetTrigger>
           <SheetContent side="left" className="w-full max-w-sm p-0">
             <SheetHeader className="border-b border-border px-6 pb-5 pt-6">
-              <SheetTitle className="font-display text-left">Surface index</SheetTitle>
+              <SheetTitle className="font-display text-h3 text-left">Surface index</SheetTitle>
               <SheetDescription className="text-left">
                 Courses, Judge, Labs, and the Rank Ladder.
               </SheetDescription>

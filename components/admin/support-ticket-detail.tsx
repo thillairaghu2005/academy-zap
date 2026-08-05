@@ -49,12 +49,12 @@ function InternalNote({ message }: { message: TicketMessage }) {
     <div className="flex justify-start">
       <div className="max-w-[85%] rounded-2xl border border-amber-500/40 bg-amber-500/10 px-4 py-3 text-sm sm:max-w-[70%]">
         <div className="flex flex-wrap items-center gap-2">
-          <span className="inline-flex items-center gap-1 rounded-full border border-amber-500/40 bg-amber-500/15 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-amber-700">
+          <span className="inline-flex items-center gap-1 rounded-full border border-amber-500/40 bg-amber-500/15 px-2 py-0.5 text-caption font-bold uppercase tracking-wide text-amber-700">
             <Lock className="size-3" />
             Internal note
           </span>
           <span className="text-xs font-semibold">{message.author_name}</span>
-          <span className="text-[10px] text-muted-foreground/70">
+          <span className="text-caption text-muted-foreground/70">
             {new Date(message.created_at).toLocaleString("en-US", {
               month: "short",
               day: "numeric",
@@ -95,10 +95,10 @@ function MessageBubble({
           )}
         >
           <span className="text-xs font-semibold">{message.author_name}</span>
-          <span className="text-[10px] uppercase tracking-wide text-muted-foreground">
+          <span className="text-caption uppercase tracking-wide text-muted-foreground">
             {message.author_role === "agent" ? "You" : "Learner"}
           </span>
-          <span className="text-[10px] text-muted-foreground/70">
+          <span className="text-caption text-muted-foreground/70">
             {new Date(message.created_at).toLocaleString("en-US", {
               month: "short",
               day: "numeric",
@@ -231,7 +231,7 @@ export function AdminSupportTicketDetail({ ticketId }: { ticketId: string }) {
             <TicketPriorityBadge priority={ticket.priority} />
             <TicketCategoryBadge category={ticket.category} />
           </div>
-          <h1 className="mt-2 font-display text-2xl font-bold tracking-tight">
+          <h1 className="mt-2 font-display text-h1">
             {ticket.subject}
           </h1>
           <p className="mt-1 text-xs text-muted-foreground">

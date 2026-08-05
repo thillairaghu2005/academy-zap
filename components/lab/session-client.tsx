@@ -102,14 +102,14 @@ function ObjectivesPanel({
   return (
     <Card className="flex flex-col gap-3 p-4">
       <div className="flex items-center justify-between">
-        <h2 className="flex items-center gap-2 font-display text-sm font-semibold">
+        <h2 className="flex items-center gap-2 font-display text-small font-semibold">
           <Flag className="size-4 text-muted-foreground" />
           Objectives
         </h2>
         <Badge
           variant={allDone ? "secondary" : "outline"}
           className={cn(
-            "text-[10px]",
+            "text-caption",
             allDone && "border-emerald-500/40 bg-emerald-500/10 text-emerald-700",
           )}
         >
@@ -152,7 +152,7 @@ function ObjectivesPanel({
                 <Button
                   variant="outline"
                   size="sm"
-                  className="h-7 shrink-0 px-2 text-[11px]"
+                  className="h-7 shrink-0 px-2 text-caption"
                   onClick={() => onCheck(objective.id)}
                 >
                   Check
@@ -163,7 +163,7 @@ function ObjectivesPanel({
         })}
       </div>
 
-      <p className="text-[11px] leading-relaxed text-muted-foreground/80">
+      <p className="text-caption leading-relaxed text-muted-foreground/80">
         Terminal objectives verify automatically when the flag is found
         (server-side). GUI objectives use the Check button.
       </p>
@@ -215,7 +215,7 @@ function SessionEnded({
       </div>
 
       <div>
-        <h2 className="font-display text-xl font-bold tracking-tight">
+        <h2 className="font-display text-h2">
           {isCompleted
             ? "Lab completed"
             : kind === "timed_out"
@@ -261,7 +261,7 @@ function SessionEnded({
 function Stat({ label, value }: { label: string; value: string }) {
   return (
     <div className="flex flex-col gap-1 rounded-xl border border-border bg-card px-3 py-2.5">
-      <span className="text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">
+      <span className="text-caption font-semibold uppercase tracking-wide text-muted-foreground">
         {label}
       </span>
       <span className="font-mono text-sm font-medium">{value}</span>
@@ -441,7 +441,7 @@ export function LabSessionClient({
             </Link>
           </Button>
           <div>
-            <h1 className="font-display text-xl font-bold tracking-tight">
+            <h1 className="font-display text-h1">
               {lab?.title ?? "Lab session"}
             </h1>
             <p className="font-mono text-[11px] text-muted-foreground">
@@ -467,7 +467,7 @@ export function LabSessionClient({
               {session.status}
             </Badge>
           ) : (
-            <Badge variant="outline" className="text-[10px]">
+                  <Badge variant="outline" className="text-caption">
               ended
             </Badge>
           )}
@@ -528,7 +528,7 @@ export function LabSessionClient({
                   {lab?.requires_gui ? "Guacamole GUI viewer" : "shell — ttyd over WebSocket"}
                 </span>
                 <div className="flex items-center gap-2">
-                  <span className="flex items-center gap-1 text-[10px] text-emerald-700/80">
+                  <span className="flex items-center gap-1 text-caption text-emerald-700/80">
                     <Lock className="size-3" />
                     encrypted
                   </span>
@@ -554,7 +554,7 @@ export function LabSessionClient({
             {/* Terminal hint bar */}
             {!lab?.requires_gui ? (
               <div className="flex flex-wrap items-center justify-between gap-2 rounded-lg border border-dashed border-border bg-muted/30 px-3.5 py-2.5">
-                <p className="text-[11px] leading-relaxed text-muted-foreground">
+                <p className="text-caption leading-relaxed text-muted-foreground">
                   Try{" "}
                   <code className="rounded bg-muted px-1">help</code>,{" "}
                   <code className="rounded bg-muted px-1">ls /root</code>,{" "}
@@ -564,7 +564,7 @@ export function LabSessionClient({
                 <Button
                   variant="outline"
                   size="sm"
-                  className="h-7 gap-1.5 px-2.5 text-[11px]"
+                    className="h-7 gap-1.5 px-2.5 text-caption"
                   onClick={() => hintMutation.mutate()}
                   disabled={hintMutation.isPending}
                 >
@@ -625,7 +625,7 @@ export function LabSessionClient({
             ) : null}
 
             <Card className="flex flex-col gap-2.5 p-4">
-              <h3 className="font-display text-sm font-semibold">
+              <h3 className="font-display text-h3">
                 Session info
               </h3>
               <InfoRow label="Started" value={timeAgo(session.provisioned_at)} />

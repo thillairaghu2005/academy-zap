@@ -91,7 +91,7 @@ export function LedgerViewer({
               <div>
                 <p
                   className={cn(
-                    "font-display text-sm font-semibold",
+                    "font-display text-small font-semibold",
                     data.chain.valid
                       ? "text-emerald-700"
                       : "text-rose-700",
@@ -144,7 +144,7 @@ export function LedgerViewer({
             </div>
 
             <div className="mt-3 flex items-center justify-between">
-              <p className="flex items-center gap-1.5 text-[11px] text-muted-foreground">
+              <p className="flex items-center gap-1.5 text-caption text-muted-foreground">
                 <ShieldCheck className="size-3.5 text-emerald-700" />
                 Append-only — nothing is ever mutated or deleted
               </p>
@@ -179,7 +179,7 @@ const INTEGRITY_STYLE: Record<string, string> = {
 function LedgerEntriesTable({ entries }: { entries: LedgerAuditView["entries"] }) {
   return (
     <table className="w-full text-left text-xs">
-      <thead className="sticky top-0 bg-card text-[10px] uppercase tracking-wider text-muted-foreground">
+              <thead className="sticky top-0 bg-card text-caption uppercase tracking-wider text-muted-foreground">
         <tr>
           <th className="px-3 py-2 font-medium">Date</th>
           <th className="px-3 py-2 font-medium">Reason</th>
@@ -206,12 +206,12 @@ function LedgerEntriesTable({ entries }: { entries: LedgerAuditView["entries"] }
             </td>
             <td className="px-3 py-2">
               <div className="flex flex-wrap items-center gap-1.5">
-                <Badge className={cn("text-[9px]", XP_TYPE_STYLE[e.xp_type])}>
+                <Badge className={cn("text-caption", XP_TYPE_STYLE[e.xp_type])}>
                   {e.xp_type}
                 </Badge>
                 <span className="font-mono text-[10px]">{e.reason_code}</span>
                 {e.multiplier_applied !== 1 ? (
-                  <span className="text-[9px] text-muted-foreground">
+                <span className="text-caption text-muted-foreground">
                     ×{e.multiplier_applied.toFixed(2)}
                   </span>
                 ) : null}
@@ -280,7 +280,7 @@ function VersionsView({
               v{d.from_version} → v{d.to_version}
             </span>
             {d.rank_changed ? (
-              <Badge className="border-fuchsia-500/40 bg-fuchsia-500/10 text-[9px] text-fuchsia-600">
+              <Badge className="border-fuchsia-500/40 bg-fuchsia-500/10 text-caption text-fuchsia-600">
                 rank change: {d.from_rank} → {d.to_rank}
               </Badge>
             ) : null}
@@ -312,7 +312,7 @@ function VersionsView({
               · {s.current_streak_days}-day streak
             </p>
           </div>
-          <Badge variant="outline" className="text-[9px]">
+          <Badge variant="outline" className="text-caption">
             {s.freeze_status.replace("_", " ")}
           </Badge>
         </div>

@@ -62,7 +62,7 @@ export function LeaderboardClient() {
   return (
     <PageContainer>
       <div className="mb-8">
-        <h1 className="font-display text-2xl font-bold tracking-tight sm:text-3xl">
+                <h1 className="font-display text-h1">
           Leaderboards
         </h1>
         <p className="mt-1.5 max-w-xl text-sm leading-relaxed text-muted-foreground">
@@ -128,7 +128,7 @@ export function LeaderboardClient() {
                     · {me.rank_name} · level {me.level}
                   </span>
                 </p>
-                <p className="text-[11px] text-muted-foreground">
+                <p className="text-caption text-muted-foreground">
                   Your standing on the {scope} board
                 </p>
               </div>
@@ -163,7 +163,7 @@ export function LeaderboardClient() {
                     <p className="flex items-center gap-2 truncate text-sm font-medium">
                       {e.display_name}
                       {e.is_me ? (
-                        <Badge variant="secondary" className="text-[9px]">
+                        <Badge variant="secondary" className="text-caption">
                           you
                         </Badge>
                       ) : null}
@@ -171,7 +171,7 @@ export function LeaderboardClient() {
                         <Crown className="size-3.5 text-amber-700" />
                       ) : null}
                     </p>
-                    <p className="text-[11px] text-muted-foreground">
+                    <p className="text-caption text-muted-foreground">
                       {e.rank_name}
                       {e.prestige_tier > 0 ? ` · prestige ${e.prestige_tier}` : ""}
                     </p>
@@ -214,5 +214,3 @@ export function LeaderboardClient() {
     </PageContainer>
   );
 }
-
-

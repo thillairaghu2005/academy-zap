@@ -53,7 +53,7 @@ export function ComboMeter({ combo }: { combo: ComboState }) {
 
       <div className="flex min-w-0 flex-1 flex-col gap-1">
         <div className="flex items-center justify-between">
-          <span className="font-display text-xs font-semibold">
+          <span className="font-display text-small font-semibold">
             {active ? `${combo.count}× combo` : "Combo"}
           </span>
           <span className="font-mono text-[11px] text-amber-700">
@@ -68,7 +68,7 @@ export function ComboMeter({ combo }: { combo: ComboState }) {
             transition={{ duration: 0.4, ease: "easeOut" }}
           />
         </div>
-        <span className="text-[10px] text-muted-foreground">
+          <span className="text-caption text-muted-foreground">
           best: {combo.best} · server-verified preview
         </span>
       </div>

@@ -127,10 +127,10 @@ export function SkillTree() {
 
   return (
     <div className="rounded-xl border border-border bg-card p-4">
-      <p className="flex items-center gap-2 font-display text-sm font-semibold">
+      <p className="flex items-center gap-2 font-display text-small font-semibold">
         <GitFork className="size-4 text-muted-foreground" /> Skill tree
       </p>
-      <p className="mt-0.5 text-[11px] text-muted-foreground">
+      <p className="mt-0.5 text-caption text-muted-foreground">
         Category-level completion XP projection · green ≥85%, amber ≥50%, red below.
       </p>
       {isLoading ? (

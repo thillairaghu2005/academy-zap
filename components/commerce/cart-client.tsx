@@ -142,7 +142,7 @@ export function CartClient() {
   if (cart.items.length === 0) {
     return (
       <PageContainer>
-        <h1 className="font-display text-2xl font-bold tracking-tight">
+        <h1 className="font-display text-h1">
           Your cart
         </h1>
         <div className="mt-6">
@@ -168,7 +168,7 @@ export function CartClient() {
     <PageContainer>
       <div className="flex items-end justify-between gap-4">
         <div>
-          <h1 className="font-display text-2xl font-bold tracking-tight">
+        <h1 className="font-display text-h1">
             Your cart
           </h1>
           <p className="mt-1 text-sm text-muted-foreground">
@@ -202,7 +202,7 @@ export function CartClient() {
 
                 <div className="min-w-0 flex-1">
                   <div className="flex items-center gap-2">
-                    <Badge variant="outline" className="text-[10px]">
+                    <Badge variant="outline" className="text-caption">
                       {item.kind === "lab" ? "Lab pass" : "Course"}
                     </Badge>
                     <p className="truncate text-sm font-medium">
@@ -253,7 +253,7 @@ export function CartClient() {
                   </Button>
                 </div>
 
-                <p className="w-20 text-right font-display text-sm font-semibold">
+                <p className="w-20 text-right font-display text-small font-semibold">
                   {formatMoney(item.unit_price_cents * item.quantity)}
                 </p>
 
@@ -275,7 +275,7 @@ export function CartClient() {
         <div className="flex flex-col gap-4 lg:sticky lg:top-20">
           <Card>
             <CardContent className="flex flex-col gap-3 p-5">
-              <p className="font-display text-sm font-semibold">Summary</p>
+              <p className="font-display text-small font-semibold">Summary</p>
               <div className="flex items-center justify-between text-sm text-muted-foreground">
                 <span>Subtotal</span>
                 <span className="font-medium text-foreground">
@@ -284,7 +284,7 @@ export function CartClient() {
               </div>
               <div className="flex items-center justify-between border-t border-border pt-3 text-sm">
                 <span className="font-medium">Total</span>
-                <span className="font-display text-xl font-bold">
+                <span className="font-display text-h3">
                   {formatMoney(cart.total_cents)}
                 </span>
               </div>
@@ -340,7 +340,7 @@ export function CartClient() {
                 )
               : null}
 
-              <p className="flex items-center gap-1.5 text-[11px] leading-relaxed text-muted-foreground">
+              <p className="flex items-center gap-1.5 text-caption leading-relaxed text-muted-foreground">
                 <ShieldCheck className="size-3.5 shrink-0 text-emerald-700" />
                 Payment happens on the provider&apos;s hosted page — Zapsters
                 never touches card numbers (PCI scope stays with Razorpay /
@@ -354,7 +354,7 @@ export function CartClient() {
           {DEMO_MODE ? (
             <Card className="border-dashed">
               <CardContent className="flex flex-col gap-2 p-4">
-                <p className="text-[11px] font-semibold uppercase tracking-widest text-muted-foreground/60">
+                <p className="text-caption font-semibold uppercase tracking-widest text-muted-foreground/60">
                   Demo states
                 </p>
                 <div className="flex flex-wrap gap-2">
@@ -385,7 +385,7 @@ export function CartClient() {
                     <Link href="/checkout/cs-paid-demo">Already paid</Link>
                   </Button>
                 </div>
-                <p className="flex items-center gap-1.5 text-[11px] text-muted-foreground">
+                <p className="flex items-center gap-1.5 text-caption text-muted-foreground">
                   <Lock className="size-3 shrink-0" />
                   Deterministic mock ids so every state is demoable.
                 </p>

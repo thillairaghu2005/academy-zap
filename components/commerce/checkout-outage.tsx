@@ -27,7 +27,7 @@ export function CheckoutOutage({
         <ServerCrash className="size-5" />
       </div>
       <div>
-        <h3 className="font-display text-base font-semibold">
+        <h3 className="font-display text-h3">
           Checkout service is temporarily unavailable.
         </h3>
         <p className="mx-auto mt-1 max-w-md text-sm leading-relaxed text-muted-foreground">

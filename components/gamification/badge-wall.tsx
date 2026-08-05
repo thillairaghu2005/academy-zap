@@ -57,7 +57,7 @@ export function BadgeWall() {
   return (
     <PageContainer>
       <div className="mb-8">
-        <h1 className="font-display text-2xl font-bold tracking-tight sm:text-3xl">
+        <h1 className="font-display text-h1">
           Badge wall
         </h1>
         <p className="mt-1.5 max-w-xl text-sm leading-relaxed text-muted-foreground">
@@ -126,18 +126,18 @@ export function BadgeWall() {
                       <Award className="size-5" />
                     )}
                   </span>
-                  <Badge className={cn("text-[10px]", style.badge)}>
+                  <Badge className={cn("text-caption", style.badge)}>
                     {style.icon}
                     {b.status}
                   </Badge>
                 </div>
-                <h3 className="mt-3 font-display text-sm font-semibold tracking-tight">
+                <h3 className="mt-3 font-display text-h3">
                   {b.name}
                 </h3>
                 <p className="mt-1 flex-1 text-xs leading-relaxed text-muted-foreground">
                   {b.description}
                 </p>
-                <div className="mt-3 flex items-center justify-between text-[10px] text-muted-foreground">
+                <div className="mt-3 flex items-center justify-between text-caption text-muted-foreground">
                   <span className="rounded-md bg-secondary px-1.5 py-0.5 font-medium">
                     {b.category}
                   </span>

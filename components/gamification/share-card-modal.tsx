@@ -99,17 +99,17 @@ export function ShareCardModal({
               <div className="absolute -bottom-16 -left-10 size-40 rounded-full bg-cyan-500/10 blur-3xl" />
               <div className="relative">
                 <div className="flex items-center justify-between">
-                  <p className="font-display text-sm font-bold tracking-tight text-white">
+                  <p className="font-display text-small font-bold text-white">
                     ZAPSTERS
                   </p>
                   <span className="rounded-full border border-white/20 px-2 py-0.5 font-mono text-[9px] text-white/60">
                     {data.league_tier ? data.league_tier.toUpperCase() : "UNRANKED"}
                   </span>
                 </div>
-                <p className="mt-6 font-display text-[11px] uppercase tracking-widest text-white/50">
+                <p className="mt-6 font-display text-caption uppercase tracking-widest text-white/50">
                   Rank {data.level} · {data.rank_name}
                 </p>
-                <h3 className="mt-1 font-display text-2xl font-bold text-white">
+                <h3 className="mt-1 font-display text-h3 text-white">
                   {data.display_name}
                 </h3>
                 <div className="mt-5 grid grid-cols-2 gap-3">
@@ -129,7 +129,7 @@ export function ShareCardModal({
               </div>
             </motion.div>
 
-            <p className="text-[11px] leading-relaxed text-muted-foreground">
+            <p className="text-caption leading-relaxed text-muted-foreground">
               The card is hash-stamped ({data.card_hash.slice(0, 12)}…) so a
               shared screenshot routes back to a live, re-verifiable source.
               The canonical file is server-rendered; this is the client preview.
@@ -164,7 +164,7 @@ export function ShareCardModal({
 function CardStat({ label, value }: { label: string; value: string }) {
   return (
     <div className="rounded-lg border border-white/10 bg-white/5 px-3 py-2">
-      <p className="text-[9px] uppercase tracking-wider text-white/40">{label}</p>
+      <p className="text-caption uppercase tracking-wider text-white/40">{label}</p>
       <p className="mt-0.5 font-mono text-sm font-semibold text-white">{value}</p>
     </div>
   );

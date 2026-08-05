@@ -21,7 +21,7 @@ export function CategoryCard({ name, count, icon: Icon, tone, onSelect }: Catego
     >
       <Icon className={cn("size-5 shrink-0", tone)} />
       <span className="min-w-0 flex-1">
-        <span className="block font-display text-base font-semibold">{name}</span>
+        <span className="block font-display text-small font-semibold">{name}</span>
         <span className="mt-1 block font-mono text-xs text-muted-foreground">
           {String(count).padStart(2, "0")} courses in catalog
         </span>

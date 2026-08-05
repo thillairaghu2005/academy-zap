@@ -119,7 +119,7 @@ export function AdminAuditClient() {
         <div className="flex max-w-xl flex-col gap-0.5">
           <span>{e.detail}</span>
           {hasLedgerLink(e) ? (
-            <span className="inline-flex items-center gap-1 text-[11px] font-medium text-primary">
+            <span className="inline-flex items-center gap-1 text-caption font-medium text-primary">
               <Link2 className="size-3" />
               Linked ledger entry
             </span>
@@ -155,7 +155,7 @@ export function AdminAuditClient() {
   return (
     <PageContainer>
       <div>
-        <h1 className="font-display text-2xl font-bold tracking-tight">
+        <h1 className="font-display text-h1">
           Audit log
         </h1>
         <p className="mt-1 text-sm text-muted-foreground">
@@ -171,7 +171,7 @@ export function AdminAuditClient() {
       <div className="mt-6 flex flex-col gap-3 rounded-xl border border-border bg-card p-3">
         <div className="flex flex-col gap-3 lg:flex-row lg:items-end">
           <div className="flex flex-col gap-1.5 lg:min-w-[150px]">
-            <Label htmlFor="audit-actor" className="text-[11px] text-muted-foreground">
+              <Label htmlFor="audit-actor" className="text-caption text-muted-foreground">
               Actor
             </Label>
             <Select value={actorFilter} onValueChange={setActorFilter}>
@@ -190,7 +190,7 @@ export function AdminAuditClient() {
           </div>
 
           <div className="flex flex-col gap-1.5 lg:min-w-[180px]">
-            <Label htmlFor="audit-action" className="text-[11px] text-muted-foreground">
+              <Label htmlFor="audit-action" className="text-caption text-muted-foreground">
               Event type
             </Label>
             <Select value={actionFilter} onValueChange={setActionFilter}>
@@ -210,7 +210,7 @@ export function AdminAuditClient() {
 
           <div className="flex items-end gap-2">
             <div className="flex flex-col gap-1.5">
-              <Label htmlFor="audit-from" className="text-[11px] text-muted-foreground">
+                <Label htmlFor="audit-from" className="text-caption text-muted-foreground">
                 From
               </Label>
               <Input
@@ -224,7 +224,7 @@ export function AdminAuditClient() {
             </div>
             <span className="pb-2 text-muted-foreground">→</span>
             <div className="flex flex-col gap-1.5">
-              <Label htmlFor="audit-to" className="text-[11px] text-muted-foreground">
+                <Label htmlFor="audit-to" className="text-caption text-muted-foreground">
                 To
               </Label>
               <Input

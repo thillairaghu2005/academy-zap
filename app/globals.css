@@ -2,6 +2,7 @@
 @import "tw-animate-css";
 @import "@fontsource-variable/inter";
 @import "@fontsource-variable/space-grotesk";
+@import "../src/styles/typography.css";
 
 /* ------------------------------------------------------------------ */
 /*  Zapsters design system — F0 (Track B: Coursera-inspired retheme)   */
@@ -12,18 +13,6 @@
 /* ------------------------------------------------------------------ */
 
 @theme {
-  /* Typography — Inter (body) + Space Grotesk (display), bundled locally */
-  --font-sans:
-    "Inter Variable", ui-sans-serif, system-ui, -apple-system, "Segoe UI",
-    Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji",
-    "Segoe UI Emoji", "Segoe UI Symbol";
-  --font-display:
-    "Space Grotesk Variable", "Inter Variable", ui-sans-serif, system-ui,
-    sans-serif;
-  --font-mono:
-    ui-monospace, "Cascadia Code", "SF Mono", "JetBrains Mono", Menlo, Consolas,
-    "Liberation Mono", monospace;
-
   /* Core surface tokens — light, academic */
   --color-background: #f8f9fb;
   --color-foreground: #1f2937;

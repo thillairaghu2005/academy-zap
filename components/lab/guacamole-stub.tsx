@@ -32,7 +32,7 @@ export function GuacamoleStub({ sessionId }: { sessionId: string }) {
   return (
     <div className="relative h-full w-full bg-[#0b0f14]">
       {/* Connection bar */}
-      <div className="flex items-center justify-between border-b border-white/5 bg-[#0d131b] px-3 py-1.5 text-[10px] text-muted-foreground">
+      <div className="flex items-center justify-between border-b border-white/5 bg-[#0d131b] px-3 py-1.5 text-caption text-muted-foreground">
         <span className="flex items-center gap-1.5">
           <Signal className="size-3 text-emerald-700" />
           guacamole · rdp-over-ws
@@ -65,11 +65,11 @@ export function GuacamoleStub({ sessionId }: { sessionId: string }) {
           <div className="flex h-full flex-col overflow-hidden rounded-md border border-white/10 bg-[#10151d]">
             {/* Taskbar */}
             <div className="flex items-center gap-2 border-b border-white/5 bg-[#0d131b] px-3 py-1.5">
-              <span className="flex items-center gap-1.5 text-[11px] text-foreground/80">
+              <span className="flex items-center gap-1.5 text-caption text-foreground/80">
                 <Cpu className="size-3.5 text-emerald-700" />
                 Blue Team Console
               </span>
-              <span className="ml-auto flex items-center gap-1 text-[10px] text-muted-foreground">
+              <span className="ml-auto flex items-center gap-1 text-caption text-muted-foreground">
                 <Wifi className="size-3 text-emerald-700/70" />
                 session-private net
               </span>
@@ -81,7 +81,7 @@ export function GuacamoleStub({ sessionId }: { sessionId: string }) {
                 <span className="text-xs text-foreground/80">
                   SIEM · alert queue
                 </span>
-                <span className="rounded-full border border-rose-500/40 bg-rose-500/10 px-2 py-0.5 text-[10px] font-semibold text-rose-700">
+                <span className="rounded-full border border-rose-500/40 bg-rose-500/10 px-2 py-0.5 text-caption font-semibold text-rose-700">
                   3 CRITICAL
                 </span>
               </div>
@@ -96,7 +96,7 @@ export function GuacamoleStub({ sessionId }: { sessionId: string }) {
                     key={s.label}
                     className="flex flex-col justify-center gap-1 rounded-lg border border-white/5 bg-[#131a24] px-3 py-2"
                   >
-                    <span className="text-[10px] text-muted-foreground">
+                    <span className="text-caption text-muted-foreground">
                       {s.label}
                     </span>
                     <span className={`font-mono text-lg font-semibold ${s.tone}`}>
@@ -105,7 +105,7 @@ export function GuacamoleStub({ sessionId }: { sessionId: string }) {
                   </div>
                 ))}
               </div>
-              <p className="text-center text-[10px] text-muted-foreground/50">
+              <p className="text-center text-caption text-muted-foreground/50">
                 GUI stream is a mock — real RDP/VNC lands with the backend.
               </p>
             </div>

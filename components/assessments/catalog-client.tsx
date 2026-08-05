@@ -62,7 +62,7 @@ function AssessmentCard({ assessment, index }: { assessment: Assessment; index: 
           >
             <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
             <div className="absolute bottom-3 left-4 right-4 flex items-end justify-between gap-2">
-              <h3 className="font-display text-base font-bold leading-tight text-white drop-shadow-sm">
+              <h3 className="font-display text-h3 text-white drop-shadow-sm">
                 {assessment.title}
               </h3>
               <span className="shrink-0 rounded-full border border-white/20 bg-black/40 px-2 py-0.5 font-mono text-[10px] text-white/90 backdrop-blur-sm">
@@ -96,7 +96,7 @@ function AssessmentCard({ assessment, index }: { assessment: Assessment; index: 
                 {types.map((t) => {
                   const meta = TYPE_META[t];
                   return (
-                    <Badge key={t} variant="outline" className="gap-1 text-[10px]">
+                    <Badge key={t} variant="outline" className="gap-1 text-caption">
                       <meta.icon className="size-3" />
                       {meta.label}
                     </Badge>
@@ -123,7 +123,7 @@ export function AssessmentCatalogClient() {
   return (
     <PageContainer>
       <div className="flex flex-col gap-2">
-        <h1 className="font-display text-3xl font-bold tracking-tight">
+        <h1 className="font-display text-h1">
           Assessments
         </h1>
         <p className="text-sm text-muted-foreground">

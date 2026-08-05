@@ -140,13 +140,13 @@ export function AssessmentDetailClient({
               </Badge>
               <Badge
                 variant="secondary"
-                className="gap-1 text-[10px] text-emerald-700"
+                className="gap-1 text-caption text-emerald-700"
               >
                 <Flame className="size-3" />
                 combo meter active
               </Badge>
             </div>
-            <h1 className="mt-1.5 font-display text-3xl font-bold tracking-tight">
+            <h1 className="mt-1.5 font-display text-h1">
               {assessment.title}
             </h1>
             <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
@@ -184,7 +184,7 @@ export function AssessmentDetailClient({
           </div>
 
           <div>
-            <h2 className="font-display text-lg font-semibold tracking-tight">
+            <h2 className="font-display text-h2">
               Questions
             </h2>
             <div className="mt-3 flex flex-col gap-2">
@@ -202,7 +202,7 @@ export function AssessmentDetailClient({
                       <p className="line-clamp-2 text-sm font-medium">
                         {q.prompt}
                       </p>
-                      <div className="flex items-center gap-2 text-[11px] text-muted-foreground">
+                      <div className="flex items-center gap-2 text-caption text-muted-foreground">
                         <meta.icon className="size-3" />
                         {meta.label}
                         <span
@@ -304,7 +304,7 @@ export function AssessmentDetailClient({
             ) : null}
           </Card>
 
-          <p className="mt-3 flex items-start gap-1.5 text-[11px] leading-relaxed text-muted-foreground">
+          <p className="mt-3 flex items-start gap-1.5 text-caption leading-relaxed text-muted-foreground">
             <Code2 className="mt-0.5 size-3 shrink-0" />
             Code questions are graded by the Judge Engine mock — one grading
             truth across both surfaces.

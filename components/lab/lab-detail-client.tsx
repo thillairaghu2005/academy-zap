@@ -163,19 +163,19 @@ export function LabDetailClient({ labId }: { labId: string }) {
               </span>
               <span
                 className={cn(
-                  "rounded-full border px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide",
+                  "rounded-full border px-2 py-0.5 text-caption font-semibold uppercase tracking-wide",
                   diff.className,
                 )}
               >
                 {diff.label}
               </span>
               {lab.requires_gui ? (
-                <Badge variant="outline" className="gap-1 text-[10px]">
+                <Badge variant="outline" className="gap-1 text-caption">
                   <Monitor className="size-3" /> GUI session
                 </Badge>
               ) : null}
             </div>
-            <h1 className="mt-1.5 font-display text-3xl font-bold tracking-tight">
+            <h1 className="mt-1.5 font-display text-h1">
               {lab.title}
             </h1>
             <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
@@ -205,7 +205,7 @@ export function LabDetailClient({ labId }: { labId: string }) {
           </div>
 
           <div>
-            <h2 className="font-display text-lg font-semibold tracking-tight">
+            <h2 className="font-display text-h2">
               Objectives
             </h2>
             <p className="mt-1 text-xs text-muted-foreground">
@@ -227,7 +227,7 @@ export function LabDetailClient({ labId }: { labId: string }) {
                       {objective.description}
                     </p>
                     {objective.hints.length > 0 ? (
-                      <p className="mt-1 flex items-center gap-1 text-[11px] text-muted-foreground/70">
+                      <p className="mt-1 flex items-center gap-1 text-caption text-muted-foreground/70">
                         <Sparkles className="size-3" />
                         {objective.hints.length}{" "}
                         {objective.hints.length === 1 ? "hint" : "hints"} available
@@ -339,7 +339,7 @@ export function LabDetailClient({ labId }: { labId: string }) {
                     />
                   ))}
                 </div>
-                <p className="text-[11px] text-muted-foreground">
+                <p className="text-caption text-muted-foreground">
                   microVM boot · private network · shell bridge
                 </p>
               </motion.div>
@@ -365,7 +365,7 @@ export function LabDetailClient({ labId }: { labId: string }) {
           </Card>
 
           {DEMO_MODE ? (
-            <p className="mt-3 flex items-start gap-1.5 text-[11px] leading-relaxed text-muted-foreground">
+            <p className="mt-3 flex items-start gap-1.5 text-caption leading-relaxed text-muted-foreground">
               <FlaskConical className="mt-0.5 size-3 shrink-0" />
               Mock note: provisioning is simulated — a session object is
               created against the mock orchestrator and the terminal connects

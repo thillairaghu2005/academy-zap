@@ -1,0 +1,73 @@
+/* Zapsters typography system: one source of truth for type roles and scale. */
+:root {
+  --font-heading: "Space Grotesk Variable", "Inter Variable", -apple-system,
+    BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-body: "Inter Variable", "Inter Fallback", -apple-system,
+    BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-mono-stack: ui-monospace, "Cascadia Code", "SF Mono", "JetBrains Mono",
+    Menlo, Consolas, "Liberation Mono", monospace;
+  --font-mono: var(--font-mono-stack);
+
+  --fs-hero: clamp(2.5rem, 1.35rem + 4.2vw, 4.5rem);
+  --fs-h1: clamp(2.25rem, 1.3rem + 3.5vw, 4rem);
+  --fs-h2: clamp(1.75rem, 1.1rem + 2vw, 2.5rem);
+  --fs-h3: clamp(1.25rem, 1rem + 1vw, 1.5rem);
+  --fs-body: clamp(1rem, 0.95rem + 0.25vw, 1.125rem);
+  --fs-small: 0.875rem;
+  --fs-caption: 0.8125rem;
+
+  --fw-heading-strong: 700;
+  --fw-heading: 600;
+  --fw-body: 400;
+  --fw-ui: 500;
+  --fw-emphasis: 600;
+  --fw-bold: 700;
+
+  --lh-hero: 1.1;
+  --lh-h1: 1.15;
+  --lh-h2: 1.2;
+  --lh-h3: 1.25;
+  --lh-body: 1.6;
+  --lh-small: 1.5;
+  --lh-caption: 1.4;
+
+  --ls-heading: -0.02em;
+  --ls-heading-soft: -0.01em;
+  --ls-body: normal;
+}
+
+@theme inline {
+  --font-sans: var(--font-body);
+  --font-display: var(--font-heading);
+  --font-mono: var(--font-mono-stack);
+
+  --text-hero: var(--fs-hero);
+  --text-hero--line-height: var(--lh-hero);
+  --text-hero--font-weight: var(--fw-heading-strong);
+  --text-hero--letter-spacing: var(--ls-heading);
+
+  --text-h1: var(--fs-h1);
+  --text-h1--line-height: var(--lh-h1);
+  --text-h1--font-weight: var(--fw-heading-strong);
+  --text-h1--letter-spacing: var(--ls-heading);
+
+  --text-h2: var(--fs-h2);
+  --text-h2--line-height: var(--lh-h2);
+  --text-h2--font-weight: var(--fw-heading);
+  --text-h2--letter-spacing: var(--ls-heading);
+
+  --text-h3: var(--fs-h3);
+  --text-h3--line-height: var(--lh-h3);
+  --text-h3--font-weight: var(--fw-heading);
+  --text-h3--letter-spacing: var(--ls-heading-soft);
+
+  --text-body: var(--fs-body);
+  --text-body--line-height: var(--lh-body);
+  --text-body--font-weight: var(--fw-body);
+
+  --text-small: var(--fs-small);
+  --text-small--line-height: var(--lh-small);
+
+  --text-caption: var(--fs-caption);
+  --text-caption--line-height: var(--lh-caption);
+}

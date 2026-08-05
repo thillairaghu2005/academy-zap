@@ -104,12 +104,12 @@ function LabCard({
           >
             <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
             <div className="absolute bottom-3 left-4 right-4 flex items-end justify-between gap-2">
-              <h3 className="font-display text-base font-bold leading-tight text-white drop-shadow-sm">
+              <h3 className="font-display text-h3 text-white drop-shadow-sm">
                 {lab.title}
               </h3>
               <span
                 className={cn(
-                  "shrink-0 rounded-full border px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide backdrop-blur-sm",
+                  "shrink-0 rounded-full border px-2 py-0.5 text-caption font-semibold uppercase tracking-wide backdrop-blur-sm",
                   diff.className,
                 )}
               >
@@ -218,7 +218,7 @@ export function LabCatalogClient() {
   return (
     <PageContainer>
       <div className="flex flex-col gap-2">
-        <h1 className="font-display text-3xl font-bold tracking-tight">
+        <h1 className="font-display text-h1">
           Virtual labs
         </h1>
         <p className="text-sm text-muted-foreground">

@@ -83,7 +83,7 @@ function QuestionTypeBadge({ type }: { type: Assessment["questions"][number]["ty
         ? { label: "Short answer", icon: PenLine }
         : { label: "Coding question", icon: Code2 };
   return (
-    <Badge variant="outline" className="gap-1 text-[10px]">
+    <Badge variant="outline" className="gap-1 text-caption">
       <meta.icon className="size-3" />
       {meta.label}
     </Badge>
@@ -124,7 +124,7 @@ function AttemptSummary({
         {passed ? <CheckCircle2 className="size-8" /> : <RotateCcw className="size-8" />}
       </div>
       <div>
-        <h2 className="font-display text-2xl font-bold tracking-tight">
+         <h2 className="font-display text-h2">
           {passed ? "Assessment passed" : "Keep at it"}
         </h2>
         <p className="mt-1.5 text-sm text-muted-foreground">
@@ -162,7 +162,7 @@ function AttemptSummary({
 function SummaryStat({ label, value }: { label: string; value: string }) {
   return (
     <div className="flex flex-col gap-1 rounded-xl border border-border bg-card px-3 py-2.5">
-      <span className="text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">
+       <span className="text-caption font-semibold uppercase tracking-wide text-muted-foreground">
         {label}
       </span>
       <span className="font-mono text-sm font-medium">{value}</span>
@@ -416,7 +416,7 @@ export function AssessmentAttemptClient({
             <TimerReset className="size-7" />
           </div>
           <div>
-            <h2 className="font-display text-xl font-bold">Time&apos;s up</h2>
+         <h2 className="font-display text-h2">Time&apos;s up</h2>
             <p className="mt-1.5 text-sm text-muted-foreground">
               The attempt hit its time limit and was auto-submitted with the
               answers captured so far (server-enforced).
@@ -480,7 +480,7 @@ export function AssessmentAttemptClient({
             </Link>
           </Button>
           <div>
-            <h1 className="font-display text-lg font-bold tracking-tight">
+            <h1 className="font-display text-h1">
               {assessment.title}
             </h1>
             <p className="font-mono text-[11px] text-muted-foreground">
@@ -489,7 +489,7 @@ export function AssessmentAttemptClient({
           </div>
         </div>
         <div className="flex items-center gap-2">
-          <Badge variant="secondary" className="gap-1.5 text-[10px]">
+           <Badge variant="secondary" className="gap-1.5 text-caption">
             <ClipboardCheck className="size-3" />
             {answeredCount}/{assessment.questions.length} answered
           </Badge>
@@ -596,7 +596,7 @@ export function AssessmentAttemptClient({
                       <Code2 className="size-3.5 text-muted-foreground" />
                       solution.py
                     </span>
-                    <span className="text-[10px] text-muted-foreground">
+                    <span className="text-caption text-muted-foreground">
                       graded by the Judge Engine
                     </span>
                   </div>
@@ -684,7 +684,7 @@ export function AssessmentAttemptClient({
                   exit={{ opacity: 0 }}
                   className="mt-4 flex items-center justify-between"
                 >
-                  <p className="text-[11px] text-muted-foreground">
+                  <p className="text-caption text-muted-foreground">
                     {lastResult ? "" : "Your answer is graded deterministically, server-side."}
                   </p>
                   <Button
@@ -709,7 +709,7 @@ export function AssessmentAttemptClient({
         <div className="flex flex-col gap-4">
           {/* Progress dots */}
           <Card className="p-4">
-            <h3 className="font-display text-sm font-semibold">Progress</h3>
+            <h3 className="font-display text-h3">Progress</h3>
             <div className="mt-3 flex flex-wrap gap-1.5">
               {assessment.questions.map((q, i) => {
                 const isAnswered = attempt.answers.some((a) => a.question_id === q.id);
@@ -739,7 +739,7 @@ export function AssessmentAttemptClient({
 
           {/* Final submit */}
           <Card className="flex flex-col gap-3 p-4">
-            <h3 className="flex items-center gap-2 font-display text-sm font-semibold">
+            <h3 className="flex items-center gap-2 font-display text-h3">
               <Flag className="size-4 text-muted-foreground" />
               Finalize
             </h3>
@@ -768,7 +768,7 @@ export function AssessmentAttemptClient({
                   : "Could not submit."}
               </p>
             ) : null}
-            <p className="flex items-start gap-1.5 text-[11px] text-muted-foreground">
+            <p className="flex items-start gap-1.5 text-caption text-muted-foreground">
               <Lock className="mt-0.5 size-3 shrink-0" />
               Tab-switches and paste events are captured as anti-cheat
               telemetry.

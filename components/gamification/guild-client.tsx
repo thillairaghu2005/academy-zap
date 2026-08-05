@@ -42,7 +42,7 @@ export function GuildClient() {
   return (
     <PageContainer>
       <div className="mb-8">
-        <h1 className="font-display text-2xl font-bold tracking-tight sm:text-3xl">
+        <h1 className="font-display text-h1">
           Guild board
         </h1>
         <p className="mt-1.5 max-w-xl text-sm leading-relaxed text-muted-foreground">
@@ -82,7 +82,7 @@ export function GuildClient() {
           <div>
             <div className="flex flex-wrap items-center justify-between gap-3">
               <div>
-                <h2 className="flex items-center gap-2 font-display text-lg font-bold tracking-tight">
+                <h2 className="flex items-center gap-2 font-display text-h2">
                   <Shield className="size-5 text-purple-700" /> {board.name}
                 </h2>
                 <p className="mt-0.5 text-xs text-muted-foreground">
@@ -91,7 +91,7 @@ export function GuildClient() {
                   global rank #{board.guild_rank_global}
                 </p>
               </div>
-              <Badge variant="secondary" className="text-[10px]">
+              <Badge variant="secondary" className="text-caption">
                 <Trophy className="size-3" /> Top {board.guild_rank_global} guild
               </Badge>
             </div>
@@ -119,12 +119,12 @@ export function GuildClient() {
                     <p className="flex items-center gap-2 truncate text-sm font-medium">
                       {m.display_name}
                       {m.is_me ? (
-                        <Badge variant="secondary" className="text-[9px]">
+                        <Badge variant="secondary" className="text-caption">
                           you
                         </Badge>
                       ) : null}
                     </p>
-                    <p className="text-[11px] text-muted-foreground">
+                    <p className="text-caption text-muted-foreground">
                       {m.rank_name} · level {m.level}
                     </p>
                   </div>
@@ -156,7 +156,7 @@ function GuildVsCard({
   if (!vs) {
     return (
       <div className="rounded-xl border border-border bg-card p-4">
-        <p className="flex items-center gap-2 font-display text-sm font-semibold">
+        <p className="flex items-center gap-2 font-display text-small font-semibold">
           <Swords className="size-4 text-muted-foreground" /> Guild vs guild
         </p>
         <p className="mt-2 text-xs text-muted-foreground">
@@ -175,10 +175,10 @@ function GuildVsCard({
 
   return (
     <div className="rounded-xl border border-border bg-card p-4">
-      <p className="flex items-center gap-2 font-display text-sm font-semibold">
+      <p className="flex items-center gap-2 font-display text-small font-semibold">
         <Swords className="size-4 text-purple-700" /> Guild vs guild
       </p>
-      <p className="mt-0.5 text-[11px] text-muted-foreground">
+      <p className="mt-0.5 text-caption text-muted-foreground">
         This week, by combined XP.
       </p>
 
@@ -229,7 +229,7 @@ function VsRow({
           {delta !== undefined ? (
             <span
               className={cn(
-                "flex items-center gap-0.5 text-[10px]",
+                "flex items-center gap-0.5 text-caption",
                 delta >= 0 ? "text-rose-700" : "text-emerald-700",
               )}
             >
@@ -257,5 +257,3 @@ function VsRow({
     </div>
   );
 }
-
-

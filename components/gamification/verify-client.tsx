@@ -83,7 +83,7 @@ export function VerifyClient({ credentialId }: { credentialId: string }) {
             <>
               <div className="flex flex-wrap items-center justify-between gap-4">
                 <div>
-                  <h1 className="font-display text-2xl font-bold tracking-tight">
+                  <h1 className="font-display text-h1">
                     {data.badge_name}
                   </h1>
                   <p className="mt-1 text-sm text-muted-foreground">
@@ -103,7 +103,7 @@ export function VerifyClient({ credentialId }: { credentialId: string }) {
                   <div>
                     <p
                       className={cn(
-                        "font-display text-sm font-bold",
+                        "font-display text-small font-bold",
                         STATUS_META[data.status].text,
                       )}
                     >
@@ -172,7 +172,7 @@ export function VerifyClient({ credentialId }: { credentialId: string }) {
 function DetailRow({ label, value }: { label: string; value: string }) {
   return (
     <div className="rounded-lg border border-border px-3 py-2.5">
-      <p className="text-[10px] font-medium uppercase tracking-wider text-muted-foreground">
+      <p className="text-caption font-medium uppercase tracking-wider text-muted-foreground">
         {label}
       </p>
       <p className="mt-0.5 text-sm font-medium">{value}</p>

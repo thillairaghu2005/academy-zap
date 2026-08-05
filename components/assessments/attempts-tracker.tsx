@@ -54,7 +54,7 @@ export function AttemptsTracker({
   return (
     <div className="rounded-xl border border-border bg-card p-4">
       <div className="flex items-center justify-between">
-        <p className="flex items-center gap-2 font-display text-sm font-semibold">
+        <p className="flex items-center gap-2 font-display text-small font-semibold">
           <History className="size-4 text-muted-foreground" />
           Your attempts
         </p>
@@ -62,7 +62,7 @@ export function AttemptsTracker({
           <Badge
             variant={exhausted ? "outline" : "secondary"}
             className={cn(
-              "text-[10px]",
+              "text-caption",
               exhausted && "border-rose-500/40 bg-rose-500/10 text-rose-700",
             )}
           >
@@ -108,7 +108,7 @@ export function AttemptsTracker({
                   <span className="font-mono text-[11px] text-muted-foreground">
                     #{attempt.attempt_number}
                   </span>
-                  <Badge variant="outline" className="text-[10px]">
+                  <Badge variant="outline" className="text-caption">
                     {STATUS_LABEL[attempt.status] ?? attempt.status}
                   </Badge>
                 </div>

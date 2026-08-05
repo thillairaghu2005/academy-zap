@@ -61,7 +61,7 @@ export function CourseReviewDiffCard({ courseId }: { courseId: string }) {
   return (
     <Card className="border-amber-500/25">
       <CardHeader className="p-4 pb-2">
-        <CardTitle className="flex items-center gap-2 font-display text-sm">
+                <CardTitle className="flex items-center gap-2 font-display text-small">
           <FileDiff className="size-4 text-amber-700" />
           Changes since last published version
         </CardTitle>
@@ -83,7 +83,7 @@ export function CourseReviewDiffCard({ courseId }: { courseId: string }) {
           <div className="overflow-hidden rounded-lg border border-border">
             <table className="w-full text-left text-sm">
               <thead>
-                <tr className="border-b border-border bg-muted/40 text-[11px] uppercase tracking-widest text-muted-foreground/70">
+                <tr className="border-b border-border bg-muted/40 text-caption uppercase tracking-widest text-muted-foreground/70">
                   <th className="px-3 py-2 font-semibold">Field</th>
                   <th className="px-3 py-2 font-semibold">Published</th>
                   <th className="px-3 py-2 font-semibold">In review</th>

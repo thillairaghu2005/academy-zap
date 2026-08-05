@@ -70,7 +70,7 @@ export function AdminProblemsClient() {
   return (
     <PageContainer>
       <div>
-        <h1 className="font-display text-2xl font-bold tracking-tight">
+        <h1 className="font-display text-h1">
           Problems
         </h1>
         <p className="mt-1 text-sm text-muted-foreground">

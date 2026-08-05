@@ -34,7 +34,7 @@ export function SurfaceStub({ surface }: { surface: SurfaceMeta }) {
           </div>
           <div>
             <div className="flex flex-wrap items-center gap-2">
-              <h1 className="font-display text-2xl font-bold tracking-tight">
+              <h1 className="font-display text-h1">
                 {surface.title}
               </h1>
               <Badge variant="outline">{surface.stage}</Badge>
@@ -66,7 +66,7 @@ export function SurfaceStub({ surface }: { surface: SurfaceMeta }) {
       {/* Planned vs deliberately-not-built */}
       <div className="mt-8 grid gap-6 lg:grid-cols-2">
         <div className="rounded-xl border border-border bg-card p-5 shadow-sm">
-          <h2 className="font-display text-sm font-semibold uppercase tracking-wider text-muted-foreground">
+          <h2 className="font-display text-small font-semibold uppercase tracking-wider text-muted-foreground">
             Planned — per build.md {surface.stage}
           </h2>
           <ul className="mt-4 flex flex-col gap-2.5">
@@ -79,7 +79,7 @@ export function SurfaceStub({ surface }: { surface: SurfaceMeta }) {
           </ul>
         </div>
         <div className="rounded-xl border border-border bg-card p-5 shadow-sm">
-          <h2 className="font-display text-sm font-semibold uppercase tracking-wider text-muted-foreground">
+          <h2 className="font-display text-small font-semibold uppercase tracking-wider text-muted-foreground">
             Deliberately not building yet — build.md §3
           </h2>
           <ul className="mt-4 flex flex-col gap-2.5">

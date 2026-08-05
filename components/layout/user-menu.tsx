@@ -50,7 +50,7 @@ export function UserMenu() {
             {user.avatar_url ? (
               <AvatarImage src={user.avatar_url} alt={user.display_name} />
             ) : (
-              <AvatarFallback className="text-[10px]">
+              <AvatarFallback className="text-caption">
                 {getInitials(user.display_name)}
               </AvatarFallback>
             )}

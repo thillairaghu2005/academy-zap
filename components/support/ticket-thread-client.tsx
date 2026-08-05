@@ -60,10 +60,10 @@ function MessageBubble({
           )}
         >
           <span className="text-xs font-semibold">{message.author_name}</span>
-          <span className="text-[10px] uppercase tracking-wide text-muted-foreground">
+          <span className="text-caption uppercase tracking-wide text-muted-foreground">
             {message.author_role === "agent" ? "Support" : "You"}
           </span>
-          <span className="text-[10px] text-muted-foreground/70">
+          <span className="text-caption text-muted-foreground/70">
             {new Date(message.created_at).toLocaleString("en-US", {
               month: "short",
               day: "numeric",
@@ -182,7 +182,7 @@ export function TicketThreadClient({ ticketId }: { ticketId: string }) {
             <TicketPriorityBadge priority={ticket.priority} />
             <TicketCategoryBadge category={ticket.category} />
           </div>
-          <h1 className="mt-2 font-display text-2xl font-bold tracking-tight">
+          <h1 className="mt-2 font-display text-h1">
             {ticket.subject}
           </h1>
           <p className="mt-1 text-xs text-muted-foreground">

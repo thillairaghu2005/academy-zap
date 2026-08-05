@@ -111,7 +111,7 @@ export function AdminWalkthrough({
               <Compass className="size-4.5" />
             </div>
             <div>
-              <DialogTitle className="font-display text-base">
+              <DialogTitle className="font-display text-small">
                 Tour the admin console
               </DialogTitle>
               <p className="text-xs text-muted-foreground">
@@ -135,10 +135,10 @@ export function AdminWalkthrough({
         </div>
 
         <div className="px-6 py-4">
-          <p className="text-[11px] font-semibold uppercase tracking-widest text-muted-foreground/70">
+            <p className="text-caption font-semibold uppercase tracking-widest text-muted-foreground/70">
             {step.element}
           </p>
-          <h3 className="mt-1 font-display text-lg font-bold tracking-tight">
+            <h3 className="mt-1 font-display text-h3">
             {step.title}
           </h3>
           <p className="mt-2 text-sm leading-relaxed text-muted-foreground">

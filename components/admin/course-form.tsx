@@ -297,7 +297,7 @@ export function CourseForm({ courseId }: { courseId?: string }) {
       </Button>
 
       <div className="flex flex-wrap items-center gap-3">
-        <h1 className="font-display text-2xl font-bold tracking-tight">
+        <h1 className="font-display text-h1">
           {isEdit ? "Edit course" : "New course"}
         </h1>
         {course ? <CourseStatusBadge status={course.status} /> : null}
@@ -331,7 +331,7 @@ export function CourseForm({ courseId }: { courseId?: string }) {
               <CourseReviewDiffCard courseId={course.id} />
               <Card className="border-emerald-500/25">
                 <CardHeader className="p-4 pb-2">
-                  <CardTitle className="flex items-center gap-2 font-display text-sm">
+                  <CardTitle className="flex items-center gap-2 font-display text-small">
                     <CheckCircle2 className="size-4 text-emerald-700" />
                     Second-reviewer approval
                   </CardTitle>
@@ -413,7 +413,7 @@ export function CourseForm({ courseId }: { courseId?: string }) {
 
       <Card className={isEdit && course ? "mt-4" : "mt-6"}>
         <CardHeader>
-          <CardTitle className="font-display text-base">
+                  <CardTitle className="font-display text-small">
             Course details
           </CardTitle>
         </CardHeader>
@@ -594,7 +594,7 @@ export function CourseForm({ courseId }: { courseId?: string }) {
               <div className="flex flex-wrap items-center gap-2 border-t border-border pt-5">
                 {isEdit ? (
                   <span
-                    className="mr-auto text-[11px] text-muted-foreground"
+                    className="mr-auto text-caption text-muted-foreground"
                     role="status"
                     aria-live="polite"
                   >
@@ -619,7 +619,7 @@ export function CourseForm({ courseId }: { courseId?: string }) {
                     )}
                   </span>
                 ) : (
-                  <Badge variant="outline" className="mr-auto text-[11px]">
+                  <Badge variant="outline" className="mr-auto text-caption">
                     Created as draft
                   </Badge>
                 )}

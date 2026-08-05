@@ -96,7 +96,7 @@ export function RankHubClient() {
           demo scaffolding and never renders in a production-shaped build. */}
       {DEMO_MODE ? (
         <div className="mb-6 flex flex-wrap items-center gap-2">
-          <span className="text-[11px] font-medium uppercase tracking-wider text-muted-foreground">
+          <span className="text-caption font-medium uppercase tracking-wider text-muted-foreground">
             Demo state
           </span>
           <div className="flex overflow-hidden rounded-lg border border-border">
@@ -156,7 +156,7 @@ export function RankHubClient() {
             >
               <ShieldAlert className="mt-0.5 size-5 shrink-0 text-amber-700" />
               <div>
-                <p className="font-display text-sm font-semibold text-amber-700">
+                <p className="font-display text-small font-semibold text-amber-700">
                   Progress frozen pending review
                 </p>
                 <p className="mt-0.5 text-xs leading-relaxed text-muted-foreground">
@@ -184,7 +184,7 @@ export function RankHubClient() {
                       Current rank
                     </span>
                   </div>
-                  <h1 className="mt-2 font-display text-3xl font-bold tracking-tight sm:text-4xl">
+                  <h1 className="mt-2 font-display text-h1">
                     {ctx.rank.rank_name}
                   </h1>
                   <div className="mt-2 flex flex-wrap items-center gap-2">
@@ -224,7 +224,7 @@ export function RankHubClient() {
                     </Button>
                   </div>
                   {ctx.freeze_status === "frozen_pending_review" ? (
-                    <p className="text-[10px] text-muted-foreground">
+                    <p className="text-caption text-muted-foreground">
                       Frozen — share disabled pending review
                     </p>
                   ) : null}
@@ -365,7 +365,7 @@ function DualXpTracks({
           className="h-full rounded-full bg-gradient-to-r from-fuchsia-600 to-pink-500"
         />
       </div>
-      <p className="text-[11px] text-muted-foreground">
+      <p className="text-caption text-muted-foreground">
         Two independent tracks, never blended — rank is a weighted function of
         both, with the weights owned by the server.
       </p>
@@ -376,7 +376,7 @@ function DualXpTracks({
 function Stat({ label, value }: { label: string; value: string }) {
   return (
     <div className="rounded-lg border border-border bg-card/60 px-3 py-2.5">
-      <p className="text-[10px] font-medium uppercase tracking-wider text-muted-foreground">
+      <p className="text-caption font-medium uppercase tracking-wider text-muted-foreground">
         {label}
       </p>
       <p className="mt-0.5 font-mono text-lg font-semibold tracking-tight">
@@ -406,7 +406,7 @@ function StreakWidget({
   return (
     <div className="rounded-xl border border-border bg-card p-4">
       <div className="flex items-center justify-between">
-        <p className="flex items-center gap-2 font-display text-sm font-semibold">
+        <p className="flex items-center gap-2 font-display text-small font-semibold">
           <Flame className="size-4 text-orange-700" />
           Streak
         </p>
@@ -419,7 +419,7 @@ function StreakWidget({
                   ? "outline"
                   : "destructive"
             }
-            className="text-[10px]"
+            className="text-caption"
           >
             {streak.status.replace("_", " ")}
           </Badge>
@@ -443,7 +443,7 @@ function StreakWidget({
               key={streak.current_streak_days}
               initial={{ scale: 0.8, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
-              className="font-display text-3xl font-bold leading-none"
+              className="font-display text-h2"
             >
               {streak.current_streak_days}
             </motion.span>
@@ -451,7 +451,7 @@ function StreakWidget({
               days · best {streak.longest_streak_days}
             </span>
           </div>
-          <div className="mt-3 flex flex-wrap gap-2 text-[11px]">
+          <div className="mt-3 flex flex-wrap gap-2 text-caption">
             <span className="rounded-md bg-orange-500/10 px-2 py-1 font-medium text-orange-700">
               ×{streak.momentum_multiplier.toFixed(2)} momentum
             </span>
@@ -485,7 +485,7 @@ function LeagueWidget({
 
   return (
     <div className="rounded-xl border border-border bg-card p-4">
-      <p className="flex items-center gap-2 font-display text-sm font-semibold">
+      <p className="flex items-center gap-2 font-display text-small font-semibold">
         <Trophy className="size-4 text-muted-foreground" /> League
       </p>
       {isLoading ? (
@@ -518,7 +518,7 @@ function LeagueWidget({
               #{league.rank_in_league} · {league.xp_this_season.toLocaleString()} XP
             </span>
           </div>
-          <div className="mt-3 flex flex-wrap gap-2 text-[11px]">
+          <div className="mt-3 flex flex-wrap gap-2 text-caption">
             {league.promotion_zone ? (
               <span className="flex items-center gap-1 rounded-md bg-emerald-500/10 px-2 py-1 font-medium text-emerald-700">
                 <TrendingUp className="size-3" /> Promotion zone
@@ -548,7 +548,7 @@ function LeagueWidget({
 function GuildWidget({ guild }: { guild: { guild_id: string; member_count: number; combined_xp_this_week: number; guild_rank_global: number } | null }) {
   return (
     <div className="rounded-xl border border-border bg-card p-4">
-      <p className="flex items-center gap-2 font-display text-sm font-semibold">
+      <p className="flex items-center gap-2 font-display text-small font-semibold">
         <Users className="size-4 text-muted-foreground" /> Guild
       </p>
       {!guild ? (
@@ -559,7 +559,7 @@ function GuildWidget({ guild }: { guild: { guild_id: string; member_count: numbe
             {guild.member_count} members ·{" "}
             {guild.combined_xp_this_week.toLocaleString()} XP this week
           </p>
-          <div className="mt-2 inline-flex items-center gap-1.5 rounded-md bg-purple-500/10 px-2 py-1 text-[11px] font-medium text-purple-700">
+          <div className="mt-2 inline-flex items-center gap-1.5 rounded-md bg-purple-500/10 px-2 py-1 text-caption font-medium text-purple-700">
             <Trophy className="size-3" /> Global rank #{guild.guild_rank_global}
           </div>
         </>
@@ -586,10 +586,10 @@ function RankLadderSection({
   return (
     <section>
       <div className="flex items-center justify-between">
-        <h2 className="font-display text-xl font-bold tracking-tight">
+        <h2 className="font-display text-h2">
           The rank ladder
         </h2>
-        <Badge variant="outline" className="text-[10px]">
+        <Badge variant="outline" className="text-caption">
           Initiate → Deus
         </Badge>
       </div>
@@ -627,11 +627,11 @@ function RankLadderSection({
                 </span>
                 <div className="min-w-0 flex-1">
                   <div className="flex flex-wrap items-center gap-2">
-                    <p className="font-display text-sm font-semibold tracking-tight">
+                    <p className="font-display text-small font-semibold">
                       {r.rank_name}
                     </p>
                     {isCurrent ? (
-                      <Badge className="border-fuchsia-500/40 bg-fuchsia-500/15 text-[10px] text-fuchsia-600">
+                      <Badge className="border-fuchsia-500/40 bg-fuchsia-500/15 text-caption text-fuchsia-600">
                         <Medal className="size-3" /> You are here
                       </Badge>
                     ) : null}
@@ -663,7 +663,7 @@ function RankLadderSection({
               ∞
             </span>
             <div className="min-w-0 flex-1">
-              <p className="font-display text-sm font-semibold tracking-tight">
+              <p className="font-display text-small font-semibold">
                 Prestige — Deus I / II / III…
               </p>
               <p className="mt-0.5 text-xs text-muted-foreground">
@@ -672,11 +672,11 @@ function RankLadderSection({
               </p>
             </div>
             {currentPrestige > 0 ? (
-              <Badge className="border-fuchsia-500/40 bg-fuchsia-500/15 text-[10px] text-fuchsia-600">
+              <Badge className="border-fuchsia-500/40 bg-fuchsia-500/15 text-caption text-fuchsia-600">
                 <Sparkles className="size-3" /> Prestige {currentPrestige}
               </Badge>
             ) : (
-              <span className="shrink-0 text-[10px] text-muted-foreground">
+                <span className="shrink-0 text-caption text-muted-foreground">
                 Opt-in at Deus
               </span>
             )}
@@ -711,11 +711,9 @@ function QuickLink({
         <Icon className="size-5" />
       </span>
       <span>
-        <span className="block font-display text-sm font-semibold">{title}</span>
+        <span className="block font-display text-small font-semibold">{title}</span>
         <span className="block text-xs text-muted-foreground">{subtitle}</span>
       </span>
     </button>
   );
 }
-
-

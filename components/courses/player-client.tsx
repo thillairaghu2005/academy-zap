@@ -69,7 +69,7 @@ function ArticleBody({ lesson }: { lesson: CourseLesson }) {
         <FileText className="size-4" />
         Article lesson · ~{lesson.duration_seconds} words · 5 min read
       </div>
-      <h2 className="mt-3 font-display text-2xl font-bold tracking-tight">
+      <h2 className="mt-3 font-display text-h2">
         {lesson.title}
       </h2>
       <p className="mt-4 text-sm leading-relaxed text-muted-foreground">
@@ -395,7 +395,7 @@ export function PlayerClient({ course }: { course: Course }) {
                     <span className="flex-1 truncate text-xs font-medium">
                       {section.title}
                     </span>
-                    <span className="text-[10px] text-muted-foreground">
+                    <span className="text-caption text-muted-foreground">
                       {sectionDone}/{section.lessons.length}
                     </span>
                   </button>
@@ -420,7 +420,7 @@ export function PlayerClient({ course }: { course: Course }) {
                         >
                           <span
                             className={cn(
-                              "grid size-5 shrink-0 place-items-center rounded-full border text-[10px] font-medium",
+                              "grid size-5 shrink-0 place-items-center rounded-full border text-caption font-medium",
                               done
                                 ? "border-transparent bg-success/15 text-success-strong"
                                 : active
@@ -437,7 +437,7 @@ export function PlayerClient({ course }: { course: Course }) {
                           <span className="min-w-0 flex-1 truncate">
                             {lesson.title}
                           </span>
-                          <span className="flex shrink-0 items-center gap-1 text-[10px] text-muted-foreground">
+                          <span className="flex shrink-0 items-center gap-1 text-caption text-muted-foreground">
                             {lesson.kind === "article" ? (
                               <FileText className="size-3" />
                             ) : (

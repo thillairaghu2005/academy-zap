@@ -40,11 +40,11 @@ export function ComboCurveTeaser() {
   return (
     <div className="rounded-xl border border-amber-500/25 bg-amber-500/5 p-4">
       <div className="flex items-center justify-between">
-        <p className="flex items-center gap-2 font-display text-sm font-semibold">
+        <p className="flex items-center gap-2 font-display text-small font-semibold">
           <Flame className="size-4 text-amber-700" />
           Combo curve
         </p>
-        <span className="flex items-center gap-1 text-[10px] text-muted-foreground">
+          <span className="flex items-center gap-1 text-caption text-muted-foreground">
           <TrendingUp className="size-3" />
           server-verified multiplier
         </span>
@@ -86,7 +86,7 @@ export function ComboCurveTeaser() {
         </span>
       </div>
 
-      <p className="mt-2 text-[11px] leading-relaxed text-muted-foreground">
+      <p className="mt-2 text-caption leading-relaxed text-muted-foreground">
         Consecutive correct answers raise the multiplier up to{" "}
         <span className="font-semibold text-amber-700">
           ×{maxMultiplier.toFixed(2)}

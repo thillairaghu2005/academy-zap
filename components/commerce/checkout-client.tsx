@@ -114,11 +114,11 @@ function HostedEmbed({
         </div>
         <div className="flex-1">
           <p className="text-sm font-semibold">{PROVIDER_LABEL} Checkout</p>
-          <p className="text-[11px] text-muted-foreground">
+          <p className="text-caption text-muted-foreground">
             hosted checkout · sandbox test mode
           </p>
         </div>
-        <Badge variant="outline" className="gap-1 text-[10px]">
+          <Badge variant="outline" className="gap-1 text-caption">
           <Lock className="size-3" />
           provider-hosted
         </Badge>
@@ -150,7 +150,7 @@ function HostedEmbed({
                 )}
                 <span className="truncate">{item.title}</span>
                 {item.quantity > 1 ? (
-                  <Badge variant="outline" className="text-[10px]">
+                  <Badge variant="outline" className="text-caption">
                     ×{item.quantity}
                   </Badge>
                 ) : null}
@@ -165,7 +165,7 @@ function HostedEmbed({
           ))}
           <div className="mt-1 flex items-center justify-between border-t border-border pt-2 text-sm">
             <span className="text-muted-foreground">Total</span>
-            <span className="font-display text-lg font-bold">
+    <span className="font-display text-h3">
               {formatMoney(session.amount_cents, session.currency)}
             </span>
           </div>
@@ -192,7 +192,7 @@ function HostedEmbed({
           )}
         </Button>
 
-        <p className="flex items-center justify-center gap-1.5 text-[11px] text-muted-foreground">
+                <p className="flex items-center justify-center gap-1.5 text-caption text-muted-foreground">
           <ShieldCheck className="size-3.5 text-emerald-700" />
           PCI-DSS scope stays with {PROVIDER_LABEL} · 3-D Secure applies in
           test mode
@@ -235,7 +235,7 @@ function PaidPanel({
       <div className="mb-4 grid size-14 place-items-center rounded-full border border-success/30 bg-success/10 text-success-strong">
         <CheckCircle2 className="size-7" />
       </div>
-      <h2 className="font-display text-xl font-bold tracking-tight">
+      <h2 className="font-display text-h2">
         Payment succeeded
       </h2>
       <p className="mt-1.5 max-w-md text-sm text-muted-foreground">
@@ -271,7 +271,7 @@ function PaidPanel({
 
       {granted.length > 0 ? (
         <div className="mt-5 w-full max-w-md rounded-lg border border-border bg-card p-4 text-left">
-          <p className="text-[11px] font-semibold uppercase tracking-widest text-muted-foreground/60">
+          <p className="text-caption font-semibold uppercase tracking-widest text-muted-foreground/60">
             Granted to your account
           </p>
           <ul className="mt-2 flex flex-col gap-1.5 text-sm">
@@ -282,7 +282,7 @@ function PaidPanel({
                   {session.cart.items.find((i) => i.product_id === g.product_id)
                     ?.title ?? g.product_id}
                 </span>
-                <span className="ml-auto shrink-0 text-[11px] text-muted-foreground">
+                <span className="ml-auto shrink-0 text-caption text-muted-foreground">
                   {g.kind}
                 </span>
               </li>
@@ -330,7 +330,7 @@ function DeclinedPanel() {
       <div className="mb-4 grid size-14 place-items-center rounded-full border border-destructive/30 bg-destructive/10 text-destructive">
         <TriangleAlert className="size-7" />
       </div>
-      <h2 className="font-display text-xl font-bold tracking-tight">
+      <h2 className="font-display text-h2">
         Payment declined
       </h2>
       <p className="mt-1.5 max-w-md text-sm text-muted-foreground">
@@ -358,7 +358,7 @@ function ExpiredPanel() {
       <div className="mb-4 grid size-14 place-items-center rounded-full border border-warning/30 bg-warning/10 text-warning-strong">
         <Hourglass className="size-7" />
       </div>
-      <h2 className="font-display text-xl font-bold tracking-tight">
+      <h2 className="font-display text-h2">
         Checkout session expired
       </h2>
       <p className="mt-1.5 max-w-md text-sm text-muted-foreground">
@@ -515,7 +515,7 @@ export function CheckoutClient({ checkoutId }: { checkoutId: string }) {
     <PageContainer narrow>
       <div className="mb-5 flex items-center justify-between gap-3">
         <div>
-          <h1 className="font-display text-xl font-bold tracking-tight">
+          <h1 className="font-display text-h1">
             Complete your purchase
           </h1>
           <p className="mt-0.5 flex items-center gap-1.5 text-xs text-muted-foreground">
@@ -534,7 +534,7 @@ export function CheckoutClient({ checkoutId }: { checkoutId: string }) {
       {DEMO_MODE ? (
         <>
           <div className="mt-4 flex flex-wrap items-center gap-2 rounded-lg border border-dashed border-border bg-card/40 px-4 py-3">
-            <p className="text-[11px] font-semibold uppercase tracking-widest text-muted-foreground/60">
+            <p className="text-caption font-semibold uppercase tracking-widest text-muted-foreground/60">
               Demo states
             </p>
             <Button variant="outline" size="sm" asChild>
@@ -548,7 +548,7 @@ export function CheckoutClient({ checkoutId }: { checkoutId: string }) {
             </Button>
           </div>
 
-          <p className="mt-4 rounded-lg border border-border bg-card/50 px-4 py-3 text-[11px] leading-relaxed text-muted-foreground">
+          <p className="mt-4 rounded-lg border border-border bg-card/50 px-4 py-3 text-caption leading-relaxed text-muted-foreground">
             <Lock className="mr-1.5 inline size-3 align-[-1px]" />
             Mock note: the frame above stands in for the{" "}
             <span className="font-medium text-foreground">

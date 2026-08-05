@@ -72,7 +72,7 @@ function NotificationRow({
         <span className="mt-1 block text-xs leading-relaxed text-muted-foreground">
           {notification.body}
         </span>
-        <span className="mt-2 block text-[11px] text-muted-foreground/70">
+        <span className="mt-2 block text-caption text-muted-foreground/70">
           {formatNotificationTime(notification.created_at)}
         </span>
       </span>
@@ -131,7 +131,7 @@ export function NotificationCenter() {
         >
           <Bell />
           {unreadCount ? (
-            <span className="absolute right-1.5 top-1.5 flex min-w-4 items-center justify-center rounded-full bg-primary px-1 text-[9px] font-bold leading-4 text-primary-foreground ring-2 ring-background">
+            <span className="absolute right-1.5 top-1.5 flex min-w-4 items-center justify-center rounded-full bg-primary px-1 text-caption font-bold leading-4 text-primary-foreground ring-2 ring-background">
               {unreadCount > 9 ? "9+" : unreadCount}
             </span>
           ) : null}

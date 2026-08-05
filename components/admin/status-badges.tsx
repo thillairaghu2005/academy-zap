@@ -22,7 +22,7 @@ export function CourseStatusBadge({ status }: { status: ContentStatus }) {
   return (
     <span
       className={cn(
-        "inline-flex items-center rounded-full border px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide",
+        "inline-flex items-center rounded-full border px-2 py-0.5 text-caption font-semibold uppercase tracking-wide",
         styles[status],
       )}
     >
@@ -40,7 +40,7 @@ export function OrderStatusBadge({ status }: { status: Order["status"] }) {
   return (
     <span
       className={cn(
-        "inline-flex items-center rounded-full border px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide",
+        "inline-flex items-center rounded-full border px-2 py-0.5 text-caption font-semibold uppercase tracking-wide",
         styles[status],
       )}
     >
@@ -53,7 +53,7 @@ export function RoleBadge({ role }: { role: SessionUser["role"] }) {
   return (
     <span
       className={cn(
-        "inline-flex items-center rounded-full border px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide",
+        "inline-flex items-center rounded-full border px-2 py-0.5 text-caption font-semibold uppercase tracking-wide",
         role === "admin"
           ? "border-primary/40 bg-primary/10 text-primary"
           : "border-border bg-secondary text-muted-foreground",
@@ -80,7 +80,7 @@ export function DifficultyBadge({
   return (
     <span
       className={cn(
-        "inline-flex items-center rounded-full border px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide",
+        "inline-flex items-center rounded-full border px-2 py-0.5 text-caption font-semibold uppercase tracking-wide",
         styles[difficulty] ?? "border-border bg-secondary text-muted-foreground",
       )}
     >

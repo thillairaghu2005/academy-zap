@@ -54,7 +54,7 @@ export function ReconciliationPanel() {
   return (
     <Card className="mt-6">
       <CardHeader className="p-4 pb-2">
-        <CardTitle className="flex items-center gap-2 font-display text-sm">
+          <CardTitle className="flex items-center gap-2 font-display text-small">
           <Scale className="size-4 text-primary" />
           Balance reconciliation
         </CardTitle>
@@ -120,13 +120,13 @@ export function ReconciliationPanel() {
             <dl className="grid gap-x-8 gap-y-1.5 text-xs sm:grid-cols-3">
               <div>
                 <dt className="text-muted-foreground">Ledger sum ({data.entry_count} entries)</dt>
-                <dd className="font-display text-base font-bold text-foreground">
+                <dd className="font-display text-small font-bold text-foreground">
                   {data.ledger_sum} XP
                 </dd>
               </div>
               <div>
                 <dt className="text-muted-foreground">Cached balance (ProgressContext)</dt>
-                <dd className="font-display text-base font-bold text-foreground">
+                <dd className="font-display text-small font-bold text-foreground">
                   {data.cached_total_xp} XP
                 </dd>
               </div>
@@ -134,7 +134,7 @@ export function ReconciliationPanel() {
                 <dt className="text-muted-foreground">Delta</dt>
                 <dd
                   className={cn(
-                    "font-display text-base font-bold",
+                    "font-display text-small font-bold",
                     data.reconciled ? "text-emerald-700" : "text-rose-700",
                   )}
                 >

@@ -6,10 +6,10 @@ import { PageContainer } from "@/components/shared/page-container";
 export default function NotFound() {
   return (
     <PageContainer className="flex min-h-[60dvh] flex-col items-center justify-center py-20 text-center">
-      <p className="text-gradient-zap font-display text-7xl font-bold tracking-tight">
+      <p className="text-gradient-zap font-display text-hero">
         404
       </p>
-      <h1 className="mt-4 font-display text-xl font-semibold">
+      <h1 className="mt-4 font-display text-h3">
         This page hasn&apos;t been built yet
       </h1>
       <p className="mt-2 max-w-sm text-sm leading-relaxed text-muted-foreground">

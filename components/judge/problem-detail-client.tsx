@@ -104,7 +104,7 @@ function CopyButton({ text }: { text: string }) {
         setCopied(true);
         window.setTimeout(() => setCopied(false), 1500);
       }}
-      className="flex items-center gap-1 rounded-md border border-border bg-muted/50 px-1.5 py-0.5 text-[10px] text-muted-foreground transition-colors hover:text-foreground"
+      className="flex items-center gap-1 rounded-md border border-border bg-muted/50 px-1.5 py-0.5 text-caption text-muted-foreground transition-colors hover:text-foreground"
       aria-label="Copy to clipboard"
     >
       {copied ? <Check className="size-3" /> : <Copy className="size-3" />}
@@ -119,12 +119,12 @@ function StatementPanel({ problem }: { problem: Problem }) {
     <div className="flex flex-col gap-5">
       <div>
         <div className="flex flex-wrap items-center gap-2">
-          <h1 className="font-display text-2xl font-bold tracking-tight">
+          <h1 className="font-display text-h1">
             {problem.title}
           </h1>
           <span
             className={cn(
-              "rounded-full border px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide",
+              "rounded-full border px-2 py-0.5 text-caption font-semibold uppercase tracking-wide",
               problem.difficulty === "easy" &&
                 "border-emerald-500/40 bg-emerald-500/10 text-emerald-700",
               problem.difficulty === "medium" &&
@@ -138,7 +138,7 @@ function StatementPanel({ problem }: { problem: Problem }) {
         </div>
         <div className="mt-2 flex flex-wrap gap-1.5">
           {problem.topics.map((topic) => (
-            <Badge key={topic} variant="outline" className="text-[10px]">
+              <Badge key={topic} variant="outline" className="text-caption">
               {topic}
             </Badge>
           ))}
@@ -176,7 +176,7 @@ function StatementPanel({ problem }: { problem: Problem }) {
       </div>
 
       <div>
-        <h3 className="mb-2 font-display text-sm font-semibold">Constraints</h3>
+        <h3 className="mb-2 font-display text-h3">Constraints</h3>
         <ul className="flex flex-col gap-1.5">
           {problem.constraints.map((constraint) => (
             <li
@@ -191,7 +191,7 @@ function StatementPanel({ problem }: { problem: Problem }) {
       </div>
 
       <div>
-        <h3 className="mb-2 font-display text-sm font-semibold">
+        <h3 className="mb-2 font-display text-h3">
           Sample cases
         </h3>
         <div className="flex flex-col gap-3">
@@ -208,7 +208,7 @@ function StatementPanel({ problem }: { problem: Problem }) {
               </div>
               <div className="flex flex-col gap-2 px-3 py-2.5">
                 <div className="flex flex-col gap-1">
-                  <span className="text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">
+                  <span className="text-caption font-semibold uppercase tracking-wide text-muted-foreground">
                     Input
                   </span>
                   <pre className="overflow-x-auto rounded-md bg-secondary/60 px-2.5 py-1.5 font-mono text-[12.5px] leading-relaxed">
@@ -216,7 +216,7 @@ function StatementPanel({ problem }: { problem: Problem }) {
                   </pre>
                 </div>
                 <div className="flex flex-col gap-1">
-                  <span className="text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">
+                  <span className="text-caption font-semibold uppercase tracking-wide text-muted-foreground">
                     Output
                   </span>
                   <pre className="overflow-x-auto rounded-md bg-secondary/60 px-2.5 py-1.5 font-mono text-[12.5px] leading-relaxed">
@@ -372,7 +372,7 @@ function SubmissionHistory({
     <div className="flex flex-col gap-3">
       <div className="flex items-center gap-2">
         <History className="size-4 text-muted-foreground" />
-        <h2 className="font-display text-sm font-semibold">
+        <h2 className="font-display text-small font-semibold">
           Submission history
         </h2>
         {data && data.length > 0 ? (
@@ -610,7 +610,7 @@ export function ProblemDetailClient({ problemId }: { problemId: string }) {
                   <Terminal className="size-3.5 text-muted-foreground" />
                   solution.py
                 </span>
-                <Badge variant="secondary" className="text-[10px]">
+                <Badge variant="secondary" className="text-caption">
                   Python 3
                 </Badge>
               </div>
@@ -633,7 +633,7 @@ export function ProblemDetailClient({ problemId }: { problemId: string }) {
               />
             </div>
             <div className="flex items-center justify-between gap-3 border-t border-border bg-muted/40 px-4 py-3">
-              <p className="hidden text-[11px] text-muted-foreground sm:block">
+              <p className="hidden text-caption text-muted-foreground sm:block">
                 {code !== null
                   ? `${code.split("\n").length} lines edited`
                   : "Editing starter code"}

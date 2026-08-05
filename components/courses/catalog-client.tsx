@@ -90,7 +90,7 @@ function CourseCard({
         >
           <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
           <div className="absolute bottom-3 left-4 right-4">
-            <h3 className="font-display text-base font-bold leading-tight text-white drop-shadow-sm">
+            <h3 className="font-display text-h3 text-white drop-shadow-sm">
               {course.title}
             </h3>
             <p className="mt-0.5 text-xs text-white/80">{course.category}</p>
@@ -130,7 +130,7 @@ function CourseCard({
             <span className="text-xs text-muted-foreground">
               {course.instructor_name}
             </span>
-            <Badge variant="outline" className="text-[10px]">
+              <Badge variant="outline" className="text-caption">
               {course.level}
             </Badge>
           </div>
@@ -247,7 +247,7 @@ export function CatalogClient() {
     <PageContainer>
       {/* Header */}
       <div className="flex flex-col gap-2">
-        <h1 className="font-display text-3xl font-bold tracking-tight">
+        <h1 className="font-display text-h1">
           Course catalog
         </h1>
         <p className="text-sm text-muted-foreground">

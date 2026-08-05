@@ -277,7 +277,7 @@ export function DataTable<T>({
           <div className="overflow-x-auto">
             <table className="w-full text-left text-sm">
               <thead>
-                <tr className="border-b border-border bg-muted/40 text-[11px] uppercase tracking-widest text-muted-foreground/70">
+                <tr className="border-b border-border bg-muted/40 text-caption uppercase tracking-widest text-muted-foreground/70">
                   {expandable ? <th className="w-9 px-2" /> : null}
                   {columns.map((column) => (
                     <th

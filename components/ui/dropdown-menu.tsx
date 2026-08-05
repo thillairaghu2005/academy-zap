@@ -66,7 +66,7 @@ function DropdownMenuSubTrigger({
       data-slot="dropdown-menu-sub-trigger"
       data-inset={inset}
       className={cn(
-        "flex cursor-default select-none items-center gap-2 rounded-sm px-2 py-1.5 text-sm outline-hidden focus:bg-accent data-[state=open]:bg-accent [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0",
+        "flex cursor-default select-none items-center gap-2 rounded-sm px-2 py-1.5 text-small outline-hidden focus:bg-accent data-[state=open]:bg-accent [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0",
         inset && "pl-8",
         className,
       )}
@@ -129,7 +129,7 @@ function DropdownMenuItem({
       data-inset={inset}
       data-variant={variant}
       className={cn(
-        "relative flex cursor-default select-none items-center gap-2 rounded-md px-2 py-1.5 text-sm outline-hidden transition-colors focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0",
+        "relative flex cursor-default select-none items-center gap-2 rounded-md px-2 py-1.5 text-small outline-hidden transition-colors focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0",
         variant === "destructive" && "text-destructive focus:bg-destructive/10 focus:text-destructive",
         inset && "pl-8",
         className,
@@ -149,7 +149,7 @@ function DropdownMenuCheckboxItem({
     <DropdownMenuPrimitive.CheckboxItem
       data-slot="dropdown-menu-checkbox-item"
       className={cn(
-        "relative flex cursor-default select-none items-center gap-2 rounded-sm py-1.5 pl-8 pr-2 text-sm outline-hidden transition-colors focus:bg-accent data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
+        "relative flex cursor-default select-none items-center gap-2 rounded-sm py-1.5 pl-8 pr-2 text-small outline-hidden transition-colors focus:bg-accent data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
         className,
       )}
       checked={checked}
@@ -174,7 +174,7 @@ function DropdownMenuRadioItem({
     <DropdownMenuPrimitive.RadioItem
       data-slot="dropdown-menu-radio-item"
       className={cn(
-        "relative flex cursor-default select-none items-center gap-2 rounded-sm py-1.5 pl-8 pr-2 text-sm outline-hidden transition-colors focus:bg-accent data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
+        "relative flex cursor-default select-none items-center gap-2 rounded-sm py-1.5 pl-8 pr-2 text-small outline-hidden transition-colors focus:bg-accent data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
         className,
       )}
       {...props}
@@ -201,7 +201,7 @@ function DropdownMenuLabel({
       data-slot="dropdown-menu-label"
       data-inset={inset}
       className={cn(
-        "px-2 py-1.5 text-sm font-medium",
+        "px-2 py-1.5 text-small font-medium",
         inset && "pl-8",
         className,
       )}
@@ -231,7 +231,7 @@ function DropdownMenuShortcut({
     <span
       data-slot="dropdown-menu-shortcut"
       className={cn(
-        "ml-auto text-xs tracking-widest text-muted-foreground",
+        "ml-auto text-caption tracking-widest text-muted-foreground",
         className,
       )}
       {...props}

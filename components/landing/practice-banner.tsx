@@ -10,10 +10,10 @@ export function PracticeBanner() {
       <div className="grid gap-10 py-10 lg:grid-cols-[0.8fr_1.2fr] lg:items-center">
         <div>
           <p className="font-mono text-xs uppercase tracking-widest text-primary">F2 → F3 handoff</p>
-          <h2 className="mt-4 max-w-lg font-display text-3xl font-semibold tracking-tight sm:text-4xl">
+          <h2 className="mt-4 max-w-lg font-display text-h2">
             A passing submission is not the finish line.
           </h2>
-          <p className="mt-4 max-w-xl text-sm leading-7 text-muted-foreground sm:text-base">
+          <p className="mt-4 max-w-xl text-body text-muted-foreground">
             Take the algorithm from the Judge into a terminal session. Labs check objectives against the session state, not a checkbox in the browser.
           </p>
           <Button variant="link" className="mt-5 h-auto p-0 font-semibold" asChild>

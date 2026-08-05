@@ -34,7 +34,7 @@ export function EmptyState({
           <Icon className="size-5" />
         </div>
       ) : null}
-      <h3 className="font-display text-base font-semibold tracking-tight">
+      <h3 className="font-display text-h3">
         {title}
       </h3>
       {description ? (

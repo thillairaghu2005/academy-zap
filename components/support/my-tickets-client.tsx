@@ -55,7 +55,7 @@ export function MyTicketsClient() {
     <PageContainer>
       <div className="flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between">
         <div>
-          <h1 className="font-display text-3xl font-bold tracking-tight">
+          <h1 className="font-display text-h1">
             Support
           </h1>
           <p className="mt-1 text-sm text-muted-foreground">

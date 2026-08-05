@@ -22,7 +22,7 @@ export function SurfaceIndex() {
             >
               <span className="font-mono text-xs font-semibold text-primary">{surface.stage}</span>
               <span>
-                <span className="block font-display font-semibold">{surface.name}</span>
+                <span className="block font-display text-small font-semibold">{surface.name}</span>
                 <span className="mt-1.5 block text-xs leading-relaxed text-muted-foreground">{surface.detail}</span>
               </span>
               <surface.icon className="mt-0.5 size-4 text-muted-foreground transition-transform duration-200 group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />

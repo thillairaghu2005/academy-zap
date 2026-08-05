@@ -21,7 +21,7 @@ export function SkillCard({ name, description, icon: Icon, tone, href }: SkillCa
     >
       <Icon className={cn("mt-0.5 size-5", tone)} />
       <span className="min-w-0">
-        <span className="block font-display font-semibold">{name}</span>
+        <span className="block font-display text-small font-semibold">{name}</span>
         <span className="mt-1.5 block text-sm leading-relaxed text-muted-foreground">{description}</span>
       </span>
       <ArrowRight className="mt-1 size-4 text-muted-foreground transition-transform duration-200 group-hover:translate-x-1" />

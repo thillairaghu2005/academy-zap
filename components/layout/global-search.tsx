@@ -152,7 +152,7 @@ export function GlobalSearch({ className }: { className?: string }) {
             )}
           </div>
 
-          <div className="flex items-center justify-between border-t border-border bg-muted/40 px-5 py-3 text-[11px] text-muted-foreground">
+              <div className="flex items-center justify-between border-t border-border bg-muted/40 px-5 py-3 text-caption text-muted-foreground">
             <span>Search is powered by the mock unified index.</span>
             <span className={cn("font-mono", search.data && "text-muted-foreground/70")}>
               {search.data?.estimatedTotalHits ?? 0} results

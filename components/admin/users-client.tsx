@@ -51,7 +51,7 @@ export function AdminUsersClient() {
       sortValue: (u) => u.display_name,
       cell: (u) => (
         <div className="flex items-center gap-3">
-          <div className="grid size-8 shrink-0 place-items-center rounded-full bg-gradient-to-br from-primary to-fuchsia-500 text-[10px] font-bold text-white">
+          <div className="grid size-8 shrink-0 place-items-center rounded-full bg-gradient-to-br from-primary to-fuchsia-500 text-caption font-bold text-white">
             {u.display_name
               .split(" ")
               .map((n) => n[0])
@@ -85,7 +85,7 @@ export function AdminUsersClient() {
   return (
     <PageContainer>
       <div>
-        <h1 className="font-display text-2xl font-bold tracking-tight">Users</h1>
+        <h1 className="font-display text-h1">Users</h1>
         <p className="mt-1 text-sm text-muted-foreground">
           Directory + role management. The demo learner stays a learner so the
           public demo never silently unlocks /admin.

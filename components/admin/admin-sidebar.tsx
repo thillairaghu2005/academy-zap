@@ -67,7 +67,7 @@ export function AdminSidebar({ onReplay }: { onReplay?: () => void }) {
       aria-label="Admin sections"
       className="flex gap-1 overflow-x-auto border-b border-border bg-card/40 px-4 py-2 lg:sticky lg:top-16 lg:h-[calc(100dvh-4rem)] lg:w-52 lg:flex-col lg:overflow-y-auto lg:border-b-0 lg:border-r lg:px-3 lg:py-5"
     >
-      <p className="hidden px-3 pb-1.5 pt-1 text-[11px] font-semibold uppercase tracking-widest text-muted-foreground/60 lg:block">
+      <p className="hidden px-3 pb-1.5 pt-1 text-caption font-semibold uppercase tracking-widest text-muted-foreground/60 lg:block">
         Admin / CMS
       </p>
       {ADMIN_NAV.map((item) => {

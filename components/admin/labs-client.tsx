@@ -67,7 +67,7 @@ export function AdminLabsClient() {
       sortValue: (l) => (l.requires_gui ? 1 : 0),
       cell: (l) =>
         l.requires_gui ? (
-          <Badge variant="outline" className="gap-1 text-[10px]">
+          <Badge variant="outline" className="gap-1 text-caption">
             <Monitor className="size-3" /> Guacamole
           </Badge>
         ) : (
@@ -79,7 +79,7 @@ export function AdminLabsClient() {
   return (
     <PageContainer>
       <div>
-        <h1 className="font-display text-2xl font-bold tracking-tight">Labs</h1>
+        <h1 className="font-display text-h1">Labs</h1>
         <p className="mt-1 text-sm text-muted-foreground">
           Read-only catalog view — lab authoring is out of the F7 scope.
         </p>

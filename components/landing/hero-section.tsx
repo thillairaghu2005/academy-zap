@@ -21,7 +21,7 @@ export function HeroSection() {
           <p className="font-mono text-xs font-medium uppercase tracking-widest text-primary-light">
             F2 / Judge Engine
           </p>
-          <h1 className="mt-5 max-w-xl font-display text-5xl font-semibold leading-[1.04] tracking-tight text-background sm:text-6xl lg:text-7xl">
+          <h1 className="mt-5 max-w-xl font-display text-hero text-background">
             Submit code.
             <br />
             <span className="text-primary-light">Get a verdict.</span>
