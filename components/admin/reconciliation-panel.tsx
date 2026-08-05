@@ -100,8 +100,8 @@ export function ReconciliationPanel() {
               className={cn(
                 "flex items-center gap-2.5 rounded-lg border px-3.5 py-2.5 text-sm font-medium",
                 data.reconciled
-                  ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-600"
-                  : "border-rose-500/30 bg-rose-500/10 text-rose-600",
+                  ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-700"
+                  : "border-rose-500/30 bg-rose-500/10 text-rose-700",
               )}
               role="status"
             >
@@ -135,7 +135,7 @@ export function ReconciliationPanel() {
                 <dd
                   className={cn(
                     "font-display text-base font-bold",
-                    data.reconciled ? "text-emerald-600" : "text-rose-600",
+                    data.reconciled ? "text-emerald-700" : "text-rose-700",
                   )}
                 >
                   {data.delta_xp > 0 ? "+" : ""}
@@ -146,7 +146,7 @@ export function ReconciliationPanel() {
 
             {data.reconciled ? (
               <p className="flex items-center gap-1.5 text-xs text-muted-foreground">
-                <Activity className="size-3 text-emerald-600" />
+                <Activity className="size-3 text-emerald-700" />
                 Live check — switch users to see the drift fixture (Ravi Kapoor) and
                 the 404 demo (missing-user).
               </p>

@@ -189,7 +189,7 @@ export function CartClient() {
                   className={cn(
                     "grid size-11 shrink-0 place-items-center rounded-lg",
                     item.kind === "lab"
-                      ? "bg-emerald-500/10 text-emerald-600"
+                      ? "bg-emerald-500/10 text-emerald-700"
                       : "bg-primary/10 text-primary",
                   )}
                 >
@@ -341,7 +341,7 @@ export function CartClient() {
               : null}
 
               <p className="flex items-center gap-1.5 text-[11px] leading-relaxed text-muted-foreground">
-                <ShieldCheck className="size-3.5 shrink-0 text-emerald-600" />
+                <ShieldCheck className="size-3.5 shrink-0 text-emerald-700" />
                 Payment happens on the provider&apos;s hosted page — Zapsters
                 never touches card numbers (PCI scope stays with Razorpay /
                 Stripe).

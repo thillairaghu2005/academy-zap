@@ -1,5 +1,9 @@
-import { describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it } from "vitest";
 
+import {
+  MOCK_COURSES,
+  MOCK_COURSES_BY_ID,
+} from "@/lib/mocks/courses";
 import { MOCK_ADMIN, MOCK_REVIEWERS } from "@/lib/mocks/users";
 import {
   createCourse,
@@ -28,6 +32,23 @@ const DRAFT: CourseDraftInput = {
   price_cents: 9900,
   estimated_hours: 4,
 };
+
+/**
+ * The course store is module-level mutable state (upsert/delete mutate the
+ * shared arrays and id map) — snapshot before each test, restore after so
+ * the suite stays hermetic and order-independent.
+ */
+let coursesSnapshot: typeof MOCK_COURSES;
+let byIdSnapshot: typeof MOCK_COURSES_BY_ID;
+beforeEach(() => {
+  coursesSnapshot = structuredClone(MOCK_COURSES);
+  byIdSnapshot = structuredClone(MOCK_COURSES_BY_ID);
+});
+afterEach(() => {
+  MOCK_COURSES.splice(0, MOCK_COURSES.length, ...coursesSnapshot);
+  MOCK_COURSES_BY_ID.clear();
+  for (const [id, course] of byIdSnapshot) MOCK_COURSES_BY_ID.set(id, course);
+});
 
 describe("course review workflow", () => {
   it("creates a draft, submits it, and publishes via a second reviewer", async () => {

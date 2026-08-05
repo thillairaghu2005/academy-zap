@@ -31,7 +31,7 @@ export function ComboMeter({ combo }: { combo: ComboState }) {
         className={cn(
           "grid size-8 shrink-0 place-items-center rounded-lg",
           active
-            ? "bg-amber-500/20 text-amber-600"
+            ? "bg-amber-500/20 text-amber-700"
             : "bg-muted text-muted-foreground",
         )}
       >
@@ -56,7 +56,7 @@ export function ComboMeter({ combo }: { combo: ComboState }) {
           <span className="font-display text-xs font-semibold">
             {active ? `${combo.count}× combo` : "Combo"}
           </span>
-          <span className="font-mono text-[11px] text-amber-600">
+          <span className="font-mono text-[11px] text-amber-700">
             ×{combo.multiplier.toFixed(2)}
           </span>
         </div>

@@ -332,7 +332,7 @@ export function CourseForm({ courseId }: { courseId?: string }) {
               <Card className="border-emerald-500/25">
                 <CardHeader className="p-4 pb-2">
                   <CardTitle className="flex items-center gap-2 font-display text-sm">
-                    <CheckCircle2 className="size-4 text-emerald-600" />
+                    <CheckCircle2 className="size-4 text-emerald-700" />
                     Second-reviewer approval
                   </CardTitle>
                 </CardHeader>
@@ -606,7 +606,7 @@ export function CourseForm({ courseId }: { courseId?: string }) {
                         Saving draft…
                       </span>
                     ) : autosaveState === "saved" ? (
-                      <span className="inline-flex items-center gap-1.5 text-success">
+                      <span className="inline-flex items-center gap-1.5 text-success-strong">
                         <CheckCircle2 className="size-3" />
                         Draft saved
                       </span>

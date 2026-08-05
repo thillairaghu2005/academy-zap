@@ -50,15 +50,15 @@ const DIFFICULTY_STYLES: Record<
 > = {
   beginner: {
     label: "Beginner",
-    className: "border-emerald-500/40 bg-emerald-500/10 text-emerald-600",
+    className: "border-emerald-500/40 bg-emerald-500/10 text-emerald-700",
   },
   intermediate: {
     label: "Intermediate",
-    className: "border-amber-500/40 bg-amber-500/10 text-amber-600",
+    className: "border-amber-500/40 bg-amber-500/10 text-amber-700",
   },
   advanced: {
     label: "Advanced",
-    className: "border-rose-500/40 bg-rose-500/10 text-rose-600",
+    className: "border-rose-500/40 bg-rose-500/10 text-rose-700",
   },
 };
 
@@ -158,7 +158,7 @@ export function LabDetailClient({ labId }: { labId: string }) {
         <div className="flex flex-col gap-6">
           <div>
             <div className="flex flex-wrap items-center gap-2">
-              <span className="text-xs font-medium uppercase tracking-wide text-emerald-600">
+              <span className="text-xs font-medium uppercase tracking-wide text-emerald-700">
                 {lab.category}
               </span>
               <span
@@ -249,7 +249,7 @@ export function LabDetailClient({ labId }: { labId: string }) {
           <Card className="flex flex-col gap-4 p-5">
             <div className="flex items-center justify-between">
               <span className="text-sm font-semibold">Start the lab</span>
-              <ShieldCheck className="size-4 text-emerald-600" />
+              <ShieldCheck className="size-4 text-emerald-700" />
             </div>
             <p className="text-xs leading-relaxed text-muted-foreground">
               A dedicated sandbox is provisioned on a session-private network.
@@ -257,15 +257,15 @@ export function LabDetailClient({ labId }: { labId: string }) {
             </p>
             <ul className="flex flex-col gap-1.5 text-xs text-muted-foreground">
               <li className="flex items-center gap-1.5">
-                <CheckCircle2 className="size-3.5 text-emerald-600" />
+                <CheckCircle2 className="size-3.5 text-emerald-700" />
                 Isolated microVM — no internet egress
               </li>
               <li className="flex items-center gap-1.5">
-                <CheckCircle2 className="size-3.5 text-emerald-600" />
+                <CheckCircle2 className="size-3.5 text-emerald-700" />
                 Objectives verified server-side
               </li>
               <li className="flex items-center gap-1.5">
-                <CheckCircle2 className="size-3.5 text-emerald-600" />
+                <CheckCircle2 className="size-3.5 text-emerald-700" />
                 Hints tracked ({lab.hard_timeout_minutes} min hard stop)
               </li>
             </ul>
@@ -309,7 +309,7 @@ export function LabDetailClient({ labId }: { labId: string }) {
 
             {isLocked ? (
               <p className="flex items-start gap-1.5 text-xs leading-relaxed text-muted-foreground">
-                <Lock className="mt-0.5 size-3.5 shrink-0 text-warning" />
+                <Lock className="mt-0.5 size-3.5 shrink-0 text-warning-strong" />
                 This lab requires a lab pass. Payment happens on the
                 provider&apos;s hosted page — no card data touches Zapsters.
               </p>
@@ -322,7 +322,7 @@ export function LabDetailClient({ labId }: { labId: string }) {
                 className="flex flex-col gap-2 rounded-lg border border-border bg-muted/40 p-3"
               >
                 <div className="flex items-center gap-2 text-xs">
-                  <LoaderCircle className="size-3.5 animate-spin text-emerald-600" />
+                  <LoaderCircle className="size-3.5 animate-spin text-emerald-700" />
                   <span className="font-medium">Spinning up sandbox…</span>
                 </div>
                 <div className="flex h-1 w-full gap-0.5 overflow-hidden">

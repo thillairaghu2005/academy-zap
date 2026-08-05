@@ -84,17 +84,17 @@ export function LedgerViewer({
               )}
             >
               {data.chain.valid ? (
-                <CheckCircle2 className="mt-0.5 size-5 shrink-0 text-emerald-600" />
+                <CheckCircle2 className="mt-0.5 size-5 shrink-0 text-emerald-700" />
               ) : (
-                <TriangleAlert className="mt-0.5 size-5 shrink-0 text-rose-600" />
+                <TriangleAlert className="mt-0.5 size-5 shrink-0 text-rose-700" />
               )}
               <div>
                 <p
                   className={cn(
                     "font-display text-sm font-semibold",
                     data.chain.valid
-                      ? "text-emerald-600"
-                      : "text-rose-600",
+                      ? "text-emerald-700"
+                      : "text-rose-700",
                   )}
                 >
                   {data.chain.valid
@@ -145,7 +145,7 @@ export function LedgerViewer({
 
             <div className="mt-3 flex items-center justify-between">
               <p className="flex items-center gap-1.5 text-[11px] text-muted-foreground">
-                <ShieldCheck className="size-3.5 text-emerald-600" />
+                <ShieldCheck className="size-3.5 text-emerald-700" />
                 Append-only — nothing is ever mutated or deleted
               </p>
               <Button variant="outline" size="sm" onClick={() => onOpenChange(false)}>
@@ -164,16 +164,16 @@ export function LedgerViewer({
 /* ------------------------------------------------------------------ */
 
 const XP_TYPE_STYLE: Record<string, string> = {
-  completion: "border-sky-500/40 bg-sky-500/10 text-sky-600",
+  completion: "border-sky-500/40 bg-sky-500/10 text-sky-700",
   mastery: "border-fuchsia-500/40 bg-fuchsia-500/10 text-fuchsia-600",
-  bonus: "border-emerald-500/40 bg-emerald-500/10 text-emerald-600",
-  adjustment: "border-rose-500/40 bg-rose-500/10 text-rose-600",
+  bonus: "border-emerald-500/40 bg-emerald-500/10 text-emerald-700",
+  adjustment: "border-rose-500/40 bg-rose-500/10 text-rose-700",
 };
 
 const INTEGRITY_STYLE: Record<string, string> = {
-  verified: "text-emerald-600",
-  flagged: "text-amber-600",
-  reversed: "text-rose-600",
+  verified: "text-emerald-700",
+  flagged: "text-amber-700",
+  reversed: "text-rose-700",
 };
 
 function LedgerEntriesTable({ entries }: { entries: LedgerAuditView["entries"] }) {
@@ -220,7 +220,7 @@ function LedgerEntriesTable({ entries }: { entries: LedgerAuditView["entries"] }
             <td
               className={cn(
                 "whitespace-nowrap px-3 py-2 font-mono font-semibold tabular-nums",
-                e.xp_delta < 0 ? "text-rose-600" : "text-emerald-600",
+                e.xp_delta < 0 ? "text-rose-700" : "text-emerald-700",
               )}
             >
               {e.xp_delta > 0 ? "+" : ""}
@@ -245,7 +245,7 @@ function LedgerEntriesTable({ entries }: { entries: LedgerAuditView["entries"] }
             </td>
             <td className="px-3 py-2">
               <div className="font-mono text-[9px] text-muted-foreground">
-                <p className="truncate text-emerald-600/70" title={e.prev_hash}>
+                <p className="truncate text-emerald-700/70" title={e.prev_hash}>
                   prev {e.prev_hash.slice(0, 8)}…
                 </p>
                 <p className="truncate" title={e.entry_hash}>
@@ -286,7 +286,7 @@ function VersionsView({
             ) : null}
           </div>
           <div className="mt-1.5 flex flex-wrap gap-3 font-mono text-[11px]">
-            <span className="text-sky-600">
+            <span className="text-sky-700">
               completion {d.completion_delta > 0 ? "+" : ""}
               {d.completion_delta.toLocaleString()}
             </span>

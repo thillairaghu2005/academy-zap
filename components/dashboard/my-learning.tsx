@@ -85,7 +85,7 @@ function MyLearningRow({ item }: { item: MyLearningItem }) {
               <span
                 className={cn(
                   "shrink-0 text-xs font-medium tabular-nums",
-                  completed ? "text-success" : "text-muted-foreground",
+                  completed ? "text-success-strong" : "text-muted-foreground",
                 )}
               >
                 {progress}%

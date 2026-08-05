@@ -117,8 +117,8 @@ function AttemptSummary({
         className={cn(
           "grid size-16 place-items-center rounded-2xl border",
           passed
-            ? "border-emerald-500/40 bg-emerald-500/10 text-emerald-600"
-            : "border-amber-500/40 bg-amber-500/10 text-amber-600",
+            ? "border-emerald-500/40 bg-emerald-500/10 text-emerald-700"
+            : "border-amber-500/40 bg-amber-500/10 text-amber-700",
         )}
       >
         {passed ? <CheckCircle2 className="size-8" /> : <RotateCcw className="size-8" />}
@@ -145,7 +145,7 @@ function AttemptSummary({
 
       {event.integrity_flags.length > 0 ? (
         <p className="flex items-center gap-1.5 text-xs text-muted-foreground">
-          <ShieldAlert className="size-3.5 text-amber-600" />
+          <ShieldAlert className="size-3.5 text-amber-700" />
           {event.integrity_flags.length} anti-cheat{" "}
           {event.integrity_flags.length === 1 ? "event" : "events"} captured this
           attempt (reviewed by the Integrity Gate in prod).
@@ -412,7 +412,7 @@ export function AssessmentAttemptClient({
           animate={{ opacity: 1, y: 0 }}
           className="mx-auto flex max-w-md flex-col items-center gap-4 py-12 text-center"
         >
-          <div className="grid size-14 place-items-center rounded-2xl border border-amber-500/40 bg-amber-500/10 text-amber-600">
+          <div className="grid size-14 place-items-center rounded-2xl border border-amber-500/40 bg-amber-500/10 text-amber-700">
             <TimerReset className="size-7" />
           </div>
           <div>
@@ -497,7 +497,7 @@ export function AssessmentAttemptClient({
             className={cn(
               "flex items-center gap-1.5 rounded-full border px-3 py-1 font-mono text-sm font-semibold tabular-nums",
               low
-                ? "border-amber-500/40 bg-amber-500/10 text-amber-600"
+                ? "border-amber-500/40 bg-amber-500/10 text-amber-700"
                 : "border-border bg-muted/50",
             )}
             title="Time remaining"
@@ -531,11 +531,11 @@ export function AssessmentAttemptClient({
                 className={cn(
                   "rounded-full border px-2 py-0.5 font-mono text-[10px]",
                   question.difficulty === "easy" &&
-                    "border-emerald-500/40 bg-emerald-500/10 text-emerald-600",
+                    "border-emerald-500/40 bg-emerald-500/10 text-emerald-700",
                   question.difficulty === "medium" &&
-                    "border-amber-500/40 bg-amber-500/10 text-amber-600",
+                    "border-amber-500/40 bg-amber-500/10 text-amber-700",
                   question.difficulty === "hard" &&
-                    "border-rose-500/40 bg-rose-500/10 text-rose-600",
+                    "border-rose-500/40 bg-rose-500/10 text-rose-700",
                 )}
               >
                 {question.difficulty}
@@ -643,17 +643,17 @@ export function AssessmentAttemptClient({
                   )}
                 >
                   {lastResult.correct ? (
-                    <CheckCircle2 className="mt-0.5 size-5 shrink-0 text-emerald-600" />
+                    <CheckCircle2 className="mt-0.5 size-5 shrink-0 text-emerald-700" />
                   ) : (
-                    <XCircle className="mt-0.5 size-5 shrink-0 text-rose-600" />
+                    <XCircle className="mt-0.5 size-5 shrink-0 text-rose-700" />
                   )}
                   <div className="flex min-w-0 flex-1 flex-col gap-1">
                     <p
                       className={cn(
                         "text-sm font-semibold",
                         lastResult.correct
-                          ? "text-emerald-600"
-                          : "text-rose-600",
+                          ? "text-emerald-700"
+                          : "text-rose-700",
                       )}
                     >
                       {lastResult.correct
@@ -725,7 +725,7 @@ export function AssessmentAttemptClient({
                     className={cn(
                       "size-6 rounded-md border font-mono text-[10px] transition-colors",
                       isAnswered
-                        ? "border-emerald-500/40 bg-emerald-500/10 text-emerald-600"
+                        ? "border-emerald-500/40 bg-emerald-500/10 text-emerald-700"
                         : "border-border bg-card text-muted-foreground hover:border-primary/40",
                       isCurrent && "ring-2 ring-primary/30",
                     )}

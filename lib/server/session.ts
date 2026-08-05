@@ -8,7 +8,11 @@
  * exact contract the future Platform Core auth replaces (build.md §4).
  *
  * Security note (flagged): the signing secret falls back to a mock constant
- * when SESSION_SECRET is not set — a real deployment MUST set SESSION_SECRET.
+ * when SESSION_SECRET is not set — except in production, where the first
+ * sign/verify THROWS (fail-closed, audit A4) rather than signing with a
+ * publicly-known constant. Note the failure mode: verifySessionToken calls
+ * sign() inside proxy.ts, which has no try/catch, so a misconfigured
+ * production box 500s every protected request until SESSION_SECRET is set.
  * Real Platform Core auth will own tokens entirely; this is the swappable
  * stand-in.
  *

@@ -61,15 +61,15 @@ const DIFFICULTY_STYLES: Record<
 > = {
   beginner: {
     label: "Beginner",
-    className: "border-emerald-500/40 bg-emerald-500/10 text-emerald-600",
+    className: "border-emerald-500/40 bg-emerald-500/10 text-emerald-700",
   },
   intermediate: {
     label: "Intermediate",
-    className: "border-amber-500/40 bg-amber-500/10 text-amber-600",
+    className: "border-amber-500/40 bg-amber-500/10 text-amber-700",
   },
   advanced: {
     label: "Advanced",
-    className: "border-rose-500/40 bg-rose-500/10 text-rose-600",
+    className: "border-rose-500/40 bg-rose-500/10 text-rose-700",
   },
 };
 
@@ -145,7 +145,7 @@ function LabCard({
 
             <div className="flex items-center justify-between border-t border-border pt-2.5">
               <span className="flex items-center gap-1 text-xs text-muted-foreground">
-                <ShieldCheck className="size-3.5 text-emerald-600" />
+                <ShieldCheck className="size-3.5 text-emerald-700" />
                 Isolated sandbox
               </span>
               <span className="text-xs text-muted-foreground">{lab.category}</span>

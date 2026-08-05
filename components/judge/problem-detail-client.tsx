@@ -126,11 +126,11 @@ function StatementPanel({ problem }: { problem: Problem }) {
             className={cn(
               "rounded-full border px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide",
               problem.difficulty === "easy" &&
-                "border-emerald-500/40 bg-emerald-500/10 text-emerald-600",
+                "border-emerald-500/40 bg-emerald-500/10 text-emerald-700",
               problem.difficulty === "medium" &&
-                "border-amber-500/40 bg-amber-500/10 text-amber-600",
+                "border-amber-500/40 bg-amber-500/10 text-amber-700",
               problem.difficulty === "hard" &&
-                "border-rose-500/40 bg-rose-500/10 text-rose-600",
+                "border-rose-500/40 bg-rose-500/10 text-rose-700",
             )}
           >
             {problem.difficulty}

@@ -65,7 +65,7 @@ function LessonRow({
         className={cn(
           "grid size-6 shrink-0 place-items-center rounded-full border text-[11px] font-medium",
           completed
-            ? "border-transparent bg-success/15 text-success"
+            ? "border-transparent bg-success/15 text-success-strong"
             : "border-border text-muted-foreground",
         )}
       >
@@ -168,11 +168,11 @@ export function CourseDetailClient({
           reviewer preview); the CTA is replaced with a read-only note. */}
       {isPreview ? (
         <div className="mt-4 flex items-start gap-3 rounded-lg border border-warning/30 bg-warning/10 px-4 py-3">
-          <span className="mt-0.5 grid size-5 shrink-0 place-items-center rounded-full bg-warning/20 text-warning">
+          <span className="mt-0.5 grid size-5 shrink-0 place-items-center rounded-full bg-warning/20 text-warning-strong">
             <Clock className="size-3" />
           </span>
           <div className="text-sm">
-            <p className="font-medium text-warning">
+            <p className="font-medium text-warning-strong">
               {isDraft
                 ? "Draft course — author preview"
                 : previewMode
@@ -209,7 +209,7 @@ export function CourseDetailClient({
 
           <div className="flex flex-wrap items-center gap-x-5 gap-y-2 text-sm text-muted-foreground">
             <span className="flex items-center gap-1.5">
-              <Star className="size-4 fill-amber-400 text-amber-600" />
+              <Star className="size-4 fill-amber-400 text-amber-700" />
               <span className="font-medium text-foreground">
                 {course.rating > 0 ? course.rating.toFixed(1) : "New"}
               </span>
@@ -315,7 +315,7 @@ export function CourseDetailClient({
               ) : enrollment ? (
                 <>
                   {enrollment.status === "completed" ? (
-                    <div className="flex items-center gap-2 rounded-md bg-success/10 px-3 py-2 text-sm font-medium text-success">
+                    <div className="flex items-center gap-2 rounded-md bg-success/10 px-3 py-2 text-sm font-medium text-success-strong">
                       <CheckCircle2 className="size-4" />
                       Course completed — great climb!
                     </div>
@@ -344,7 +344,7 @@ export function CourseDetailClient({
                   <BuyNowButton productId={course.id} className="w-full" />
                   <AddToCartButton productId={course.id} className="w-full" />
                   <p className="flex items-start gap-1.5 text-xs leading-relaxed text-muted-foreground">
-                    <Lock className="mt-0.5 size-3.5 shrink-0 text-warning" />
+                    <Lock className="mt-0.5 size-3.5 shrink-0 text-warning-strong" />
                     You don&apos;t have access yet. Payment happens on the
                     provider&apos;s hosted page — no card data touches Zapsters.
                   </p>
@@ -386,15 +386,15 @@ export function CourseDetailClient({
 
               <div className="flex flex-col gap-1.5 text-xs text-muted-foreground">
                 <span className="flex items-center gap-1.5">
-                  <Check className="size-3.5 text-success" />
+                  <Check className="size-3.5 text-success-strong" />
                   Lifetime access
                 </span>
                 <span className="flex items-center gap-1.5">
-                  <Check className="size-3.5 text-success" />
+                  <Check className="size-3.5 text-success-strong" />
                   Certificate of completion
                 </span>
                 <span className="flex items-center gap-1.5">
-                  <Check className="size-3.5 text-success" />
+                  <Check className="size-3.5 text-success-strong" />
                   On-demand video + articles
                 </span>
               </div>
@@ -475,7 +475,7 @@ export function CourseDetailClient({
                   className={cn(
                     "size-4",
                     i < Math.round(course.rating)
-                      ? "fill-amber-400 text-amber-600"
+                      ? "fill-amber-400 text-amber-700"
                       : "text-muted-foreground/30",
                   )}
                 />

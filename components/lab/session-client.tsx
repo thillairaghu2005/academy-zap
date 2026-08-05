@@ -110,7 +110,7 @@ function ObjectivesPanel({
           variant={allDone ? "secondary" : "outline"}
           className={cn(
             "text-[10px]",
-            allDone && "border-emerald-500/40 bg-emerald-500/10 text-emerald-600",
+            allDone && "border-emerald-500/40 bg-emerald-500/10 text-emerald-700",
           )}
         >
           {session.objectives_completed.length}/{lab.objectives.length}
@@ -131,7 +131,7 @@ function ObjectivesPanel({
               )}
             >
               {completed ? (
-                <CheckCircle2 className="mt-0.5 size-4 shrink-0 text-emerald-600" />
+                <CheckCircle2 className="mt-0.5 size-4 shrink-0 text-emerald-700" />
               ) : (
                 <Circle className="mt-0.5 size-4 shrink-0 text-muted-foreground/50" />
               )}
@@ -139,7 +139,7 @@ function ObjectivesPanel({
                 <p
                   className={cn(
                     "text-sm font-medium",
-                    completed && "text-emerald-600",
+                    completed && "text-emerald-700",
                   )}
                 >
                   {objective.title}
@@ -199,9 +199,9 @@ function SessionEnded({
         className={cn(
           "grid size-16 place-items-center rounded-2xl border",
           isCompleted
-            ? "border-emerald-500/40 bg-emerald-500/10 text-emerald-600"
+            ? "border-emerald-500/40 bg-emerald-500/10 text-emerald-700"
             : kind === "timed_out"
-              ? "border-amber-500/40 bg-amber-500/10 text-amber-600"
+              ? "border-amber-500/40 bg-amber-500/10 text-amber-700"
               : "border-muted-foreground/30 bg-secondary text-muted-foreground",
         )}
       >
@@ -477,7 +477,7 @@ export function LabSessionClient({
               className={cn(
                 "flex items-center gap-1.5 rounded-full border px-3 py-1 font-mono text-sm font-semibold tabular-nums",
                 low
-                  ? "border-amber-500/40 bg-amber-500/10 text-amber-600"
+                  ? "border-amber-500/40 bg-amber-500/10 text-amber-700"
                   : "border-border bg-muted/50",
               )}
               title="Hard timeout countdown"
@@ -521,14 +521,14 @@ export function LabSessionClient({
               <div className="flex items-center justify-between border-b border-white/5 bg-[#0d131b] px-3.5 py-2">
                 <span className="flex items-center gap-2 text-xs font-medium text-muted-foreground">
                   {lab?.requires_gui ? (
-                    <Monitor className="size-3.5 text-emerald-600" />
+                    <Monitor className="size-3.5 text-emerald-700" />
                   ) : (
-                    <Terminal className="size-3.5 text-emerald-600" />
+                    <Terminal className="size-3.5 text-emerald-700" />
                   )}
                   {lab?.requires_gui ? "Guacamole GUI viewer" : "shell — ttyd over WebSocket"}
                 </span>
                 <div className="flex items-center gap-2">
-                  <span className="flex items-center gap-1 text-[10px] text-emerald-600/80">
+                  <span className="flex items-center gap-1 text-[10px] text-emerald-700/80">
                     <Lock className="size-3" />
                     encrypted
                   </span>
@@ -575,7 +575,7 @@ export function LabSessionClient({
             ) : null}
 
             {hintMutation.data ? (
-              <div className="animate-fade-up rounded-lg border border-amber-500/25 bg-amber-500/5 px-3.5 py-2.5 text-xs text-amber-600">
+              <div className="animate-fade-up rounded-lg border border-amber-500/25 bg-amber-500/5 px-3.5 py-2.5 text-xs text-amber-700">
                 <span className="font-semibold">Hint:</span> {hintMutation.data}
               </div>
             ) : null}
@@ -600,7 +600,7 @@ export function LabSessionClient({
                     className={cn(
                       "animate-fade-up rounded-lg border px-3.5 py-2.5 text-xs",
                       result.completed
-                        ? "border-emerald-500/25 bg-emerald-500/5 text-emerald-600"
+                        ? "border-emerald-500/25 bg-emerald-500/5 text-emerald-700"
                         : "border-border bg-muted/30 text-muted-foreground",
                     )}
                   >

@@ -14,19 +14,19 @@ const badgeVariants = cva(
           "border-transparent bg-destructive text-destructive-foreground",
         outline: "border-border text-foreground",
         // Small text on white cards needs the darker -strong shade for WCAG AA.
-        success: "border-transparent bg-success/15 text-success-strong",
-        warning: "border-transparent bg-warning/15 text-warning-strong",
-        info: "border-transparent bg-info/15 text-info-strong",
+        success: "border-transparent bg-success/15 text-success-strong-strong",
+        warning: "border-transparent bg-warning/15 text-warning-strong-strong",
+        info: "border-transparent bg-info/15 text-info-strong-strong",
         // Verdict literals (F2) — styled distinctly, used verbatim
-        accepted: "border-transparent bg-verdict-accepted/15 text-success-strong",
+        accepted: "border-transparent bg-verdict-accepted/15 text-success-strong-strong",
         "wrong-answer":
-          "border-transparent bg-verdict-wrong-answer/15 text-danger-strong",
+          "border-transparent bg-verdict-wrong-answer/15 text-danger-strong-strong",
         "time-limit-exceeded":
-          "border-transparent bg-verdict-time-limit-exceeded/15 text-warning-strong",
+          "border-transparent bg-verdict-time-limit-exceeded/15 text-warning-strong-strong",
         "runtime-error":
-          "border-transparent bg-verdict-runtime-error/15 text-warning-strong",
+          "border-transparent bg-verdict-runtime-error/15 text-warning-strong-strong",
         "compile-error":
-          "border-transparent bg-verdict-compile-error/15 text-warning-strong",
+          "border-transparent bg-verdict-compile-error/15 text-warning-strong-strong",
       },
     },
     defaultVariants: {

@@ -97,7 +97,7 @@ export function SeasonPassCard() {
                     reached
                       ? "border-violet-500 bg-violet-500 text-white"
                       : m.premium
-                        ? "border-amber-500/60 text-amber-600"
+                        ? "border-amber-500/60 text-amber-700"
                         : "border-secondary text-muted-foreground",
                   )}
                 >

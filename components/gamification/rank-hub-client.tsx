@@ -53,10 +53,10 @@ const DEMO_USERS = [
 ] as const;
 
 const LEAGUE_TIER_STYLE: Record<string, string> = {
-  bronze: "border-orange-700/40 bg-orange-700/10 text-orange-600",
+  bronze: "border-orange-700/40 bg-orange-700/10 text-orange-700",
   silver: "border-slate-400/40 bg-slate-400/10 text-slate-500",
-  gold: "border-amber-500/40 bg-amber-500/10 text-amber-600",
-  platinum: "border-cyan-500/40 bg-cyan-500/10 text-cyan-600",
+  gold: "border-amber-500/40 bg-amber-500/10 text-amber-700",
+  platinum: "border-cyan-500/40 bg-cyan-500/10 text-cyan-700",
   obsidian: "border-violet-600/40 bg-violet-600/10 text-violet-600",
 };
 
@@ -154,9 +154,9 @@ export function RankHubClient() {
               animate={{ opacity: 1, y: 0 }}
               className="mb-6 flex items-start gap-3 rounded-xl border border-amber-500/40 bg-amber-500/10 p-4"
             >
-              <ShieldAlert className="mt-0.5 size-5 shrink-0 text-amber-600" />
+              <ShieldAlert className="mt-0.5 size-5 shrink-0 text-amber-700" />
               <div>
-                <p className="font-display text-sm font-semibold text-amber-600">
+                <p className="font-display text-sm font-semibold text-amber-700">
                   Progress frozen pending review
                 </p>
                 <p className="mt-0.5 text-xs leading-relaxed text-muted-foreground">
@@ -334,7 +334,7 @@ function DualXpTracks({
   return (
     <div className="relative mt-8 space-y-4">
       <div className="flex items-center justify-between text-xs">
-        <span className="flex items-center gap-1.5 font-medium text-sky-600">
+        <span className="flex items-center gap-1.5 font-medium text-sky-700">
           <BookOpen className="size-3.5" /> Completion XP
         </span>
         <span className="font-mono text-muted-foreground">
@@ -407,7 +407,7 @@ function StreakWidget({
     <div className="rounded-xl border border-border bg-card p-4">
       <div className="flex items-center justify-between">
         <p className="flex items-center gap-2 font-display text-sm font-semibold">
-          <Flame className="size-4 text-orange-600" />
+          <Flame className="size-4 text-orange-700" />
           Streak
         </p>
         {!isLoading && !isError && streak ? (
@@ -452,7 +452,7 @@ function StreakWidget({
             </span>
           </div>
           <div className="mt-3 flex flex-wrap gap-2 text-[11px]">
-            <span className="rounded-md bg-orange-500/10 px-2 py-1 font-medium text-orange-600">
+            <span className="rounded-md bg-orange-500/10 px-2 py-1 font-medium text-orange-700">
               ×{streak.momentum_multiplier.toFixed(2)} momentum
             </span>
             <span className="rounded-md bg-secondary px-2 py-1 font-medium text-muted-foreground">
@@ -520,12 +520,12 @@ function LeagueWidget({
           </div>
           <div className="mt-3 flex flex-wrap gap-2 text-[11px]">
             {league.promotion_zone ? (
-              <span className="flex items-center gap-1 rounded-md bg-emerald-500/10 px-2 py-1 font-medium text-emerald-600">
+              <span className="flex items-center gap-1 rounded-md bg-emerald-500/10 px-2 py-1 font-medium text-emerald-700">
                 <TrendingUp className="size-3" /> Promotion zone
               </span>
             ) : null}
             {league.relegation_zone ? (
-              <span className="rounded-md bg-rose-500/10 px-2 py-1 font-medium text-rose-600">
+              <span className="rounded-md bg-rose-500/10 px-2 py-1 font-medium text-rose-700">
                 Relegation zone
               </span>
             ) : null}
@@ -559,7 +559,7 @@ function GuildWidget({ guild }: { guild: { guild_id: string; member_count: numbe
             {guild.member_count} members ·{" "}
             {guild.combined_xp_this_week.toLocaleString()} XP this week
           </p>
-          <div className="mt-2 inline-flex items-center gap-1.5 rounded-md bg-purple-500/10 px-2 py-1 text-[11px] font-medium text-purple-600">
+          <div className="mt-2 inline-flex items-center gap-1.5 rounded-md bg-purple-500/10 px-2 py-1 text-[11px] font-medium text-purple-700">
             <Trophy className="size-3" /> Global rank #{guild.guild_rank_global}
           </div>
         </>

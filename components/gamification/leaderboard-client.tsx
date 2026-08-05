@@ -168,7 +168,7 @@ export function LeaderboardClient() {
                         </Badge>
                       ) : null}
                       {e.rank === 1 ? (
-                        <Crown className="size-3.5 text-amber-600" />
+                        <Crown className="size-3.5 text-amber-700" />
                       ) : null}
                     </p>
                     <p className="text-[11px] text-muted-foreground">

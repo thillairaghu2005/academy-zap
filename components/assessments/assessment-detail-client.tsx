@@ -132,7 +132,7 @@ export function AssessmentDetailClient({
         <div className="flex flex-col gap-6">
           <div>
             <div className="flex flex-wrap items-center gap-2">
-              <span className="text-xs font-medium uppercase tracking-wide text-amber-600">
+              <span className="text-xs font-medium uppercase tracking-wide text-amber-700">
                 {assessment.category}
               </span>
               <Badge variant="outline" className="font-mono text-[10px]">
@@ -140,7 +140,7 @@ export function AssessmentDetailClient({
               </Badge>
               <Badge
                 variant="secondary"
-                className="gap-1 text-[10px] text-emerald-600"
+                className="gap-1 text-[10px] text-emerald-700"
               >
                 <Flame className="size-3" />
                 combo meter active
@@ -209,11 +209,11 @@ export function AssessmentDetailClient({
                           className={cn(
                             "rounded-full border px-1.5 py-px font-mono text-[10px]",
                             q.difficulty === "easy" &&
-                              "border-emerald-500/40 bg-emerald-500/10 text-emerald-600",
+                              "border-emerald-500/40 bg-emerald-500/10 text-emerald-700",
                             q.difficulty === "medium" &&
-                              "border-amber-500/40 bg-amber-500/10 text-amber-600",
+                              "border-amber-500/40 bg-amber-500/10 text-amber-700",
                             q.difficulty === "hard" &&
-                              "border-rose-500/40 bg-rose-500/10 text-rose-600",
+                              "border-rose-500/40 bg-rose-500/10 text-rose-700",
                           )}
                         >
                           {q.difficulty}
@@ -235,7 +235,7 @@ export function AssessmentDetailClient({
           <Card className="flex flex-col gap-4 p-5">
             <div className="flex items-center justify-between">
               <span className="text-sm font-semibold">Start the assessment</span>
-              <Gauge className="size-4 text-amber-600" />
+              <Gauge className="size-4 text-amber-700" />
             </div>
             <p className="text-xs leading-relaxed text-muted-foreground">
               The timer starts when you begin. Answer flow is one question at a
@@ -243,15 +243,15 @@ export function AssessmentDetailClient({
             </p>
             <ul className="flex flex-col gap-1.5 text-xs text-muted-foreground">
               <li className="flex items-center gap-1.5">
-                <ListChecks className="size-3.5 text-amber-600" />
+                <ListChecks className="size-3.5 text-amber-700" />
                 Deterministic grading — never AI
               </li>
               <li className="flex items-center gap-1.5">
-                <Flame className="size-3.5 text-amber-600" />
+                <Flame className="size-3.5 text-amber-700" />
                 Combo preview ×3.0 max
               </li>
               <li className="flex items-center gap-1.5">
-                <ShieldAlert className="size-3.5 text-amber-600" />
+                <ShieldAlert className="size-3.5 text-amber-700" />
                 Anti-cheat telemetry is captured
               </li>
             </ul>
@@ -280,7 +280,7 @@ export function AssessmentDetailClient({
                 animate={{ opacity: 1 }}
                 className="flex items-center gap-2 rounded-lg border border-border bg-muted/40 p-3 text-xs"
               >
-                <LoaderCircle className="size-3.5 animate-spin text-amber-600" />
+                <LoaderCircle className="size-3.5 animate-spin text-amber-700" />
                 <span>Reserving attempt slot…</span>
               </motion.div>
             ) : null}

@@ -422,7 +422,7 @@ export function PlayerClient({ course }: { course: Course }) {
                             className={cn(
                               "grid size-5 shrink-0 place-items-center rounded-full border text-[10px] font-medium",
                               done
-                                ? "border-transparent bg-success/15 text-success"
+                                ? "border-transparent bg-success/15 text-success-strong"
                                 : active
                                   ? "border-primary/40 text-primary"
                                   : "border-border text-muted-foreground",

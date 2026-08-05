@@ -1,5 +1,12 @@
 # Zapsters Frontend — Codebase Audit
 
+> **Snapshot note:** this audit reflects the repo at commit `92275fd` (working
+> tree with 45 modified + 16 untracked files). Since then, audit Track A
+> (working tree committed in logical units, Vitest + CI, `.gitattributes`,
+> five hardening fixes) and Track B (Coursera-inspired light retheme) have
+> been applied on `main` (`0e3e5bd` → `7b1897b` + follow-ups). Findings below
+> are the point-in-time record; see git history for resolution status.
+
 **Audited:** 2026-08-05 · **Auditor:** Buffy (automated audit — no code was modified) · **Scope:** full repository, working tree state
 
 ---

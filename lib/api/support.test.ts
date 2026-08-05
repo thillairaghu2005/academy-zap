@@ -1,5 +1,7 @@
-import { describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it } from "vitest";
 
+import { mockTickets } from "@/lib/mocks/support";
+import type { SupportTicket } from "@/lib/contracts/support";
 import { MOCK_ADMIN, MOCK_LEARNER, MOCK_REVIEWERS } from "@/lib/mocks/users";
 import {
   assignTicket,
@@ -28,6 +30,19 @@ const TICKET: CreateTicketInput = {
 
 const OTHER_TICKET_ID = "tkt-1004"; // owned by Ravi Kapoor, not MOCK_LEARNER
 const INTERNAL_NOTE_TICKET_ID = "tkt-1005"; // has an agent internal note
+
+/**
+ * The support store is module-level mutable state — snapshot it before each
+ * test and restore afterwards so tests stay hermetic and order-independent.
+ */
+let storeSnapshot: Map<string, SupportTicket>;
+beforeEach(() => {
+  storeSnapshot = structuredClone(mockTickets);
+});
+afterEach(() => {
+  mockTickets.clear();
+  for (const [id, ticket] of storeSnapshot) mockTickets.set(id, ticket);
+});
 
 describe("support tickets — create + read", () => {
   it("creates an open ticket that appears in the owner's list", async () => {

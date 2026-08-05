@@ -29,19 +29,19 @@ const STATUS_META = {
   verified: {
     label: "Verified",
     icon: BadgeCheck,
-    text: "text-emerald-600",
+    text: "text-emerald-700",
     ring: "border-emerald-500/40 bg-emerald-500/10",
   },
   flagged: {
     label: "Pending review",
     icon: ShieldQuestion,
-    text: "text-amber-600",
+    text: "text-amber-700",
     ring: "border-amber-500/40 bg-amber-500/10",
   },
   revoked: {
     label: "Revoked",
     icon: BadgeX,
-    text: "text-rose-600",
+    text: "text-rose-700",
     ring: "border-rose-500/40 bg-rose-500/10",
   },
 } as const;
@@ -152,7 +152,7 @@ export function VerifyClient({ credentialId }: { credentialId: string }) {
 
               <div className="mt-6 flex items-center justify-between">
                 <p className="flex items-center gap-1.5 text-xs text-muted-foreground">
-                  <ShieldCheck className="size-4 text-emerald-600" />
+                  <ShieldCheck className="size-4 text-emerald-700" />
                   Re-verified against current ledger truth
                 </p>
                 <Button variant="outline" size="sm" asChild>

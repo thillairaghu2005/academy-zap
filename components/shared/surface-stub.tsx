@@ -72,7 +72,7 @@ export function SurfaceStub({ surface }: { surface: SurfaceMeta }) {
           <ul className="mt-4 flex flex-col gap-2.5">
             {surface.planned.map((item) => (
               <li key={item} className="flex items-start gap-2.5 text-sm">
-                <Check className="mt-0.5 size-4 shrink-0 text-success" />
+                <Check className="mt-0.5 size-4 shrink-0 text-success-strong" />
                 <span className="text-foreground/90">{item}</span>
               </li>
             ))}

@@ -144,7 +144,7 @@ function HostedEmbed({
             >
               <span className="flex min-w-0 items-center gap-2">
                 {item.kind === "lab" ? (
-                  <FlaskConical className="size-3.5 shrink-0 text-emerald-600" />
+                  <FlaskConical className="size-3.5 shrink-0 text-emerald-700" />
                 ) : (
                   <BookOpen className="size-3.5 shrink-0 text-primary" />
                 )}
@@ -193,7 +193,7 @@ function HostedEmbed({
         </Button>
 
         <p className="flex items-center justify-center gap-1.5 text-[11px] text-muted-foreground">
-          <ShieldCheck className="size-3.5 text-emerald-600" />
+          <ShieldCheck className="size-3.5 text-emerald-700" />
           PCI-DSS scope stays with {PROVIDER_LABEL} · 3-D Secure applies in
           test mode
         </p>
@@ -232,7 +232,7 @@ function PaidPanel({
       animate={{ opacity: 1, y: 0 }}
       className="flex flex-col items-center rounded-xl border border-success/25 bg-success/5 px-6 py-10 text-center"
     >
-      <div className="mb-4 grid size-14 place-items-center rounded-full border border-success/30 bg-success/10 text-success">
+      <div className="mb-4 grid size-14 place-items-center rounded-full border border-success/30 bg-success/10 text-success-strong">
         <CheckCircle2 className="size-7" />
       </div>
       <h2 className="font-display text-xl font-bold tracking-tight">
@@ -277,7 +277,7 @@ function PaidPanel({
           <ul className="mt-2 flex flex-col gap-1.5 text-sm">
             {granted.map((g) => (
               <li key={g.product_id} className="flex items-center gap-2">
-                <BadgeCheck className="size-4 shrink-0 text-success" />
+                <BadgeCheck className="size-4 shrink-0 text-success-strong" />
                 <span className="truncate">
                   {session.cart.items.find((i) => i.product_id === g.product_id)
                     ?.title ?? g.product_id}
@@ -310,7 +310,7 @@ function PaidPanel({
       </div>
 
       {replayResult ? (
-        <p className="mt-3 flex items-center gap-1.5 rounded-md border border-success/30 bg-success/10 px-3 py-1.5 text-xs text-success">
+        <p className="mt-3 flex items-center gap-1.5 rounded-md border border-success/30 bg-success/10 px-3 py-1.5 text-xs text-success-strong">
           <BadgeCheck className="size-3.5" />
           Replayed — same idempotency_key, no double charge, no duplicate
           fulfillment.
@@ -355,7 +355,7 @@ function ExpiredPanel() {
       animate={{ opacity: 1, y: 0 }}
       className="flex flex-col items-center rounded-xl border border-warning/25 bg-warning/5 px-6 py-10 text-center"
     >
-      <div className="mb-4 grid size-14 place-items-center rounded-full border border-warning/30 bg-warning/10 text-warning">
+      <div className="mb-4 grid size-14 place-items-center rounded-full border border-warning/30 bg-warning/10 text-warning-strong">
         <Hourglass className="size-7" />
       </div>
       <h2 className="font-display text-xl font-bold tracking-tight">

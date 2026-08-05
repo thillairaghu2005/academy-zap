@@ -110,7 +110,7 @@ function CourseCard({
 
           <div className="flex items-center gap-3 text-xs text-muted-foreground">
             <span className="flex items-center gap-1">
-              <Star className="size-3.5 fill-amber-400 text-amber-600" />
+              <Star className="size-3.5 fill-amber-400 text-amber-700" />
               {course.rating.toFixed(1)}
               <span className="text-muted-foreground/60">
                 ({course.review_count})

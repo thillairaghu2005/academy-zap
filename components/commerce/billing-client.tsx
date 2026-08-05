@@ -39,17 +39,17 @@ const SEAT_STATUS_STYLES: Record<
 > = {
   active: {
     label: "Active",
-    className: "border-emerald-500/40 bg-emerald-500/10 text-emerald-600",
+    className: "border-emerald-500/40 bg-emerald-500/10 text-emerald-700",
     dot: "bg-emerald-500",
   },
   invited: {
     label: "Invited",
-    className: "border-amber-500/40 bg-amber-500/10 text-amber-600",
+    className: "border-amber-500/40 bg-amber-500/10 text-amber-700",
     dot: "bg-amber-500",
   },
   suspended: {
     label: "Suspended",
-    className: "border-rose-500/40 bg-rose-500/10 text-rose-600",
+    className: "border-rose-500/40 bg-rose-500/10 text-rose-700",
     dot: "bg-rose-500",
   },
 };
@@ -158,8 +158,8 @@ export function BillingClient() {
           className={cn(
             "gap-1.5",
             subscription.active
-              ? "border-emerald-500/40 bg-emerald-500/10 text-emerald-600"
-              : "border-rose-500/40 bg-rose-500/10 text-rose-600",
+              ? "border-emerald-500/40 bg-emerald-500/10 text-emerald-700"
+              : "border-rose-500/40 bg-rose-500/10 text-rose-700",
           )}
         >
           <span

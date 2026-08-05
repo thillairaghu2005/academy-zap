@@ -62,7 +62,7 @@ export function CourseReviewDiffCard({ courseId }: { courseId: string }) {
     <Card className="border-amber-500/25">
       <CardHeader className="p-4 pb-2">
         <CardTitle className="flex items-center gap-2 font-display text-sm">
-          <FileDiff className="size-4 text-amber-600" />
+          <FileDiff className="size-4 text-amber-700" />
           Changes since last published version
         </CardTitle>
       </CardHeader>
@@ -104,7 +104,7 @@ export function CourseReviewDiffCard({ courseId }: { courseId: string }) {
                     <td className="px-3 py-2.5">
                       <Badge
                         variant="outline"
-                        className="border-emerald-500/40 bg-emerald-500/10 text-emerald-600"
+                        className="border-emerald-500/40 bg-emerald-500/10 text-emerald-700"
                       >
                         {formatValue(item.field, item.after)}
                       </Badge>

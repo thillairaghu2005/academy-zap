@@ -11,8 +11,8 @@ import type { ProblemDifficulty } from "@/lib/contracts/judge";
 export function CourseStatusBadge({ status }: { status: ContentStatus }) {
   const styles: Record<ContentStatus, string> = {
     draft: "border-slate-400/40 bg-slate-500/10 text-slate-500",
-    in_review: "border-amber-500/40 bg-amber-500/10 text-amber-600",
-    published: "border-emerald-500/40 bg-emerald-500/10 text-emerald-600",
+    in_review: "border-amber-500/40 bg-amber-500/10 text-amber-700",
+    published: "border-emerald-500/40 bg-emerald-500/10 text-emerald-700",
   };
   const labels: Record<ContentStatus, string> = {
     draft: "Draft",
@@ -33,8 +33,8 @@ export function CourseStatusBadge({ status }: { status: ContentStatus }) {
 
 export function OrderStatusBadge({ status }: { status: Order["status"] }) {
   const styles: Record<Order["status"], string> = {
-    paid: "border-emerald-500/40 bg-emerald-500/10 text-emerald-600",
-    failed: "border-rose-500/40 bg-rose-500/10 text-rose-600",
+    paid: "border-emerald-500/40 bg-emerald-500/10 text-emerald-700",
+    failed: "border-rose-500/40 bg-rose-500/10 text-rose-700",
     refunded: "border-slate-400/40 bg-slate-500/10 text-slate-500",
   };
   return (
@@ -70,12 +70,12 @@ export function DifficultyBadge({
   difficulty: LabDifficulty | ProblemDifficulty;
 }) {
   const styles: Record<string, string> = {
-    easy: "border-emerald-500/40 bg-emerald-500/10 text-emerald-600",
-    beginner: "border-emerald-500/40 bg-emerald-500/10 text-emerald-600",
-    medium: "border-amber-500/40 bg-amber-500/10 text-amber-600",
-    intermediate: "border-amber-500/40 bg-amber-500/10 text-amber-600",
-    hard: "border-rose-500/40 bg-rose-500/10 text-rose-600",
-    advanced: "border-rose-500/40 bg-rose-500/10 text-rose-600",
+    easy: "border-emerald-500/40 bg-emerald-500/10 text-emerald-700",
+    beginner: "border-emerald-500/40 bg-emerald-500/10 text-emerald-700",
+    medium: "border-amber-500/40 bg-amber-500/10 text-amber-700",
+    intermediate: "border-amber-500/40 bg-amber-500/10 text-amber-700",
+    hard: "border-rose-500/40 bg-rose-500/10 text-rose-700",
+    advanced: "border-rose-500/40 bg-rose-500/10 text-rose-700",
   };
   return (
     <span

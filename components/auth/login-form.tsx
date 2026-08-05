@@ -167,7 +167,7 @@ export function LoginForm({ next }: { next?: string }) {
         {DEMO_MODE && (
           <div className="mt-6 rounded-lg border border-border bg-secondary/50 p-3.5">
             <p className="flex items-start gap-2 text-xs leading-relaxed text-muted-foreground">
-              <Sparkles className="mt-0.5 size-3.5 shrink-0 text-warning" />
+              <Sparkles className="mt-0.5 size-3.5 shrink-0 text-warning-strong" />
               <span>
                 <span className="font-medium text-foreground">Demo account.</span>{" "}
                 Explore every surface as a sample learner — no signup needed.
