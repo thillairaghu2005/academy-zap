@@ -12,23 +12,19 @@ export interface SkillCardProps {
   href: string;
 }
 
-/** Skill link card uses only subjects present in the seeded learning catalog. */
+/** Compact topic row for real course and lab subjects. */
 export function SkillCard({ name, description, icon: Icon, tone, href }: SkillCardProps) {
   return (
     <Link
       href={href}
-      className="group flex min-h-36 items-start gap-4 rounded-2xl border border-border bg-card p-5 outline-none transition-[transform,box-shadow,border-color] duration-200 hover:-translate-y-1 hover:border-primary/30 hover:shadow-lg hover:shadow-primary/10 focus-visible:ring-2 focus-visible:ring-ring motion-reduce:transform-none motion-reduce:transition-none"
+      className="group grid grid-cols-[auto_1fr_auto] items-start gap-4 border-t border-border py-5 outline-none transition-colors duration-200 hover:border-foreground focus-visible:ring-2 focus-visible:ring-ring motion-reduce:transition-none"
     >
-      <span className={cn("grid size-11 shrink-0 place-items-center rounded-xl text-primary-foreground", tone)}>
-        <Icon className="size-5" />
-      </span>
+      <Icon className={cn("mt-0.5 size-5", tone)} />
       <span className="min-w-0">
-        <span className="flex items-center gap-2 font-display font-semibold">
-          {name}
-          <ArrowRight className="size-3.5 text-muted-foreground transition-transform duration-200 group-hover:translate-x-1" />
-        </span>
-        <span className="mt-2 block text-sm leading-relaxed text-muted-foreground">{description}</span>
+        <span className="block font-display font-semibold">{name}</span>
+        <span className="mt-1.5 block text-sm leading-relaxed text-muted-foreground">{description}</span>
       </span>
+      <ArrowRight className="mt-1 size-4 text-muted-foreground transition-transform duration-200 group-hover:translate-x-1" />
     </Link>
   );
 }

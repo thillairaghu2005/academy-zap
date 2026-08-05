@@ -24,6 +24,7 @@ import { MarketingNav } from "@/components/landing/marketing-nav";
 import { PracticeBanner } from "@/components/landing/practice-banner";
 import { SectionTitle } from "@/components/landing/section-title";
 import { SkillCard } from "@/components/landing/skill-card";
+import { SurfaceIndex } from "@/components/landing/surface-index";
 import { VerifiedProgression } from "@/components/landing/verified-progression";
 
 export interface LandingPageProps {
@@ -86,9 +87,8 @@ function LandingSections({ courses }: LandingPageProps) {
     <>
       <section className="mx-auto max-w-7xl px-4 py-16 sm:px-6 sm:py-20 lg:px-8">
         <SectionTitle
-          eyebrow="Find your starting point"
-          title="Build a learning path that feels like yours."
-          description="Choose a discipline, then switch between guided content and hands-on practice whenever you are ready."
+          title="Course catalog / choose your base"
+          description="Start with the subject you want to use in a submission, a lab session, or your next rank climb."
         />
         <div className="mt-8 flex gap-4 overflow-x-auto pb-3 sm:grid sm:grid-cols-2 lg:grid-cols-4">
           {categories.map((category) => {
@@ -110,9 +110,8 @@ function LandingSections({ courses }: LandingPageProps) {
       <section id="featured-courses" className="scroll-mt-24 border-y border-border bg-muted/40">
         <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 sm:py-20 lg:px-8">
           <SectionTitle
-            eyebrow="Featured courses"
-            title="Start with something worth finishing."
-            description="Real courses from the Zapsters catalog, with a next step waiting when the lesson ends."
+            title="Courses that build the base for submissions"
+            description="The catalog is where you learn the syntax, reasoning, and operating context before you open the Judge or a Lab."
           />
           <div className="mt-8">
             <FilterTabs tabs={tabs} value={activeCategory} onChange={setActiveCategory} label="Filter featured courses by category" />
@@ -127,6 +126,7 @@ function LandingSections({ courses }: LandingPageProps) {
                   key={course.id}
                   course={course}
                   visualClass={visualClass}
+                  index={index}
                 />
               );
             })}
@@ -141,9 +141,8 @@ function LandingSections({ courses }: LandingPageProps) {
       <section className="border-y border-border bg-background">
         <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 sm:py-20 lg:px-8">
           <SectionTitle
-            eyebrow="Popular skills"
-            title="Go deeper when you know what you want to sharpen."
-            description="These subjects are grounded in the current course, problem, and lab catalog."
+            title="Topics you can submit, shell into, and climb with"
+            description="Python, detection, web security, cloud controls, and the systems underneath them are all connected to a working surface."
           />
           <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {skillCards.map((skill) => (
@@ -172,6 +171,7 @@ export function LandingPage({ courses }: LandingPageProps) {
       <MarketingNav />
       <main id="main-content">
         <HeroSection />
+        <SurfaceIndex />
         <LandingSections courses={courses} />
       </main>
       <MarketingFooter />

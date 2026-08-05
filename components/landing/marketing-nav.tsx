@@ -18,10 +18,10 @@ import {
 import { cn } from "@/lib/utils";
 
 const links = [
-  { href: "/courses", label: "Learn" },
-  { href: "/judge", label: "Practice" },
+  { href: "/courses", label: "Courses" },
+  { href: "/judge", label: "Judge" },
   { href: "/labs", label: "Labs" },
-  { href: "/rank", label: "Climb" },
+  { href: "/rank", label: "Rank" },
 ] as const;
 
 /** Public navigation keeps the landing page distinct from the learner shell. */
@@ -57,9 +57,9 @@ export function MarketingNav() {
           </SheetTrigger>
           <SheetContent side="left" className="w-full max-w-sm p-0">
             <SheetHeader className="border-b border-border px-6 pb-5 pt-6">
-              <SheetTitle className="font-display text-left">Explore Zapsters</SheetTitle>
+              <SheetTitle className="font-display text-left">Surface index</SheetTitle>
               <SheetDescription className="text-left">
-                Build practical skills and prove your progress.
+                Courses, Judge, Labs, and the Rank Ladder.
               </SheetDescription>
             </SheetHeader>
             <nav className="flex flex-col gap-1 p-4" aria-label="Mobile navigation">

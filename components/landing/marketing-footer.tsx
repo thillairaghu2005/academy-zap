@@ -5,27 +5,27 @@ import { Logo } from "@/components/layout/logo";
 
 const columns = [
   {
-    title: "Learn",
+    title: "Do the work",
     links: [
       ["Course catalog", "/courses"],
-      ["Virtual labs", "/labs"],
-      ["Assessments", "/assessments"],
+      ["Python Judge", "/judge"],
+      ["Virtual lab sessions", "/labs"],
     ],
   },
   {
-    title: "Practice",
+    title: "Track the climb",
     links: [
-      ["Judge Engine", "/judge"],
-      ["Leaderboards", "/leaderboards"],
-      ["Guilds", "/guilds"],
+      ["Rank ladder", "/rank"],
+      ["Global leaderboard", "/leaderboards"],
+      ["Guild boards", "/guilds"],
     ],
   },
   {
-    title: "Account",
+    title: "Keep your account",
     links: [
       ["Sign in", "/login"],
-      ["Create account", "/register"],
-      ["Support", "/support"],
+      ["Create a Zapsters account", "/register"],
+      ["Open a support ticket", "/support"],
     ],
   },
 ] as const;
@@ -38,9 +38,9 @@ export function MarketingFooter() {
         <div>
           <Logo size="sm" />
           <p className="mt-5 max-w-xs text-sm leading-6 text-muted-foreground">
-            Learn. Build. Climb. A practical learning platform for people who want their work to count.
+            Submit solutions, verify objectives, and see the work accumulate in your rank.
           </p>
-          <p className="mt-8 text-xs text-muted-foreground/70">© 2026 Zapsters. Built for the climb.</p>
+          <p className="mt-8 font-mono text-xs text-muted-foreground/70">© 2026 Zapsters / learn-build-climb</p>
         </div>
         <div className="grid gap-8 sm:grid-cols-3">
           {columns.map((column) => (
@@ -64,9 +64,9 @@ export function MarketingFooter() {
       </div>
       <div className="border-t border-border/70">
         <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-4 text-xs text-muted-foreground sm:px-6 lg:px-8">
-          <span>More learning surfaces are on the way.</span>
+          <span>Next command: make a submission.</span>
           <Link href="/courses" className="inline-flex items-center gap-1 font-medium text-primary outline-none focus-visible:ring-2 focus-visible:ring-ring">
-            Browse courses <ArrowUpRight className="size-3.5" />
+            Open the catalog <ArrowUpRight className="size-3.5" />
           </Link>
         </div>
       </div>

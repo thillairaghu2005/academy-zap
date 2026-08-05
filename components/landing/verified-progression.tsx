@@ -1,43 +1,68 @@
 import Link from "next/link";
-import { ArrowRight, BadgeCheck, GitBranch, ShieldCheck, Trophy } from "lucide-react";
+import { ArrowRight, CheckCircle2, ShieldCheck, Trophy } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
 
-/** Uses the existing rank, badge, and verification surfaces instead of inventing vendor certifications. */
+const ranks = ["Initiate", "Oracle", "Spartan", "Titan", "Atlas", "Hyperion", "Olympian", "Primordial", "Ascendant", "Deus"] as const;
+
+/** Real F5 vocabulary: rank ladder plus the two XP tracks that feed it. */
 export function VerifiedProgression() {
   return (
-    <section className="overflow-hidden rounded-3xl bg-foreground text-background">
-      <div className="relative grid gap-10 p-6 sm:p-10 lg:grid-cols-[0.85fr_1.15fr] lg:items-center lg:p-12">
-        <div className="pointer-events-none absolute -right-24 -top-24 size-72 rounded-full bg-primary/25 blur-3xl" />
-        <div className="relative">
-          <p className="text-xs font-semibold uppercase tracking-widest text-primary-light">Proof, not promises</p>
-          <h2 className="mt-3 max-w-md font-display text-3xl font-bold tracking-tight sm:text-4xl">
-            Make progress you can show.
+    <section className="border-y border-border bg-foreground text-background">
+      <div className="grid gap-10 px-5 py-10 sm:px-8 sm:py-12 lg:grid-cols-[0.75fr_1.25fr] lg:items-center lg:px-12">
+        <div>
+          <p className="font-mono text-xs uppercase tracking-widest text-primary-light">F5 / ProgressContext</p>
+          <h2 className="mt-4 max-w-md font-display text-3xl font-semibold tracking-tight sm:text-4xl">
+            Your rank is two tracks, not one score.
           </h2>
-          <p className="mt-4 max-w-md text-sm leading-7 text-background/70 sm:text-base">
-            Your work flows into a visible rank, earned badges, and credentials with public verification pages.
+          <p className="mt-4 max-w-md text-sm leading-7 text-background/70">
+            Completion XP records what you finish. Mastery XP records what you can do. The server resolves both into the rank ladder.
           </p>
-          <Button variant="gradient" className="mt-7" asChild>
+          <Button variant="gradient" className="mt-6" asChild>
             <Link href="/rank">
-              See the rank ladder <ArrowRight />
+              Inspect the ladder <ArrowRight />
             </Link>
           </Button>
         </div>
 
-        <div className="relative grid gap-3 sm:grid-cols-3">
-          {[
-            { icon: GitBranch, title: "Practice", body: "Ship solutions in the Judge." },
-            { icon: Trophy, title: "Progress", body: "Climb with two XP tracks." },
-            { icon: ShieldCheck, title: "Verify", body: "Share badges with confidence." },
-          ].map((item) => (
-            <Card key={item.title} className="border-background/15 bg-background/10 p-5 text-background shadow-none backdrop-blur-sm">
-              <item.icon className="size-5 text-primary-light" />
-              <p className="mt-8 font-display font-semibold">{item.title}</p>
-              <p className="mt-2 text-sm leading-relaxed text-background/65">{item.body}</p>
-              <BadgeCheck className="mt-5 size-4 text-background/35" />
-            </Card>
-          ))}
+        <div className="min-w-0 font-mono text-xs">
+          <div className="flex items-center gap-3 border-b border-background/15 pb-4 text-background/55">
+            <Trophy className="size-4 text-xp-mastery" />
+            <span>rank_ladder / level 07</span>
+            <span className="ml-auto text-success">verified</span>
+          </div>
+          <div className="flex gap-4 overflow-x-auto py-6" aria-label="Rank ladder">
+            {ranks.map((rank, index) => (
+              <div key={rank} className="min-w-20 shrink-0">
+                <div className={index === 6 ? "h-1 bg-primary-light" : "h-px bg-background/25"} />
+                <p className={index === 6 ? "mt-3 text-primary-light" : "mt-3 text-background/50"}>
+                  {String(index + 1).padStart(2, "0")}
+                </p>
+                <p className={index === 6 ? "mt-1 font-semibold text-background" : "mt-1 text-background/60"}>{rank}</p>
+              </div>
+            ))}
+          </div>
+          <div className="grid gap-4 border-t border-background/15 pt-5 sm:grid-cols-2">
+            <div>
+              <div className="flex justify-between text-background/55">
+                <span>completion_xp</span>
+                <span className="text-xp-completion">4,180</span>
+              </div>
+              <div className="mt-2 h-1 bg-background/15"><div className="h-1 w-3/5 bg-xp-completion" /></div>
+            </div>
+            <div>
+              <div className="flex justify-between text-background/55">
+                <span>mastery_xp</span>
+                <span className="text-xp-mastery">3,240</span>
+              </div>
+              <div className="mt-2 h-1 bg-background/15"><div className="h-1 w-2/5 bg-xp-mastery" /></div>
+            </div>
+          </div>
+          <div className="mt-5 flex items-center gap-2 text-background/45">
+            <ShieldCheck className="size-3.5 text-success" />
+            <CheckCircle2 className="size-3.5 text-success" />
+            ledger-derived, publicly verifiable
+          </div>
         </div>
       </div>
     </section>
