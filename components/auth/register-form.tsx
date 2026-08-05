@@ -27,6 +27,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Logo } from "@/components/layout/logo";
 import { useSession } from "@/components/providers/session-provider";
+import { DEMO_MODE } from "@/lib/config";
 
 const registerSchema = z.object({
   display_name: z
@@ -165,17 +166,19 @@ export function RegisterForm() {
           </Link>
         </p>
 
-        <div className="mt-6 rounded-lg border border-border bg-secondary/50 p-3.5">
-          <p className="flex items-start gap-2 text-xs leading-relaxed text-muted-foreground">
-            <Sparkles className="mt-0.5 size-3.5 shrink-0 text-warning" />
-            <span>
-              <span className="font-medium text-foreground">Mock auth.</span> Any
-              password of 8+ characters works. Email{" "}
-              <code className="rounded bg-secondary px-1 font-mono">taken@zapsters.dev</code>{" "}
-              demos the duplicate-account error.
-            </span>
-          </p>
-        </div>
+        {DEMO_MODE && (
+          <div className="mt-6 rounded-lg border border-border bg-secondary/50 p-3.5">
+            <p className="flex items-start gap-2 text-xs leading-relaxed text-muted-foreground">
+              <Sparkles className="mt-0.5 size-3.5 shrink-0 text-warning" />
+              <span>
+                <span className="font-medium text-foreground">Demo mode.</span> Any
+                password of 8+ characters works. Email{" "}
+                <code className="rounded bg-secondary px-1 font-mono">taken@zapsters.dev</code>{" "}
+                demos the duplicate-account error.
+              </span>
+            </p>
+          </div>
+        )}
       </CardContent>
     </Card>
   );

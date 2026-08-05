@@ -27,6 +27,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Logo } from "@/components/layout/logo";
 import { useSession } from "@/components/providers/session-provider";
+import { DEMO_MODE } from "@/lib/config";
 
 const loginSchema = z.object({
   email: z.email("Enter a valid email address."),
@@ -35,9 +36,17 @@ const loginSchema = z.object({
 
 type LoginValues = z.infer<typeof loginSchema>;
 
-export function LoginForm() {
+/**
+ * Redirect target from middleware's ?next= — same-origin paths only, so a
+ * crafted ?next cannot bounce users to an external URL.
+ */
+function safeNext(next: string | undefined): string {
+  return next && next.startsWith("/") && !next.startsWith("//") ? next : "/";
+}
+
+export function LoginForm({ next }: { next?: string }) {
   const router = useRouter();
-  const { login, session, isLoading } = useSession();
+  const { login, loginDemo, session, isLoading } = useSession();
   const [pending, setPending] = React.useState(false);
   const [showPassword, setShowPassword] = React.useState(false);
 
@@ -46,18 +55,32 @@ export function LoginForm() {
     defaultValues: { email: "", password: "" },
   });
 
-  // Already signed in? Straight back to the dashboard.
+  // Already signed in? Straight back to where they were headed.
   React.useEffect(() => {
     if (!isLoading && session.status === "authenticated") {
-      router.replace("/");
+      router.replace(safeNext(next));
     }
-  }, [isLoading, session.status, router]);
+  }, [isLoading, session.status, router, next]);
 
   const onSubmit = async (values: LoginValues) => {
     setPending(true);
     try {
       await login(values);
-      router.push("/");
+      router.replace(safeNext(next));
+    } catch (err) {
+      form.setError("password", {
+        message: err instanceof Error ? err.message : "Sign in failed.",
+      });
+    } finally {
+      setPending(false);
+    }
+  };
+
+  const onDemo = async () => {
+    setPending(true);
+    try {
+      await loginDemo();
+      router.replace(safeNext(next));
     } catch (err) {
       form.setError("password", {
         message: err instanceof Error ? err.message : "Sign in failed.",
@@ -141,43 +164,44 @@ export function LoginForm() {
           </Link>
         </p>
 
-        <div className="mt-6 rounded-lg border border-border bg-secondary/50 p-3.5">
-          <p className="flex items-start gap-2 text-xs leading-relaxed text-muted-foreground">
-            <Sparkles className="mt-0.5 size-3.5 shrink-0 text-warning" />
-            <span>
-              <span className="font-medium text-foreground">Mock auth.</span> Any email
-              + password of 8+ characters signs you in. Email ending in
-              <code className="mx-1 rounded bg-secondary px-1 font-mono">@error.zapsters.dev</code>
-              demos the error state.
-            </span>
-          </p>
-          <div className="mt-2.5 flex flex-wrap gap-2">
-            <Button
-              type="button"
-              variant="outline"
-              size="sm"
-              onClick={() => form.setValue("email", "aarav@zapsters.dev")}
-            >
-              Learner demo
-            </Button>
-            <Button
-              type="button"
-              variant="outline"
-              size="sm"
-              onClick={() => form.setValue("email", "priya@admin.zapsters.dev")}
-            >
-              Admin demo
-            </Button>
-            <Button
-              type="button"
-              variant="outline"
-              size="sm"
-              onClick={() => form.setValue("email", "error@zapsters.dev")}
-            >
-              Error demo
-            </Button>
+        {DEMO_MODE && (
+          <div className="mt-6 rounded-lg border border-border bg-secondary/50 p-3.5">
+            <p className="flex items-start gap-2 text-xs leading-relaxed text-muted-foreground">
+              <Sparkles className="mt-0.5 size-3.5 shrink-0 text-warning" />
+              <span>
+                <span className="font-medium text-foreground">Demo account.</span>{" "}
+                Explore every surface as a sample learner — no signup needed.
+              </span>
+            </p>
+            <div className="mt-2.5 flex flex-wrap gap-2">
+              <Button
+                type="button"
+                variant="gradient"
+                size="sm"
+                onClick={onDemo}
+                disabled={pending}
+              >
+                {pending ? "Signing in…" : "Continue as demo learner"}
+              </Button>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => form.setValue("email", "priya@admin.zapsters.dev")}
+              >
+                Admin demo
+              </Button>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => form.setValue("email", "error@zapsters.dev")}
+              >
+                Error demo
+              </Button>
+            </div>
           </div>
-        </div>
+        )}
       </CardContent>
     </Card>
   );

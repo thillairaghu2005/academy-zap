@@ -25,3 +25,30 @@ export const MOCK_ADMIN: SessionUser = {
   role: "admin",
   org_id: null,
 };
+
+/**
+ * Mock reviewer identities for the F7 two-person review flow. With no real
+ * auth yet, the "different reviewer" rule needs a picker of fake admins —
+ * this is that pool (build.md F7: mirror the rule even before it's
+ * enforced server-side). The submitted_by of seeded in-review courses
+ * points at one of these so the rule is actually exercisable.
+ */
+export const MOCK_REVIEWERS: SessionUser[] = [
+  MOCK_ADMIN,
+  {
+    id: "2a4c6e8f-0b1d-4c3e-8f5a-9b7c1d3e5f7a",
+    display_name: "Meera Patel",
+    email: "meera@zapsters.dev",
+    avatar_url: null,
+    role: "admin",
+    org_id: null,
+  },
+  {
+    id: "3b5d7f9a-1c2e-4d4f-9a6b-0c8d2e4f6a8b",
+    display_name: "Diego Fernández",
+    email: "diego@zapsters.dev",
+    avatar_url: null,
+    role: "admin",
+    org_id: null,
+  },
+];

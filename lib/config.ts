@@ -10,3 +10,22 @@
  */
 export const CHECKOUT_DEMO_503 =
   process.env.NEXT_PUBLIC_CHECKOUT_DEMO_503 === "true";
+
+/**
+ * DEMO_MODE — product-audit fix: gate every piece of demo scaffolding that
+ * would otherwise leak into the default user journey.
+ *
+ * When `NEXT_PUBLIC_DEMO_MODE=true`:
+ *   - the /rank "Demo state" switcher, the judge verdict-demo markers and
+ *     mock hints, the cart/checkout demo-state strips, the "boom"/"zzzz"
+ *     search placeholders, and the various "Mock note" footnotes render.
+ *   - the auth proxy is lenient and GET /api/auth/session auto-issues
+ *     the demo learner session (the guided-demo experience).
+ *
+ * When false (the default — production-shaped): all of the above are hidden,
+ * the middleware enforces real route protection, and anonymous visitors are
+ * sent to /login. The mock backend hooks themselves are untouched — they
+ * stay deterministic for tests; only their user-facing affordances are
+ * gated.
+ */
+export const DEMO_MODE = process.env.NEXT_PUBLIC_DEMO_MODE === "true";

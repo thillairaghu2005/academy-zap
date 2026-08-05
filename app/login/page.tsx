@@ -8,10 +8,19 @@ export const metadata: Metadata = {
   description: "Sign in to Zapsters.",
 };
 
-export default function LoginPage() {
+/**
+ * /login — anonymous visitors redirected here by middleware.ts with
+ * ?next=<path> so they land back where they were headed after signing in.
+ */
+export default async function LoginPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ next?: string }>;
+}) {
+  const { next } = await searchParams;
   return (
     <AuthBackdrop>
-      <LoginForm />
+      <LoginForm next={next} />
     </AuthBackdrop>
   );
 }
