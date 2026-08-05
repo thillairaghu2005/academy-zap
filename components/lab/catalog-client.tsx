@@ -16,7 +16,11 @@ import {
 } from "lucide-react";
 
 import type { Lab, LabDifficulty } from "@/lib/contracts/lab";
+import type { CatalogProduct } from "@/lib/contracts/commerce";
 import { searchLabs } from "@/lib/api/lab";
+import { listCatalogProducts } from "@/lib/api/commerce";
+import { AddToCartButton } from "@/components/commerce/add-to-cart-button";
+import { BuyNowButton } from "@/components/commerce/buy-now-button";
 import { useDebouncedValue } from "@/lib/hooks/use-debounced-value";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -68,7 +72,15 @@ const DIFFICULTY_STYLES: Record<
   },
 };
 
-function LabCard({ lab, index }: { lab: Lab; index: number }) {
+function LabCard({
+  lab,
+  index,
+  product,
+}: {
+  lab: Lab;
+  index: number;
+  product?: CatalogProduct;
+}) {
   const diff = DIFFICULTY_STYLES[lab.difficulty];
   const hue = (lab.id.length * 47 + index * 60) % 360;
 
@@ -78,11 +90,11 @@ function LabCard({ lab, index }: { lab: Lab; index: number }) {
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.04 * index, duration: 0.35, ease: "easeOut" }}
     >
-      <Link
-        href={`/labs/${lab.id}`}
-        className="group block h-full outline-none"
-      >
-        <Card className="h-full overflow-hidden transition-all duration-200 group-hover:-translate-y-0.5 group-hover:border-emerald-500/40 group-hover:shadow-xl group-hover:shadow-emerald-500/10 focus-visible:ring-2 focus-visible:ring-ring">
+      <Card className="group flex h-full flex-col overflow-hidden transition-all duration-200 group-hover:-translate-y-0.5 group-hover:border-emerald-500/40 group-hover:shadow-xl group-hover:shadow-emerald-500/10">
+        <Link
+          href={`/labs/${lab.id}`}
+          className="flex-1 outline-none focus-visible:ring-2 focus-visible:ring-ring"
+        >
           <div
             className="relative h-32 w-full"
             style={{
@@ -138,8 +150,16 @@ function LabCard({ lab, index }: { lab: Lab; index: number }) {
               <span className="text-xs text-muted-foreground">{lab.category}</span>
             </div>
           </CardContent>
-        </Card>
-      </Link>
+        </Link>
+
+        {/* Purchasable lab pass → Buy now + Add to cart (Task 3) */}
+        {product ? (
+          <div className="flex gap-2 border-t border-border p-3">
+            <AddToCartButton productId={lab.id} size="sm" className="flex-1" />
+            <BuyNowButton productId={lab.id} size="sm" className="flex-1" />
+          </div>
+        ) : null}
+      </Card>
     </motion.div>
   );
 }
@@ -182,6 +202,14 @@ export function LabCatalogClient() {
     queryFn: () => searchLabs(debouncedQuery),
   });
 
+  const catalogQuery = useQuery({
+    queryKey: ["catalog-products"],
+    queryFn: () => listCatalogProducts(),
+  });
+  const products = new Map(
+    catalogQuery.data?.map((p) => [p.product_id, p]) ?? [],
+  );
+
   const visible = data?.filter(
     (lab) => difficulty === "all" || lab.difficulty === difficulty,
   );
@@ -202,6 +230,8 @@ export function LabCatalogClient() {
         <div className="relative flex-1">
           <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
           <Input
+            name="q"
+            aria-label="Search labs"
             placeholder={'Search labs… (try "web", "zzzz" for empty, "boom" for error)'}
             value={query}
             onChange={(e) => applyQuery(e.target.value)}
@@ -284,7 +314,12 @@ export function LabCatalogClient() {
             </div>
             <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
               {visible.map((lab, i) => (
-                <LabCard key={lab.id} lab={lab} index={i} />
+                <LabCard
+                  key={lab.id}
+                  lab={lab}
+                  index={i}
+                  product={products.get(lab.id)}
+                />
               ))}
             </div>
           </>

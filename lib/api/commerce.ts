@@ -23,12 +23,14 @@
 import type {
   Cart,
   CartItem,
+  CatalogProduct,
   CheckoutSession,
   EntitlementsSnapshot,
   Order,
   PaymentEvent,
   Subscription,
 } from "@/lib/contracts/commerce";
+import { CHECKOUT_DEMO_503 } from "@/lib/config";
 import {
   cartForUser,
   createCheckoutSession,
@@ -41,6 +43,7 @@ import {
   MOCK_DEMO_USER_ID,
   MOCK_PLANS,
   MOCK_SUBSCRIPTION,
+  persistCart,
   recomputeTotal,
   seedDemoCart,
   seedDemoSession,
@@ -82,6 +85,7 @@ export async function addToCart(
     } satisfies CartItem);
   cart.total_cents = recomputeTotal(cart.items);
   cart.updated_at = new Date().toISOString();
+  persistCart(cart);
   return cart;
 }
 
@@ -94,6 +98,7 @@ export async function removeFromCart(
   cart.items = cart.items.filter((i) => i.product_id !== productId);
   cart.total_cents = recomputeTotal(cart.items);
   cart.updated_at = new Date().toISOString();
+  persistCart(cart);
   return cart;
 }
 
@@ -104,6 +109,17 @@ export async function removeFromCart(
 /** create_checkout(cart) -> CheckoutSession (hosted embed URL). */
 export async function createCheckout(userId: string): Promise<CheckoutSession> {
   await delay(jitter(300));
+  if (CHECKOUT_DEMO_503) {
+    // Simulated provider outage (Task 4) — distinguishable from a real error.
+    console.warn(
+      "[mock] simulated checkout outage (CHECKOUT_DEMO_503=true) — not a real failure",
+    );
+    throw new MockApiError(
+      "checkout_down",
+      "Checkout service is temporarily unavailable.",
+      503,
+    );
+  }
   if (userId === MOCK_DEMO_USER_ID) seedDemoCart();
   const cart = cartForUser(userId);
   if (cart.items.length === 0) {
@@ -161,6 +177,69 @@ export async function simulatePaymentCompletion(
     );
   }
   return deliverWebhook(checkoutId, "succeeded");
+}
+
+/**
+ * Buy Now (Task 3) — one product straight to checkout, bypassing the cart.
+ *
+ * Validates stock against the mock inventory, then builds a TEMPORARY
+ * isolated cart for the session (never written to the user's stored cart),
+ * and hands back the hosted CheckoutSession. Respects CHECKOUT_DEMO_503 so
+ * the outage state is exercised from the Buy Now path too.
+ */
+export async function buyNow(
+  userId: string,
+  productId: string,
+  quantity = 1,
+): Promise<CheckoutSession> {
+  await delay(jitter(300));
+  if (!userId) {
+    throw new MockApiError("auth_required", "Sign in to buy this item.", 401);
+  }
+  if (CHECKOUT_DEMO_503) {
+    console.warn(
+      "[mock] simulated checkout outage (CHECKOUT_DEMO_503=true) — not a real failure",
+    );
+    throw new MockApiError(
+      "checkout_down",
+      "Checkout service is temporarily unavailable.",
+      503,
+    );
+  }
+  const product = mockGetCatalogProduct(productId);
+  if (!product) {
+    throw new MockApiError("product_not_found", "Unknown product.", 404);
+  }
+  if (product.stock < quantity) {
+    throw new MockApiError(
+      "out_of_stock",
+      `"${product.title}" is out of stock.`,
+      409,
+    );
+  }
+  const now = new Date().toISOString();
+  const isolated: Cart = {
+    cart_id: `buynow-${userId.slice(0, 8)}`,
+    user_id: userId,
+    items: [
+      {
+        product_id: product.product_id,
+        kind: product.kind,
+        title: product.title,
+        unit_price_cents: product.price_cents,
+        quantity,
+      },
+    ],
+    total_cents: product.price_cents * quantity,
+    updated_at: now,
+  };
+  return createCheckoutSession(isolated);
+}
+
+/** Catalog read for product cards (pricing + stock display). */
+export async function listCatalogProducts(): Promise<CatalogProduct[]> {
+  await delay(jitter(60));
+  return MOCK_CATALOG;
 }
 
 /** Order read from the `orders` table by its checkout session. */

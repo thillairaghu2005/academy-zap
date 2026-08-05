@@ -336,6 +336,30 @@ export const MOCK_COURSES_BY_ID = new Map(
   MOCK_COURSES.map((course) => [course.id, course]),
 );
 
+/**
+ * F7 admin helpers — mutate the fixture store the way the real CMS writes
+ * the `courses` table. `upsertCourse` adds or patches in place so every
+ * consumer (catalog, detail, player) sees the change immediately.
+ */
+export function upsertCourse(course: Course): Course {
+  const existing = MOCK_COURSES_BY_ID.get(course.id);
+  if (existing) {
+    Object.assign(existing, course);
+  } else {
+    MOCK_COURSES.push(course);
+    MOCK_COURSES_BY_ID.set(course.id, course);
+  }
+  return course;
+}
+
+export function deleteCourseById(courseId: string): boolean {
+  const index = MOCK_COURSES.findIndex((c) => c.id === courseId);
+  if (index === -1) return false;
+  MOCK_COURSES.splice(index, 1);
+  MOCK_COURSES_BY_ID.delete(courseId);
+  return true;
+}
+
 export const MOCK_DRAFT_COURSE_ID = "1b2c3d4e-5f6a-4b7c-8d9e-0f1a2b3c4d5e";
 export const MOCK_ENROLLED_COURSE_ID = "a1b2c3d4-e5f6-4a7b-8c9d-0e1f2a3b4c5d";
 // Go DSA course — seeded as fully completed for the demo learner.

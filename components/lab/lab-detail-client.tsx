@@ -5,7 +5,6 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
-import { toast } from "sonner";
 import {
   AlertTriangle,
   CheckCircle2,
@@ -18,19 +17,15 @@ import {
   Play,
   ShieldCheck,
   ShieldQuestion,
-  ShoppingCart,
   Sparkles,
   Terminal,
 } from "lucide-react";
 
 import type { Lab } from "@/lib/contracts/lab";
 import { getLab, provisionSession } from "@/lib/api/lab";
-import {
-  addToCart,
-  getCatalogProduct,
-  hasEntitlement,
-} from "@/lib/api/commerce";
-import { formatMoney } from "@/lib/format";
+import { getCatalogProduct, hasEntitlement } from "@/lib/api/commerce";
+import { AddToCartButton } from "@/components/commerce/add-to-cart-button";
+import { BuyNowButton } from "@/components/commerce/buy-now-button";
 import { useSession } from "@/components/providers/session-provider";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -99,12 +94,6 @@ export function LabDetailClient({ labId }: { labId: string }) {
       provisionSession(labId, user?.id ?? "").then((session) => {
         router.push(`/labs/${labId}/session/${session.session_id}`);
       }),
-  });
-
-  const buyMutation = useMutation({
-    mutationFn: () =>
-      addToCart(user?.id ?? "", labId, 1).then(() => router.push("/cart")),
-    onError: (error: Error) => toast.error(error.message),
   });
 
   /* ---------- Loading ---------- */
@@ -293,25 +282,10 @@ export function LabDetailClient({ labId }: { labId: string }) {
                 Checking access…
               </Button>
             ) : isLocked ? (
-              <Button
-                variant="gradient"
-                className="w-full gap-2"
-                disabled={buyMutation.isPending}
-                onClick={() => buyMutation.mutate()}
-              >
-                {buyMutation.isPending ? (
-                  <>
-                    <LoaderCircle className="size-4 animate-spin" />
-                    Adding to cart…
-                  </>
-                ) : (
-                  <>
-                    <ShoppingCart className="size-4" />
-                    Buy lab pass —{" "}
-                    {formatMoney(catalogQuery.data!.price_cents)}
-                  </>
-                )}
-              </Button>
+              <div className="flex flex-col gap-2">
+                <BuyNowButton productId={labId} className="w-full" />
+                <AddToCartButton productId={labId} className="w-full" />
+              </div>
             ) : (
               <Button
                 onClick={() => provision.mutate()}

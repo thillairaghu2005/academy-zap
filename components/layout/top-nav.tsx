@@ -7,6 +7,7 @@ import { Bell, Search } from "lucide-react";
 import { Logo } from "@/components/layout/logo";
 import { MobileNav } from "@/components/layout/side-nav";
 import { UserMenu } from "@/components/layout/user-menu";
+import { CartBadge } from "@/components/commerce/cart-badge";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
@@ -73,6 +74,14 @@ export function TopNav() {
               </Button>
             </TooltipTrigger>
             <TooltipContent>Search the course catalog</TooltipContent>
+          </Tooltip>
+
+          {/* Cart — live item count badge (Task 2) */}
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <CartBadge />
+            </TooltipTrigger>
+            <TooltipContent>Cart</TooltipContent>
           </Tooltip>
 
           {/* Notifications — decorative until push lands */}

@@ -18,6 +18,7 @@
 import type {
   Cart,
   CartItem,
+  CatalogProduct,
   CheckoutSession,
   Entitlement,
   EntitlementsSnapshot,
@@ -35,27 +36,26 @@ export const MOCK_DEMO_USER_ID = "4c1e0a9f-8c6e-4b2d-9f3a-2b8d1e5c7a91";
 /*  Catalog — courses/labs/plans that can be purchased                 */
 /* ------------------------------------------------------------------ */
 
-export interface CatalogProduct {
-  product_id: string;
-  kind: "course" | "lab";
-  title: string;
-  price_cents: number;
-}
+// CatalogProduct is defined in the contract layer (lib/contracts/commerce.ts)
+// — it is a shared entity, not a mock-only shape.
 
 /**
  * Catalog — the purchasable subset of the real Content catalog. product_ids
  * are the ACTUAL course/lab ids from lib/mocks/courses.ts / labs.ts so the
  * entitlement gate and checkout resolve against the real products.
  */
+// Stock values are mock inventory so Buy Now can validate before checkout.
+// "Offensive Web App Testing" has stock 0 → the out-of-stock demo path;
+// "Race the Clock" has stock 3 → the low-stock display path.
 export const MOCK_CATALOG: CatalogProduct[] = [
-  { product_id: "b2c3d4e5-f6a7-4b8c-9d0e-1f2a3b4c5d6e", kind: "course", title: "Offensive Web App Testing", price_cents: 149900 },
-  { product_id: "c3d4e5f6-a7b8-4c9d-0e1f-2a3b4c5d6e7f", kind: "course", title: "React & TypeScript Deep Dive", price_cents: 99900 },
-  { product_id: "e5f6a7b8-c9d0-4e1f-2a3b-4c5d6e7f8a9b", kind: "course", title: "Cloud Security Essentials", price_cents: 129900 },
-  { product_id: "f6a7b8c9-d0e1-4f2a-3b4c-5d6e7f8a9b0c", kind: "course", title: "Data Structures & Algorithms in Go", price_cents: 89900 },
-  { product_id: "lab-race-the-clock", kind: "lab", title: "Race the Clock (lab pass)", price_cents: 1200 },
+  { product_id: "b2c3d4e5-f6a7-4b8c-9d0e-1f2a3b4c5d6e", kind: "course", title: "Offensive Web App Testing", price_cents: 149900, stock: 0 },
+  { product_id: "c3d4e5f6-a7b8-4c9d-0e1f-2a3b4c5d6e7f", kind: "course", title: "React & TypeScript Deep Dive", price_cents: 99900, stock: 25 },
+  { product_id: "e5f6a7b8-c9d0-4e1f-2a3b-4c5d6e7f8a9b", kind: "course", title: "Cloud Security Essentials", price_cents: 129900, stock: 25 },
+  { product_id: "f6a7b8c9-d0e1-4f2a-3b4c-5d6e7f8a9b0c", kind: "course", title: "Data Structures & Algorithms in Go", price_cents: 89900, stock: 25 },
+  { product_id: "lab-race-the-clock", kind: "lab", title: "Race the Clock (lab pass)", price_cents: 1200, stock: 3 },
   // Hidden demo product — only added to the cart via the "simulate provider
   // outage" demo, so the checkout 503 state is reachable on demand.
-  { product_id: "course-boom", kind: "course", title: "Simulated outage product", price_cents: 4900 },
+  { product_id: "course-boom", kind: "course", title: "Simulated outage product", price_cents: 4900, stock: 1 },
 ];
 
 export function getCatalogProduct(productId: string): CatalogProduct | null {
@@ -88,6 +88,50 @@ export const mockCheckoutSessions = new Map<string, CheckoutSession>();
 export const mockOrders = new Map<string, Order>();
 export const mockEntitlements = new Map<string, Entitlement>();
 
+/* ------------------------------------------------------------------ */
+/*  Cart persistence (Task 2)                                          */
+/*                                                                    */
+/*  The mock cart store is in-memory, but the demo user's cart is      */
+/*  hydrated from / written to localStorage so the nav badge and the   */
+/*  cart survive a full page refresh — mirroring the real Commerce     */
+/*  backend's cart persistence. Guarded for SSR and node (tests).      */
+/* ------------------------------------------------------------------ */
+
+const CART_STORAGE_KEY = "zapsters.mock.cart";
+
+function loadPersistedCart(): void {
+  if (typeof window === "undefined") return;
+  try {
+    const raw = window.localStorage.getItem(CART_STORAGE_KEY);
+    if (!raw) return;
+    const parsed = JSON.parse(raw) as {
+      user_id: string;
+      items: CartItem[];
+    };
+    if (!parsed || !Array.isArray(parsed.items)) return;
+    const cart = cartForUser(parsed.user_id || MOCK_DEMO_USER_ID);
+    cart.items = parsed.items;
+    cart.total_cents = recomputeTotal(cart.items);
+    cart.updated_at = new Date().toISOString();
+  } catch {
+    // Corrupt storage is ignored — the in-memory store stands in.
+  }
+}
+
+export function persistCart(cart: Cart): void {
+  if (typeof window === "undefined") return;
+  try {
+    window.localStorage.setItem(
+      CART_STORAGE_KEY,
+      JSON.stringify({ user_id: cart.user_id, items: cart.items }),
+    );
+  } catch {
+    // Storage may be unavailable (private mode) — mock keeps working.
+  }
+}
+
+loadPersistedCart();
+
 export function cartForUser(userId: string): Cart {
   let cart = mockCarts.get(userId);
   if (!cart) {
@@ -100,6 +144,7 @@ export function cartForUser(userId: string): Cart {
     };
     mockCarts.set(userId, cart);
   }
+  if (cart.user_id === MOCK_DEMO_USER_ID) persistCart(cart);
   return cart;
 }
 
@@ -131,6 +176,7 @@ export function seedDemoCart(): Cart {
     });
     cart.total_cents = recomputeTotal(cart.items);
     cart.updated_at = new Date().toISOString();
+    persistCart(cart);
   }
   return cart;
 }
@@ -358,6 +404,50 @@ export function entitlementsForUser(userId: string): EntitlementsSnapshot {
     entitlements: all,
     product_ids: all.map((e) => e.product_id),
   };
+}
+
+/* ------------------------------------------------------------------ */
+/*  Admin order fixtures — a few realistic rows for the Orders screen   */
+/* ------------------------------------------------------------------ */
+
+function seedOrder(
+  id: string,
+  userId: string,
+  amountCents: number,
+  status: Order["status"],
+  productTitle: string,
+  daysAgo: number,
+  provider: PaymentProvider = "razorpay",
+): void {
+  mockOrders.set(id, {
+    order_id: id,
+    user_id: userId,
+    checkout_id: `cs-${id.replace("ord-", "")}`,
+    provider,
+    amount_cents: amountCents,
+    currency: "usd",
+    status,
+    items: [
+      {
+        product_id: "seed",
+        kind: "course",
+        title: productTitle,
+        unit_price_cents: amountCents,
+        quantity: 1,
+      },
+    ],
+    created_at: new Date(Date.now() - daysAgo * 86400_000).toISOString(),
+    idempotency_key: `idem-${id}`,
+  });
+}
+
+export function seedDemoOrders(): void {
+  if (mockOrders.size >= 5) return;
+  seedOrder("ord-demo-1", MOCK_DEMO_USER_ID, 129900, "paid", "Cloud Security Essentials", 3);
+  seedOrder("ord-demo-2", MOCK_DEMO_USER_ID, 99900, "paid", "React & TypeScript Deep Dive", 12);
+  seedOrder("ord-demo-3", "7f3b2c4d-1a9e-4f6b-8c0d-5e2a9f3b7c81", 89900, "refunded", "Data Structures & Algorithms in Go", 20);
+  seedOrder("ord-demo-4", "0a2f9e3b-5c6d-4a7b-9e0f-1b3c5d7e9f01", 149900, "failed", "Offensive Web App Testing", 1);
+  seedOrder("ord-demo-5", "5f1a9e3b-2c4d-4f6b-8c0d-7e2a9f3b1c81", 1200, "paid", "Race the Clock (lab pass)", 0, "stripe");
 }
 
 /* ------------------------------------------------------------------ */

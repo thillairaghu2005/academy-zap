@@ -38,7 +38,7 @@ Monaco (F2) · xterm.js (F3) · video.js (F1) · recharts/d3 (F5).
 | F4 ✅ | Assessment Engine | `/assessments`, `/assessments/[id]`, `/assessments/[id]/attempt/[attemptId]` |
 | F5 ✅ | Gamification UI | `/rank`, `/rank/badges`, `/rank/verify/[credentialId]`, `/leaderboards`, `/guilds` |
 | F6 ✅ | Commerce UI | `/cart`, `/checkout/[checkoutId]`, `/checkout/billing` |
-| F7 | Admin/CMS (lowest priority) | `/admin` |
+| F7 ✅ | Admin/CMS | `/admin`, `/admin/courses(+/new/+/[id]/edit)`, `/admin/orders`, `/admin/users`, `/admin/labs`, `/admin/problems`, `/admin/audit` |
 
 ## Commands
 

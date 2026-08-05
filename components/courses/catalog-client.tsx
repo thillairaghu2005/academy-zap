@@ -17,7 +17,11 @@ import {
 } from "lucide-react";
 
 import type { CourseLevel, CourseSummary } from "@/lib/contracts/content";
+import type { CatalogProduct } from "@/lib/contracts/commerce";
 import { searchCatalog } from "@/lib/api/content";
+import { listCatalogProducts } from "@/lib/api/commerce";
+import { AddToCartButton } from "@/components/commerce/add-to-cart-button";
+import { BuyNowButton } from "@/components/commerce/buy-now-button";
 import { useDebouncedValue } from "@/lib/hooks/use-debounced-value";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -58,15 +62,24 @@ const CATEGORIES = [
   "Programming",
 ];
 
-function CourseCard({ course }: { course: CourseSummary }) {
+function CourseCard({
+  course,
+  product,
+}: {
+  course: CourseSummary;
+  product?: CatalogProduct;
+}) {
   const price =
     course.price_cents === 0
       ? "Free"
       : `$${(course.price_cents / 100).toFixed(0)}`;
 
   return (
-    <Link href={`/courses/${course.id}`} className="group block h-full outline-none">
-      <Card className="h-full overflow-hidden transition-all duration-200 group-hover:-translate-y-0.5 group-hover:border-primary/40 group-hover:shadow-xl group-hover:shadow-primary/10 focus-visible:ring-2 focus-visible:ring-ring">
+    <Card className="group flex h-full flex-col overflow-hidden transition-all duration-200 group-hover:-translate-y-0.5 group-hover:border-primary/40 group-hover:shadow-xl group-hover:shadow-primary/10">
+      <Link
+        href={`/courses/${course.id}`}
+        className="flex-1 outline-none focus-visible:ring-2 focus-visible:ring-ring"
+      >
         {/* Cover art gradient */}
         <div
           className="relative h-36 w-full"
@@ -121,12 +134,26 @@ function CourseCard({ course }: { course: CourseSummary }) {
             </Badge>
           </div>
         </CardContent>
-      </Card>
-    </Link>
+      </Link>
+
+      {/* Purchasable → Buy now + Add to cart (Task 3) */}
+      {product ? (
+        <div className="flex gap-2 border-t border-border p-3">
+          <AddToCartButton productId={course.id} size="sm" className="flex-1" />
+          <BuyNowButton productId={course.id} size="sm" className="flex-1" />
+        </div>
+      ) : null}
+    </Card>
   );
 }
 
-function CatalogGrid({ courses }: { courses: CourseSummary[] }) {
+function CatalogGrid({
+  courses,
+  products,
+}: {
+  courses: CourseSummary[];
+  products: Map<string, CatalogProduct>;
+}) {
   return (
     <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
       {courses.map((course, i) => (
@@ -136,7 +163,7 @@ function CatalogGrid({ courses }: { courses: CourseSummary[] }) {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.04 * i, duration: 0.35, ease: "easeOut" }}
         >
-          <CourseCard course={course} />
+          <CourseCard course={course} product={products.get(course.id)} />
         </motion.div>
       ))}
     </div>
@@ -202,6 +229,15 @@ export function CatalogClient() {
       }),
   });
 
+  // Purchasable products (pricing + stock) for the card action row.
+  const catalogQuery = useQuery({
+    queryKey: ["catalog-products"],
+    queryFn: () => listCatalogProducts(),
+  });
+  const products = new Map(
+    catalogQuery.data?.map((p) => [p.product_id, p]) ?? [],
+  );
+
   const totalPages = data
     ? Math.ceil(data.estimatedTotalHits / data.limit)
     : 0;
@@ -223,6 +259,8 @@ export function CatalogClient() {
         <div className="relative flex-1">
           <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
           <Input
+            name="q"
+            aria-label="Search courses"
             placeholder={'Search courses… (try "security", "zzzz" for empty, "boom" for error)'}
             value={query}
             onChange={(e) => applyQuery(e.target.value)}
@@ -330,7 +368,7 @@ export function CatalogClient() {
               ) : null}
             </div>
 
-            <CatalogGrid courses={data.hits} />
+            <CatalogGrid courses={data.hits} products={products} />
 
             {/* Pagination */}
             {totalPages > 1 ? (

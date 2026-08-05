@@ -62,6 +62,19 @@
  *     Webhook delivery is idempotent by idempotency_key (§8.2/§8.3). B2B
  *     seat actions (invite/suspend/reassign) are left open by the docs — the
  *     billing surface renders the read model only.
+ *   - content.ts : ContentStatus gained `in_review` (F7) as a provisional
+ *     intermediate state for the submit-for-review / publish workflow; §4.4
+ *     names draft vs published.
+ *   - admin (F7) : build.md F7 scopes the admin surface to COURSE authoring
+ *     + the two-person review flow + audit. Orders / Users / Labs / Problems
+ *     are manage-style read lists here, not authoring CRUD. The role gate is
+ *     FRONTEND-ONLY (real RBAC lives in the backend); admin ops mutate the
+ *     fixture stores (upsert/deleteCourse) and write an append-only audit
+ *     log. CatalogProduct.stock is mock inventory for Buy Now validation.
+ *     The demo user's cart persists to localStorage (mock stand-in for the
+ *     Commerce backend's cart persistence). CHECKOUT_DEMO_503 (lib/config.ts)
+ *     is a demo flag that short-circuits checkout with a simulated 503.
+ *     Guest checkout does NOT exist: Buy Now / Add to Cart require sign-in.
  *   - gamification.ts : the §5.3 Pydantic schemas (LedgerEntry, StreakState,
  *     RankState, LeagueStanding, GuildRollup, ProgressContext) are
  *     transcribed verbatim. The rank-ladder XP bands are ILLUSTRATIVE in the

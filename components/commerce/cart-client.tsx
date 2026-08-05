@@ -25,7 +25,9 @@ import {
   getCart,
   removeFromCart,
 } from "@/lib/api/commerce";
+import { MockApiError } from "@/lib/api/errors";
 import { formatMoney } from "@/lib/format";
+import { CheckoutOutage } from "@/components/commerce/checkout-outage";
 import { cn } from "@/lib/utils";
 import { useSession } from "@/components/providers/session-provider";
 import { Badge } from "@/components/ui/badge";
@@ -305,24 +307,36 @@ export function CartClient() {
                 )}
               </Button>
 
-              {checkoutMutation.isError ? (
-                <div className="flex items-start gap-2 rounded-lg border border-destructive/25 bg-destructive/5 p-3 text-xs text-destructive">
-                  <TriangleAlert className="mt-0.5 size-3.5 shrink-0" />
-                  <div className="flex flex-col gap-1">
+              {checkoutMutation.isError ?
+                checkoutMutation.error instanceof MockApiError &&
+                checkoutMutation.error.code === "checkout_down" ? (
+                  /* Simulated outage (Task 4) — dedicated maintenance state */
+                  <div className="flex flex-col gap-2">
+                    <CheckoutOutage
+                      onRetry={() => checkoutMutation.mutate()}
+                      retrying={checkoutMutation.isPending}
+                    />
+                    {cart.items.some((i) => i.product_id === "course-boom") ? (
+                      <button
+                        className="self-center text-xs font-medium text-muted-foreground underline underline-offset-2 hover:text-foreground"
+                        onClick={() => removeMutation.mutate("course-boom")}
+                      >
+                        Remove the outage demo product from your cart to
+                        recover
+                      </button>
+                    ) : null}
+                  </div>
+                ) : (
+                  <div className="flex items-start gap-2 rounded-lg border border-destructive/25 bg-destructive/5 p-3 text-xs text-destructive">
+                    <TriangleAlert className="mt-0.5 size-3.5 shrink-0" />
                     <span>
                       {checkoutMutation.error instanceof Error
                         ? checkoutMutation.error.message
                         : "Checkout failed."}
                     </span>
-                    <button
-                      className="text-left font-medium underline underline-offset-2"
-                      onClick={() => removeMutation.mutate("course-boom")}
-                    >
-                      Remove the outage product and retry
-                    </button>
                   </div>
-                </div>
-              ) : null}
+                )
+              : null}
 
               <p className="flex items-center gap-1.5 text-[11px] leading-relaxed text-muted-foreground">
                 <ShieldCheck className="size-3.5 shrink-0 text-emerald-500" />

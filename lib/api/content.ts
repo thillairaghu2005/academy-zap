@@ -57,8 +57,6 @@ export async function getCourseProgress(
  *    → player error state
  */
 
-const PUBLISHED_COURSES = MOCK_COURSES.filter((c) => c.status === "published");
-
 export async function getCourse(courseId: string): Promise<Course> {
   await delay(jitter(320));
   const course = MOCK_COURSES_BY_ID.get(courseId);
@@ -134,7 +132,9 @@ export async function searchCatalog(
     );
   }
 
-  const filtered = PUBLISHED_COURSES.filter((course) => {
+  // Filter LIVE (not a module-load snapshot) so courses published through
+  // the admin CMS (F7) appear in the public catalog immediately.
+  const filtered = MOCK_COURSES.filter((course) => course.status === "published").filter((course) => {
     const summary = courseToSummary(course);
     const haystack = [
       course.title,

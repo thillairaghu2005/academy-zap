@@ -10,8 +10,12 @@
 
 export type CourseLevel = "beginner" | "intermediate" | "advanced";
 export type LessonKind = "video" | "article";
-/** §4.4 — courses are versioned like code: draft vs published */
-export type ContentStatus = "draft" | "published";
+/**
+ * §4.4 — courses are versioned like code: draft vs published.
+ * F7 (Admin/CMS) adds `in_review` for the submit-for-review →
+ * second-reviewer-publish workflow (build.md F7).
+ */
+export type ContentStatus = "draft" | "in_review" | "published";
 export type EnrollmentStatus = "active" | "completed";
 
 export interface CourseInstructor {

@@ -27,6 +27,16 @@
 
 export type PaymentProvider = "razorpay" | "stripe";
 
+/** Purchasable product (course or lab pass) as listed in the catalog. */
+export interface CatalogProduct {
+  product_id: string;
+  kind: "course" | "lab";
+  title: string;
+  price_cents: number;
+  /** Mock inventory — Buy Now validates this before checkout. */
+  stock: number;
+}
+
 export interface CartItem {
   /** Product id (course id / lab id / plan id). */
   product_id: string;
