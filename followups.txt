@@ -1,0 +1,111 @@
+ZAPSTERS — SUGGESTED FOLLOW-UPS (EXPLAINED)
+============================================
+Generated after the audit Track A (safety net) + Track B (Coursera-style
+light redesign) were completed and committed on `main`.
+
+Current state at a glance:
+  - 6 new commits on top of 92275fd (auth, support, f7+demo, Track A,
+    Track B, review follow-ups). Working tree is clean.
+  - pnpm typecheck / lint / test (34 tests) / build all pass.
+  - Auth boundary verified at runtime (redirect, cookie, admin gate).
+
+----------------------------------------------------------------------
+1. PUSH THE MAIN BRANCH TO ORIGIN (CI + backup)
+----------------------------------------------------------------------
+What:      `git push origin main` — the local repo has 6 commits that
+           have never been pushed (origin/main is still at 92275fd).
+Why it matters:
+  - The work is only on your machine right now. A disk failure or a
+    stray `git reset` would lose the auth/support/F7 work, the test
+    harness, and the redesign.
+  - The new GitHub Actions workflow (.github/workflows/ci.yml) only
+    runs after a push. It will lint, typecheck, run the 34 tests,
+    build, and track the dependency audit on every push/PR — a real
+    regression net for all future changes.
+What it involves:
+  - `git push origin main`
+  - Watch the first CI run; the `pnpm audit` step is non-blocking by
+    design (Track, don't fix — see follow-up notes / audit.md A5).
+Note: pushing is an effectful action — say the word and I'll run it.
+
+----------------------------------------------------------------------
+2. DECOMPOSE THE FIVE 700+ LOC COMPONENTS
+----------------------------------------------------------------------
+What:      Split these large client components into smaller units:
+             - components/judge/problem-detail-client.tsx   (812 LOC)
+             - components/assessments/attempt-client.tsx    (781 LOC)
+             - components/gamification/rank-hub-client.tsx  (721 LOC)
+             - components/admin/course-form.tsx             (713 LOC)
+             - components/lab/session-client.tsx            (690 LOC)
+Why it matters:
+  - The audit flagged these as the highest-risk files (LOC grows past
+    the point where one person can hold the whole file in their head).
+  - During the redesign they were deliberately restyled IN PLACE (swap
+    classes/tokens, no JSX restructure) so the "restyle + decompose"
+    diff would be safe to review. Decomposition was deferred to now.
+What it involves:
+  - Extract self-contained panels/helpers per file, e.g.:
+      * problem-detail: verdict panel, submission history, editor pane
+      * attempt-client: timer/combo widgets, question renderer
+      * rank-hub: XP tracks card, streak card, ladder, prestige row
+      * course-form: the review-approval card and the diff card
+      * session-client: terminal chrome, objectives panel, timer bar
+  - Behavior must stay identical — the 34 unit tests + typecheck +
+    lint + build are the guardrails while refactoring.
+Note: this is refactoring only, no visual/behavioral change expected.
+
+----------------------------------------------------------------------
+3. DARKEN THE INPUT BORDER TOKEN (#D1D5DB -> #9CA3AF)
+----------------------------------------------------------------------
+What:      Change `--color-input` in app/globals.css from #D1D5DB to a
+           darker gray (#9CA3AF) so interactive field boundaries pass
+           WCAG 2.2 non-text contrast (3:1 against the #FFFFFF card).
+Why it matters:
+  - The B8 accessibility review found that the light #E5E7EB/#D1D5DB
+    borders are a deliberate Coursera-style look, but input boundaries
+    at <3:1 fail the non-text contrast requirement for people with low
+    vision.
+  - Focus is already compensated with a strong #0056D2 ring, but the
+    resting border is the gap.
+What it involves:
+  - One token change in globals.css (`--color-input`), which cascades
+    to every Input/Select/Textarea since they all read the token.
+  - Quick verify: rerun typecheck/lint/build; visually check a form.
+Note: pure styling, no logic impact. ~5 minutes of work.
+
+----------------------------------------------------------------------
+4. VERIFY ALL 29 ROUTES IN THE BROWSER (responsive + light-theme)
+----------------------------------------------------------------------
+What:      Start the app in demo mode and walk every route at desktop,
+           tablet, and mobile widths to catch remaining light-theme
+           layout issues.
+Why it matters:
+  - The redesign flipped the theme dark -> light via tokens, which
+    affects every surface. The browser check already confirmed the
+    dashboard, /rank, and /login look correct, but the remaining 26
+    routes (judge editor, lab terminal, checkout, admin tables,
+    support threads, etc.) haven't been visually walked since the
+    retheme.
+  - Areas most likely to have leftovers: components that keep their
+    own dark elements (share-card, Guacamole stub), and dense tables
+    on small screens.
+What it involves:
+  - `NEXT_PUBLIC_DEMO_MODE=true pnpm dev` (demo auto-auth skips login)
+  - Walk the route tree:
+      /, /courses, /courses/[id], /courses/[id]/learn, /judge,
+      /judge/[id], /labs, /labs/[id], /labs/[id]/session/[sessionId],
+      /assessments, /assessments/[id]/attempt/[attemptId], /rank,
+      /rank/badges, /rank/verify/[credentialId], /leaderboards,
+      /guilds, /cart, /checkout/[checkoutId], /checkout/billing,
+      /support, /support/new, /support/[ticketId],
+      /admin + all admin sections
+  - Check: light background, readable text, no horizontal overflow,
+    mobile nav drawer works, console has no errors.
+Note: I can automate this with the browser tool when you're ready.
+
+----------------------------------------------------------------------
+Quick reference — credentials if you need to sign in (mock auth):
+  - Learner:  any email (e.g. aarav@zapsters.dev) + any 8+ char password
+  - Admin:    any email ending in @admin.zapsters.dev + any 8+ char password
+  - Error demos: error@zapsters.dev (401), taken@zapsters.dev (409 register)
+----------------------------------------------------------------------
