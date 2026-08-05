@@ -5,6 +5,7 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
+import { toast } from "sonner";
 import {
   AlertTriangle,
   CheckCircle2,
@@ -17,12 +18,19 @@ import {
   Play,
   ShieldCheck,
   ShieldQuestion,
+  ShoppingCart,
   Sparkles,
   Terminal,
 } from "lucide-react";
 
 import type { Lab } from "@/lib/contracts/lab";
 import { getLab, provisionSession } from "@/lib/api/lab";
+import {
+  addToCart,
+  getCatalogProduct,
+  hasEntitlement,
+} from "@/lib/api/commerce";
+import { formatMoney } from "@/lib/format";
 import { useSession } from "@/components/providers/session-provider";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -67,11 +75,36 @@ export function LabDetailClient({ labId }: { labId: string }) {
     queryFn: () => getLab(labId),
   });
 
+  // F6 entitlement gate: some labs are sold as lab passes (catalog lookup).
+  const catalogQuery = useQuery({
+    queryKey: ["catalog-product", labId],
+    queryFn: () => getCatalogProduct(labId),
+    enabled: Boolean(user),
+  });
+  const entitlementQuery = useQuery({
+    queryKey: ["entitlement", labId, user?.id ?? ""],
+    queryFn: () => hasEntitlement(user?.id ?? "", labId),
+    enabled: Boolean(user && catalogQuery.data),
+  });
+  const isPaidLab = Boolean(catalogQuery.data);
+  const isLocked = Boolean(
+    isPaidLab && user && entitlementQuery.data === false,
+  );
+  // While the entitlement read is in flight, a paid lab must not show the
+  // Start button (it could be clicked before access resolves).
+  const accessPending = Boolean(isPaidLab && user && entitlementQuery.isLoading);
+
   const provision = useMutation({
     mutationFn: () =>
       provisionSession(labId, user?.id ?? "").then((session) => {
         router.push(`/labs/${labId}/session/${session.session_id}`);
       }),
+  });
+
+  const buyMutation = useMutation({
+    mutationFn: () =>
+      addToCart(user?.id ?? "", labId, 1).then(() => router.push("/cart")),
+    onError: (error: Error) => toast.error(error.message),
   });
 
   /* ---------- Loading ---------- */
@@ -247,23 +280,65 @@ export function LabDetailClient({ labId }: { labId: string }) {
               </li>
             </ul>
 
-            <Button
-              onClick={() => provision.mutate()}
-              disabled={!user || provision.isPending}
-              className="w-full gap-2"
-            >
-              {provision.isPending ? (
-                <>
-                  <LoaderCircle className="size-4 animate-spin" />
-                  Provisioning…
-                </>
-              ) : (
-                <>
-                  <Play className="size-4" />
-                  Start Lab
-                </>
-              )}
-            </Button>
+            {!user && isPaidLab ? (
+              <Button variant="gradient" className="w-full gap-2" asChild>
+                <Link href={`/login?next=/labs/${labId}`}>
+                  <Lock className="size-4" />
+                  Sign in to buy this lab
+                </Link>
+              </Button>
+            ) : accessPending ? (
+              <Button disabled className="w-full gap-2">
+                <LoaderCircle className="size-4 animate-spin" />
+                Checking access…
+              </Button>
+            ) : isLocked ? (
+              <Button
+                variant="gradient"
+                className="w-full gap-2"
+                disabled={buyMutation.isPending}
+                onClick={() => buyMutation.mutate()}
+              >
+                {buyMutation.isPending ? (
+                  <>
+                    <LoaderCircle className="size-4 animate-spin" />
+                    Adding to cart…
+                  </>
+                ) : (
+                  <>
+                    <ShoppingCart className="size-4" />
+                    Buy lab pass —{" "}
+                    {formatMoney(catalogQuery.data!.price_cents)}
+                  </>
+                )}
+              </Button>
+            ) : (
+              <Button
+                onClick={() => provision.mutate()}
+                disabled={!user || provision.isPending}
+                className="w-full gap-2"
+              >
+                {provision.isPending ? (
+                  <>
+                    <LoaderCircle className="size-4 animate-spin" />
+                    Provisioning…
+                  </>
+                ) : (
+                  <>
+                    <Play className="size-4" />
+                    Start Lab
+                  </>
+                )}
+              </Button>
+            )}
+
+            {isLocked ? (
+              <p className="flex items-start gap-1.5 text-xs leading-relaxed text-muted-foreground">
+                <Lock className="mt-0.5 size-3.5 shrink-0 text-warning" />
+                This lab requires a lab pass. Payment happens on the
+                provider&apos;s hosted page — no card data touches Zapsters.
+              </p>
+            ) : null}
 
             {provision.isPending ? (
               <motion.div
@@ -295,7 +370,7 @@ export function LabDetailClient({ labId }: { labId: string }) {
               </motion.div>
             ) : null}
 
-            {!user ? (
+            {!user && !isPaidLab ? (
               <p className="flex items-center gap-1.5 text-xs text-muted-foreground">
                 <Lock className="size-3.5 shrink-0" />
                 Sign in to start a lab session.

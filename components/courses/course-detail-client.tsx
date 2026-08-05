@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import {
@@ -15,7 +16,9 @@ import {
   GraduationCap,
   Hourglass,
   LoaderCircle,
+  Lock,
   PlayCircle,
+  ShoppingCart,
   Star,
   Users,
 } from "lucide-react";
@@ -26,6 +29,8 @@ import {
   getCourseProgress,
   type CourseProgress,
 } from "@/lib/api/content";
+import { addToCart, hasEntitlement } from "@/lib/api/commerce";
+import { formatMoney } from "@/lib/format";
 import { hueForId } from "@/lib/visual";
 import { useSession } from "@/components/providers/session-provider";
 import { Badge } from "@/components/ui/badge";
@@ -93,9 +98,11 @@ function LessonRow({
 
 export function CourseDetailClient({ course }: { course: Course }) {
   const { user } = useSession();
+  const router = useRouter();
   const queryClient = useQueryClient();
   const userId = user?.id ?? "";
   const isEnrolledUser = Boolean(user);
+  const isFree = course.price_cents === 0;
 
   const allLessons = course.syllabus.flatMap((section) => section.lessons);
 
@@ -123,11 +130,25 @@ export function CourseDetailClient({ course }: { course: Course }) {
     },
   });
 
+  // F6 entitlement gate: paid courses require a purchase (hosted checkout).
+  // The mock owns the truth — the client never guesses access.
+  const ownedQuery = useQuery({
+    queryKey: ["entitlement", course.id, userId],
+    queryFn: () => hasEntitlement(userId, course.id),
+    enabled: isEnrolledUser && !isFree,
+  });
+  const owned = ownedQuery.data ?? false;
+
+  const buyMutation = useMutation({
+    mutationFn: () =>
+      addToCart(userId, course.id, 1).then(() => router.push("/cart")),
+    onError: (error: Error) => toast.error(error.message),
+  });
+
   const enrollment = progress?.enrollment ?? null;
   const completedSet = new Set(progress?.completed_lesson_ids ?? []);
   const completedCount = allLessons.filter((l) => completedSet.has(l.id)).length;
   const isDraft = course.status === "draft";
-  const isFree = course.price_cents === 0;
 
   return (
     <PageContainer className="max-w-5xl">
@@ -270,14 +291,14 @@ export function CourseDetailClient({ course }: { course: Course }) {
                     Sign in to enroll
                   </Link>
                 </Button>
-              ) : progressLoading ? (
+              ) : progressLoading || (ownedQuery.isLoading && !isFree) ? (
                 <Button variant="gradient" disabled className="w-full">
                   <LoaderCircle className="animate-spin" />
-                  Checking enrollment…
+                  Checking access…
                 </Button>
-              ) : progressError ? (
+              ) : progressError || (ownedQuery.isError && !isFree) ? (
                 <ErrorState
-                  title="Couldn't load your enrollment"
+                  title="Couldn't check your access"
                   message="Refresh to retry."
                   className="px-4 py-6"
                 />
@@ -305,6 +326,33 @@ export function CourseDetailClient({ course }: { course: Course }) {
                 <Button disabled className="w-full">
                   Draft — not enrollable
                 </Button>
+              ) : !isFree && !owned ? (
+                /* Paid + not owned → entitlement gate: buy via hosted checkout */
+                <div className="flex flex-col gap-2.5">
+                  <Button
+                    variant="gradient"
+                    className="w-full"
+                    disabled={buyMutation.isPending}
+                    onClick={() => buyMutation.mutate()}
+                  >
+                    {buyMutation.isPending ? (
+                      <>
+                        <LoaderCircle className="animate-spin" />
+                        Adding to cart…
+                      </>
+                    ) : (
+                      <>
+                        <ShoppingCart className="size-4" />
+                        Buy course — {formatMoney(course.price_cents)}
+                      </>
+                    )}
+                  </Button>
+                  <p className="flex items-start gap-1.5 text-xs leading-relaxed text-muted-foreground">
+                    <Lock className="mt-0.5 size-3.5 shrink-0 text-warning" />
+                    You don&apos;t have access yet. Payment happens on the
+                    provider&apos;s hosted page — no card data touches Zapsters.
+                  </p>
+                </div>
               ) : (
                 <Button
                   variant="gradient"

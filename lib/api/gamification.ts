@@ -16,12 +16,15 @@
 import type {
   Badge,
   BadgeVerifyResult,
+  ContextSnapshot,
+  ContextVersionDiff,
   GuildStanding,
   GuildVsGuild,
   LeaderboardEntry,
   LeaderboardPage,
   LeaderboardScope,
   LeagueStanding,
+  LedgerAuditView,
   ProgressContext,
   RankLevel,
   SeasonPassState,
@@ -33,10 +36,12 @@ import {
   buildGuildBoard,
   buildGuildVsGuild,
   buildLeaderboard,
+  buildLedgerAudit,
   buildMyStanding,
   buildSeasonPass,
   buildShareCard,
   contextForUser,
+  demoLedgerEntries,
   MOCK_BADGES,
   MOCK_SKILL_TREE,
   verifyCredential,
@@ -193,4 +198,40 @@ export async function getSeasonPass(userId: string): Promise<SeasonPassState> {
   await delay(jitter(200));
   assertReachable(userId);
   return buildSeasonPass();
+}
+
+/**
+ * Full audit view for the ledger viewer (§7.2): raw entries, chain status,
+ * versioned context snapshots and the diffs between them — the "show me why
+ * user X is Rank 7" answer, in mock form.
+ */
+export async function getLedgerAudit(userId: string): Promise<LedgerAuditView> {
+  await delay(jitter(260));
+  assertReachable(userId);
+  const ledger = await demoLedgerEntries();
+  const audit = await buildLedgerAudit();
+  const snapshots: ContextSnapshot[] = audit.snapshots;
+
+  // Diffs between consecutive snapshots (reverse-chronological: newest last).
+  const diffs: ContextVersionDiff[] = [];
+  for (let i = 1; i < snapshots.length; i++) {
+    const from = snapshots[i - 1]!;
+    const to = snapshots[i]!;
+    diffs.push({
+      from_version: from.context_version,
+      to_version: to.context_version,
+      completion_delta: to.completion_xp - from.completion_xp,
+      mastery_delta: to.mastery_xp - from.mastery_xp,
+      rank_changed: from.rank_name !== to.rank_name || from.level !== to.level,
+      from_rank: from.rank_name,
+      to_rank: to.rank_name,
+    });
+  }
+
+  return {
+    chain: audit.chain,
+    entries: ledger,
+    snapshots,
+    diffs,
+  };
 }

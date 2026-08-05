@@ -34,6 +34,8 @@ import { ErrorState } from "@/components/shared/error-state";
 import { PageContainer } from "@/components/shared/page-container";
 import { SkeletonLines } from "@/components/shared/skeletons";
 import { ShareCardModal } from "@/components/gamification/share-card-modal";
+import { SeasonPassCard } from "@/components/gamification/season-pass-card";
+import { LedgerViewer } from "@/components/gamification/ledger-viewer";
 import { cn } from "@/lib/utils";
 
 /* ------------------------------------------------------------------ */
@@ -62,6 +64,7 @@ export function RankHubClient() {
   const router = useRouter();
   const [demoUser, setDemoUser] = React.useState<string>(user?.id ?? "4c1e0a9f-8c6e-4b2d-9f3a-2b8d1e5c7a91");
   const [shareOpen, setShareOpen] = React.useState(false);
+  const [ledgerOpen, setLedgerOpen] = React.useState(false);
 
   const ctxQuery = useQuery({
     queryKey: ["progress-context", demoUser],
@@ -200,13 +203,22 @@ export function RankHubClient() {
                     ctx v{ctx.context_version} ·{" "}
                     {new Date(ctx.computed_at).toLocaleDateString()}
                   </p>
-                  <Button
-                    size="sm"
-                    onClick={() => setShareOpen(true)}
-                    disabled={ctx.freeze_status === "frozen_pending_review"}
-                  >
-                    <Sparkles /> Share rank card
-                  </Button>
+                  <div className="flex gap-2">
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => setLedgerOpen(true)}
+                    >
+                      <BookOpen /> Ledger
+                    </Button>
+                    <Button
+                      size="sm"
+                      onClick={() => setShareOpen(true)}
+                      disabled={ctx.freeze_status === "frozen_pending_review"}
+                    >
+                      <Sparkles /> Share rank card
+                    </Button>
+                  </div>
                   {ctx.freeze_status === "frozen_pending_review" ? (
                     <p className="text-[10px] text-muted-foreground">
                       Frozen — share disabled pending review
@@ -247,6 +259,11 @@ export function RankHubClient() {
             </div>
           </div>
 
+          {/* Season pass track */}
+          <div className="mt-10">
+            <SeasonPassCard />
+          </div>
+
           {/* Rank ladder */}
           <div className="mt-10">
             <RankLadderSection
@@ -284,6 +301,11 @@ export function RankHubClient() {
       <ShareCardModal
         open={shareOpen}
         onOpenChange={setShareOpen}
+        userId={demoUser === "boom" || demoUser === "missing-user" ? "4c1e0a9f-8c6e-4b2d-9f3a-2b8d1e5c7a91" : demoUser}
+      />
+      <LedgerViewer
+        open={ledgerOpen}
+        onOpenChange={setLedgerOpen}
         userId={demoUser === "boom" || demoUser === "missing-user" ? "4c1e0a9f-8c6e-4b2d-9f3a-2b8d1e5c7a91" : demoUser}
       />
     </PageContainer>

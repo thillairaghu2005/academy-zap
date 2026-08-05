@@ -1,16 +1,9 @@
-import type { Metadata } from "next";
-import { notFound } from "next/navigation";
+import { redirect } from "next/navigation";
 
-import { getSurface } from "@/lib/surfaces";
-import { SurfaceStub } from "@/components/shared/surface-stub";
-
-export const metadata: Metadata = {
-  title: "Checkout",
-  description: "Commerce — cart and hosted checkout embeds. Landing in F6.",
-};
-
-export default function CheckoutPage() {
-  const surface = getSurface("checkout");
-  if (!surface) notFound();
-  return <SurfaceStub surface={surface} />;
+/**
+ * The checkout root has no session id — a checkout session is always created
+ * from the cart (create_checkout) and deep-linked. Redirect to the cart.
+ */
+export default function CheckoutRootPage() {
+  redirect("/cart");
 }

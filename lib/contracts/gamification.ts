@@ -311,3 +311,50 @@ export interface SeasonPassState {
   xp_this_season: number;
   premium_owned: boolean;
 }
+
+/* ------------------------------------------------------------------ */
+/*  Ledger viewer (§7.2 auditability — the "show me why user X is      */
+/*  Rank 7" answer)                                                    */
+/* ------------------------------------------------------------------ */
+
+/** Chain verification result for the viewer banner. */
+export interface LedgerChainStatus {
+  valid: boolean;
+  /** Index of the first broken link, if any. */
+  broken_at: number | null;
+  /** Genesis anchor shown in the UI. */
+  genesis_hash: string;
+}
+
+/** One versioned ProgressContext snapshot — append-only, never overwritten. */
+export interface ContextSnapshot {
+  context_version: number;
+  computed_at: string;
+  rank_name: string;
+  level: number;
+  completion_xp: number;
+  mastery_xp: number;
+  current_streak_days: number;
+  freeze_status: FreezeStatus;
+}
+
+/** Diff between two consecutive context versions (§5.4 step 7). */
+export interface ContextVersionDiff {
+  from_version: number;
+  to_version: number;
+  /** Net XP added on each track between versions. */
+  completion_delta: number;
+  mastery_delta: number;
+  /** true if rank_name or level changed. */
+  rank_changed: boolean;
+  from_rank: string;
+  to_rank: string;
+}
+
+/** The full audit payload for the ledger viewer. */
+export interface LedgerAuditView {
+  chain: LedgerChainStatus;
+  entries: LedgerEntry[];
+  snapshots: ContextSnapshot[];
+  diffs: ContextVersionDiff[];
+}

@@ -27,6 +27,7 @@ import { RANK_LADDER } from "@/lib/contracts/gamification";
 import type {
   Badge,
   BadgeVerifyResult,
+  FreezeStatus,
   GuildMember,
   GuildStanding,
   GuildVsGuild,
@@ -199,6 +200,62 @@ export async function verifyDemoLedger(): Promise<{
   broken_at: number | null;
 }> {
   return verifyLedgerChain(await demoLedger());
+}
+
+/** Raw ledger read for the audit viewer (append-only, nothing mutated). */
+export async function demoLedgerEntries(): Promise<LedgerEntry[]> {
+  return demoLedger();
+}
+
+/**
+ * §5.4 step 7 — versioned recomputes. Each context_version is computed from
+ * an earlier slice of the same append-only ledger (like a nightly recompute),
+ * so diffs between versions are honest deltas over real entries. The
+ * genesis-anchor chain status and the reverse-chronological snapshots let the
+ * viewer answer "show me exactly why user X is Rank 7".
+ */
+export async function buildLedgerAudit(): Promise<{
+  chain: { valid: boolean; broken_at: number | null; genesis_hash: string };
+  snapshots: {
+    context_version: number;
+    computed_at: string;
+    rank_name: string;
+    level: number;
+    completion_xp: number;
+    mastery_xp: number;
+    current_streak_days: number;
+    freeze_status: FreezeStatus;
+  }[];
+}> {
+  const ledger = await demoLedger();
+  const chain = await verifyLedgerChain(ledger);
+  // Recompute from progressively older slices: v43 (2 weeks ago), v42 (1 week
+  // ago), v41 (now). Slices keep the reversed-adjustment entry in every case
+  // so the reversal stays visible in the audit trail.
+  const slices: [number, number][] = [
+    [43, Math.floor(ledger.length * 0.62)],
+    [42, Math.floor(ledger.length * 0.8)],
+    [41, ledger.length],
+  ];
+  const snapshots = [];
+  for (const [version, count] of slices) {
+    const { completion_xp, mastery_xp } = aggregateXpTracks(
+      ledger.slice(0, count),
+    );
+    const { level, rank_name } = resolveRank(completion_xp, mastery_xp);
+    const computedDaysAgo = version === 41 ? 0 : version === 42 ? 7 : 14;
+    snapshots.push({
+      context_version: version,
+      computed_at: iso(computedDaysAgo),
+      rank_name,
+      level,
+      completion_xp,
+      mastery_xp,
+      current_streak_days: version === 41 ? 21 : version === 42 ? 14 : 7,
+      freeze_status: "live" as FreezeStatus,
+    });
+  }
+  return { chain: { ...chain, genesis_hash: GENESIS_HASH }, snapshots };
 }
 
 /* ------------------------------------------------------------------ */

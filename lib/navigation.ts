@@ -4,6 +4,7 @@ import {
   ChartColumn,
   ClipboardList,
   CodeXml,
+  CreditCard,
   FlaskConical,
   LayoutDashboard,
   ShoppingCart,
@@ -57,6 +58,9 @@ export const sideNavGroups: NavGroup[] = [
   },
   {
     label: "Commerce",
-    items: [{ href: "/checkout", label: "Checkout", icon: ShoppingCart }],
+    items: [
+      { href: "/cart", label: "Cart", icon: ShoppingCart },
+      { href: "/checkout/billing", label: "Billing & seats", icon: CreditCard },
+    ],
   },
 ];

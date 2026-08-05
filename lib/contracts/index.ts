@@ -48,6 +48,20 @@
  *     are referenced, not schematized). ComboState is a reasonable reading
  *     of the gamification doc's combo counter + multiplier language; the
  *     client only ever previews it.
+ *   - commerce.ts : the docs lock the PaymentProvider Protocol (§4.1:
+ *     create_checkout -> CheckoutSession, verify_webhook -> PaymentEvent), the
+ *     `payment.succeeded` event literal, the orders/subscriptions/invoices
+ *     tables (§4.2), and the HARD rule that payment UI is Razorpay/Stripe
+ *     hosted-checkout embeds only (§2.2/§2.3 — never a custom card-number
+ *     input). Cart / CheckoutSession / PaymentEvent / Entitlement / Order /
+ *     Subscription field lists are NOT schematized in the docs — reasonable
+ *     decisions, with CheckoutSession deliberately provider-shaped (id,
+ *     status, hosted embed URL) so the sandbox-embed swap is field-identical.
+ *     `payment.failed` / `payment.refunded` are reasonable additions to the
+ *     named `payment.succeeded` literal for the all-states requirement.
+ *     Webhook delivery is idempotent by idempotency_key (§8.2/§8.3). B2B
+ *     seat actions (invite/suspend/reassign) are left open by the docs — the
+ *     billing surface renders the read model only.
  *   - gamification.ts : the §5.3 Pydantic schemas (LedgerEntry, StreakState,
  *     RankState, LeagueStanding, GuildRollup, ProgressContext) are
  *     transcribed verbatim. The rank-ladder XP bands are ILLUSTRATIVE in the
@@ -67,3 +81,4 @@ export * from "./judge";
 export * from "./lab";
 export * from "./assessment";
 export * from "./gamification";
+export * from "./commerce";
