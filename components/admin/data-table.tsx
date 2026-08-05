@@ -5,6 +5,8 @@ import {
   ArrowDown,
   ArrowUp,
   ArrowUpDown,
+  ChevronDown,
+  ChevronRight,
   Search,
   X,
 } from "lucide-react";
@@ -68,6 +70,13 @@ interface DataTableProps<T> {
   toolbar?: React.ReactNode;
   /** Row-level action buttons rendered in a right-aligned column. */
   actions?: (row: T) => React.ReactNode;
+  /**
+   * When set, each row gets a leading expander chevron (only rows where
+   * this returns true are expandable) and the expanded content renders in a
+   * full-width row below. Used by the audit log's ledger-link details.
+   */
+  expandable?: (row: T) => boolean;
+  expandedRow?: (row: T) => React.ReactNode;
   /** Footer caption under the count, e.g. row totals. */
   caption?: string;
 }
@@ -96,6 +105,8 @@ export function DataTable<T>({
   emptyDescription,
   toolbar,
   actions,
+  expandable,
+  expandedRow,
   caption,
 }: DataTableProps<T>) {
   const [query, setQuery] = React.useState("");
@@ -105,6 +116,18 @@ export function DataTable<T>({
   const [sortKey, setSortKey] = React.useState<string | null>(null);
   const [sortDir, setSortDir] = React.useState<SortDir>("asc");
   const [page, setPage] = React.useState(1);
+  const [expandedKeys, setExpandedKeys] = React.useState<Set<string>>(
+    () => new Set(),
+  );
+
+  const toggleExpanded = (key: string) => {
+    setExpandedKeys((prev) => {
+      const next = new Set(prev);
+      if (next.has(key)) next.delete(key);
+      else next.add(key);
+      return next;
+    });
+  };
 
   const resetPage = React.useCallback(() => setPage(1), []);
 
@@ -255,6 +278,7 @@ export function DataTable<T>({
             <table className="w-full text-left text-sm">
               <thead>
                 <tr className="border-b border-border bg-muted/40 text-[11px] uppercase tracking-widest text-muted-foreground/70">
+                  {expandable ? <th className="w-9 px-2" /> : null}
                   {columns.map((column) => (
                     <th
                       key={column.key}
@@ -297,28 +321,69 @@ export function DataTable<T>({
                 </tr>
               </thead>
               <tbody>
-                {pageRows.map((row) => (
-                  <tr
-                    key={rowKey(row)}
-                    className="border-b border-border/60 transition-colors last:border-0 hover:bg-muted/30"
-                  >
-                    {columns.map((column) => (
-                      <td
-                        key={column.key}
-                        className={cn("px-4 py-3 align-middle", column.className)}
+                {pageRows.map((row) => {
+                  const key = rowKey(row);
+                  const isExpandable = expandable?.(row) ?? false;
+                  const isExpanded = expandedKeys.has(key);
+                  const colSpan =
+                    (expandable ? 1 : 0) + columns.length + (actions ? 1 : 0);
+                  return (
+                    <React.Fragment key={key}>
+                      <tr
+                        className={cn(
+                          "border-b border-border/60 transition-colors hover:bg-muted/30",
+                          isExpanded ? "bg-muted/30" : "last:border-0",
+                        )}
                       >
-                        {column.cell ? column.cell(row) : String((row as Record<string, unknown>)[column.key] ?? "—")}
-                      </td>
-                    ))}
-                    {actions ? (
-                      <td className="px-4 py-3 text-right">
-                        <div className="flex items-center justify-end gap-1">
-                          {actions(row)}
-                        </div>
-                      </td>
-                    ) : null}
-                  </tr>
-                ))}
+                        {expandable ? (
+                          <td className="w-9 px-2 py-3 align-middle">
+                            {isExpandable ? (
+                              <button
+                                onClick={() => toggleExpanded(key)}
+                                className="grid size-6 place-items-center rounded-md text-muted-foreground transition-colors outline-none hover:bg-accent hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring"
+                                aria-expanded={isExpanded}
+                                aria-label={
+                                  isExpanded ? "Collapse details" : "Expand details"
+                                }
+                              >
+                                {isExpanded ? (
+                                  <ChevronDown className="size-4" />
+                                ) : (
+                                  <ChevronRight className="size-4" />
+                                )}
+                              </button>
+                            ) : null}
+                          </td>
+                        ) : null}
+                        {columns.map((column) => (
+                          <td
+                            key={column.key}
+                            className={cn("px-4 py-3 align-middle", column.className)}
+                          >
+                            {column.cell ? column.cell(row) : String((row as Record<string, unknown>)[column.key] ?? "—")}
+                          </td>
+                        ))}
+                        {actions ? (
+                          <td className="px-4 py-3 text-right">
+                            <div className="flex items-center justify-end gap-1">
+                              {actions(row)}
+                            </div>
+                          </td>
+                        ) : null}
+                      </tr>
+                      {isExpanded && expandedRow && isExpandable ? (
+                        <tr className="border-b border-border/60 bg-muted/20">
+                          <td
+                            colSpan={colSpan}
+                            className="px-4 py-3 pl-12"
+                          >
+                            {expandedRow(row)}
+                          </td>
+                        </tr>
+                      ) : null}
+                    </React.Fragment>
+                  );
+                })}
               </tbody>
             </table>
           </div>
