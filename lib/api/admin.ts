@@ -198,6 +198,16 @@ async function updateCourseShared(
   if (!course) {
     throw new MockApiError("course_not_found", "Course was not found.", 404);
   }
+  // Status guard (audit A4): the UI already locks in_review/published
+  // fields, but the mock API must enforce it too — a direct call cannot
+  // patch a locked course. Status transitions are workflow-owned.
+  if (course.status !== "draft") {
+    throw new MockApiError(
+      "course_locked",
+      `A ${course.status} course is locked — only drafts can be edited. Unpublish first to start a new authoring cycle.`,
+      409,
+    );
+  }
   const next: Course = {
     ...course,
     ...patch,
@@ -439,7 +449,13 @@ export async function setUserRole(
   if (!user) throw new MockApiError("user_not_found", "User was not found.", 404);
   if (user.id === MOCK_DEMO_USER_ID && role === "admin") {
     // The demo learner stays a learner so the public demo never silently
-    // unlocks /admin — role toggles are visible on the other users.
+    // unlocks /admin. Explicit 409 (was a silent no-op that actually
+    // applied the role — audit A4 fix).
+    throw new MockApiError(
+      "role_locked",
+      "The demo learner account cannot be granted admin.",
+      409,
+    );
   }
   user.role = role;
   logAudit({

@@ -9,7 +9,8 @@ export const metadata: Metadata = {
 };
 
 /**
- * /login — anonymous visitors redirected here by middleware.ts with
+ * /login — anonymous visitors redirected here by proxy.ts (Next 16's
+ * middleware convention) with
  * ?next=<path> so they land back where they were headed after signing in.
  */
 export default async function LoginPage({

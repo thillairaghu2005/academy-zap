@@ -60,8 +60,8 @@ audit log and the admin dashboard counts open tickets.
 ## Auth & demo mode
 
 Mock auth rules live server-side: `app/api/auth/session` issues a signed,
-HttpOnly, 7-day session cookie (HMAC-SHA256, SameSite=Lax); `middleware.ts`
-verifies it on every protected request and redirects anonymous visitors to
+HttpOnly, 7-day session cookie (HMAC-SHA256, SameSite=Lax); `proxy.ts`
+(Next 16's middleware convention) verifies it on every protected request and redirects anonymous visitors to
 `/login?next=<path>` so they land back where they were headed. The client
 `lib/api/auth.ts` is a thin fetch wrapper with the same signatures the old
 all-client mock had — components never changed.

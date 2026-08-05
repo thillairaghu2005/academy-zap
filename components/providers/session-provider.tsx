@@ -49,7 +49,7 @@ const SessionContext = React.createContext<SessionContextValue | null>(null);
  * resolves it on GET /api/auth/session, and login/register/logout/demo
  * mutate it via POST. In DEMO_MODE the server auto-issues the demo learner
  * session; outside demo mode, anonymous visitors are redirected to /login
- * by middleware.ts before they ever reach the shell.
+ * by proxy.ts (Next 16's middleware) before they ever reach the shell.
  */
 export function SessionProvider({ children }: { children: React.ReactNode }) {
   const queryClient = useQueryClient();

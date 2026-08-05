@@ -206,12 +206,14 @@ export function PlayerClient({ course }: { course: Course }) {
   const [captionsOn, setCaptionsOn] = React.useState(true);
   const toggleCaptions = () => {
     setCaptionsOn((v) => !v);
-    // Toggle the first text track if the player exposes one.
+    // Toggle the first text track if the player exposes one. The video.js
+    // player is typed loosely at the ref, so the optional API surface is
+    // narrowed here instead of escaping through `any` (audit A4).
+    type TextTrackLike = { mode: string };
     const p = playerRef.current as (typeof playerRef.current) & {
-      textTracks?: () => { length: number };
+      textTracks?: () => TextTrackLike[];
     };
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const track = (p as any)?.textTracks?.()?.[0];
+    const track = p?.textTracks?.()?.[0];
     if (track) {
       track.mode = captionsOn ? "hidden" : "showing";
     }

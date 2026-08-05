@@ -2,7 +2,7 @@
  * Server-side session utilities (product-audit Fix 4: real auth boundary).
  *
  * The session is a signed, expiring cookie token (HMAC-SHA256) issued by the
- * /api/auth/session route handler and verified by middleware.ts on every
+ * /api/auth/session route handler and verified by proxy.ts on every
  * protected request. That gives the mock frontend a REAL boundary shape:
  * HttpOnly cookie, SameSite=Lax, server-issued, middleware-enforced — the
  * exact contract the future Platform Core auth replaces (build.md §4).
@@ -20,6 +20,14 @@ export const SESSION_COOKIE = "zapsters_session";
 /** Set on logout so the demo auto-auth does not immediately re-issue. */
 export const SIGNED_OUT_COOKIE = "zapsters_signed_out";
 
+// Fail fast in production (audit A4): a deployment that forgets
+// SESSION_SECRET must not silently sign tokens with a publicly-known
+// constant. Dev/demo builds keep the mock fallback for frictionless runs.
+if (!process.env.SESSION_SECRET && process.env.NODE_ENV === "production") {
+  throw new Error(
+    "SESSION_SECRET must be set in production — refusing to boot with the mock signing secret.",
+  );
+}
 const SECRET = process.env.SESSION_SECRET ?? "zapsters-mock-session-secret";
 export const SESSION_MAX_AGE_SECONDS = 7 * 24 * 60 * 60; // 7 days
 
