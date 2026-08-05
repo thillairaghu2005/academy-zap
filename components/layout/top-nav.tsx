@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Bell, Search } from "lucide-react";
 
 import { Logo } from "@/src/components/Logo/Logo";
 import { MobileNav } from "@/components/layout/side-nav";
@@ -18,6 +17,8 @@ import {
 import { cn } from "@/lib/utils";
 import { primaryNav } from "@/lib/navigation";
 import { useSession } from "@/components/providers/session-provider";
+import { GlobalSearch } from "@/components/layout/global-search";
+import { NotificationCenter } from "@/components/layout/notification-center";
 
 export function TopNav() {
   const pathname = usePathname();
@@ -58,27 +59,8 @@ export function TopNav() {
         </nav>
 
         <div className="ml-auto flex items-center gap-1.5">
-          {/* Search — catalog search (mock Meilisearch shape) */}
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button
-                variant="ghost"
-                size="sm"
-                asChild
-                className="hidden text-muted-foreground md:inline-flex"
-                aria-label="Search courses"
-              >
-                <Link href="/courses">
-                  <Search />
-                  <span>Search</span>
-                  <kbd className="ml-1 rounded border border-border bg-secondary px-1.5 py-0.5 font-mono text-[10px] text-muted-foreground">
-                    ⌘K
-                  </kbd>
-                </Link>
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>Search the course catalog</TooltipContent>
-          </Tooltip>
+          {/* Unified search — courses, problems, and labs */}
+          <GlobalSearch />
 
           {/* Cart — live item count badge (Task 2) */}
           <Tooltip>
@@ -88,23 +70,8 @@ export function TopNav() {
             <TooltipContent>Cart</TooltipContent>
           </Tooltip>
 
-          {/* Notifications — decorative until push lands */}
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <div className="relative">
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="text-muted-foreground"
-                  aria-label="Notifications (mock)"
-                >
-                  <Bell />
-                </Button>
-                <span className="pointer-events-none absolute right-2 top-2 size-2 rounded-full bg-primary ring-2 ring-background" />
-              </div>
-            </TooltipTrigger>
-            <TooltipContent>Notifications — mock until push lands</TooltipContent>
-          </Tooltip>
+          {/* Notification center — mock event feed until push/SSE lands */}
+          <NotificationCenter />
 
           <div className="ml-1">
             {isLoading ? (

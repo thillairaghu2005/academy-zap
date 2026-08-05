@@ -139,3 +139,5 @@ export * from "./assessment";
 export * from "./gamification";
 export * from "./commerce";
 export * from "./support";
+export * from "./search";
+export * from "./notification";
