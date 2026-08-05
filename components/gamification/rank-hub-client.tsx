@@ -53,11 +53,11 @@ const DEMO_USERS = [
 ] as const;
 
 const LEAGUE_TIER_STYLE: Record<string, string> = {
-  bronze: "border-orange-700/40 bg-orange-700/10 text-orange-400",
-  silver: "border-slate-400/40 bg-slate-400/10 text-slate-300",
-  gold: "border-amber-500/40 bg-amber-500/10 text-amber-400",
-  platinum: "border-cyan-500/40 bg-cyan-500/10 text-cyan-400",
-  obsidian: "border-violet-600/40 bg-violet-600/10 text-violet-400",
+  bronze: "border-orange-700/40 bg-orange-700/10 text-orange-600",
+  silver: "border-slate-400/40 bg-slate-400/10 text-slate-500",
+  gold: "border-amber-500/40 bg-amber-500/10 text-amber-600",
+  platinum: "border-cyan-500/40 bg-cyan-500/10 text-cyan-600",
+  obsidian: "border-violet-600/40 bg-violet-600/10 text-violet-600",
 };
 
 export function RankHubClient() {
@@ -154,9 +154,9 @@ export function RankHubClient() {
               animate={{ opacity: 1, y: 0 }}
               className="mb-6 flex items-start gap-3 rounded-xl border border-amber-500/40 bg-amber-500/10 p-4"
             >
-              <ShieldAlert className="mt-0.5 size-5 shrink-0 text-amber-500" />
+              <ShieldAlert className="mt-0.5 size-5 shrink-0 text-amber-600" />
               <div>
-                <p className="font-display text-sm font-semibold text-amber-400">
+                <p className="font-display text-sm font-semibold text-amber-600">
                   Progress frozen pending review
                 </p>
                 <p className="mt-0.5 text-xs leading-relaxed text-muted-foreground">
@@ -179,7 +179,7 @@ export function RankHubClient() {
               <div className="relative flex flex-wrap items-start justify-between gap-4">
                 <div>
                   <div className="flex items-center gap-2">
-                    <Trophy className="size-5 text-fuchsia-500" />
+                    <Trophy className="size-5 text-fuchsia-600" />
                     <span className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
                       Current rank
                     </span>
@@ -190,7 +190,7 @@ export function RankHubClient() {
                   <div className="mt-2 flex flex-wrap items-center gap-2">
                     <Badge variant="secondary">Level {ctx.rank.level}</Badge>
                     {ctx.rank.prestige_tier > 0 ? (
-                      <Badge className="border-fuchsia-500/40 bg-fuchsia-500/10 text-fuchsia-400">
+                      <Badge className="border-fuchsia-500/40 bg-fuchsia-500/10 text-fuchsia-600">
                         <Sparkles className="size-3" /> Prestige{" "}
                         {ctx.rank.prestige_tier}
                       </Badge>
@@ -334,7 +334,7 @@ function DualXpTracks({
   return (
     <div className="relative mt-8 space-y-4">
       <div className="flex items-center justify-between text-xs">
-        <span className="flex items-center gap-1.5 font-medium text-sky-400">
+        <span className="flex items-center gap-1.5 font-medium text-sky-600">
           <BookOpen className="size-3.5" /> Completion XP
         </span>
         <span className="font-mono text-muted-foreground">
@@ -350,7 +350,7 @@ function DualXpTracks({
         />
       </div>
       <div className="flex items-center justify-between text-xs">
-        <span className="flex items-center gap-1.5 font-medium text-fuchsia-400">
+        <span className="flex items-center gap-1.5 font-medium text-fuchsia-600">
           <Sparkles className="size-3.5" /> Mastery XP
         </span>
         <span className="font-mono text-muted-foreground">
@@ -407,7 +407,7 @@ function StreakWidget({
     <div className="rounded-xl border border-border bg-card p-4">
       <div className="flex items-center justify-between">
         <p className="flex items-center gap-2 font-display text-sm font-semibold">
-          <Flame className="size-4 text-orange-500" />
+          <Flame className="size-4 text-orange-600" />
           Streak
         </p>
         {!isLoading && !isError && streak ? (
@@ -452,7 +452,7 @@ function StreakWidget({
             </span>
           </div>
           <div className="mt-3 flex flex-wrap gap-2 text-[11px]">
-            <span className="rounded-md bg-orange-500/10 px-2 py-1 font-medium text-orange-400">
+            <span className="rounded-md bg-orange-500/10 px-2 py-1 font-medium text-orange-600">
               ×{streak.momentum_multiplier.toFixed(2)} momentum
             </span>
             <span className="rounded-md bg-secondary px-2 py-1 font-medium text-muted-foreground">
@@ -520,12 +520,12 @@ function LeagueWidget({
           </div>
           <div className="mt-3 flex flex-wrap gap-2 text-[11px]">
             {league.promotion_zone ? (
-              <span className="flex items-center gap-1 rounded-md bg-emerald-500/10 px-2 py-1 font-medium text-emerald-400">
+              <span className="flex items-center gap-1 rounded-md bg-emerald-500/10 px-2 py-1 font-medium text-emerald-600">
                 <TrendingUp className="size-3" /> Promotion zone
               </span>
             ) : null}
             {league.relegation_zone ? (
-              <span className="rounded-md bg-rose-500/10 px-2 py-1 font-medium text-rose-400">
+              <span className="rounded-md bg-rose-500/10 px-2 py-1 font-medium text-rose-600">
                 Relegation zone
               </span>
             ) : null}
@@ -559,7 +559,7 @@ function GuildWidget({ guild }: { guild: { guild_id: string; member_count: numbe
             {guild.member_count} members ·{" "}
             {guild.combined_xp_this_week.toLocaleString()} XP this week
           </p>
-          <div className="mt-2 inline-flex items-center gap-1.5 rounded-md bg-purple-500/10 px-2 py-1 text-[11px] font-medium text-purple-400">
+          <div className="mt-2 inline-flex items-center gap-1.5 rounded-md bg-purple-500/10 px-2 py-1 text-[11px] font-medium text-purple-600">
             <Trophy className="size-3" /> Global rank #{guild.guild_rank_global}
           </div>
         </>
@@ -631,7 +631,7 @@ function RankLadderSection({
                       {r.rank_name}
                     </p>
                     {isCurrent ? (
-                      <Badge className="border-fuchsia-500/40 bg-fuchsia-500/15 text-[10px] text-fuchsia-400">
+                      <Badge className="border-fuchsia-500/40 bg-fuchsia-500/15 text-[10px] text-fuchsia-600">
                         <Medal className="size-3" /> You are here
                       </Badge>
                     ) : null}
@@ -659,7 +659,7 @@ function RankLadderSection({
               currentPrestige > 0 && "border-fuchsia-500/60 bg-fuchsia-500/10",
             )}
           >
-            <span className="grid size-9 shrink-0 place-items-center rounded-lg bg-fuchsia-500/20 font-mono text-sm font-bold text-fuchsia-500">
+            <span className="grid size-9 shrink-0 place-items-center rounded-lg bg-fuchsia-500/20 font-mono text-sm font-bold text-fuchsia-600">
               ∞
             </span>
             <div className="min-w-0 flex-1">
@@ -672,7 +672,7 @@ function RankLadderSection({
               </p>
             </div>
             {currentPrestige > 0 ? (
-              <Badge className="border-fuchsia-500/40 bg-fuchsia-500/15 text-[10px] text-fuchsia-400">
+              <Badge className="border-fuchsia-500/40 bg-fuchsia-500/15 text-[10px] text-fuchsia-600">
                 <Sparkles className="size-3" /> Prestige {currentPrestige}
               </Badge>
             ) : (
@@ -707,7 +707,7 @@ function QuickLink({
       onClick={onClick}
       className="group flex items-center gap-3 rounded-xl border border-border bg-card p-4 text-left transition-colors hover:border-fuchsia-500/40 hover:bg-card/70"
     >
-      <span className="grid size-10 shrink-0 place-items-center rounded-lg bg-secondary text-muted-foreground transition-colors group-hover:bg-fuchsia-500/10 group-hover:text-fuchsia-500">
+      <span className="grid size-10 shrink-0 place-items-center rounded-lg bg-secondary text-muted-foreground transition-colors group-hover:bg-fuchsia-500/10 group-hover:text-fuchsia-600">
         <Icon className="size-5" />
       </span>
       <span>

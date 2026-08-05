@@ -132,7 +132,7 @@ export function AssessmentDetailClient({
         <div className="flex flex-col gap-6">
           <div>
             <div className="flex flex-wrap items-center gap-2">
-              <span className="text-xs font-medium uppercase tracking-wide text-amber-500">
+              <span className="text-xs font-medium uppercase tracking-wide text-amber-600">
                 {assessment.category}
               </span>
               <Badge variant="outline" className="font-mono text-[10px]">
@@ -235,7 +235,7 @@ export function AssessmentDetailClient({
           <Card className="flex flex-col gap-4 p-5">
             <div className="flex items-center justify-between">
               <span className="text-sm font-semibold">Start the assessment</span>
-              <Gauge className="size-4 text-amber-500" />
+              <Gauge className="size-4 text-amber-600" />
             </div>
             <p className="text-xs leading-relaxed text-muted-foreground">
               The timer starts when you begin. Answer flow is one question at a
@@ -243,15 +243,15 @@ export function AssessmentDetailClient({
             </p>
             <ul className="flex flex-col gap-1.5 text-xs text-muted-foreground">
               <li className="flex items-center gap-1.5">
-                <ListChecks className="size-3.5 text-amber-500" />
+                <ListChecks className="size-3.5 text-amber-600" />
                 Deterministic grading — never AI
               </li>
               <li className="flex items-center gap-1.5">
-                <Flame className="size-3.5 text-amber-500" />
+                <Flame className="size-3.5 text-amber-600" />
                 Combo preview ×3.0 max
               </li>
               <li className="flex items-center gap-1.5">
-                <ShieldAlert className="size-3.5 text-amber-500" />
+                <ShieldAlert className="size-3.5 text-amber-600" />
                 Anti-cheat telemetry is captured
               </li>
             </ul>
@@ -280,7 +280,7 @@ export function AssessmentDetailClient({
                 animate={{ opacity: 1 }}
                 className="flex items-center gap-2 rounded-lg border border-border bg-muted/40 p-3 text-xs"
               >
-                <LoaderCircle className="size-3.5 animate-spin text-amber-500" />
+                <LoaderCircle className="size-3.5 animate-spin text-amber-600" />
                 <span>Reserving attempt slot…</span>
               </motion.div>
             ) : null}

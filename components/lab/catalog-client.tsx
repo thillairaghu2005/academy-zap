@@ -145,7 +145,7 @@ function LabCard({
 
             <div className="flex items-center justify-between border-t border-border pt-2.5">
               <span className="flex items-center gap-1 text-xs text-muted-foreground">
-                <ShieldCheck className="size-3.5 text-emerald-500" />
+                <ShieldCheck className="size-3.5 text-emerald-600" />
                 Isolated sandbox
               </span>
               <span className="text-xs text-muted-foreground">{lab.category}</span>

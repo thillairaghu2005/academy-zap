@@ -209,7 +209,7 @@ export function CourseDetailClient({
 
           <div className="flex flex-wrap items-center gap-x-5 gap-y-2 text-sm text-muted-foreground">
             <span className="flex items-center gap-1.5">
-              <Star className="size-4 fill-amber-400 text-amber-400" />
+              <Star className="size-4 fill-amber-400 text-amber-600" />
               <span className="font-medium text-foreground">
                 {course.rating > 0 ? course.rating.toFixed(1) : "New"}
               </span>
@@ -475,7 +475,7 @@ export function CourseDetailClient({
                   className={cn(
                     "size-4",
                     i < Math.round(course.rating)
-                      ? "fill-amber-400 text-amber-400"
+                      ? "fill-amber-400 text-amber-600"
                       : "text-muted-foreground/30",
                   )}
                 />

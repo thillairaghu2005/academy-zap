@@ -34,7 +34,7 @@ export function GuacamoleStub({ sessionId }: { sessionId: string }) {
       {/* Connection bar */}
       <div className="flex items-center justify-between border-b border-white/5 bg-[#0d131b] px-3 py-1.5 text-[10px] text-muted-foreground">
         <span className="flex items-center gap-1.5">
-          <Signal className="size-3 text-emerald-400" />
+          <Signal className="size-3 text-emerald-600" />
           guacamole · rdp-over-ws
         </span>
         <span className="flex items-center gap-1.5 font-mono">
@@ -49,7 +49,7 @@ export function GuacamoleStub({ sessionId }: { sessionId: string }) {
             animate={{ scale: [1, 1.08, 1] }}
             transition={{ duration: 1.4, repeat: Infinity }}
           >
-            <Monitor className="size-10 text-emerald-400/80" />
+            <Monitor className="size-10 text-emerald-600/80" />
           </motion.div>
           <div className="flex items-center gap-2 text-sm text-muted-foreground">
             <span className="size-2 animate-pulse rounded-full bg-emerald-400" />
@@ -66,11 +66,11 @@ export function GuacamoleStub({ sessionId }: { sessionId: string }) {
             {/* Taskbar */}
             <div className="flex items-center gap-2 border-b border-white/5 bg-[#0d131b] px-3 py-1.5">
               <span className="flex items-center gap-1.5 text-[11px] text-foreground/80">
-                <Cpu className="size-3.5 text-emerald-400" />
+                <Cpu className="size-3.5 text-emerald-600" />
                 Blue Team Console
               </span>
               <span className="ml-auto flex items-center gap-1 text-[10px] text-muted-foreground">
-                <Wifi className="size-3 text-emerald-400/70" />
+                <Wifi className="size-3 text-emerald-600/70" />
                 session-private net
               </span>
             </div>
@@ -81,16 +81,16 @@ export function GuacamoleStub({ sessionId }: { sessionId: string }) {
                 <span className="text-xs text-foreground/80">
                   SIEM · alert queue
                 </span>
-                <span className="rounded-full border border-rose-500/40 bg-rose-500/10 px-2 py-0.5 text-[10px] font-semibold text-rose-400">
+                <span className="rounded-full border border-rose-500/40 bg-rose-500/10 px-2 py-0.5 text-[10px] font-semibold text-rose-600">
                   3 CRITICAL
                 </span>
               </div>
               <div className="grid flex-1 grid-cols-2 gap-2">
                 {[
-                  { label: "Auth failures", value: "1,204", tone: "text-rose-400" },
-                  { label: "Egress attempts", value: "37", tone: "text-amber-400" },
-                  { label: "Active sessions", value: "12", tone: "text-emerald-400" },
-                  { label: "Flagged hosts", value: "2", tone: "text-rose-400" },
+                  { label: "Auth failures", value: "1,204", tone: "text-rose-600" },
+                  { label: "Egress attempts", value: "37", tone: "text-amber-600" },
+                  { label: "Active sessions", value: "12", tone: "text-emerald-600" },
+                  { label: "Flagged hosts", value: "2", tone: "text-rose-600" },
                 ].map((s) => (
                   <div
                     key={s.label}

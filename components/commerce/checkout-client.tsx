@@ -144,7 +144,7 @@ function HostedEmbed({
             >
               <span className="flex min-w-0 items-center gap-2">
                 {item.kind === "lab" ? (
-                  <FlaskConical className="size-3.5 shrink-0 text-emerald-500" />
+                  <FlaskConical className="size-3.5 shrink-0 text-emerald-600" />
                 ) : (
                   <BookOpen className="size-3.5 shrink-0 text-primary" />
                 )}
@@ -193,7 +193,7 @@ function HostedEmbed({
         </Button>
 
         <p className="flex items-center justify-center gap-1.5 text-[11px] text-muted-foreground">
-          <ShieldCheck className="size-3.5 text-emerald-500" />
+          <ShieldCheck className="size-3.5 text-emerald-600" />
           PCI-DSS scope stays with {PROVIDER_LABEL} · 3-D Secure applies in
           test mode
         </p>

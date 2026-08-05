@@ -12,7 +12,7 @@ const buttonVariants = cva(
         default:
           "bg-primary text-primary-foreground shadow-sm hover:bg-primary/90 active:scale-[0.98]",
         gradient:
-          "bg-gradient-to-r from-violet-500 via-fuchsia-500 to-cyan-400 text-white shadow-lg shadow-violet-500/25 hover:brightness-110 hover:shadow-violet-500/40 active:scale-[0.98]",
+          "bg-gradient-to-r from-primary to-primary-hover text-primary-foreground shadow-sm shadow-primary/20 hover:brightness-105 active:scale-[0.98]",
         destructive:
           "bg-destructive text-destructive-foreground shadow-sm hover:bg-destructive/90 active:scale-[0.98]",
         outline:

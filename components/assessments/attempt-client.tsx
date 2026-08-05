@@ -117,8 +117,8 @@ function AttemptSummary({
         className={cn(
           "grid size-16 place-items-center rounded-2xl border",
           passed
-            ? "border-emerald-500/40 bg-emerald-500/10 text-emerald-500"
-            : "border-amber-500/40 bg-amber-500/10 text-amber-500",
+            ? "border-emerald-500/40 bg-emerald-500/10 text-emerald-600"
+            : "border-amber-500/40 bg-amber-500/10 text-amber-600",
         )}
       >
         {passed ? <CheckCircle2 className="size-8" /> : <RotateCcw className="size-8" />}
@@ -145,7 +145,7 @@ function AttemptSummary({
 
       {event.integrity_flags.length > 0 ? (
         <p className="flex items-center gap-1.5 text-xs text-muted-foreground">
-          <ShieldAlert className="size-3.5 text-amber-500" />
+          <ShieldAlert className="size-3.5 text-amber-600" />
           {event.integrity_flags.length} anti-cheat{" "}
           {event.integrity_flags.length === 1 ? "event" : "events"} captured this
           attempt (reviewed by the Integrity Gate in prod).
@@ -412,7 +412,7 @@ export function AssessmentAttemptClient({
           animate={{ opacity: 1, y: 0 }}
           className="mx-auto flex max-w-md flex-col items-center gap-4 py-12 text-center"
         >
-          <div className="grid size-14 place-items-center rounded-2xl border border-amber-500/40 bg-amber-500/10 text-amber-500">
+          <div className="grid size-14 place-items-center rounded-2xl border border-amber-500/40 bg-amber-500/10 text-amber-600">
             <TimerReset className="size-7" />
           </div>
           <div>
@@ -643,17 +643,17 @@ export function AssessmentAttemptClient({
                   )}
                 >
                   {lastResult.correct ? (
-                    <CheckCircle2 className="mt-0.5 size-5 shrink-0 text-emerald-500" />
+                    <CheckCircle2 className="mt-0.5 size-5 shrink-0 text-emerald-600" />
                   ) : (
-                    <XCircle className="mt-0.5 size-5 shrink-0 text-rose-500" />
+                    <XCircle className="mt-0.5 size-5 shrink-0 text-rose-600" />
                   )}
                   <div className="flex min-w-0 flex-1 flex-col gap-1">
                     <p
                       className={cn(
                         "text-sm font-semibold",
                         lastResult.correct
-                          ? "text-emerald-400"
-                          : "text-rose-400",
+                          ? "text-emerald-600"
+                          : "text-rose-600",
                       )}
                     >
                       {lastResult.correct

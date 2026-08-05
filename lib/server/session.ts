@@ -20,15 +20,20 @@ export const SESSION_COOKIE = "zapsters_session";
 /** Set on logout so the demo auto-auth does not immediately re-issue. */
 export const SIGNED_OUT_COOKIE = "zapsters_signed_out";
 
-// Fail fast in production (audit A4): a deployment that forgets
-// SESSION_SECRET must not silently sign tokens with a publicly-known
-// constant. Dev/demo builds keep the mock fallback for frictionless runs.
-if (!process.env.SESSION_SECRET && process.env.NODE_ENV === "production") {
-  throw new Error(
-    "SESSION_SECRET must be set in production — refusing to boot with the mock signing secret.",
-  );
+// Fail fast when the signing boundary is actually used (audit A4): a
+// production deployment that forgets SESSION_SECRET must not silently sign
+// tokens with a publicly-known constant. The check is lazy (inside
+// getSecret) so `next build` page-data collection and dev runs stay
+// frictionless — the first real sign/verify in production without the env
+// var throws a clear error instead of booting insecure.
+function getSecret(): string {
+  if (!process.env.SESSION_SECRET && process.env.NODE_ENV === "production") {
+    throw new Error(
+      "SESSION_SECRET must be set in production — refusing to sign sessions with the mock secret.",
+    );
+  }
+  return process.env.SESSION_SECRET ?? "zapsters-mock-session-secret";
 }
-const SECRET = process.env.SESSION_SECRET ?? "zapsters-mock-session-secret";
 export const SESSION_MAX_AGE_SECONDS = 7 * 24 * 60 * 60; // 7 days
 
 export interface SessionPayload {
@@ -54,7 +59,7 @@ function b64urlDecode(value: string): Uint8Array {
 async function sign(data: string): Promise<string> {
   const key = await crypto.subtle.importKey(
     "raw",
-    new TextEncoder().encode(SECRET),
+    new TextEncoder().encode(getSecret()),
     { name: "HMAC", hash: "SHA-256" },
     false,
     ["sign"],

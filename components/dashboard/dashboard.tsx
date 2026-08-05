@@ -80,8 +80,8 @@ export function Dashboard() {
         className="relative overflow-hidden rounded-2xl border border-border bg-card"
       >
         <div className="pointer-events-none absolute inset-0 bg-grid opacity-70 [mask-image:radial-gradient(ellipse_at_top_left,black,transparent_75%)]" />
-        <div className="pointer-events-none absolute -right-24 -top-24 size-96 rounded-full bg-violet-600/20 blur-3xl animate-glow-pulse" />
-        <div className="pointer-events-none absolute -bottom-20 -left-16 size-72 rounded-full bg-cyan-500/10 blur-3xl" />
+        <div className="pointer-events-none absolute -right-24 -top-24 size-96 rounded-full bg-primary/10 blur-3xl animate-glow-pulse" />
+        <div className="pointer-events-none absolute -bottom-20 -left-16 size-72 rounded-full bg-primary-light/60 blur-3xl" />
 
         <div className="relative z-10 px-6 py-14 sm:px-10 sm:py-16">
           <h1 className="max-w-2xl font-display text-4xl font-bold leading-tight tracking-tight sm:text-5xl">

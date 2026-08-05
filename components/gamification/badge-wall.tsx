@@ -29,15 +29,15 @@ import { cn } from "@/lib/utils";
 
 const STATUS_STYLE: Record<string, { badge: string; icon: React.ReactNode }> = {
   verified: {
-    badge: "border-emerald-500/40 bg-emerald-500/10 text-emerald-400",
+    badge: "border-emerald-500/40 bg-emerald-500/10 text-emerald-600",
     icon: <BadgeCheck className="size-3.5" />,
   },
   flagged: {
-    badge: "border-amber-500/40 bg-amber-500/10 text-amber-400",
+    badge: "border-amber-500/40 bg-amber-500/10 text-amber-600",
     icon: <ShieldQuestion className="size-3.5" />,
   },
   revoked: {
-    badge: "border-rose-500/40 bg-rose-500/10 text-rose-400",
+    badge: "border-rose-500/40 bg-rose-500/10 text-rose-600",
     icon: <BadgeX className="size-3.5" />,
   },
 };
@@ -112,10 +112,10 @@ export function BadgeWall() {
                     className={cn(
                       "grid size-11 place-items-center rounded-xl",
                       b.status === "revoked"
-                        ? "bg-rose-500/10 text-rose-500"
+                        ? "bg-rose-500/10 text-rose-600"
                         : b.status === "flagged"
-                          ? "bg-amber-500/10 text-amber-500"
-                          : "bg-emerald-500/10 text-emerald-500",
+                          ? "bg-amber-500/10 text-amber-600"
+                          : "bg-emerald-500/10 text-emerald-600",
                     )}
                   >
                     {b.status === "revoked" ? (

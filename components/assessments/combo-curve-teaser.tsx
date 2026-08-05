@@ -41,7 +41,7 @@ export function ComboCurveTeaser() {
     <div className="rounded-xl border border-amber-500/25 bg-amber-500/5 p-4">
       <div className="flex items-center justify-between">
         <p className="flex items-center gap-2 font-display text-sm font-semibold">
-          <Flame className="size-4 text-amber-500" />
+          <Flame className="size-4 text-amber-600" />
           Combo curve
         </p>
         <span className="flex items-center gap-1 text-[10px] text-muted-foreground">
@@ -81,14 +81,14 @@ export function ComboCurveTeaser() {
         <span>
           ×{(data.find((s) => s.count === 4)?.multiplier ?? 2).toFixed(2)} at 4
         </span>
-        <span className="text-amber-400">
+        <span className="text-amber-600">
           ×{maxMultiplier.toFixed(2)} at {maxCount}
         </span>
       </div>
 
       <p className="mt-2 text-[11px] leading-relaxed text-muted-foreground">
         Consecutive correct answers raise the multiplier up to{" "}
-        <span className="font-semibold text-amber-400">
+        <span className="font-semibold text-amber-600">
           ×{maxMultiplier.toFixed(2)}
         </span>
         . A wrong answer resets the run — the meter you see is a preview; the

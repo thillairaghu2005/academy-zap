@@ -131,7 +131,7 @@ function ObjectivesPanel({
               )}
             >
               {completed ? (
-                <CheckCircle2 className="mt-0.5 size-4 shrink-0 text-emerald-500" />
+                <CheckCircle2 className="mt-0.5 size-4 shrink-0 text-emerald-600" />
               ) : (
                 <Circle className="mt-0.5 size-4 shrink-0 text-muted-foreground/50" />
               )}
@@ -139,7 +139,7 @@ function ObjectivesPanel({
                 <p
                   className={cn(
                     "text-sm font-medium",
-                    completed && "text-emerald-400",
+                    completed && "text-emerald-600",
                   )}
                 >
                   {objective.title}
@@ -199,9 +199,9 @@ function SessionEnded({
         className={cn(
           "grid size-16 place-items-center rounded-2xl border",
           isCompleted
-            ? "border-emerald-500/40 bg-emerald-500/10 text-emerald-500"
+            ? "border-emerald-500/40 bg-emerald-500/10 text-emerald-600"
             : kind === "timed_out"
-              ? "border-amber-500/40 bg-amber-500/10 text-amber-500"
+              ? "border-amber-500/40 bg-amber-500/10 text-amber-600"
               : "border-muted-foreground/30 bg-secondary text-muted-foreground",
         )}
       >
@@ -521,14 +521,14 @@ export function LabSessionClient({
               <div className="flex items-center justify-between border-b border-white/5 bg-[#0d131b] px-3.5 py-2">
                 <span className="flex items-center gap-2 text-xs font-medium text-muted-foreground">
                   {lab?.requires_gui ? (
-                    <Monitor className="size-3.5 text-emerald-400" />
+                    <Monitor className="size-3.5 text-emerald-600" />
                   ) : (
-                    <Terminal className="size-3.5 text-emerald-400" />
+                    <Terminal className="size-3.5 text-emerald-600" />
                   )}
                   {lab?.requires_gui ? "Guacamole GUI viewer" : "shell — ttyd over WebSocket"}
                 </span>
                 <div className="flex items-center gap-2">
-                  <span className="flex items-center gap-1 text-[10px] text-emerald-400/80">
+                  <span className="flex items-center gap-1 text-[10px] text-emerald-600/80">
                     <Lock className="size-3" />
                     encrypted
                   </span>
@@ -575,7 +575,7 @@ export function LabSessionClient({
             ) : null}
 
             {hintMutation.data ? (
-              <div className="animate-fade-up rounded-lg border border-amber-500/25 bg-amber-500/5 px-3.5 py-2.5 text-xs text-amber-400">
+              <div className="animate-fade-up rounded-lg border border-amber-500/25 bg-amber-500/5 px-3.5 py-2.5 text-xs text-amber-600">
                 <span className="font-semibold">Hint:</span> {hintMutation.data}
               </div>
             ) : null}
@@ -600,7 +600,7 @@ export function LabSessionClient({
                     className={cn(
                       "animate-fade-up rounded-lg border px-3.5 py-2.5 text-xs",
                       result.completed
-                        ? "border-emerald-500/25 bg-emerald-500/5 text-emerald-400"
+                        ? "border-emerald-500/25 bg-emerald-500/5 text-emerald-600"
                         : "border-border bg-muted/30 text-muted-foreground",
                     )}
                   >

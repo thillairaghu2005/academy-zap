@@ -48,9 +48,9 @@ const DIFFICULTY_STYLE: Record<
   ProblemDifficulty,
   { badge: string; text: string }
 > = {
-  easy: { badge: "border-emerald-500/40 bg-emerald-500/10 text-emerald-600", text: "text-emerald-500" },
-  medium: { badge: "border-amber-500/40 bg-amber-500/10 text-amber-600", text: "text-amber-500" },
-  hard: { badge: "border-rose-500/40 bg-rose-500/10 text-rose-600", text: "text-rose-500" },
+  easy: { badge: "border-emerald-500/40 bg-emerald-500/10 text-emerald-600", text: "text-emerald-600" },
+  medium: { badge: "border-amber-500/40 bg-amber-500/10 text-amber-600", text: "text-amber-600" },
+  hard: { badge: "border-rose-500/40 bg-rose-500/10 text-rose-600", text: "text-rose-600" },
 };
 
 function ProblemRow({ problem, index }: { problem: Problem; index: number }) {

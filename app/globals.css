@@ -4,10 +4,11 @@
 @import "@fontsource-variable/space-grotesk";
 
 /* ------------------------------------------------------------------ */
-/*  Zapsters design system — F0                                        */
-/*  Dark-first, gamified learning platform. Shared @theme tokens that  */
-/*  every subsystem surface (Content, Judge, Lab, Assessment,          */
-/*  Gamification, Commerce, Admin) consumes. Per build.md §1.          */
+/*  Zapsters design system — F0 (Track B: Coursera-inspired retheme)   */
+/*  Light-first, clean academic look: generous whitespace, typographic */
+/*  hierarchy, blue primary (#0056D2), neutral surfaces on a soft      */
+/*  background. Shared @theme tokens every subsystem surface consumes. */
+/*  All functional behavior is untouched — tokens only.               */
 /* ------------------------------------------------------------------ */
 
 @theme {
@@ -23,64 +24,75 @@
     ui-monospace, "Cascadia Code", "SF Mono", "JetBrains Mono", Menlo, Consolas,
     "Liberation Mono", monospace;
 
-  /* Core surface tokens */
-  --color-background: oklch(0.145 0.017 262);
-  --color-foreground: oklch(0.955 0.008 262);
-  --color-card: oklch(0.175 0.018 262);
-  --color-card-foreground: oklch(0.955 0.008 262);
-  --color-popover: oklch(0.195 0.02 262);
-  --color-popover-foreground: oklch(0.955 0.008 262);
-  --color-muted: oklch(0.215 0.02 262);
-  --color-muted-foreground: oklch(0.645 0.022 262);
-  --color-secondary: oklch(0.235 0.02 262);
-  --color-secondary-foreground: oklch(0.955 0.008 262);
-  --color-accent: oklch(0.26 0.035 280);
-  --color-accent-foreground: oklch(0.955 0.008 262);
-  --color-border: oklch(0.245 0.022 262);
-  --color-input: oklch(0.27 0.022 262);
-  --color-ring: oklch(0.62 0.21 285);
+  /* Core surface tokens — light, academic */
+  --color-background: #f8f9fb;
+  --color-foreground: #1f2937;
+  --color-card: #ffffff;
+  --color-card-foreground: #1f2937;
+  --color-popover: #ffffff;
+  --color-popover-foreground: #1f2937;
+  --color-muted: #f1f3f6;
+  --color-muted-foreground: #6b7280;
+  --color-secondary: #edf1f7;
+  --color-secondary-foreground: #1f2937;
+  --color-accent: #eaf2ff; /* primary-light */
+  --color-accent-foreground: #0056d2;
+  --color-border: #e5e7eb;
+  --color-input: #d1d5db;
+  --color-ring: #0056d2;
 
   /* Brand / action */
-  --color-primary: oklch(0.623 0.214 285);
-  --color-primary-foreground: oklch(0.99 0 0);
-  --color-destructive: oklch(0.64 0.23 22);
-  --color-destructive-foreground: oklch(0.99 0 0);
+  --color-primary: #0056d2;
+  --color-primary-hover: #00419e;
+  --color-primary-light: #eaf2ff;
+  --color-primary-foreground: #ffffff;
+  --color-destructive: #dc2626;
+  --color-destructive-foreground: #ffffff;
 
   /* Semantic status (shared across surfaces) */
-  --color-success: oklch(0.72 0.18 160);
-  --color-warning: oklch(0.78 0.16 85);
-  --color-info: oklch(0.72 0.15 200);
+  --color-success: #16a34a;
+  --color-warning: #f59e0b;
+  --color-danger: #dc2626;
+  --color-info: #0284c7;
+
+  /* Status TEXT shades — the palette tones above are for fills/icons;
+     small text on white needs the darker -700 step to hold WCAG AA
+     (e.g. #16a34a text is only 3.3:1 on white, #15803d is 4.9:1). */
+  --color-success-strong: #15803d;
+  --color-warning-strong: #b45309;
+  --color-danger-strong: #b91c1c;
+  --color-info-strong: #0369a1;
 
   /* Dual XP tracks — NEVER blended (gamification §5.2) */
-  --color-xp-completion: oklch(0.74 0.14 210);
-  --color-xp-mastery: oklch(0.7 0.2 325);
+  --color-xp-completion: #0284c7;
+  --color-xp-mastery: #7c3aed;
 
   /* Verdict literals — F2 Judge Engine (platform §4.3, verbatim) */
-  --color-verdict-accepted: oklch(0.72 0.18 160);
-  --color-verdict-wrong-answer: oklch(0.68 0.2 5);
-  --color-verdict-time-limit-exceeded: oklch(0.78 0.16 85);
-  --color-verdict-runtime-error: oklch(0.72 0.17 45);
-  --color-verdict-compile-error: oklch(0.68 0.18 300);
+  --color-verdict-accepted: #16a34a;
+  --color-verdict-wrong-answer: #dc2626;
+  --color-verdict-time-limit-exceeded: #d97706;
+  --color-verdict-runtime-error: #ea580c;
+  --color-verdict-compile-error: #7c3aed;
 
   /* League tiers — F5 (gamification §5.3, verbatim) */
-  --color-tier-bronze: oklch(0.62 0.11 55);
-  --color-tier-silver: oklch(0.8 0.02 260);
-  --color-tier-gold: oklch(0.82 0.16 95);
-  --color-tier-platinum: oklch(0.78 0.1 220);
-  --color-tier-obsidian: oklch(0.68 0.19 300);
+  --color-tier-bronze: #b45309;
+  --color-tier-silver: #64748b;
+  --color-tier-gold: #ca8a04;
+  --color-tier-platinum: #0e7490;
+  --color-tier-obsidian: #6d28d9;
 
   /* Ledger integrity statuses — F5 (gamification §5.3, verbatim) */
-  --color-status-verified: oklch(0.72 0.18 160);
-  --color-status-flagged: oklch(0.78 0.16 85);
-  --color-status-reversed: oklch(0.68 0.2 5);
-  --color-status-revoked: oklch(0.68 0.2 5);
+  --color-status-verified: #16a34a;
+  --color-status-flagged: #d97706;
+  --color-status-reversed: #dc2626;
+  --color-status-revoked: #dc2626;
 
-  /* Radius scale */
-  --radius-sm: 0.5rem;
-  --radius-md: 0.625rem;
-  --radius-lg: 0.75rem;
-  --radius-xl: 1rem;
-  --radius-2xl: 1.25rem;
+  /* Radius scale — tighter, academic (Coursera ~4-8px corners) */
+  --radius-sm: 0.375rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 0.625rem;
+  --radius-xl: 0.75rem;
+  --radius-2xl: 1rem;
 
   /* Motion */
   --animate-fade-up: fade-up 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
@@ -151,7 +163,7 @@
   }
 
   ::selection {
-    @apply bg-violet-500/30 text-foreground;
+    @apply bg-primary-light text-primary;
   }
 
   /* Slim, theme-aware scrollbars */

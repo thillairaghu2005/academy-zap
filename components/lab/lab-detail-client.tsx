@@ -158,7 +158,7 @@ export function LabDetailClient({ labId }: { labId: string }) {
         <div className="flex flex-col gap-6">
           <div>
             <div className="flex flex-wrap items-center gap-2">
-              <span className="text-xs font-medium uppercase tracking-wide text-emerald-500">
+              <span className="text-xs font-medium uppercase tracking-wide text-emerald-600">
                 {lab.category}
               </span>
               <span
@@ -249,7 +249,7 @@ export function LabDetailClient({ labId }: { labId: string }) {
           <Card className="flex flex-col gap-4 p-5">
             <div className="flex items-center justify-between">
               <span className="text-sm font-semibold">Start the lab</span>
-              <ShieldCheck className="size-4 text-emerald-500" />
+              <ShieldCheck className="size-4 text-emerald-600" />
             </div>
             <p className="text-xs leading-relaxed text-muted-foreground">
               A dedicated sandbox is provisioned on a session-private network.
@@ -257,15 +257,15 @@ export function LabDetailClient({ labId }: { labId: string }) {
             </p>
             <ul className="flex flex-col gap-1.5 text-xs text-muted-foreground">
               <li className="flex items-center gap-1.5">
-                <CheckCircle2 className="size-3.5 text-emerald-500" />
+                <CheckCircle2 className="size-3.5 text-emerald-600" />
                 Isolated microVM — no internet egress
               </li>
               <li className="flex items-center gap-1.5">
-                <CheckCircle2 className="size-3.5 text-emerald-500" />
+                <CheckCircle2 className="size-3.5 text-emerald-600" />
                 Objectives verified server-side
               </li>
               <li className="flex items-center gap-1.5">
-                <CheckCircle2 className="size-3.5 text-emerald-500" />
+                <CheckCircle2 className="size-3.5 text-emerald-600" />
                 Hints tracked ({lab.hard_timeout_minutes} min hard stop)
               </li>
             </ul>
@@ -322,7 +322,7 @@ export function LabDetailClient({ labId }: { labId: string }) {
                 className="flex flex-col gap-2 rounded-lg border border-border bg-muted/40 p-3"
               >
                 <div className="flex items-center gap-2 text-xs">
-                  <LoaderCircle className="size-3.5 animate-spin text-emerald-500" />
+                  <LoaderCircle className="size-3.5 animate-spin text-emerald-600" />
                   <span className="font-medium">Spinning up sandbox…</span>
                 </div>
                 <div className="flex h-1 w-full gap-0.5 overflow-hidden">
