@@ -9,7 +9,7 @@ import { Menu } from "lucide-react";
 import { cn, getInitials } from "@/lib/utils";
 import { sideNavGroups } from "@/lib/navigation";
 import { useSession } from "@/components/providers/session-provider";
-import { Logo } from "@/components/layout/logo";
+import { Logo } from "@/src/components/Logo/Logo";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
@@ -90,6 +90,9 @@ export function NavLinks({ onNavigate }: { onNavigate?: () => void }) {
 export function SideNav() {
   return (
     <aside className="sticky top-16 hidden h-[calc(100dvh-4rem)] w-60 shrink-0 flex-col overflow-y-auto border-r border-border/70 px-3 py-5 lg:flex">
+      <div className="px-1 pb-3">
+        <Logo size="sm" />
+      </div>
       <NavLinks />
     </aside>
   );

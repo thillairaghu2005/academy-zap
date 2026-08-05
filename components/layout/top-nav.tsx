@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Bell, Search } from "lucide-react";
 
-import { Logo } from "@/components/layout/logo";
+import { Logo } from "@/src/components/Logo/Logo";
 import { MobileNav } from "@/components/layout/side-nav";
 import { UserMenu } from "@/components/layout/user-menu";
 import { CartBadge } from "@/components/commerce/cart-badge";
@@ -28,7 +28,11 @@ export function TopNav() {
       <div className="flex h-16 items-center gap-2 px-4 sm:px-6 lg:px-8">
         <MobileNav />
 
-        <Logo />
+        <Logo
+          size="sm"
+          eager
+          className="p-1.5 [&>img]:h-8 sm:[&>img]:h-9 lg:[&>img]:h-11"
+        />
 
         {/* Primary learning surfaces (desktop) */}
         <nav className="ml-4 hidden items-center gap-1 lg:flex" aria-label="Primary">

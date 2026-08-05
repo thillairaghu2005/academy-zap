@@ -25,7 +25,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Logo } from "@/components/layout/logo";
+import { Logo } from "@/src/components/Logo/Logo";
 import { useSession } from "@/components/providers/session-provider";
 import { DEMO_MODE } from "@/lib/config";
 
@@ -93,7 +93,7 @@ export function LoginForm({ next }: { next?: string }) {
   return (
     <Card className="w-full max-w-md border-border/80 bg-card/80 backdrop-blur-xl">
       <CardHeader className="items-center gap-2 pb-6 pt-8 text-center">
-        <Logo />
+        <Logo size="lg" linkTo={null} />
         <CardTitle className="mt-2 text-xl">Welcome back</CardTitle>
         <CardDescription>
           Sign in to continue climbing the ladder.
