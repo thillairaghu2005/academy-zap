@@ -22,6 +22,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { PageContainer } from "@/components/shared/page-container";
+import { MyLearning } from "@/components/dashboard/my-learning";
 
 const statusChip: Record<
   SurfaceStatus,
@@ -133,6 +134,9 @@ export function Dashboard() {
         </div>
       </motion.section>
 
+      {/* My learning — enrollments + progress from the mock state */}
+      <MyLearning />
+
       {/* Surfaces */}
       <section className="mt-12">
         <div className="flex flex-wrap items-end justify-between gap-3">
@@ -145,7 +149,7 @@ export function Dashboard() {
             </p>
           </div>
           <Badge variant="outline" className="mb-1">
-            Next: F1 · Content Engine
+            Next: F2 · Judge Engine
           </Badge>
         </div>
 

@@ -1,16 +1,20 @@
 import type { Metadata } from "next";
-import { notFound } from "next/navigation";
+import { Suspense } from "react";
 
-import { getSurface } from "@/lib/surfaces";
-import { SurfaceStub } from "@/components/shared/surface-stub";
+import { CatalogClient } from "@/components/courses/catalog-client";
 
 export const metadata: Metadata = {
-  title: "Courses",
-  description: "Content Engine — Udemy-shaped course catalog and player. Landing in F1.",
+  title: "Course catalog",
+  description:
+    "Content Engine — browse the catalog, search and open a course to learn.",
 };
 
 export default function CoursesPage() {
-  const surface = getSurface("courses");
-  if (!surface) notFound();
-  return <SurfaceStub surface={surface} />;
+  // CatalogClient reads useSearchParams (URL-synced filters) — it must be
+  // inside a Suspense boundary for static prerendering.
+  return (
+    <Suspense>
+      <CatalogClient />
+    </Suspense>
+  );
 }

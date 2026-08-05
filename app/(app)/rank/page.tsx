@@ -1,16 +1,13 @@
 import type { Metadata } from "next";
-import { notFound } from "next/navigation";
 
-import { getSurface } from "@/lib/surfaces";
-import { SurfaceStub } from "@/components/shared/surface-stub";
+import { RankHubClient } from "@/components/gamification/rank-hub-client";
 
 export const metadata: Metadata = {
   title: "Rank Ladder",
-  description: "Gamification — rank ladder, dual XP tracks, streaks. Landing in F5.",
+  description:
+    "Gamification — Initiate → Deus with Prestige rebirth, dual XP tracks, streaks, leagues and guilds.",
 };
 
 export default function RankPage() {
-  const surface = getSurface("rank");
-  if (!surface) notFound();
-  return <SurfaceStub surface={surface} />;
+  return <RankHubClient />;
 }

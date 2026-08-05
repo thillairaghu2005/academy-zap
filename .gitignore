@@ -17,6 +17,9 @@
 /.next/
 /out/
 
+# monaco self-hosted AMD build (synced from node_modules by scripts/sync-monaco.mjs)
+/public/vs/
+
 # production
 /build
 

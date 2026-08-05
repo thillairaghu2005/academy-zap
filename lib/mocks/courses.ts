@@ -2,6 +2,7 @@ import type {
   Course,
   CourseSummary,
 } from "@/lib/contracts/content";
+import { hueForId } from "@/lib/visual";
 
 /**
  * Content Engine fixtures.
@@ -337,6 +338,10 @@ export const MOCK_COURSES_BY_ID = new Map(
 
 export const MOCK_DRAFT_COURSE_ID = "1b2c3d4e-5f6a-4b7c-8d9e-0f1a2b3c4d5e";
 export const MOCK_ENROLLED_COURSE_ID = "a1b2c3d4-e5f6-4a7b-8c9d-0e1f2a3b4c5d";
+// Go DSA course — seeded as fully completed for the demo learner.
+export const MOCK_COMPLETED_COURSE_ID = "f6a7b8c9-d0e1-4f2a-3b4c-5d6e7f8a9b0c";
+// Linux Fundamentals course — seeded as a fresh 0% enrollment.
+export const MOCK_FRESH_COURSE_ID = "d4e5f6a7-b8c9-4d0e-1f2a-3b4c5d6e7f8a";
 export const MOCK_EXPIRED_MANIFEST_LESSON_ID = "a1b2c3d4-0010";
 
 export function courseToSummary(course: Course): CourseSummary {
@@ -357,10 +362,3 @@ export function courseToSummary(course: Course): CourseSummary {
   };
 }
 
-function hueForId(id: string): number {
-  let hash = 0;
-  for (let i = 0; i < id.length; i++) {
-    hash = (hash * 31 + id.charCodeAt(i)) >>> 0;
-  }
-  return hash % 360;
-}

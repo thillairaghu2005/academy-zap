@@ -53,23 +53,26 @@ export function TopNav() {
         </nav>
 
         <div className="ml-auto flex items-center gap-1.5">
-          {/* Search — wired to the mock Meilisearch shape in F1 */}
+          {/* Search — catalog search (mock Meilisearch shape) */}
           <Tooltip>
             <TooltipTrigger asChild>
               <Button
                 variant="ghost"
                 size="sm"
+                asChild
                 className="hidden text-muted-foreground md:inline-flex"
-                aria-label="Search (coming with F1)"
+                aria-label="Search courses"
               >
-                <Search />
-                <span>Search</span>
-                <kbd className="ml-1 rounded border border-border bg-secondary px-1.5 py-0.5 font-mono text-[10px] text-muted-foreground">
-                  ⌘K
-                </kbd>
+                <Link href="/courses">
+                  <Search />
+                  <span>Search</span>
+                  <kbd className="ml-1 rounded border border-border bg-secondary px-1.5 py-0.5 font-mono text-[10px] text-muted-foreground">
+                    ⌘K
+                  </kbd>
+                </Link>
               </Button>
             </TooltipTrigger>
-            <TooltipContent>Catalog search arrives with F1 · Content Engine</TooltipContent>
+            <TooltipContent>Search the course catalog</TooltipContent>
           </Tooltip>
 
           {/* Notifications — decorative until push lands */}

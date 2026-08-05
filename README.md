@@ -32,11 +32,11 @@ Monaco (F2) · xterm.js (F3) · video.js (F1) · recharts/d3 (F5).
 | Section | Surface | Routes |
 |---|---|---|
 | F0 ✅ | Shell & design system | `/`, `/login`, `/register` + all route stubs |
-| F1 | Content Engine | `/courses` |
-| F2 | Judge Engine | `/judge` |
-| F3 | Lab Engine | `/labs` |
-| F4 | Assessment Engine | `/assessments` |
-| F5 | Gamification UI | `/rank`, `/leaderboards`, `/guilds` |
+| F1 ✅ | Content Engine | `/courses`, `/courses/[id]`, `/courses/[id]/learn` |
+| F2 ✅ | Judge Engine | `/judge`, `/judge/[id]` |
+| F3 ✅ | Lab Engine | `/labs`, `/labs/[id]`, `/labs/[id]/session/[sessionId]` |
+| F4 ✅ | Assessment Engine | `/assessments`, `/assessments/[id]`, `/assessments/[id]/attempt/[attemptId]` |
+| F5 ✅ | Gamification UI | `/rank`, `/rank/badges`, `/rank/verify/[credentialId]`, `/leaderboards`, `/guilds` |
 | F6 | Commerce UI | `/checkout` |
 | F7 | Admin/CMS (lowest priority) | `/admin` |
 

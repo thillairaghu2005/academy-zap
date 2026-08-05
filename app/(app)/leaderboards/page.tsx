@@ -1,16 +1,13 @@
 import type { Metadata } from "next";
-import { notFound } from "next/navigation";
 
-import { getSurface } from "@/lib/surfaces";
-import { SurfaceStub } from "@/components/shared/surface-stub";
+import { LeaderboardClient } from "@/components/gamification/leaderboard-client";
 
 export const metadata: Metadata = {
   title: "Leaderboards",
-  description: "Gamification — global and guild leaderboards. Landing in F5.",
+  description:
+    "Global and guild leaderboards — ZRANGE-shaped pagination over server-derived ranks.",
 };
 
 export default function LeaderboardsPage() {
-  const surface = getSurface("leaderboards");
-  if (!surface) notFound();
-  return <SurfaceStub surface={surface} />;
+  return <LeaderboardClient />;
 }

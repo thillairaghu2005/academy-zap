@@ -12,6 +12,9 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Self-hosted monaco AMD build, synced from node_modules by
+    // scripts/sync-monaco.mjs — vendored third-party code, not ours.
+    "public/vs/**",
   ]),
 ]);
 

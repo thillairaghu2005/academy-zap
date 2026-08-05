@@ -1,16 +1,20 @@
 import type { Metadata } from "next";
-import { notFound } from "next/navigation";
+import { Suspense } from "react";
 
-import { getSurface } from "@/lib/surfaces";
-import { SurfaceStub } from "@/components/shared/surface-stub";
+import { LabCatalogClient } from "@/components/lab/catalog-client";
 
 export const metadata: Metadata = {
-  title: "Labs",
-  description: "Lab Engine — TryHackMe-shaped virtual labs. Landing in F3.",
+  title: "Virtual Labs",
+  description:
+    "Lab Engine — TryHackMe-shaped virtual labs. Provision isolated sandboxes, drive a real terminal, and capture flags.",
 };
 
 export default function LabsPage() {
-  const surface = getSurface("labs");
-  if (!surface) notFound();
-  return <SurfaceStub surface={surface} />;
+  // LabCatalogClient reads useSearchParams (URL-synced filters) — it must be
+  // inside a Suspense boundary for static prerendering (same as /courses).
+  return (
+    <Suspense>
+      <LabCatalogClient />
+    </Suspense>
+  );
 }

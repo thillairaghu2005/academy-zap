@@ -6,10 +6,10 @@ the source docs:
 | Contract | Source | Landed in |
 |---|---|---|
 | `SessionUser` / `SessionState` (provisional) | docs don't lock a User schema — Platform Core owns auth | F0 |
-| `Course`, `SignedManifest`, `Enrollment` | platform §4.1 | F1 |
-| `CodeSubmission`, `SubmissionAccepted`, `JudgeResult` | platform §4.1, §4.3 | F2 |
-| `LabSession`, `ObjectiveResult`, lab manifest | platform §4.1 | F3 |
-| `AssessmentSubmission`, `GradeResult` | platform §4.1 | F4 |
+| `Course`, `SignedManifest`, `Enrollment`, `MeilisearchCatalogResponse`, `CatalogQuery` | platform §4.1, §4.4 | F1 |
+| `Problem`, `CodeSubmission`, `SubmissionAccepted`, `JudgeResult` | platform §4.1, §4.3 | F2 |
+| `Lab`, `LabObjective`, `LabSession`, `ObjectiveResult`, `LabSessionCompletedEvent` | platform §4.1, §4.3 | F3 |
+| `Assessment`, `AssessmentQuestion`, `AssessmentSubmission`, `GradeResult`, `AssessmentAttempt`, `AssessmentSubmittedEvent`, `ComboState`, `TelemetryEvent` | platform §4.1, §2.6 | F4 |
 | `ProgressContext`, `RankState`, `StreakState`, `LeagueStanding`, `GuildRollup`, `LedgerEntry`, events | gamification §5.3, §4 | F5 |
 | `Cart`, `CheckoutSession`, `PaymentEvent` | platform §4.1 | F6 |
 

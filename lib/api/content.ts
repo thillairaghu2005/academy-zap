@@ -1,6 +1,7 @@
 import type {
   CatalogQuery,
   Course,
+  CourseSummary,
   Enrollment,
   MeilisearchCatalogResponse,
   SignedManifest,
@@ -78,23 +79,39 @@ export async function getPlaybackManifest(
   await delay(jitter(220));
 
   const baseUrl = "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8";
-  const expired = lessonId === MOCK_EXPIRED_MANIFEST_LESSON_ID;
 
-  const expiresAt = new Date(
-    Date.now() + (expired ? -5 * 60_000 : 15 * 60_000),
-  ).toISOString();
+  // Contract-faithful expiry: the docs say a media fetch after `expires_at`
+  // must 403. The mock enforces that server-side for the capstone lesson —
+  // the player surfaces it as the MANIFEST_EXPIRED error state, exactly as
+  // it would handle a real CDN 403.
+  if (lessonId === MOCK_EXPIRED_MANIFEST_LESSON_ID) {
+    throw new MockApiError(
+      "manifest_expired",
+      "The signed manifest has expired — refetch a fresh signed URL.",
+      403,
+    );
+  }
+
+  // Deterministic: the last lesson of each section has captions; others
+  // return null so both SignedManifest states render in the player UI.
+  const hasCaptions =
+    lessonId.endsWith("-0003") ||
+    lessonId.endsWith("-0006") ||
+    lessonId.endsWith("-0008");
+
+  const expiresAt = new Date(Date.now() + 15 * 60_000).toISOString();
 
   return {
     lesson_id: lessonId,
     user_id: userId,
     // Mock stand-in: real manifests come from the CDN with short-TTL signed
     // URLs. Public HLS test stream until the Content backend lands.
-    manifest_url: expired
-      ? "https://test-streams.mux.dev/does-not-exist/playlist.m3u8"
-      : baseUrl,
+    manifest_url: baseUrl,
     expires_at: expiresAt,
     signature: `mock-ed25519:${lessonId}:${expiresAt}`,
-    captions_url: null,
+    captions_url: hasCaptions
+      ? "https://bitdash-a.akamaihd.net/content/sintel/subtitles/subtitles_en.vtt"
+      : null,
   };
 }
 
@@ -182,6 +199,48 @@ export async function enroll(courseId: string, userId: string): Promise<Enrollme
   return enrollment;
 }
 
+/** One row of the dashboard "My learning" list — enrollment joined with
+ *  its course summary, progress derived server-side. */
+export interface MyLearningItem {
+  enrollment: Enrollment;
+  course: CourseSummary;
+}
+
+/**
+ * The learner's enrollments, newest-updated first.
+ *
+ * Mock rules (deterministic, demoable):
+ *  - userId "boom" → 503 MockApiError (dashboard error state)
+ */
+export async function listMyLearning(
+  userId: string,
+): Promise<MyLearningItem[]> {
+  await delay(jitter(240));
+
+  if (userId === "boom") {
+    throw new MockApiError(
+      "enrollments_down",
+      "Enrollments backend unreachable (simulated).",
+      503,
+    );
+  }
+
+  const items: MyLearningItem[] = [];
+  for (const [courseId, enrollment] of mockEnrollments) {
+    if (enrollment.user_id !== userId) continue;
+    const course = MOCK_COURSES_BY_ID.get(courseId);
+    if (!course) continue;
+    items.push({
+      enrollment: withDerivedProgress(enrollment, userId),
+      course: courseToSummary(course),
+    });
+  }
+
+  return items.sort((a, b) =>
+    b.enrollment.updated_at.localeCompare(a.enrollment.updated_at),
+  );
+}
+
 export interface ProgressInput {
   courseId: string;
   lessonId: string;
@@ -202,7 +261,7 @@ export async function recordProgress(
     throw new MockApiError("course_not_found", "Course was not found.", 404);
   }
   const key = `${input.userId}:${input.courseId}`;
-  let completed = mockCompletedLessons.get(key) ?? new Set<string>();
+  const completed = mockCompletedLessons.get(key) ?? new Set<string>();
 
   if (input.completed) {
     completed.add(input.lessonId);
