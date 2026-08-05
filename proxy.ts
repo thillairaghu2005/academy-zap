@@ -17,9 +17,23 @@ import { SESSION_COOKIE, verifySessionToken } from "@/lib/server/session";
  *
  * In DEMO_MODE the boundary is intentionally lenient: the demo auto-auth
  * issues the cookie server-side, so the guided demo stays frictionless.
+ *
+ * Public browsing (no session required): "/" (server-redirects to /courses),
+ * the catalog, and course detail pages. Everything else — the course player
+ * (/courses/[id]/learn), judge, labs, assessments, gamification, commerce,
+ * admin, support — stays behind the session gate.
  */
+function isPublicRoute(pathname: string): boolean {
+  if (pathname === "/" || pathname === "/courses") return true;
+  // Course detail pages are a single segment under /courses (e.g.
+  // /courses/<id>); deeper paths like /courses/<id>/learn are enrolled
+  // learner surfaces and remain gated.
+  return /^\/courses\/[^/]+$/.test(pathname);
+}
+
 export async function proxy(request: NextRequest) {
   if (DEMO_MODE) return NextResponse.next();
+  if (isPublicRoute(request.nextUrl.pathname)) return NextResponse.next();
 
   const token = request.cookies.get(SESSION_COOKIE)?.value;
   const valid = await verifySessionToken(token);

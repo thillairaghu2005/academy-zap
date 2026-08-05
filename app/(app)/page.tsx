@@ -1,13 +1,16 @@
-import type { Metadata } from "next";
+import { redirect } from "next/navigation";
 
-import { Dashboard } from "@/components/dashboard/dashboard";
-
-export const metadata: Metadata = {
-  title: "Dashboard",
-  description:
-    "Command center for every Zapsters surface — courses, judge, labs, assessments, ranks and commerce.",
+export const metadata = {
+  title: "Courses",
+  description: "Zapsters course catalog — the landing experience.",
 };
 
-export default function DashboardPage() {
-  return <Dashboard />;
+/**
+ * Landing page — "/" is the anonymous entry point, so it serves the public
+ * course catalog. The catalog lives at /courses (its own route, linked from
+ * the nav), so the root just redirects there. The dashboard moved to
+ * /dashboard and stays session-gated.
+ */
+export default function LandingPage() {
+  redirect("/courses");
 }

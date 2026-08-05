@@ -36,7 +36,7 @@ export const sideNavGroups: NavGroup[] = [
   {
     label: "Learn",
     items: [
-      { href: "/", label: "Dashboard", icon: LayoutDashboard },
+      { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
       { href: "/courses", label: "Courses", icon: BookOpen },
     ],
   },

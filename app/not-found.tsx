@@ -14,10 +14,10 @@ export default function NotFound() {
       </h1>
       <p className="mt-2 max-w-sm text-sm leading-relaxed text-muted-foreground">
         Zapsters is scaffolded surface by surface — this route isn&apos;t one of
-        them. Head back to the dashboard and pick a live surface.
+        them. Head back to the catalog and pick a live surface.
       </p>
       <Button asChild className="mt-6">
-        <Link href="/">Back to dashboard</Link>
+        <Link href="/courses">Back to courses</Link>
       </Button>
     </PageContainer>
   );
