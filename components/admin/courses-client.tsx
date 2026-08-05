@@ -17,7 +17,6 @@ import type { Course } from "@/lib/contracts/content";
 import {
   deleteCourse,
   listCoursesAdmin,
-  publishCourse,
   submitCourseForReview,
 } from "@/lib/api/admin";
 import { useSession } from "@/components/providers/session-provider";
@@ -51,15 +50,6 @@ export function AdminCoursesClient() {
     mutationFn: (courseId: string) => submitCourseForReview(courseId, actor!),
     onSuccess: (course) => {
       toast.success(`"${course.title}" submitted for review.`);
-      invalidate();
-    },
-    onError: (error: Error) => toast.error(error.message),
-  });
-
-  const publishMutation = useMutation({
-    mutationFn: (courseId: string) => publishCourse(courseId, actor!),
-    onSuccess: (course) => {
-      toast.success(`"${course.title}" published.`);
       invalidate();
     },
     onError: (error: Error) => toast.error(error.message),
@@ -217,11 +207,12 @@ export function AdminCoursesClient() {
                 <Button
                   variant="ghost"
                   size="icon"
-                  title="Publish (second reviewer)"
-                  disabled={publishMutation.isPending || !actor}
-                  onClick={() => publishMutation.mutate(course.id)}
+                  asChild
+                  title="Review & publish (second reviewer)"
                 >
-                  <UploadCloud className="size-4 text-emerald-600" />
+                  <Link href={`/admin/courses/${course.id}/edit`}>
+                    <UploadCloud className="size-4 text-emerald-600" />
+                  </Link>
                 </Button>
               ) : null}
               <Button

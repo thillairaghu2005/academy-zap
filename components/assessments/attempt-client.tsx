@@ -652,8 +652,8 @@ export function AssessmentAttemptClient({
                       className={cn(
                         "text-sm font-semibold",
                         lastResult.correct
-                          ? "text-emerald-700 dark:text-emerald-400"
-                          : "text-rose-700 dark:text-rose-400",
+                          ? "text-emerald-400"
+                          : "text-rose-400",
                       )}
                     >
                       {lastResult.correct

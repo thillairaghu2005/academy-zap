@@ -5,6 +5,7 @@ import {
   ClipboardList,
   CodeXml,
   FlaskConical,
+  LifeBuoy,
   ShieldCheck,
   ShoppingCart,
   Trophy,
@@ -147,7 +148,7 @@ export const surfaces: SurfaceMeta[] = [
     accent: "from-fuchsia-500 to-pink-500",
     tagline: "Initiate → Deus, with Prestige rebirth",
     description:
-      "ProgressContext hub: rank ladder, dual XP tracks, streak, league, guild, frozen-state banner, share-card modal.",
+      "Your rank, dual XP tracks, daily streak, league standing and guild — one climb, fully visible, with a shareable rank card.",
     planned: [
       "Full rank ladder with the exact rank names (Initiate → Deus)",
       "Completion XP and Mastery XP as two never-blended tracks",
@@ -169,9 +170,9 @@ export const surfaces: SurfaceMeta[] = [
     status: "shipped",
     icon: ChartColumn,
     accent: "from-sky-400 to-cyan-500",
-    tagline: "Global & guild boards, ZRANGE-shaped",
+    tagline: "Global & guild boards",
     description:
-      "Paginated leaderboard rows shaped like Redis ZRANGE reads — global and guild scopes, server-derived scores.",
+      "Global and guild leaderboards with your standing highlighted, top-3 medals, and promotion / relegation zones.",
     planned: [
       "Global + guild leaderboards with mock ZRANGE-shaped pagination",
       "Medal styling for top-3 ranks, current user highlighted",
@@ -193,7 +194,7 @@ export const surfaces: SurfaceMeta[] = [
     accent: "from-purple-500 to-violet-500",
     tagline: "Cohorts with combined XP",
     description:
-      "Guild boards with member rollups, combined XP, guild-vs-guild bars and the d3 skill tree.",
+      "Guild boards with member rollups, combined XP, guild-vs-guild comparison, and a skill-tree visualization of your category XP.",
     planned: [
       "Guild board: member list + combined XP rollup",
       "Guild-vs-guild comparison view",
@@ -212,9 +213,9 @@ export const surfaces: SurfaceMeta[] = [
     status: "shipped",
     icon: ShoppingCart,
     accent: "from-emerald-400 to-green-500",
-    tagline: "Cart + hosted checkout embeds only",
+    tagline: "Cart, checkout & billing",
     description:
-      "Cart, checkout sessions rendered around Razorpay/Stripe hosted checkout embeds, entitlement gating, and B2B seats — never a custom card field.",
+      "Buy courses and lab passes through a provider-hosted checkout page, manage your entitlements, and review subscriptions and seats — Zapsters never touches your card details.",
     planned: [
       "Cart page with quantity steppers, totals, empty/error states",
       "Checkout session page: hosted embed mock with pending / paid / failed / expired / 503 states",
@@ -239,17 +240,45 @@ export const surfaces: SurfaceMeta[] = [
     accent: "from-slate-400 to-slate-600",
     tagline: "Authoring, review & audit",
     description:
-      "Role-gated admin console: course authoring with draft → in-review → published, the two-person review flow, manage-style lists for orders/users/labs/problems, and an append-only audit log.",
+      "Role-gated console for course authoring, the two-person review flow, manage lists, and an append-only audit log for platform admins.",
     planned: [
       "Admin role gate + distinct layout with section sidebar",
       "Course CRUD: create/edit/delete + draft → submit-for-review → second-reviewer publish + preview link",
-      "Generic DataTable (search, filters, sort, pagination, loading/empty/error states)",
+      "Draft editor with debounced autosave + real /courses/[id]?preview=1 draft preview",
+      "In-review state: locked form, field-level diff vs the last published version, reviewer picker enforcing the two-person rule (disabled + tooltip)",
+      "Generic DataTable (search, filters, sort, pagination, loading/empty/error states, expandable rows)",
       "Manage-style lists: orders, users (role toggles), labs, problems",
-      "Moderation / audit-log view (mock append-only rendering)",
+      "Append-only audit log with actor/event/date/ledger-linked filters, expandable linked ledger entries, and a balance-reconciliation panel",
+      "Guided admin walkthrough overlay (first-visit, replayable from the sidebar)",
     ],
     notBuiltYet: [
       "Real role-gated admin APIs — the client gate is frontend-only by design (build.md §4.2 RBAC)",
       "Authoring CRUD for labs/problems/assessments (out of the F7 scope)",
+      "CSV export / i18n / full draft revision history (explicitly deferred)",
+    ],
+  },
+  {
+    slug: "support",
+    href: "/support",
+    title: "Support",
+    navLabel: "Support",
+    stage: "Add-on",
+    status: "shipped",
+    icon: LifeBuoy,
+    accent: "from-rose-400 to-pink-500",
+    tagline: "Learner tickets + admin queue",
+    description:
+      "Ticket threads with an enforced status workflow, learner isolation, agent-only internal notes, and an admin queue with assignment.",
+    planned: [
+      "Learner ticket list with status tabs + create form (react-hook-form + zod)",
+      "Ticket threads: reply, reopen-on-reply, closed disabled state, not-found isolation",
+      "Admin queue (shared DataTable) with status / priority / category filters",
+      "Agent detail: assignee picker, workflow transition buttons, internal notes + replies",
+      "Status machine enforced server-side (409 invalid_transition) + audit-logged admin actions",
+    ],
+    notBuiltYet: [
+      "Real support platform integration — this surface is beyond build.md's F0–F7 plan (see register)",
+      "Email notifications / SLAs / CSAT surveys",
     ],
   },
 ];

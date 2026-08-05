@@ -10,6 +10,11 @@ import { PageContainer } from "@/components/shared/page-container";
 import { EmptyState } from "@/components/shared/empty-state";
 import { SkeletonLines } from "@/components/shared/skeletons";
 import { AdminSidebar } from "@/components/admin/admin-sidebar";
+import { AdminWalkthrough } from "@/components/admin/admin-walkthrough";
+import {
+  isWalkthroughSeen,
+  markWalkthroughSeen,
+} from "@/lib/mocks/walkthrough";
 
 /**
  * F7 admin gate + shell.
@@ -20,7 +25,20 @@ import { AdminSidebar } from "@/components/admin/admin-sidebar";
  * presented as security. The mock admin signs in at priya@admin.zapsters.dev.
  */
 export function AdminLayout({ children }: { children: React.ReactNode }) {
-  const { user, isLoading } = useSession();
+  const { user, isLoading, isAdmin } = useSession();
+  const [replayRequested, setReplayRequested] = React.useState(false);
+  const [dismissed, setDismissed] = React.useState(false);
+
+  // Auto-open on the admin's first visit, derived during render (no effect):
+  // the dialog can only render AFTER the session resolves, so reading the
+  // seen flag from localStorage here is client-only and hydration-safe.
+  const autoOpen =
+    isAdmin &&
+    !isLoading &&
+    user !== null &&
+    !isWalkthroughSeen(user.id) &&
+    !dismissed;
+  const walkthroughOpen = replayRequested || autoOpen;
 
   if (isLoading) {
     return (
@@ -34,7 +52,7 @@ export function AdminLayout({ children }: { children: React.ReactNode }) {
     );
   }
 
-  if (!user || user.role !== "admin") {
+  if (!user || !isAdmin) {
     return (
       <PageContainer narrow>
         <EmptyState
@@ -53,8 +71,26 @@ export function AdminLayout({ children }: { children: React.ReactNode }) {
 
   return (
     <div className="lg:flex">
-      <AdminSidebar />
+      <AdminSidebar
+        onReplay={() => {
+          setDismissed(false);
+          setReplayRequested(true);
+        }}
+      />
       <main className="min-w-0 flex-1">{children}</main>
+      <AdminWalkthrough
+        open={walkthroughOpen}
+        onOpenChange={(open) => {
+          if (!open) {
+            setDismissed(true);
+            setReplayRequested(false);
+          }
+        }}
+        onComplete={() => {
+          if (user) markWalkthroughSeen(user.id);
+          setReplayRequested(false);
+        }}
+      />
     </div>
   );
 }

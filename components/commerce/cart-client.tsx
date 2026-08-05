@@ -27,6 +27,7 @@ import {
 } from "@/lib/api/commerce";
 import { MockApiError } from "@/lib/api/errors";
 import { formatMoney } from "@/lib/format";
+import { DEMO_MODE } from "@/lib/config";
 import { CheckoutOutage } from "@/components/commerce/checkout-outage";
 import { cn } from "@/lib/utils";
 import { useSession } from "@/components/providers/session-provider";
@@ -316,7 +317,8 @@ export function CartClient() {
                       onRetry={() => checkoutMutation.mutate()}
                       retrying={checkoutMutation.isPending}
                     />
-                    {cart.items.some((i) => i.product_id === "course-boom") ? (
+                    {DEMO_MODE &&
+                    cart.items.some((i) => i.product_id === "course-boom") ? (
                       <button
                         className="self-center text-xs font-medium text-muted-foreground underline underline-offset-2 hover:text-foreground"
                         onClick={() => removeMutation.mutate("course-boom")}
@@ -347,46 +349,49 @@ export function CartClient() {
             </CardContent>
           </Card>
 
-          {/* Demo hooks — reachable edge states for the checkout flow */}
-          <Card className="border-dashed">
-            <CardContent className="flex flex-col gap-2 p-4">
-              <p className="text-[11px] font-semibold uppercase tracking-widest text-muted-foreground/60">
-                Demo states
-              </p>
-              <div className="flex flex-wrap gap-2">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  disabled={qtyMutation.isPending}
-                  onClick={() => {
-                    addToCart(userId, "course-boom", 1)
-                      .then(() =>
-                        toast.info(
-                          "Outage product added — hit “Checkout securely” to see the 503 state.",
-                        ),
-                      )
-                      .catch((e: Error) => toast.error(e.message));
-                  }}
-                >
-                  <TriangleAlert className="size-3.5" />
-                  Simulate provider outage
-                </Button>
-                <Button variant="outline" size="sm" asChild>
-                  <Link href="/checkout/cs-expired-demo">Expired session</Link>
-                </Button>
-                <Button variant="outline" size="sm" asChild>
-                  <Link href="/checkout/cs-fail-demo">Declined payment</Link>
-                </Button>
-                <Button variant="outline" size="sm" asChild>
-                  <Link href="/checkout/cs-paid-demo">Already paid</Link>
-                </Button>
-              </div>
-              <p className="flex items-center gap-1.5 text-[11px] text-muted-foreground">
-                <Lock className="size-3 shrink-0" />
-                Deterministic mock ids so every state is demoable.
-              </p>
-            </CardContent>
-          </Card>
+          {/* Demo hooks — reachable edge states for the checkout flow.
+              Demo scaffolding: gated in production-shaped builds. */}
+          {DEMO_MODE ? (
+            <Card className="border-dashed">
+              <CardContent className="flex flex-col gap-2 p-4">
+                <p className="text-[11px] font-semibold uppercase tracking-widest text-muted-foreground/60">
+                  Demo states
+                </p>
+                <div className="flex flex-wrap gap-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    disabled={qtyMutation.isPending}
+                    onClick={() => {
+                      addToCart(userId, "course-boom", 1)
+                        .then(() =>
+                          toast.info(
+                            "Outage product added — hit “Checkout securely” to see the 503 state.",
+                          ),
+                        )
+                        .catch((e: Error) => toast.error(e.message));
+                    }}
+                  >
+                    <TriangleAlert className="size-3.5" />
+                    Simulate provider outage
+                  </Button>
+                  <Button variant="outline" size="sm" asChild>
+                    <Link href="/checkout/cs-expired-demo">Expired session</Link>
+                  </Button>
+                  <Button variant="outline" size="sm" asChild>
+                    <Link href="/checkout/cs-fail-demo">Declined payment</Link>
+                  </Button>
+                  <Button variant="outline" size="sm" asChild>
+                    <Link href="/checkout/cs-paid-demo">Already paid</Link>
+                  </Button>
+                </div>
+                <p className="flex items-center gap-1.5 text-[11px] text-muted-foreground">
+                  <Lock className="size-3 shrink-0" />
+                  Deterministic mock ids so every state is demoable.
+                </p>
+              </CardContent>
+            </Card>
+          ) : null}
         </div>
       </div>
     </PageContainer>

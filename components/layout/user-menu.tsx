@@ -2,7 +2,15 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { ChartColumn, ChevronDown, LogOut, ShieldCheck, Trophy, Users } from "lucide-react";
+import {
+  ChartColumn,
+  ChevronDown,
+  LifeBuoy,
+  LogOut,
+  ShieldCheck,
+  Trophy,
+  Users,
+} from "lucide-react";
 
 import {
   Avatar,
@@ -79,6 +87,13 @@ export function UserMenu() {
           <Link href="/guilds">
             <Users />
             Guilds
+          </Link>
+        </DropdownMenuItem>
+        <DropdownMenuSeparator />
+        <DropdownMenuItem asChild>
+          <Link href="/support">
+            <LifeBuoy />
+            Support
           </Link>
         </DropdownMenuItem>
         {user.role === "admin" && (

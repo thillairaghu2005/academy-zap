@@ -358,3 +358,16 @@ export interface LedgerAuditView {
   snapshots: ContextSnapshot[];
   diffs: ContextVersionDiff[];
 }
+
+/**
+ * LedgerEntry plus a server-derived running balance. The §5.3 schema has no
+ * balance fields (the chain's prev_hash/entry_hash is the integrity anchor),
+ * so balance_before/balance_after are a read projection the engine would
+ * serve — never recomputed client-side (build.md §3).
+ */
+export interface LedgerEntryDetail extends LedgerEntry {
+  /** Running XP balance just before this entry applied. */
+  balance_before: number;
+  /** Running XP balance after this entry applied. */
+  balance_after: number;
+}

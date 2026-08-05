@@ -20,6 +20,11 @@ import { hueForId } from "@/lib/visual";
  *    error state
  */
 
+// Reviewer who authored the seeded in-review course (Meera Patel).
+export const MOCK_REVIEWER_MEERA_ID = "2a4c6e8f-0b1d-4c3e-8f5a-9b7c1d3e5f7a";
+// Threat Hunting with Sigma — seeded IN REVIEW (Task 2: all three statuses).
+export const MOCK_IN_REVIEW_COURSE_ID = "2c3d4e5f-6a7b-4c8d-9e0f-1a2b3c4d5e6f";
+
 const l = (
   id: string,
   title: string,
@@ -33,6 +38,55 @@ const s = (id: string, title: string, lessons: ReturnType<typeof l>[]) => ({
   position: 0,
   lessons: lessons.map((lesson, i) => ({ ...lesson, position: i + 1 })),
 });
+
+/**
+ * Last published snapshot per course id (F7 Task 2 diff view).
+ *
+ * When a course is published, its editable fields are snapshotted here so a
+ * later revision (in_review) can be diffed against what learners actually
+ * have. Mock-only — the real CMS keeps versioned rows in the `courses`
+ * table; this map is the stand-in for "last published version".
+ */
+export interface CoursePublishedSnapshot {
+  title: string;
+  subtitle: string;
+  description: string;
+  category: string;
+  level: Course["level"];
+  language: string;
+  price_cents: number;
+  estimated_hours: number;
+}
+
+const publishedSnapshots = new Map<string, CoursePublishedSnapshot>();
+
+/** The editable fields of a course, as a snapshot row. */
+export function snapshotOf(course: Course): CoursePublishedSnapshot {
+  return {
+    title: course.title,
+    subtitle: course.subtitle,
+    description: course.description,
+    category: course.category,
+    level: course.level,
+    language: course.language,
+    price_cents: course.price_cents,
+    estimated_hours: course.estimated_hours,
+  };
+}
+
+export function setPublishedSnapshot(
+  courseId: string,
+  snapshot: CoursePublishedSnapshot,
+): void {
+  publishedSnapshots.set(courseId, snapshot);
+}
+
+export function getPublishedSnapshot(
+  courseId: string,
+): CoursePublishedSnapshot | undefined {
+  return publishedSnapshots.get(courseId);
+}
+
 
 export const MOCK_COURSES: Course[] = [
   {
@@ -329,7 +383,57 @@ export const MOCK_COURSES: Course[] = [
       ]),
     ],
   },
+  {
+    id: MOCK_IN_REVIEW_COURSE_ID,
+    title: "Threat Hunting with Sigma",
+    subtitle: "Write detection rules that survive real-world noise.",
+    description:
+      "A practical course on building Sigma rules from telemetry: log sources, correlation across hosts, tuning false positives, and validating detections against live captures before they ever reach production.",
+    category: "Cybersecurity",
+    level: "intermediate",
+    language: "English",
+    status: "in_review",
+    instructor: {
+      id: MOCK_REVIEWER_MEERA_ID,
+      display_name: "Meera Patel",
+      title: "Detection Engineer",
+    },
+    rating: 0,
+    review_count: 0,
+    price_cents: 149900,
+    enrolled_count: 0,
+    estimated_hours: 9,
+    created_at: "2026-07-18T09:00:00Z",
+    updated_at: "2026-07-29T09:00:00Z",
+    submitted_by: MOCK_REVIEWER_MEERA_ID,
+    reviewed_by: null,
+    syllabus: [
+      s("sec-1", "Sigma Foundations", [
+        l("2c3d4e5f-0001", "Detection-as-code with Sigma", 431),
+        l("2c3d4e5f-0002", "Writing your first rule", 498),
+      ]),
+      s("sec-2", "Validation & Tuning", [
+        l("2c3d4e5f-0003", "Testing against capture files", 552),
+        l("2c3d4e5f-0004", "False-positive triage", 489),
+      ]),
+    ],
+  },
 ];
+
+// Seed the in-review course's LAST PUBLISHED version so the review diff has
+// something to compare against (Task 2). The current draft has since moved:
+// subtitle, description, level, price and hours all differ below.
+setPublishedSnapshot(MOCK_IN_REVIEW_COURSE_ID, {
+  title: "Threat Hunting with Sigma",
+  subtitle: "Detection engineering for blue teams.",
+  description:
+    "An introduction to Sigma rules for blue teams: what detections are, how to write them, and how to keep them from firing on benign traffic.",
+  category: "Cybersecurity",
+  level: "advanced",
+  language: "English",
+  price_cents: 199900,
+  estimated_hours: 10,
+});
 
 /** Draft courses exist but are excluded from the public catalog. */
 export const MOCK_COURSES_BY_ID = new Map(

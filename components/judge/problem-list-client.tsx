@@ -20,6 +20,7 @@ import type {
   ProblemDifficulty,
 } from "@/lib/contracts/judge";
 import { listProblems } from "@/lib/api/judge";
+import { DEMO_MODE } from "@/lib/config";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { PageContainer } from "@/components/shared/page-container";
@@ -236,16 +237,20 @@ export function ProblemListClient() {
         )}
       </div>
 
-      {/* Mock-hint footer */}
-      <p className="mt-8 rounded-lg border border-dashed border-border bg-muted/30 px-4 py-3 text-xs leading-relaxed text-muted-foreground">
-        <span className="font-semibold text-foreground">Mock hints:</span>{" "}
-        inside the editor, include <code className="rounded bg-muted px-1">raise </code>{" "}
-        for a runtime error, <code className="rounded bg-muted px-1">sleep(</code>{" "}
-        for a time limit exceeded,{" "}
-        <code className="rounded bg-muted px-1">wrong_answer</code> for a wrong
-        answer, and <code className="rounded bg-muted px-1">compile_error</code>{" "}
-        for a compile error. The starter code passes cleanly.
-      </p>
+      {/* Mock-hint footer — demo scaffolding, gated in production builds. */}
+      {DEMO_MODE ? (
+        <p className="mt-8 rounded-lg border border-dashed border-border bg-muted/30 px-4 py-3 text-xs leading-relaxed text-muted-foreground">
+          <span className="font-semibold text-foreground">Mock hints:</span>{" "}
+          inside the editor, include{" "}
+          <code className="rounded bg-muted px-1">raise </code> for a runtime
+          error, <code className="rounded bg-muted px-1">sleep(</code> for a
+          time limit exceeded,{" "}
+          <code className="rounded bg-muted px-1">wrong_answer</code> for a
+          wrong answer, and{" "}
+          <code className="rounded bg-muted px-1">compile_error</code> for a
+          compile error. The starter code passes cleanly.
+        </p>
+      ) : null}
     </PageContainer>
   );
 }

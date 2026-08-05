@@ -7,6 +7,7 @@ import { CourseDetailClient } from "@/components/courses/course-detail-client";
 
 interface CoursePageProps {
   params: Promise<{ id: string }>;
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
 }
 
 export const metadata: Metadata = {
@@ -14,8 +15,13 @@ export const metadata: Metadata = {
   description: "Course detail — syllabus, enrollment and progress.",
 };
 
-export default async function CoursePage({ params }: CoursePageProps) {
+export default async function CoursePage({
+  params,
+  searchParams,
+}: CoursePageProps) {
   const { id } = await params;
+  // F7 draft preview — ?preview=1 renders unpublished content read-only.
+  const previewMode = (await searchParams).preview === "1";
 
   let course;
   try {
@@ -26,5 +32,5 @@ export default async function CoursePage({ params }: CoursePageProps) {
     throw err;
   }
 
-  return <CourseDetailClient course={course} />;
+  return <CourseDetailClient course={course} previewMode={previewMode} />;
 }

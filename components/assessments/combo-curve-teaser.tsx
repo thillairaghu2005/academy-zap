@@ -81,14 +81,14 @@ export function ComboCurveTeaser() {
         <span>
           ×{(data.find((s) => s.count === 4)?.multiplier ?? 2).toFixed(2)} at 4
         </span>
-        <span className="text-amber-600 dark:text-amber-400">
+        <span className="text-amber-400">
           ×{maxMultiplier.toFixed(2)} at {maxCount}
         </span>
       </div>
 
       <p className="mt-2 text-[11px] leading-relaxed text-muted-foreground">
         Consecutive correct answers raise the multiplier up to{" "}
-        <span className="font-semibold text-amber-600 dark:text-amber-400">
+        <span className="font-semibold text-amber-400">
           ×{maxMultiplier.toFixed(2)}
         </span>
         . A wrong answer resets the run — the meter you see is a preview; the

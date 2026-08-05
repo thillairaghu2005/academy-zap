@@ -27,6 +27,7 @@ import {
   getRankLadder,
   getStreak,
 } from "@/lib/api/gamification";
+import { DEMO_MODE } from "@/lib/config";
 import { useSession } from "@/components/providers/session-provider";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -52,11 +53,11 @@ const DEMO_USERS = [
 ] as const;
 
 const LEAGUE_TIER_STYLE: Record<string, string> = {
-  bronze: "border-orange-700/40 bg-orange-700/10 text-orange-600 dark:text-orange-400",
-  silver: "border-slate-400/40 bg-slate-400/10 text-slate-500 dark:text-slate-300",
-  gold: "border-amber-500/40 bg-amber-500/10 text-amber-600 dark:text-amber-400",
-  platinum: "border-cyan-500/40 bg-cyan-500/10 text-cyan-600 dark:text-cyan-400",
-  obsidian: "border-violet-600/40 bg-violet-600/10 text-violet-600 dark:text-violet-400",
+  bronze: "border-orange-700/40 bg-orange-700/10 text-orange-400",
+  silver: "border-slate-400/40 bg-slate-400/10 text-slate-300",
+  gold: "border-amber-500/40 bg-amber-500/10 text-amber-400",
+  platinum: "border-cyan-500/40 bg-cyan-500/10 text-cyan-400",
+  obsidian: "border-violet-600/40 bg-violet-600/10 text-violet-400",
 };
 
 export function RankHubClient() {
@@ -91,28 +92,31 @@ export function RankHubClient() {
 
   return (
     <PageContainer>
-      {/* Demo-state switcher — demos all four required states. */}
-      <div className="mb-6 flex flex-wrap items-center gap-2">
-        <span className="text-[11px] font-medium uppercase tracking-wider text-muted-foreground">
-          Demo state
-        </span>
-        <div className="flex overflow-hidden rounded-lg border border-border">
-          {DEMO_USERS.map((d) => (
-            <button
-              key={d.id}
-              onClick={() => setDemoUser(d.id)}
-              className={cn(
-                "px-3 py-1.5 text-xs font-medium transition-colors",
-                demoUser === d.id
-                  ? "bg-primary text-primary-foreground"
-                  : "bg-card text-muted-foreground hover:text-foreground",
-              )}
-            >
-              {d.label}
-            </button>
-          ))}
+      {/* Demo-state switcher — demos the four required states. Gated: it's
+          demo scaffolding and never renders in a production-shaped build. */}
+      {DEMO_MODE ? (
+        <div className="mb-6 flex flex-wrap items-center gap-2">
+          <span className="text-[11px] font-medium uppercase tracking-wider text-muted-foreground">
+            Demo state
+          </span>
+          <div className="flex overflow-hidden rounded-lg border border-border">
+            {DEMO_USERS.map((d) => (
+              <button
+                key={d.id}
+                onClick={() => setDemoUser(d.id)}
+                className={cn(
+                  "px-3 py-1.5 text-xs font-medium transition-colors",
+                  demoUser === d.id
+                    ? "bg-primary text-primary-foreground"
+                    : "bg-card text-muted-foreground hover:text-foreground",
+                )}
+              >
+                {d.label}
+              </button>
+            ))}
+          </div>
         </div>
-      </div>
+      ) : null}
 
       {ctxQuery.isLoading ? (
         <div className="grid gap-6 lg:grid-cols-[1fr_340px]">
@@ -152,7 +156,7 @@ export function RankHubClient() {
             >
               <ShieldAlert className="mt-0.5 size-5 shrink-0 text-amber-500" />
               <div>
-                <p className="font-display text-sm font-semibold text-amber-600 dark:text-amber-400">
+                <p className="font-display text-sm font-semibold text-amber-400">
                   Progress frozen pending review
                 </p>
                 <p className="mt-0.5 text-xs leading-relaxed text-muted-foreground">
@@ -186,7 +190,7 @@ export function RankHubClient() {
                   <div className="mt-2 flex flex-wrap items-center gap-2">
                     <Badge variant="secondary">Level {ctx.rank.level}</Badge>
                     {ctx.rank.prestige_tier > 0 ? (
-                      <Badge className="border-fuchsia-500/40 bg-fuchsia-500/10 text-fuchsia-600 dark:text-fuchsia-400">
+                      <Badge className="border-fuchsia-500/40 bg-fuchsia-500/10 text-fuchsia-400">
                         <Sparkles className="size-3" /> Prestige{" "}
                         {ctx.rank.prestige_tier}
                       </Badge>
@@ -330,7 +334,7 @@ function DualXpTracks({
   return (
     <div className="relative mt-8 space-y-4">
       <div className="flex items-center justify-between text-xs">
-        <span className="flex items-center gap-1.5 font-medium text-sky-600 dark:text-sky-400">
+        <span className="flex items-center gap-1.5 font-medium text-sky-400">
           <BookOpen className="size-3.5" /> Completion XP
         </span>
         <span className="font-mono text-muted-foreground">
@@ -346,7 +350,7 @@ function DualXpTracks({
         />
       </div>
       <div className="flex items-center justify-between text-xs">
-        <span className="flex items-center gap-1.5 font-medium text-fuchsia-600 dark:text-fuchsia-400">
+        <span className="flex items-center gap-1.5 font-medium text-fuchsia-400">
           <Sparkles className="size-3.5" /> Mastery XP
         </span>
         <span className="font-mono text-muted-foreground">
@@ -363,7 +367,7 @@ function DualXpTracks({
       </div>
       <p className="text-[11px] text-muted-foreground">
         Two independent tracks, never blended — rank is a weighted function of
-        both (weights live in rules.py).
+        both, with the weights owned by the server.
       </p>
     </div>
   );
@@ -448,7 +452,7 @@ function StreakWidget({
             </span>
           </div>
           <div className="mt-3 flex flex-wrap gap-2 text-[11px]">
-            <span className="rounded-md bg-orange-500/10 px-2 py-1 font-medium text-orange-600 dark:text-orange-400">
+            <span className="rounded-md bg-orange-500/10 px-2 py-1 font-medium text-orange-400">
               ×{streak.momentum_multiplier.toFixed(2)} momentum
             </span>
             <span className="rounded-md bg-secondary px-2 py-1 font-medium text-muted-foreground">
@@ -516,12 +520,12 @@ function LeagueWidget({
           </div>
           <div className="mt-3 flex flex-wrap gap-2 text-[11px]">
             {league.promotion_zone ? (
-              <span className="flex items-center gap-1 rounded-md bg-emerald-500/10 px-2 py-1 font-medium text-emerald-600 dark:text-emerald-400">
+              <span className="flex items-center gap-1 rounded-md bg-emerald-500/10 px-2 py-1 font-medium text-emerald-400">
                 <TrendingUp className="size-3" /> Promotion zone
               </span>
             ) : null}
             {league.relegation_zone ? (
-              <span className="rounded-md bg-rose-500/10 px-2 py-1 font-medium text-rose-600 dark:text-rose-400">
+              <span className="rounded-md bg-rose-500/10 px-2 py-1 font-medium text-rose-400">
                 Relegation zone
               </span>
             ) : null}
@@ -555,7 +559,7 @@ function GuildWidget({ guild }: { guild: { guild_id: string; member_count: numbe
             {guild.member_count} members ·{" "}
             {guild.combined_xp_this_week.toLocaleString()} XP this week
           </p>
-          <div className="mt-2 inline-flex items-center gap-1.5 rounded-md bg-purple-500/10 px-2 py-1 text-[11px] font-medium text-purple-600 dark:text-purple-400">
+          <div className="mt-2 inline-flex items-center gap-1.5 rounded-md bg-purple-500/10 px-2 py-1 text-[11px] font-medium text-purple-400">
             <Trophy className="size-3" /> Global rank #{guild.guild_rank_global}
           </div>
         </>
@@ -586,7 +590,7 @@ function RankLadderSection({
           The rank ladder
         </h2>
         <Badge variant="outline" className="text-[10px]">
-          Initiate → Deus · thresholds in rules.py
+          Initiate → Deus
         </Badge>
       </div>
       {isLoading ? (
@@ -627,7 +631,7 @@ function RankLadderSection({
                       {r.rank_name}
                     </p>
                     {isCurrent ? (
-                      <Badge className="border-fuchsia-500/40 bg-fuchsia-500/15 text-[10px] text-fuchsia-600 dark:text-fuchsia-400">
+                      <Badge className="border-fuchsia-500/40 bg-fuchsia-500/15 text-[10px] text-fuchsia-400">
                         <Medal className="size-3" /> You are here
                       </Badge>
                     ) : null}
@@ -668,7 +672,7 @@ function RankLadderSection({
               </p>
             </div>
             {currentPrestige > 0 ? (
-              <Badge className="border-fuchsia-500/40 bg-fuchsia-500/15 text-[10px] text-fuchsia-600 dark:text-fuchsia-400">
+              <Badge className="border-fuchsia-500/40 bg-fuchsia-500/15 text-[10px] text-fuchsia-400">
                 <Sparkles className="size-3" /> Prestige {currentPrestige}
               </Badge>
             ) : (

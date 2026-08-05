@@ -7,6 +7,7 @@ import {
   BookOpen,
   CodeXml,
   FlaskConical,
+  LifeBuoy,
   LoaderCircle,
   Plus,
   ScrollText,
@@ -15,6 +16,7 @@ import {
 } from "lucide-react";
 
 import { getAdminDashboard } from "@/lib/api/admin";
+import { DEMO_MODE } from "@/lib/config";
 import { useSession } from "@/components/providers/session-provider";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -30,6 +32,7 @@ const STATS = [
   { key: "problems", label: "Problems", href: "/admin/problems", icon: CodeXml, accent: "from-cyan-400 to-blue-500" },
   { key: "orders", label: "Orders", href: "/admin/orders", icon: ShoppingCart, accent: "from-amber-400 to-orange-500" },
   { key: "users", label: "Users", href: "/admin/users", icon: Users, accent: "from-sky-400 to-cyan-500" },
+  { key: "tickets", label: "Tickets", href: "/admin/support", icon: LifeBuoy, accent: "from-rose-400 to-pink-500" },
 ] as const;
 
 export function AdminDashboardClient() {
@@ -54,8 +57,8 @@ export function AdminDashboardClient() {
       </div>
 
       {dashboardQuery.isLoading ? (
-        <div className="mt-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-5">
-          {Array.from({ length: 5 }).map((_, i) => (
+        <div className="mt-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-6">
+          {Array.from({ length: 6 }).map((_, i) => (
             <SkeletonCard key={i} className="h-32" />
           ))}
         </div>
@@ -75,7 +78,7 @@ export function AdminDashboardClient() {
       ) : dashboardQuery.data ? (
         <>
           {/* Stat cards */}
-          <div className="mt-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-5">
+          <div className="mt-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-6">
             {STATS.map((stat) => {
               const Icon = stat.icon;
               const count =
@@ -195,11 +198,13 @@ export function AdminDashboardClient() {
                 </CardContent>
               </Card>
 
-              <p className="flex items-center gap-1.5 text-[11px] leading-relaxed text-muted-foreground">
-                <LoaderCircle className="size-3 shrink-0" />
-                Mock note: counts come from the fixture stores — the real CMS
-                reads live tables.
-              </p>
+              {DEMO_MODE ? (
+                <p className="flex items-center gap-1.5 text-[11px] leading-relaxed text-muted-foreground">
+                  <LoaderCircle className="size-3 shrink-0" />
+                  Mock note: counts come from the fixture stores — the real
+                  CMS reads live tables.
+                </p>
+              ) : null}
             </div>
           </div>
         </>

@@ -19,6 +19,7 @@ import type { Lab, LabDifficulty } from "@/lib/contracts/lab";
 import type { CatalogProduct } from "@/lib/contracts/commerce";
 import { searchLabs } from "@/lib/api/lab";
 import { listCatalogProducts } from "@/lib/api/commerce";
+import { DEMO_MODE } from "@/lib/config";
 import { AddToCartButton } from "@/components/commerce/add-to-cart-button";
 import { BuyNowButton } from "@/components/commerce/buy-now-button";
 import { useDebouncedValue } from "@/lib/hooks/use-debounced-value";
@@ -232,7 +233,11 @@ export function LabCatalogClient() {
           <Input
             name="q"
             aria-label="Search labs"
-            placeholder={'Search labs… (try "web", "zzzz" for empty, "boom" for error)'}
+            placeholder={
+              DEMO_MODE
+                ? 'Search labs… (try "web", "zzzz" for empty, "boom" for error)'
+                : "Search labs…"
+            }
             value={query}
             onChange={(e) => applyQuery(e.target.value)}
             className="pl-9 pr-9"

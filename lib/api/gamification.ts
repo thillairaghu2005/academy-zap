@@ -25,6 +25,8 @@ import type {
   LeaderboardScope,
   LeagueStanding,
   LedgerAuditView,
+  LedgerEntry,
+  LedgerEntryDetail,
   ProgressContext,
   RankLevel,
   SeasonPassState,
@@ -42,10 +44,14 @@ import {
   buildShareCard,
   contextForUser,
   demoLedgerEntries,
+  findLedgerEntryById,
+  ledgerDetailFor,
   MOCK_BADGES,
   MOCK_SKILL_TREE,
+  reconciliationFixtures,
   verifyCredential,
 } from "@/lib/mocks/gamification";
+import { auditEntries, ledgerEntryIdForAuditSeed } from "@/lib/mocks/admin";
 import { RANK_LADDER } from "@/lib/contracts/gamification";
 import { MockApiError } from "@/lib/api/errors";
 import { delay, jitter } from "@/lib/api/helpers";
@@ -205,6 +211,106 @@ export async function getSeasonPass(userId: string): Promise<SeasonPassState> {
  * versioned context snapshots and the diffs between them — the "show me why
  * user X is Rank 7" answer, in mock form.
  */
+/* ------------------------------------------------------------------ */
+/*  Ledger reads for the admin audit view (Task 3)                     */
+/* ------------------------------------------------------------------ */
+
+/** Addressable read of ONE ledger entry (404 for unknown ids). */
+export async function getLedgerEntry(id: string): Promise<LedgerEntry> {
+  await delay(jitter(180));
+  const entry = await findLedgerEntryById(id);
+  if (!entry) {
+    throw new MockApiError(
+      "ledger_entry_not_found",
+      "No ledger entry with this id.",
+      404,
+    );
+  }
+  return entry;
+}
+
+/**
+ * Ledger entry plus the server-derived running balance (amount, balance
+ * before/after, reason code) — the expandable row of the audit log.
+ */
+export async function getLedgerEntryDetail(
+  id: string,
+): Promise<LedgerEntryDetail> {
+  await delay(jitter(200));
+  const entry = await findLedgerEntryById(id);
+  if (!entry) {
+    throw new MockApiError(
+      "ledger_entry_not_found",
+      "No ledger entry with this id.",
+      404,
+    );
+  }
+  return ledgerDetailFor(entry);
+}
+
+/**
+ * The ledger entry linked to an audit event, if any. Resolves the seed
+ * marker against the real chained ledger — the client never re-derives a
+ * balance (build.md §3). Null for audit rows that never touched XP state.
+ */
+export async function getLedgerEntriesForAuditEvent(
+  auditEventId: string,
+): Promise<LedgerEntry | null> {
+  await delay(jitter(200));
+  const seed = auditEntries.find((e) => e.id === auditEventId);
+  if (!seed) {
+    throw new MockApiError(
+      "audit_event_not_found",
+      "No audit event with this id.",
+      404,
+    );
+  }
+  const ledgerEntryId = await ledgerEntryIdForAuditSeed(seed);
+  if (!ledgerEntryId) return null;
+  return (await findLedgerEntryById(ledgerEntryId)) ?? null;
+}
+
+/** Server verdict for the reconciliation panel (Task 3). */
+export interface LedgerReconciliation {
+  user_id: string;
+  display_name: string;
+  /** What the cached ProgressContext reports. */
+  cached_total_xp: number;
+  /** What the append-only ledger sums to. */
+  ledger_sum: number;
+  /** ledger_sum - cached_total_xp, computed server-side (never client math). */
+  delta_xp: number;
+  entry_count: number;
+  /** true when the ledger and the cached balance agree. */
+  reconciled: boolean;
+}
+
+/**
+ * Sum a user's ledger entries and flag a mismatch against the cached
+ * balance in ProgressContext — computed ENTIRELY server-side (mock). The
+ * panel renders the verdict; it never recomputes balances.
+ */
+export async function reconcileLedgerBalance(
+  userId: string,
+): Promise<LedgerReconciliation> {
+  await delay(jitter(260));
+  assertReachable(userId);
+  const fixtures = await reconciliationFixtures();
+  const fixture = fixtures.get(userId);
+  if (!fixture) {
+    throw new MockApiError(
+      "user_not_found",
+      "No ledger data for this user.",
+      404,
+    );
+  }
+  return {
+    ...fixture,
+    delta_xp: fixture.ledger_sum - fixture.cached_total_xp,
+    reconciled: fixture.ledger_sum === fixture.cached_total_xp,
+  };
+}
+
 export async function getLedgerAudit(userId: string): Promise<LedgerAuditView> {
   await delay(jitter(260));
   assertReachable(userId);

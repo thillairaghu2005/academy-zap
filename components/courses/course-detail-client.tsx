@@ -95,12 +95,23 @@ function LessonRow({
   );
 }
 
-export function CourseDetailClient({ course }: { course: Course }) {
+export function CourseDetailClient({
+  course,
+  previewMode = false,
+}: {
+  course: Course;
+  /** F7 draft preview — renders unpublished content without enroll CTAs. */
+  previewMode?: boolean;
+}) {
   const { user } = useSession();
   const queryClient = useQueryClient();
   const userId = user?.id ?? "";
   const isEnrolledUser = Boolean(user);
   const isFree = course.price_cents === 0;
+  // Unpublished courses (draft / in_review) are never enrollable — the
+  // preview shows the content exactly as an author/reviewer would see it.
+  const isPublished = course.status === "published";
+  const isPreview = previewMode || !isPublished;
 
   const allLessons = course.syllabus.flatMap((section) => section.lessons);
 
@@ -111,7 +122,7 @@ export function CourseDetailClient({ course }: { course: Course }) {
   } = useQuery({
     queryKey: ["course-progress", course.id, userId],
     queryFn: () => getCourseProgress(course.id, userId),
-    enabled: isEnrolledUser,
+    enabled: isEnrolledUser && isPublished,
   });
 
   const enrollMutation = useMutation({
@@ -133,7 +144,7 @@ export function CourseDetailClient({ course }: { course: Course }) {
   const ownedQuery = useQuery({
     queryKey: ["entitlement", course.id, userId],
     queryFn: () => hasEntitlement(userId, course.id),
-    enabled: isEnrolledUser && !isFree,
+    enabled: isEnrolledUser && !isFree && isPublished,
   });
   const owned = ownedQuery.data ?? false;
 
@@ -153,17 +164,24 @@ export function CourseDetailClient({ course }: { course: Course }) {
         Back to catalog
       </Link>
 
-      {/* Draft banner (mock: draft courses are reachable by id, excluded from catalog) */}
-      {isDraft ? (
+      {/* Preview banner — unpublished courses are reachable by id (author/
+          reviewer preview); the CTA is replaced with a read-only note. */}
+      {isPreview ? (
         <div className="mt-4 flex items-start gap-3 rounded-lg border border-warning/30 bg-warning/10 px-4 py-3">
           <span className="mt-0.5 grid size-5 shrink-0 place-items-center rounded-full bg-warning/20 text-warning">
             <Clock className="size-3" />
           </span>
           <div className="text-sm">
-            <p className="font-medium text-warning">Draft course — author preview</p>
+            <p className="font-medium text-warning">
+              {isDraft
+                ? "Draft course — author preview"
+                : previewMode
+                  ? "In review — reviewer preview"
+                  : "Unpublished course — preview"}
+            </p>
             <p className="text-muted-foreground">
-              This course is not published and won&apos;t appear in the catalog. You
-              reached it via direct link, as an author preview would.
+              This course is not published and won&apos;t appear in the catalog.
+              You reached it via direct link or the admin preview button.
             </p>
           </div>
         </div>
@@ -314,9 +332,11 @@ export function CourseDetailClient({ course }: { course: Course }) {
                     {completedCount} of {allLessons.length} lessons complete
                   </p>
                 </>
-              ) : isDraft ? (
+              ) : isPreview ? (
                 <Button disabled className="w-full">
-                  Draft — not enrollable
+                  {isDraft
+                    ? "Draft — not enrollable"
+                    : "In review — not enrollable"}
                 </Button>
               ) : !isFree && !owned ? (
                 /* Paid + not owned → entitlement gate: Buy now / Add to cart */

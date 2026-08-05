@@ -29,15 +29,15 @@ import { cn } from "@/lib/utils";
 
 const STATUS_STYLE: Record<string, { badge: string; icon: React.ReactNode }> = {
   verified: {
-    badge: "border-emerald-500/40 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400",
+    badge: "border-emerald-500/40 bg-emerald-500/10 text-emerald-400",
     icon: <BadgeCheck className="size-3.5" />,
   },
   flagged: {
-    badge: "border-amber-500/40 bg-amber-500/10 text-amber-600 dark:text-amber-400",
+    badge: "border-amber-500/40 bg-amber-500/10 text-amber-400",
     icon: <ShieldQuestion className="size-3.5" />,
   },
   revoked: {
-    badge: "border-rose-500/40 bg-rose-500/10 text-rose-600 dark:text-rose-400",
+    badge: "border-rose-500/40 bg-rose-500/10 text-rose-400",
     icon: <BadgeX className="size-3.5" />,
   },
 };

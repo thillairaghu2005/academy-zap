@@ -23,6 +23,7 @@ import {
 
 import type { Lab } from "@/lib/contracts/lab";
 import { getLab, provisionSession } from "@/lib/api/lab";
+import { DEMO_MODE } from "@/lib/config";
 import { getCatalogProduct, hasEntitlement } from "@/lib/api/commerce";
 import { AddToCartButton } from "@/components/commerce/add-to-cart-button";
 import { BuyNowButton } from "@/components/commerce/buy-now-button";
@@ -363,12 +364,14 @@ export function LabDetailClient({ labId }: { labId: string }) {
             ) : null}
           </Card>
 
-          <p className="mt-3 flex items-start gap-1.5 text-[11px] leading-relaxed text-muted-foreground">
-            <FlaskConical className="mt-0.5 size-3 shrink-0" />
-            Mock note: provisioning is simulated — a session object is created
-            against the mock orchestrator and the terminal connects to the
-            scripted bridge.
-          </p>
+          {DEMO_MODE ? (
+            <p className="mt-3 flex items-start gap-1.5 text-[11px] leading-relaxed text-muted-foreground">
+              <FlaskConical className="mt-0.5 size-3 shrink-0" />
+              Mock note: provisioning is simulated — a session object is
+              created against the mock orchestrator and the terminal connects
+              to the scripted bridge.
+            </p>
+          ) : null}
         </div>
       </div>
     </PageContainer>

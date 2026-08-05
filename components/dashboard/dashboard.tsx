@@ -2,18 +2,11 @@
 
 import Link from "next/link";
 import { motion } from "framer-motion";
-import {
-  ArrowRight,
-  Boxes,
-  FileText,
-  ShieldCheck,
-  Sparkles,
-} from "lucide-react";
+import { ArrowRight, BadgeCheck, Gift, Layers } from "lucide-react";
 
-import type { SurfaceMeta, SurfaceStatus } from "@/lib/surfaces";
+import type { SurfaceMeta } from "@/lib/surfaces";
 import { surfaces } from "@/lib/surfaces";
 import { cn } from "@/lib/utils";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -24,18 +17,8 @@ import {
 import { PageContainer } from "@/components/shared/page-container";
 import { MyLearning } from "@/components/dashboard/my-learning";
 
-const statusChip: Record<
-  SurfaceStatus,
-  { label: string; dot: string; text: string }
-> = {
-  shipped: { label: "Live", dot: "bg-success", text: "text-success" },
-  next: { label: "Next up", dot: "bg-info", text: "text-info" },
-  stubbed: { label: "Stubbed", dot: "bg-muted-foreground/50", text: "text-muted-foreground" },
-};
-
 function SurfaceCard({ surface }: { surface: SurfaceMeta }) {
   const Icon = surface.icon;
-  const chip = statusChip[surface.status];
 
   return (
     <Link href={surface.href} className="group block h-full outline-none">
@@ -53,42 +36,36 @@ function SurfaceCard({ surface }: { surface: SurfaceMeta }) {
             <CardTitle className="text-base">{surface.title}</CardTitle>
             <p className="text-xs text-muted-foreground">{surface.navLabel}</p>
           </div>
-          <Badge variant="outline" className="ml-auto shrink-0">
-            {surface.stage}
-          </Badge>
         </CardHeader>
         <CardContent>
           <p className="text-sm leading-relaxed text-muted-foreground">
             {surface.tagline}
           </p>
-          <div className="mt-4 flex items-center justify-between">
-            <span className={cn("flex items-center gap-1.5 text-xs font-medium", chip.text)}>
-              <span className={cn("size-1.5 rounded-full", chip.dot)} />
-              {chip.label}
-            </span>
-            <ArrowRight className="size-4 text-muted-foreground transition-all duration-200 group-hover:translate-x-0.5 group-hover:text-primary" />
-          </div>
+          <p className="mt-4 flex items-center gap-1.5 text-xs font-medium text-primary opacity-0 transition-opacity duration-200 group-hover:opacity-100">
+            Explore
+            <ArrowRight className="size-3.5 transition-transform duration-200 group-hover:translate-x-0.5" />
+          </p>
         </CardContent>
       </Card>
     </Link>
   );
 }
 
-const discipline = [
+const howItClimbs = [
   {
-    icon: FileText,
-    title: "Contracts first",
-    body: "lib/contracts/ transcribes every Pydantic schema field-for-field. Components consume the contract — never an invented shape.",
+    icon: Layers,
+    title: "Every effort counts",
+    body: "Courses, judge, labs and assessments all feed one XP system — no single surface is a dead end.",
   },
   {
-    icon: Boxes,
-    title: "Swappable mocks",
-    body: "lib/api/ is async-shaped with realistic latency today. The real backend is a function-body swap, not a UI rewrite (build.md §4).",
+    icon: BadgeCheck,
+    title: "Ranks you can prove",
+    body: "Every earned badge and credential links to a public verification page.",
   },
   {
-    icon: ShieldCheck,
-    title: "Server always wins",
-    body: "XP, ranks, streaks and verdicts are never computed in components — even in mock mode they come from the mock API (build.md §3).",
+    icon: Gift,
+    title: "One account, everything",
+    body: "Cart, entitlements, billing and support live in the same place.",
   },
 ];
 
@@ -107,19 +84,13 @@ export function Dashboard() {
         <div className="pointer-events-none absolute -bottom-20 -left-16 size-72 rounded-full bg-cyan-500/10 blur-3xl" />
 
         <div className="relative z-10 px-6 py-14 sm:px-10 sm:py-16">
-          <Badge variant="secondary" className="mb-5 gap-1.5 px-3 py-1">
-            <Sparkles className="size-3" />
-            Frontend build · F0 shell &amp; design system live
-          </Badge>
           <h1 className="max-w-2xl font-display text-4xl font-bold leading-tight tracking-tight sm:text-5xl">
-            Learn. Build.{" "}
-            <span className="text-gradient-zap">Climb.</span>
+            Learn. Build. <span className="text-gradient-zap">Climb.</span>
           </h1>
           <p className="mt-4 max-w-xl text-base leading-relaxed text-muted-foreground">
-            Zapsters pairs Udemy-shaped courses, a HackerRank-shaped code judge
-            and TryHackMe-shaped labs with a full gamification layer — built
-            contract-first against the locked backend contracts, so the backend
-            swap is a data-layer change, not a rewrite.
+            Learn in hands-on courses, prove it in the code judge, and break
+            things in isolated virtual labs — every effort feeds a single rank
+            climb.
           </p>
           <div className="mt-7 flex flex-wrap gap-3">
             <Button variant="gradient" size="lg" asChild>
@@ -142,15 +113,13 @@ export function Dashboard() {
         <div className="flex flex-wrap items-end justify-between gap-3">
           <div>
             <h2 className="font-display text-xl font-bold tracking-tight">
-              Platform surfaces
+              Explore the platform
             </h2>
             <p className="mt-1 text-sm text-muted-foreground">
-              Nine routes scaffolded, built in build.md order F1 → F7.
+              Courses, judge, labs, assessments, ranks and commerce — pick a
+              surface and start.
             </p>
           </div>
-          <Badge variant="outline" className="mb-1">
-            Next: F2 · Judge Engine
-          </Badge>
         </div>
 
         <div className="mt-5 grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
@@ -167,13 +136,13 @@ export function Dashboard() {
         </div>
       </section>
 
-      {/* Integration discipline */}
+      {/* How the climb works */}
       <section className="mt-12">
         <h2 className="font-display text-xl font-bold tracking-tight">
-          Why this integrates cleanly later
+          How the climb works
         </h2>
         <div className="mt-5 grid gap-4 md:grid-cols-3">
-          {discipline.map((item, i) => (
+          {howItClimbs.map((item, i) => (
             <motion.div
               key={item.title}
               initial={{ opacity: 0, y: 12 }}

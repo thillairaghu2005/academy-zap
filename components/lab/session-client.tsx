@@ -139,7 +139,7 @@ function ObjectivesPanel({
                 <p
                   className={cn(
                     "text-sm font-medium",
-                    completed && "text-emerald-700 dark:text-emerald-400",
+                    completed && "text-emerald-400",
                   )}
                 >
                   {objective.title}
@@ -575,7 +575,7 @@ export function LabSessionClient({
             ) : null}
 
             {hintMutation.data ? (
-              <div className="animate-fade-up rounded-lg border border-amber-500/25 bg-amber-500/5 px-3.5 py-2.5 text-xs text-amber-700 dark:text-amber-400">
+              <div className="animate-fade-up rounded-lg border border-amber-500/25 bg-amber-500/5 px-3.5 py-2.5 text-xs text-amber-400">
                 <span className="font-semibold">Hint:</span> {hintMutation.data}
               </div>
             ) : null}
@@ -600,7 +600,7 @@ export function LabSessionClient({
                     className={cn(
                       "animate-fade-up rounded-lg border px-3.5 py-2.5 text-xs",
                       result.completed
-                        ? "border-emerald-500/25 bg-emerald-500/5 text-emerald-700 dark:text-emerald-400"
+                        ? "border-emerald-500/25 bg-emerald-500/5 text-emerald-400"
                         : "border-border bg-muted/30 text-muted-foreground",
                     )}
                   >

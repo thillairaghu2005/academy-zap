@@ -16,6 +16,17 @@
  *   - session.ts : the docs do not lock a User/Profile schema (Platform Core
  *     owns auth). This minimal shell contract is provisional and will be
  *     reconciled with the real Platform Core schema during integration.
+ *     Product-audit Fix 4 moved the mock auth rules server-side: a signed
+ *     HttpOnly session cookie (HMAC-SHA256, 7-day expiry, SameSite=Lax)
+ *     issued by app/api/auth/session and verified by proxy.ts, which
+ *     redirects anonymous visitors to /login?next=<path>. The client auth
+ *     module (lib/api/auth.ts) is a thin fetch wrapper with unchanged
+ *     signatures. This is the boundary SHAPE, not real security: SESSION_SECRET
+ *     falls back to a mock constant when unset (a real deployment MUST set
+ *     it) and the user directory is fixture data. DEMO_MODE
+ *     (NEXT_PUBLIC_DEMO_MODE) disables the middleware gate and auto-issues
+ *     the demo learner session; the signed-out marker cookie makes logout
+ *     stick even in demo mode.
  *   - content.ts : the docs lock the ContentProvider Protocol method shapes
  *     (get_course, get_playback_manifest) but not full Course/SignedManifest/
  *     Enrollment field lists (those come from the `courses`/`lessons`/
@@ -64,7 +75,31 @@
  *     billing surface renders the read model only.
  *   - content.ts : ContentStatus gained `in_review` (F7) as a provisional
  *     intermediate state for the submit-for-review / publish workflow; §4.4
- *     names draft vs published.
+ *     names draft vs published. Course.submitted_by / reviewed_by (F7 Task 2)
+ *     drive the two-person rule (publisher must differ from the submitter) —
+ *     snake_case per the codebase convention, where the task brief named them
+ *     `reviewedBy?`. The review workflow APIs (saveDraft / submitForReview /
+ *     publishCourse / unpublishCourse / getCourseReviewDiff) live in
+ *     lib/api/admin.ts, NOT lib/api/content.ts: content.ts is the public
+ *     read surface (get_course / manifest / catalog), and F7 established
+ *     admin.ts as the authoring surface — splitting authoring writes across
+ *     the two would break that separation. Draft autosave (saveDraft) is
+ *     silent by design — no audit row per keystroke-save; the explicit
+ *     "Save changes" (updateCourse) logs to the audit trail.
+ *   - admin (F7 Task 2/3 follow-up) : the published-version snapshot map in
+ *     lib/mocks/courses.ts stands in for the CMS's versioned `courses`
+ *     rows, so the review diff has a "last published version" to compare
+ *     against. The diff is computed server-side (mock); the client renders
+ *     it. Audit rows that changed XP/economy state carry an optional
+ *     `ledger_entry_id` (resolved at read time against the real chained
+ *     demo ledger — ids are random per mock build, so fixture links point
+ *     at actual entries, never hardcoded ids). LedgerEntryDetail's
+ *     balance_before/balance_after is a read projection (the §5.3 schema
+ *     has no balance fields — the hash chain is the integrity anchor). The
+ *     reconciliation fixture for Ravi Kapoor uses a cached-balance
+ *     constant standing in for his ProgressContext. The admin walkthrough
+ *     "seen" flag is persisted in localStorage (stand-in for the future
+ *     user_prefs table; no real auth exists per build.md §3).
  *   - admin (F7) : build.md F7 scopes the admin surface to COURSE authoring
  *     + the two-person review flow + audit. Orders / Users / Labs / Problems
  *     are manage-style read lists here, not authoring CRUD. The role gate is
@@ -86,6 +121,14 @@
  *     are named in §5.5/§6 but not schematized — reasonable decisions. The
  *     mock ledger's hash chain is REAL (SHA-256 per §7.2) so rank/XP always
  *     derive from a verifiable append-only source, mirroring the backend law.
+ *   - support.ts : ADD-ON surface beyond build.md's F0–F7 plan. The source
+ *     docs never lock a support schema (only prose: "a rank... must survive
+ *     a support ticket"), so the Zendesk-shaped ticket/message shapes and
+ *     the status state machine (open → pending ↔ open, → resolved/closed,
+ *     reopen) are reasonable decisions to reconcile with the real support
+ *     platform during integration (build.md §4). Learner isolation (404 for
+ *     someone else's ticket) and internal-note stripping are enforced in
+ *     the mock API, mirroring the server-owned-data rule.
  */
 
 export * from "./session";
@@ -95,3 +138,4 @@ export * from "./lab";
 export * from "./assessment";
 export * from "./gamification";
 export * from "./commerce";
+export * from "./support";

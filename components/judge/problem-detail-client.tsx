@@ -31,6 +31,7 @@ import {
   listSubmissions,
   submit,
 } from "@/lib/api/judge";
+import { DEMO_MODE } from "@/lib/config";
 import { useSession } from "@/components/providers/session-provider";
 import { EditorShell } from "@/components/judge/editor-shell";
 import {
@@ -573,26 +574,29 @@ export function ProblemDetailClient({ problemId }: { problemId: string }) {
         <div className="order-2 flex flex-col gap-6 lg:order-1">
           <StatementPanel problem={problem} />
 
-          {/* Demo markers (reachable verdict states) */}
-          <div className="rounded-lg border border-dashed border-border bg-muted/30 px-4 py-3">
-            <p className="flex items-center gap-1.5 text-xs font-semibold text-foreground">
-              <WandSparkles className="size-3.5 text-primary" />
-              Verdict demo markers
-            </p>
-            <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
-              Markers, in precedence order:{" "}
-              <code className="rounded bg-muted px-1">compile_error</code> →
-              compile error ·{" "}
-              <code className="rounded bg-muted px-1">sleep(</code> → time
-              limit exceeded ·{" "}
-              <code className="rounded bg-muted px-1">raise </code> → runtime
-              error ·{" "}
-              <code className="rounded bg-muted px-1">wrong_answer</code> →
-              wrong answer ·{" "}
-              <code className="rounded bg-muted px-1">queue_hang</code> →
-              queue timeout. The starter code passes cleanly.
-            </p>
-          </div>
+          {/* Verdict demo markers — demo scaffolding, gated (never renders in
+              a production-shaped build). */}
+          {DEMO_MODE ? (
+            <div className="rounded-lg border border-dashed border-border bg-muted/30 px-4 py-3">
+              <p className="flex items-center gap-1.5 text-xs font-semibold text-foreground">
+                <WandSparkles className="size-3.5 text-primary" />
+                Verdict demo markers
+              </p>
+              <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
+                Markers, in precedence order:{" "}
+                <code className="rounded bg-muted px-1">compile_error</code> →
+                compile error ·{" "}
+                <code className="rounded bg-muted px-1">sleep(</code> → time
+                limit exceeded ·{" "}
+                <code className="rounded bg-muted px-1">raise </code> → runtime
+                error ·{" "}
+                <code className="rounded bg-muted px-1">wrong_answer</code> →
+                wrong answer ·{" "}
+                <code className="rounded bg-muted px-1">queue_hang</code> →
+                queue timeout. The starter code passes cleanly.
+              </p>
+            </div>
+          ) : null}
 
           <SubmissionHistory problemId={problemId} userId={userId ?? "demo-user"} />
         </div>

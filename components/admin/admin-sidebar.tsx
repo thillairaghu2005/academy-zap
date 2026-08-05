@@ -5,8 +5,10 @@ import { usePathname } from "next/navigation";
 import {
   BookOpen,
   CodeXml,
+  Compass,
   FlaskConical,
   LayoutDashboard,
+  LifeBuoy,
   ScrollText,
   ShoppingCart,
   Users,
@@ -22,6 +24,7 @@ const ADMIN_NAV = [
   { href: "/admin/orders", label: "Orders", icon: ShoppingCart },
   { href: "/admin/users", label: "Users", icon: Users },
   { href: "/admin/audit", label: "Audit log", icon: ScrollText },
+  { href: "/admin/support", label: "Support", icon: LifeBuoy },
 ] as const;
 
 function AdminNavLink({
@@ -55,8 +58,9 @@ function AdminNavLink({
 /**
  * Admin section navigation — vertical rail on desktop, horizontal scrollable
  * tab strip on mobile (the global shell already owns the top + side nav).
+ * A "Replay walkthrough" entry sits at the bottom of the desktop rail.
  */
-export function AdminSidebar() {
+export function AdminSidebar({ onReplay }: { onReplay?: () => void }) {
   const pathname = usePathname();
   return (
     <nav
@@ -81,6 +85,16 @@ export function AdminSidebar() {
           />
         );
       })}
+
+      {onReplay ? (
+        <button
+          onClick={onReplay}
+          className="flex shrink-0 items-center gap-2 rounded-lg px-3 py-2 text-sm text-muted-foreground transition-colors outline-none hover:bg-accent hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring lg:mt-auto"
+        >
+          <Compass className="size-4 shrink-0" />
+          Replay walkthrough
+        </button>
+      ) : null}
     </nav>
   );
 }

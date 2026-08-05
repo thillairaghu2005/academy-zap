@@ -56,7 +56,7 @@ export function ComboMeter({ combo }: { combo: ComboState }) {
           <span className="font-display text-xs font-semibold">
             {active ? `${combo.count}× combo` : "Combo"}
           </span>
-          <span className="font-mono text-[11px] text-amber-600 dark:text-amber-400">
+          <span className="font-mono text-[11px] text-amber-400">
             ×{combo.multiplier.toFixed(2)}
           </span>
         </div>

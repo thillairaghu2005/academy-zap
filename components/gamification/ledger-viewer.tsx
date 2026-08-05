@@ -93,8 +93,8 @@ export function LedgerViewer({
                   className={cn(
                     "font-display text-sm font-semibold",
                     data.chain.valid
-                      ? "text-emerald-600 dark:text-emerald-400"
-                      : "text-rose-600 dark:text-rose-400",
+                      ? "text-emerald-400"
+                      : "text-rose-400",
                   )}
                 >
                   {data.chain.valid
@@ -164,16 +164,16 @@ export function LedgerViewer({
 /* ------------------------------------------------------------------ */
 
 const XP_TYPE_STYLE: Record<string, string> = {
-  completion: "border-sky-500/40 bg-sky-500/10 text-sky-600 dark:text-sky-400",
-  mastery: "border-fuchsia-500/40 bg-fuchsia-500/10 text-fuchsia-600 dark:text-fuchsia-400",
-  bonus: "border-emerald-500/40 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400",
-  adjustment: "border-rose-500/40 bg-rose-500/10 text-rose-600 dark:text-rose-400",
+  completion: "border-sky-500/40 bg-sky-500/10 text-sky-400",
+  mastery: "border-fuchsia-500/40 bg-fuchsia-500/10 text-fuchsia-400",
+  bonus: "border-emerald-500/40 bg-emerald-500/10 text-emerald-400",
+  adjustment: "border-rose-500/40 bg-rose-500/10 text-rose-400",
 };
 
 const INTEGRITY_STYLE: Record<string, string> = {
-  verified: "text-emerald-600 dark:text-emerald-400",
-  flagged: "text-amber-600 dark:text-amber-400",
-  reversed: "text-rose-600 dark:text-rose-400",
+  verified: "text-emerald-400",
+  flagged: "text-amber-400",
+  reversed: "text-rose-400",
 };
 
 function LedgerEntriesTable({ entries }: { entries: LedgerAuditView["entries"] }) {
@@ -245,7 +245,7 @@ function LedgerEntriesTable({ entries }: { entries: LedgerAuditView["entries"] }
             </td>
             <td className="px-3 py-2">
               <div className="font-mono text-[9px] text-muted-foreground">
-                <p className="truncate text-emerald-600/70 dark:text-emerald-400/70" title={e.prev_hash}>
+                <p className="truncate text-emerald-400/70" title={e.prev_hash}>
                   prev {e.prev_hash.slice(0, 8)}…
                 </p>
                 <p className="truncate" title={e.entry_hash}>
@@ -280,17 +280,17 @@ function VersionsView({
               v{d.from_version} → v{d.to_version}
             </span>
             {d.rank_changed ? (
-              <Badge className="border-fuchsia-500/40 bg-fuchsia-500/10 text-[9px] text-fuchsia-600 dark:text-fuchsia-400">
+              <Badge className="border-fuchsia-500/40 bg-fuchsia-500/10 text-[9px] text-fuchsia-400">
                 rank change: {d.from_rank} → {d.to_rank}
               </Badge>
             ) : null}
           </div>
           <div className="mt-1.5 flex flex-wrap gap-3 font-mono text-[11px]">
-            <span className="text-sky-600 dark:text-sky-400">
+            <span className="text-sky-400">
               completion {d.completion_delta > 0 ? "+" : ""}
               {d.completion_delta.toLocaleString()}
             </span>
-            <span className="text-fuchsia-600 dark:text-fuchsia-400">
+            <span className="text-fuchsia-400">
               mastery {d.mastery_delta > 0 ? "+" : ""}
               {d.mastery_delta.toLocaleString()}
             </span>

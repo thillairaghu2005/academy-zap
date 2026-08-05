@@ -35,6 +35,7 @@ import {
   simulatePaymentCompletion,
 } from "@/lib/api/commerce";
 import { formatMoney } from "@/lib/format";
+import { DEMO_MODE } from "@/lib/config";
 import { useSession } from "@/components/providers/session-provider";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -529,40 +530,46 @@ export function CheckoutClient({ checkoutId }: { checkoutId: string }) {
 
       <HostedEmbed session={session} onPaid={refreshSession} />
 
-      {/* Demo strip: deep-link the other payment lifecycle states */}
-      <div className="mt-4 flex flex-wrap items-center gap-2 rounded-lg border border-dashed border-border bg-card/40 px-4 py-3">
-        <p className="text-[11px] font-semibold uppercase tracking-widest text-muted-foreground/60">
-          Demo states
-        </p>
-        <Button variant="outline" size="sm" asChild>
-          <Link href="/checkout/cs-fail-demo">Declined payment</Link>
-        </Button>
-        <Button variant="outline" size="sm" asChild>
-          <Link href="/checkout/cs-expired-demo">Expired session</Link>
-        </Button>
-        <Button variant="outline" size="sm" asChild>
-          <Link href="/checkout/cs-paid-demo">Already paid</Link>
-        </Button>
-      </div>
+      {/* Demo strip + mock note — demo scaffolding, gated in production. */}
+      {DEMO_MODE ? (
+        <>
+          <div className="mt-4 flex flex-wrap items-center gap-2 rounded-lg border border-dashed border-border bg-card/40 px-4 py-3">
+            <p className="text-[11px] font-semibold uppercase tracking-widest text-muted-foreground/60">
+              Demo states
+            </p>
+            <Button variant="outline" size="sm" asChild>
+              <Link href="/checkout/cs-fail-demo">Declined payment</Link>
+            </Button>
+            <Button variant="outline" size="sm" asChild>
+              <Link href="/checkout/cs-expired-demo">Expired session</Link>
+            </Button>
+            <Button variant="outline" size="sm" asChild>
+              <Link href="/checkout/cs-paid-demo">Already paid</Link>
+            </Button>
+          </div>
 
-      <p className="mt-4 rounded-lg border border-border bg-card/50 px-4 py-3 text-[11px] leading-relaxed text-muted-foreground">
-        <Lock className="mr-1.5 inline size-3 align-[-1px]" />
-        Mock note: the frame above stands in for the{" "}
-        <span className="font-medium text-foreground">{session.provider}</span>{" "}
-        hosted checkout embed (<code className="font-mono">
-          {session.checkout_url}
-        </code>
-        ). No card form is rendered here — payment UI is provider-hosted by
-        design. Demo states:{" "}
-        <Link href="/checkout/cs-fail-demo" className="underline">
-          declined
-        </Link>{" "}
-        ·{" "}
-        <Link href="/checkout/cs-expired-demo" className="underline">
-          expired
-        </Link>
-        .
-      </p>
+          <p className="mt-4 rounded-lg border border-border bg-card/50 px-4 py-3 text-[11px] leading-relaxed text-muted-foreground">
+            <Lock className="mr-1.5 inline size-3 align-[-1px]" />
+            Mock note: the frame above stands in for the{" "}
+            <span className="font-medium text-foreground">
+              {session.provider}
+            </span>{" "}
+            hosted checkout embed (<code className="font-mono">
+              {session.checkout_url}
+            </code>
+            ). No card form is rendered here — payment UI is provider-hosted by
+            design. Demo states:{" "}
+            <Link href="/checkout/cs-fail-demo" className="underline">
+              declined
+            </Link>{" "}
+            ·{" "}
+            <Link href="/checkout/cs-expired-demo" className="underline">
+              expired
+            </Link>
+            .
+          </p>
+        </>
+      ) : null}
     </PageContainer>
   );
 }

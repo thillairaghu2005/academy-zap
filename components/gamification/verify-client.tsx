@@ -29,19 +29,19 @@ const STATUS_META = {
   verified: {
     label: "Verified",
     icon: BadgeCheck,
-    text: "text-emerald-600 dark:text-emerald-400",
+    text: "text-emerald-400",
     ring: "border-emerald-500/40 bg-emerald-500/10",
   },
   flagged: {
     label: "Pending review",
     icon: ShieldQuestion,
-    text: "text-amber-600 dark:text-amber-400",
+    text: "text-amber-400",
     ring: "border-amber-500/40 bg-amber-500/10",
   },
   revoked: {
     label: "Revoked",
     icon: BadgeX,
-    text: "text-rose-600 dark:text-rose-400",
+    text: "text-rose-400",
     ring: "border-rose-500/40 bg-rose-500/10",
   },
 } as const;

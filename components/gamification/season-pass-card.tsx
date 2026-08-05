@@ -67,7 +67,7 @@ export function SeasonPassCard() {
           </div>
         </div>
         {data.premium_owned ? (
-          <Badge className="border-violet-500/40 bg-violet-500/10 text-violet-600 dark:text-violet-400">
+          <Badge className="border-violet-500/40 bg-violet-500/10 text-violet-400">
             <Crown className="size-3" /> Premium track
           </Badge>
         ) : (
@@ -113,7 +113,7 @@ export function SeasonPassCard() {
                   className={cn(
                     "text-center text-[9px] font-medium leading-tight",
                     reached
-                      ? "text-violet-600 dark:text-violet-400"
+                      ? "text-violet-400"
                       : "text-muted-foreground",
                   )}
                 >

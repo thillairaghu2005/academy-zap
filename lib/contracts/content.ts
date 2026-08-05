@@ -50,6 +50,14 @@ export interface Course {
   language: string;
   /** §4.4 draft vs published */
   status: ContentStatus;
+  /**
+   * F7 review workflow — who submitted the current revision for review.
+   * Drives the two-person rule (publisher must differ from the submitter).
+   * Null until a draft is submitted. Provisional, logged in the register.
+   */
+  submitted_by?: string | null;
+  /** F7 review workflow — who published the last version (second reviewer). */
+  reviewed_by?: string | null;
   instructor: CourseInstructor;
   rating: number;
   review_count: number;

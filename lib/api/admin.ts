@@ -25,13 +25,18 @@ import type { SessionUser } from "@/lib/contracts/session";
 import type { Order } from "@/lib/contracts/commerce";
 import {
   deleteCourseById,
+  getPublishedSnapshot,
   MOCK_COURSES,
+  setPublishedSnapshot,
+  snapshotOf,
   upsertCourse,
+  type CoursePublishedSnapshot,
 } from "@/lib/mocks/courses";
 import { listLabs } from "@/lib/api/lab";
 import { listProblems } from "@/lib/api/judge";
 import {
   auditEntries,
+  ledgerEntryIdForAuditSeed,
   logAudit,
   MOCK_ADMIN_USERS,
   type AuditEntry,
@@ -41,6 +46,7 @@ import {
   mockOrders,
   seedDemoOrders,
 } from "@/lib/mocks/commerce";
+import { mockTickets } from "@/lib/mocks/support";
 import { MockApiError } from "@/lib/api/errors";
 import { delay, jitter } from "@/lib/api/helpers";
 
@@ -55,6 +61,7 @@ export interface AdminDashboardData {
     problems: number;
     orders: number;
     users: number;
+    tickets: number;
   };
   recent_audit: AuditEntry[];
 }
@@ -72,6 +79,27 @@ export interface CourseDraftInput {
   price_cents: number;
   estimated_hours: number;
   status?: ContentStatus;
+}
+
+/** One changed field in the review diff (Task 2). */
+export interface CourseFieldDiffItem {
+  field: keyof CoursePublishedSnapshot;
+  label: string;
+  /** Raw value of the last published version. */
+  before: string | number;
+  /** Raw value of the current draft. */
+  after: string | number;
+}
+
+/**
+ * Field-level diff between the current revision and the last published
+ * version — computed server-side (mock) from the published snapshot.
+ */
+export interface CourseReviewDiff {
+  course_id: string;
+  /** false when the course has never been published (first-time review). */
+  has_published_version: boolean;
+  changed: CourseFieldDiffItem[];
 }
 
 /* ------------------------------------------------------------------ */
@@ -97,6 +125,7 @@ export async function getAdminDashboard(
       problems: (await listProblems()).length,
       orders: mockOrders.size,
       users: MOCK_ADMIN_USERS.length,
+      tickets: mockTickets.size,
     },
     recent_audit: auditEntries.slice(0, 5),
   };
@@ -154,6 +183,16 @@ export async function updateCourse(
   patch: Partial<CourseDraftInput>,
   actor: SessionUser,
 ): Promise<Course> {
+  // NOTE: the shared implementation lives below — see updateCourseShared.
+  return updateCourseShared(courseId, patch, actor, true);
+}
+
+async function updateCourseShared(
+  courseId: string,
+  patch: Partial<CourseDraftInput>,
+  actor: SessionUser,
+  log: boolean,
+): Promise<Course> {
   await delay(jitter(360));
   const course = MOCK_COURSES.find((c) => c.id === courseId);
   if (!course) {
@@ -165,15 +204,31 @@ export async function updateCourse(
     updated_at: new Date().toISOString(),
   };
   upsertCourse(next);
-  logAudit({
-    actor_id: actor.id,
-    actor_name: actor.display_name,
-    action: "course.updated",
-    entity: "course",
-    entity_id: courseId,
-    detail: `Updated '${next.title}'.`,
-  });
+  if (log) {
+    logAudit({
+      actor_id: actor.id,
+      actor_name: actor.display_name,
+      action: "course.updated",
+      entity: "course",
+      entity_id: courseId,
+      detail: `Updated '${next.title}'.`,
+    });
+  }
   return next;
+}
+
+/**
+ * Draft autosave (Task 2) — same write as updateCourse but SILENT: no audit
+ * row per autosave (the real CMS doesn't log every keystroke-save), and no
+ * status transition. Explicit "Save changes" uses updateCourse (logged).
+ */
+export async function saveDraft(
+  courseId: string,
+  patch: Partial<CourseDraftInput>,
+  actor: SessionUser,
+): Promise<Course> {
+  // No own delay — updateCourseShared already applies the network latency.
+  return updateCourseShared(courseId, patch, actor, false);
 }
 
 export async function deleteCourse(
@@ -214,7 +269,13 @@ export async function submitCourseForReview(
       409,
     );
   }
-  const next = upsertCourse({ ...course, status: "in_review", updated_at: new Date().toISOString() });
+  const next = upsertCourse({
+    ...course,
+    status: "in_review",
+    submitted_by: actor.id,
+    reviewed_by: null,
+    updated_at: new Date().toISOString(),
+  });
   logAudit({
     actor_id: actor.id,
     actor_name: actor.display_name,
@@ -244,7 +305,25 @@ export async function publishCourse(
       409,
     );
   }
-  const next = upsertCourse({ ...course, status: "published", updated_at: new Date().toISOString() });
+  // Two-person rule — mirror of build.md F7: the submitter can't be the
+  // publisher. Enforced server-side (mock) AND surfaced as a disabled
+  // button + tooltip in the UI before the call is ever made.
+  if (course.submitted_by && course.submitted_by === actor.id) {
+    throw new MockApiError(
+      "two_person_rule",
+      "The author cannot publish their own submission — a second reviewer is required.",
+      409,
+    );
+  }
+  const next = upsertCourse({
+    ...course,
+    status: "published",
+    reviewed_by: actor.id,
+    updated_at: new Date().toISOString(),
+  });
+  // Snapshot the published version so a future revision can be diffed
+  // against what learners actually have (Task 2 diff view).
+  setPublishedSnapshot(courseId, snapshotOf(next));
   logAudit({
     actor_id: actor.id,
     actor_name: actor.display_name,
@@ -254,6 +333,83 @@ export async function publishCourse(
     detail: `Published '${next.title}' (review passed).`,
   });
   return next;
+}
+
+/**
+ * Unpublish — a published course goes back to draft (new authoring cycle).
+ * The last published snapshot is KEPT so the next review diff still has a
+ * published version to compare against. Confirmed action, logged to audit.
+ */
+export async function unpublishCourse(
+  courseId: string,
+  actor: SessionUser,
+): Promise<Course> {
+  await delay(jitter(320));
+  const course = MOCK_COURSES.find((c) => c.id === courseId);
+  if (!course) throw new MockApiError("course_not_found", "Course was not found.", 404);
+  if (course.status !== "published") {
+    throw new MockApiError(
+      "invalid_transition",
+      "Only published courses can be unpublished.",
+      409,
+    );
+  }
+  const next = upsertCourse({
+    ...course,
+    status: "draft",
+    submitted_by: null,
+    reviewed_by: null,
+    updated_at: new Date().toISOString(),
+  });
+  logAudit({
+    actor_id: actor.id,
+    actor_name: actor.display_name,
+    action: "course.unpublished",
+    entity: "course",
+    entity_id: courseId,
+    detail: `Unpublished '${next.title}' — moved back to draft.`,
+  });
+  return next;
+}
+
+/**
+ * Task 2 diff — what changed since the last published version. Computed
+ * server-side from the published snapshot; the client never diffs or
+ * re-derives.
+ */
+export async function getCourseReviewDiff(
+  courseId: string,
+): Promise<CourseReviewDiff> {
+  await delay(jitter(220));
+  const course = MOCK_COURSES.find((c) => c.id === courseId);
+  if (!course) throw new MockApiError("course_not_found", "Course was not found.", 404);
+  const snapshot = getPublishedSnapshot(courseId);
+  if (!snapshot) {
+    return { course_id: courseId, has_published_version: false, changed: [] };
+  }
+  const current = snapshotOf(course);
+  const FIELDS: { field: keyof CoursePublishedSnapshot; label: string }[] = [
+    { field: "title", label: "Title" },
+    { field: "subtitle", label: "Subtitle" },
+    { field: "description", label: "Description" },
+    { field: "category", label: "Category" },
+    { field: "level", label: "Level" },
+    { field: "language", label: "Language" },
+    { field: "price_cents", label: "Price" },
+    { field: "estimated_hours", label: "Estimated hours" },
+  ];
+  const changed: CourseFieldDiffItem[] = [];
+  for (const { field, label } of FIELDS) {
+    if (String(snapshot[field]) !== String(current[field])) {
+      changed.push({
+        field,
+        label,
+        before: snapshot[field],
+        after: current[field],
+      });
+    }
+  }
+  return { course_id: courseId, has_published_version: true, changed };
 }
 
 /* ------------------------------------------------------------------ */
@@ -299,5 +455,14 @@ export async function setUserRole(
 
 export async function listAuditEntries(): Promise<AuditEntry[]> {
   await delay(jitter(220));
-  return auditEntries;
+  // Resolve the seeded ledger links against the real chained ledger so log
+  // rows that changed XP balances carry a live ledger_entry_id (Task 3).
+  const enriched: AuditEntry[] = [];
+  for (const entry of auditEntries) {
+    const ledgerEntryId = await ledgerEntryIdForAuditSeed(entry);
+    enriched.push(
+      ledgerEntryId ? { ...entry, ledger_entry_id: ledgerEntryId } : entry,
+    );
+  }
+  return enriched;
 }

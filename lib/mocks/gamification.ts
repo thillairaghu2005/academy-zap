@@ -36,6 +36,7 @@ import type {
   LeaderboardPage,
   LeaderboardScope,
   LedgerEntry,
+  LedgerEntryDetail,
   LeagueStanding,
   ProgressContext,
   SeasonPassState,
@@ -205,6 +206,123 @@ export async function verifyDemoLedger(): Promise<{
 /** Raw ledger read for the audit viewer (append-only, nothing mutated). */
 export async function demoLedgerEntries(): Promise<LedgerEntry[]> {
   return demoLedger();
+}
+
+/* ------------------------------------------------------------------ */
+/*  Audit → ledger wiring + reconciliation (F7 Task 3)                 */
+/* ------------------------------------------------------------------ */
+
+/**
+ * Resolve the seeded audit rows' ledger links against the REAL chained demo
+ * ledger. The ledger builds with random ids, so links are resolved at read
+ * time — the audit fixtures always point at actual entries (a verified
+ * COURSE_COMPLETE grant, and the reversal that offset a MAIN_ASSESSMENT
+ * award), never hardcoded ids.
+ */
+export async function auditLedgerLinkFor(
+  marker: "grant" | "reversal",
+): Promise<LedgerEntry> {
+  const ledger = await demoLedger();
+  if (marker === "grant") {
+    const grant = ledger.find(
+      (e) =>
+        e.reason_code === "COURSE_COMPLETE" &&
+        e.integrity_status === "verified",
+    );
+    if (grant) return grant;
+    throw new Error(
+      "Mock invariant: no verified COURSE_COMPLETE grant in the demo ledger.",
+    );
+  }
+  const reversal = ledger.find((e) => e.integrity_status === "reversed");
+  if (reversal) return reversal;
+  throw new Error("Mock invariant: no reversed entry in the demo ledger.");
+}
+
+/** Addressable ledger read — the backing store for getLedgerEntry(). */
+export async function findLedgerEntryById(
+  id: string,
+): Promise<LedgerEntry | undefined> {
+  const ledger = await demoLedger();
+  return ledger.find((e) => e.id === id);
+}
+
+/**
+ * Running-balance projection over the chain — the engine would serve this;
+ * the client never recomputes (build.md §3). balance_after for an entry is
+ * the sum of deltas up to and including it; balance_before excludes it.
+ */
+export async function ledgerDetailFor(
+  entry: LedgerEntry,
+): Promise<LedgerEntryDetail> {
+  const ledger = await demoLedger();
+  const index = ledger.findIndex((e) => e.id === entry.id);
+  let before = 0;
+  if (index !== -1) {
+    for (let i = 0; i < index; i++) before += ledger[i]!.xp_delta;
+  }
+  return {
+    ...entry,
+    balance_before: before,
+    balance_after: before + entry.xp_delta,
+  };
+}
+
+/** Server-side reconciliation verdict (Task 3) — never client math. */
+export interface LedgerReconciliationFixture {
+  user_id: string;
+  display_name: string;
+  /** What the cached ProgressContext reports as the user's total balance. */
+  cached_total_xp: number;
+  /** What the append-only ledger actually sums to. */
+  ledger_sum: number;
+  entry_count: number;
+}
+
+/** Ravi Kapoor — ledger sums to 950 while his cached context claims 1000. */
+const DRIFT_USER_ID = "9f3b2c4d-1a9e-4f6b-8c0d-5e2a9f3b7c81";
+const DRIFT_USER_NAME = "Ravi Kapoor";
+const DRIFT_LEDGER_SEED: LedgerSeed[] = [
+  [42, "completion", 400, "COURSE_COMPLETE", 1],
+  [40, "mastery", 300, "MAIN_ASSESSMENT", 1],
+  [38, "completion", 250, "COURSE_MODULE", 1],
+];
+const DRIFT_CACHED_TOTAL_XP = 1000;
+
+/**
+ * The users the reconciliation panel can audit. The demo learner's cached
+ * balance is derived from the SAME ledger the context is computed from
+ * (aggregate tracks + adjustments), so it reconciles cleanly — while Ravi's
+ * fixture has deliberate drift so the mismatch flag is demonstrable.
+ */
+export async function reconciliationFixtures(): Promise<
+  Map<string, LedgerReconciliationFixture>
+> {
+  const map = new Map<string, LedgerReconciliationFixture>();
+
+  const ledger = await demoLedger();
+  const ledgerSum = ledger.reduce((sum, e) => sum + e.xp_delta, 0);
+  // ProgressContext has no total-balance field, so the engine's cached
+  // balance is the raw ledger total — a consistent engine reconciles by
+  // construction (this is the clean demo); Ravi's fixture below is the
+  // deliberate-drift case.
+  map.set(MOCK_DEMO_USER_ID, {
+    user_id: MOCK_DEMO_USER_ID,
+    display_name: MOCK_DEMO_USER_NAME,
+    cached_total_xp: ledgerSum,
+    ledger_sum: ledgerSum,
+    entry_count: ledger.length,
+  });
+
+  map.set(DRIFT_USER_ID, {
+    user_id: DRIFT_USER_ID,
+    display_name: DRIFT_USER_NAME,
+    cached_total_xp: DRIFT_CACHED_TOTAL_XP,
+    ledger_sum: DRIFT_LEDGER_SEED.reduce((sum, [, , delta]) => sum + delta, 0),
+    entry_count: DRIFT_LEDGER_SEED.length,
+  });
+
+  return map;
 }
 
 /**
