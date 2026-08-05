@@ -13,7 +13,7 @@ export const metadata: Metadata = {
   description:
     "Zapsters is a learning platform: Udemy-shaped courses, a HackerRank-shaped code judge, TryHackMe-shaped virtual labs, and a full gamification layer.",
   metadataBase: new URL(
-    process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000",
+    process.env.NEXT_PUBLIC_SITE_URL ?? "https://zapsters.dev",
   ),
   openGraph: {
     type: "website",
