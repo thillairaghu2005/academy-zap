@@ -21,6 +21,7 @@ import {
   Hourglass,
   LoaderCircle,
   Lock,
+  Eye,
   PlayCircle,
   Star,
   Users,
@@ -30,6 +31,7 @@ import type { Course, CourseLesson } from "@/lib/contracts/content";
 import {
   enroll,
   getCourseProgress,
+  getLessonPreview,
   type CourseProgress,
 } from "@/lib/api/content";
 import { getCourseReviews } from "@/lib/api/reviews";
@@ -46,6 +48,13 @@ import { Progress } from "@/components/ui/progress";
 import { PageContainer } from "@/components/shared/page-container";
 import { ErrorState } from "@/components/shared/error-state";
 import { cn } from "@/lib/utils";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 function formatDuration(seconds: number): string {
   const mins = Math.round(seconds / 60);
@@ -77,13 +86,15 @@ function LessonRow({
   lesson,
   completed,
   index,
+  onPreview,
 }: {
   lesson: CourseLesson;
   completed: boolean;
   index: number;
+  onPreview?: () => void;
 }) {
-  return (
-    <div className="flex items-center gap-3 rounded-md px-2 py-2 transition-colors hover:bg-accent/60">
+  const content = (
+    <>
       <span
         className={cn(
           "grid size-6 shrink-0 place-items-center rounded-full border text-caption font-medium",
@@ -114,7 +125,84 @@ function LessonRow({
           formatDuration(lesson.duration_seconds)
         )}
       </span>
-    </div>
+      {lesson.isPreview ? (
+        <Badge variant="info" className="text-caption">
+          <Eye className="size-3" /> Preview
+        </Badge>
+      ) : null}
+    </>
+  );
+  const className = cn(
+    "flex w-full items-center gap-3 rounded-md px-2 py-2 text-left transition-colors",
+    onPreview ? "cursor-pointer hover:bg-accent/60" : "",
+  );
+  return onPreview ? (
+    <button type="button" onClick={onPreview} className={className}>
+      {content}
+    </button>
+  ) : (
+    <div className={className}>{content}</div>
+  );
+}
+
+function PreviewLessonDialog({
+  courseId,
+  lesson,
+  open,
+  onOpenChange,
+}: {
+  courseId: string;
+  lesson: CourseLesson | null;
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+}) {
+  const previewQuery = useQuery({
+    queryKey: ["lesson-preview", lesson?.id],
+    queryFn: () => getLessonPreview(lesson?.id ?? ""),
+    enabled: open && Boolean(lesson),
+  });
+
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="max-w-2xl">
+        <DialogHeader>
+          <DialogTitle>{lesson?.title ?? "Lesson preview"}</DialogTitle>
+          <DialogDescription>
+            A free preview from this course. Sign in to keep learning beyond this lesson.
+          </DialogDescription>
+        </DialogHeader>
+        {previewQuery.isLoading ? (
+          <div className="flex h-48 items-center justify-center text-sm text-muted-foreground">
+            Loading preview…
+          </div>
+        ) : previewQuery.isError ? (
+          <p className="rounded-lg border border-destructive/25 bg-destructive/5 p-4 text-sm text-destructive">
+            This preview is temporarily unavailable.
+          </p>
+        ) : previewQuery.data ? (
+          <div className="flex flex-col gap-4">
+            {previewQuery.data.manifest_url ? (
+              <video
+                controls
+                preload="metadata"
+                className="aspect-video w-full rounded-lg bg-foreground object-cover"
+                src={previewQuery.data.manifest_url}
+              />
+            ) : null}
+            <div className="rounded-lg border border-border bg-muted/30 p-4">
+              <p className="text-sm leading-relaxed text-muted-foreground">
+                {previewQuery.data.body}
+              </p>
+            </div>
+            <Button variant="gradient" asChild>
+              <Link href={`/login?next=/courses/${courseId}`}>
+                Sign in to continue learning <ArrowRight />
+              </Link>
+            </Button>
+          </div>
+        ) : null}
+      </DialogContent>
+    </Dialog>
   );
 }
 
@@ -175,6 +263,7 @@ export function CourseDetailClient({
   const completedSet = new Set(progress?.completed_lesson_ids ?? []);
   const completedCount = allLessons.filter((l) => completedSet.has(l.id)).length;
   const isDraft = course.status === "draft";
+  const [previewLesson, setPreviewLesson] = React.useState<CourseLesson | null>(null);
   const reviewsQuery = useInfiniteQuery({
     queryKey: ["course-reviews", course.id],
     queryFn: ({ pageParam }) => getCourseReviews(course.id, pageParam),
@@ -481,8 +570,13 @@ export function CourseDetailClient({
                       key={lesson.id}
                       lesson={lesson}
                       index={li}
-                      completed={completedSet.has(lesson.id)}
-                    />
+                       completed={completedSet.has(lesson.id)}
+                       onPreview={
+                         lesson.isPreview
+                           ? () => setPreviewLesson(lesson)
+                           : undefined
+                       }
+                     />
                   ))}
                 </CardContent>
               </Card>
@@ -490,6 +584,15 @@ export function CourseDetailClient({
           })}
         </div>
       </div>
+
+      <PreviewLessonDialog
+        courseId={course.id}
+        lesson={previewLesson}
+        open={Boolean(previewLesson)}
+        onOpenChange={(open) => {
+          if (!open) setPreviewLesson(null);
+        }}
+      />
 
       {/* Reviews are a paged Content Engine projection. */}
       <div className="mt-12">

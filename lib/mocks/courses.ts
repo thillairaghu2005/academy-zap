@@ -36,7 +36,14 @@ const s = (id: string, title: string, lessons: ReturnType<typeof l>[]) => ({
   id,
   title,
   position: 0,
-  lessons: lessons.map((lesson, i) => ({ ...lesson, position: i + 1 })),
+  lessons: lessons.map((lesson, i) => ({
+    ...lesson,
+    position: i + 1,
+    isPreview: i === 0,
+    preview_body: i === 0
+      ? `Start here with ${lesson.title.toLowerCase()}. This free preview introduces the core idea and shows how the lesson connects to the hands-on work in the rest of the course.`
+      : null,
+  })),
 });
 
 /**
@@ -489,4 +496,3 @@ export function courseToSummary(course: Course): CourseSummary {
     cover_hue: hueForId(course.id),
   };
 }
-

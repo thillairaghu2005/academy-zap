@@ -31,6 +31,19 @@ export interface CourseLesson {
   /** Seconds of video; 0 for articles */
   duration_seconds: number;
   position: number;
+  /** Guest-accessible lesson preview, served by the Content Engine. */
+  isPreview: boolean;
+  /** Mock stand-in for the authored lesson body. */
+  preview_body?: string | null;
+}
+
+export interface LessonPreview {
+  lesson_id: string;
+  title: string;
+  kind: LessonKind;
+  duration_seconds: number;
+  body: string;
+  manifest_url: string | null;
 }
 
 /** Content Engine review projection (build.md F1 course reviews). */

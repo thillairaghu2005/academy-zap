@@ -3,6 +3,7 @@ import type {
   Course,
   CourseSummary,
   Enrollment,
+  LessonPreview,
   MeilisearchCatalogResponse,
   SignedManifest,
 } from "@/lib/contracts/content";
@@ -111,6 +112,36 @@ export async function getPlaybackManifest(
       ? "https://bitdash-a.akamaihd.net/content/sintel/subtitles/subtitles_en.vtt"
       : null,
   };
+}
+
+/** Guest-safe read for lessons explicitly marked as preview content. */
+export async function getLessonPreview(lessonId: string): Promise<LessonPreview> {
+  await delay(jitter(180));
+  for (const course of MOCK_COURSES) {
+    const lesson = course.syllabus
+      .flatMap((section) => section.lessons)
+      .find((candidate) => candidate.id === lessonId);
+    if (!lesson) continue;
+    if (!lesson.isPreview) {
+      throw new MockApiError(
+        "preview_not_available",
+        "This lesson is available to enrolled learners only.",
+        403,
+      );
+    }
+    return {
+      lesson_id: lesson.id,
+      title: lesson.title,
+      kind: lesson.kind,
+      duration_seconds: lesson.duration_seconds,
+      body: lesson.preview_body ?? "This lesson preview is ready to explore.",
+      manifest_url:
+        lesson.kind === "video"
+          ? (await getPlaybackManifest(lesson.id, "preview-guest")).manifest_url
+          : null,
+    };
+  }
+  throw new MockApiError("lesson_not_found", "Lesson was not found.", 404);
 }
 
 /** Catalog search — mock Meilisearch response shape (field-identical to the real API). */
