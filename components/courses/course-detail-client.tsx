@@ -381,7 +381,7 @@ export function CourseDetailClient({
         </div>
 
         {/* CTA card */}
-        <div className="lg:sticky lg:top-24 lg:self-start">
+        <div className="sticky top-20 z-20 self-start lg:top-24">
           <Card className="overflow-hidden">
             <div
               className="relative h-36 w-full"
