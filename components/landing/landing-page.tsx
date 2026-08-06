@@ -19,14 +19,13 @@ import { CategoryCard } from "@/components/landing/category-card";
 import { FeaturedCourseCard } from "@/components/landing/featured-course-card";
 import { FilterTabs } from "@/components/landing/filter-tabs";
 import { HeroSection } from "@/components/landing/hero-section";
+import { LearningLoop } from "@/components/landing/learning-loop";
 import { MarketingFooter } from "@/components/landing/marketing-footer";
 import { MarketingNav } from "@/components/landing/marketing-nav";
-import { PracticeBanner } from "@/components/landing/practice-banner";
 import { PersonalizedHero } from "@/components/landing/personalized-hero";
 import { useSession } from "@/components/providers/session-provider";
 import { SectionTitle } from "@/components/landing/section-title";
 import { SkillCard } from "@/components/landing/skill-card";
-import { SurfaceIndex } from "@/components/landing/surface-index";
 import { VerifiedProgression } from "@/components/landing/verified-progression";
 
 export interface LandingPageProps {
@@ -136,10 +135,6 @@ function LandingSections({ courses }: LandingPageProps) {
         </div>
       </section>
 
-      <section className="mx-auto max-w-7xl px-4 py-16 sm:px-6 sm:py-20 lg:px-8">
-        <PracticeBanner />
-      </section>
-
       <section className="border-y border-border bg-background">
         <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 sm:py-20 lg:px-8">
           <SectionTitle
@@ -173,7 +168,7 @@ export function LandingPage({ courses }: LandingPageProps) {
       <MarketingNav />
       <main id="main-content">
         <HomeHero />
-        <SurfaceIndex />
+        <LearningLoop />
         <LandingSections courses={courses} />
       </main>
       <MarketingFooter />
