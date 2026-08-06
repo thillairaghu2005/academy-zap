@@ -32,7 +32,7 @@ interface SessionContextValue {
    */
   isAdmin: boolean;
   login: (input: LoginInput) => Promise<void>;
-  /** One-click demo learner sign-in (DEMO_MODE affordance only). */
+  /** One-click demo sign-in (seeded demo account, real credential path). */
   loginDemo: () => Promise<void>;
   register: (input: RegisterInput) => Promise<void>;
   logout: () => Promise<void>;

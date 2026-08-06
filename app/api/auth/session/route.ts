@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 
 import type { SessionState, SessionUser } from "@/lib/contracts/session";
-import { MOCK_ADMIN, MOCK_LEARNER, MOCK_REVIEWERS } from "@/lib/mocks/users";
+import { MOCK_LEARNER } from "@/lib/mocks/users";
 import { DEMO_MODE } from "@/lib/config";
 import {
   createSessionToken,
@@ -10,6 +10,13 @@ import {
   SIGNED_OUT_COOKIE,
   verifySessionToken,
 } from "@/lib/server/session";
+import {
+  createAccount,
+  findAccountByEmail,
+  findUserByEmail,
+  findUserByUid,
+  verifyPassword,
+} from "@/lib/server/accounts";
 import { delay, jitter } from "@/lib/api/helpers";
 
 /**
@@ -21,20 +28,16 @@ import { delay, jitter } from "@/lib/api/helpers";
  * SessionProvider never changed. When Platform Core auth lands, this route
  * handler is replaced wholesale.
  *
+ * Credentials are REAL: login looks the email up in the seeded account
+ * store (lib/server/accounts.ts) and validates the password against its
+ * scrypt hash — no email is ever "auto-accepted". The demo account
+ * (demo@company.com / Demo@123) is seeded idempotently on first startup.
+ *
  * GET  → resolve session from cookie (or, in DEMO_MODE only, auto-issue the
  *        demo learner session — gated on the signed-out marker so logout
  *        actually sticks).
  * POST → action: "login" | "register" | "demo" | "logout".
- *
- * The mock login/register rules are preserved verbatim (deterministic,
- * demoable): short passwords and @error.zapsters.dev are rejected,
- * @admin.zapsters.dev resolves the mock admin, "demo" issues the learner.
  */
-
-const USER_DIRECTORY = new Map<string, SessionUser>();
-for (const user of [MOCK_LEARNER, MOCK_ADMIN, ...MOCK_REVIEWERS]) {
-  USER_DIRECTORY.set(user.id, user);
-}
 
 function sessionResponse(user: SessionUser | null): NextResponse {
   const state: SessionState = user
@@ -63,6 +66,15 @@ function clearSessionCookie(res: NextResponse): void {
   res.cookies.set(SESSION_COOKIE, "", { httpOnly: true, path: "/", maxAge: 0 });
 }
 
+/**
+ * Coerce an untrusted JSON field to a string. A malformed client could post
+ * non-string values (e.g. a numeric password); without this, .trim() or
+ * scryptSync would throw and turn a bad request into an internal 500.
+ */
+function asString(value: unknown): string {
+  return typeof value === "string" ? value : "";
+}
+
 export async function GET(request: NextRequest): Promise<NextResponse> {
   await delay(jitter(240));
 
@@ -70,7 +82,12 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
     request.cookies.get(SESSION_COOKIE)?.value,
   );
   if (payload) {
-    const user = USER_DIRECTORY.get(payload.uid);
+    // Prefer the email carried in the token (a shared uid can belong to
+    // several emails — demo@company.com vs aarav@zapsters.dev); fall back
+    // to uid for legacy tokens issued without an email (demo auto-auth).
+    const user =
+      (payload.email ? findUserByEmail(payload.email) : null) ??
+      findUserByUid(payload.uid);
     if (user) return sessionResponse(user);
   }
 
@@ -117,41 +134,62 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
   let user: SessionUser | null = null;
 
   if (action === "demo") {
-    // The one-click demo affordance is a DEMO_MODE surface — gate the
-    // endpoint to match the UI so it cannot be used to skip sign-in in a
-    // production-shaped build.
+    // Legacy one-click demo affordance — a DEMO_MODE surface; gate the
+    // endpoint to match the UI so it cannot skip sign-in in a
+    // production-shaped build. The client's loginDemo() now uses the real
+    // demo credentials instead (lib/api/auth.ts).
     if (!DEMO_MODE) {
       return apiError("demo_unavailable", "Demo sign-in is disabled.", 403);
     }
     user = MOCK_LEARNER;
   } else if (action === "login") {
-    // Mock rules preserved verbatim from the old client-side mock.
-    if (!body.password || body.password.length < 8) {
-      return apiError("invalid_credentials", "Invalid email or password.", 401);
+    // Real credential validation — email lookup + scrypt password check.
+    // Coerce to strings so a malformed body (numeric email/password) fails
+    // the credential check instead of 500ing the route.
+    const email = asString(body.email).trim().toLowerCase();
+    const password = asString(body.password);
+    const account = findAccountByEmail(email);
+    if (!account || !verifyPassword(password, account)) {
+      // One message for "no such account" and "wrong password" — never
+      // reveal which, and never expose internal details.
+      return apiError(
+        "invalid_credentials",
+        "Incorrect email or password.",
+        401,
+      );
     }
-    // The error-demo email is `error@zapsters.dev` (exact), plus any
-    // `*@error.zapsters.dev` variant — both demo the 401 path.
-    const email = (body.email ?? "").toLowerCase();
-    if (email === "error@zapsters.dev" || email.endsWith("@error.zapsters.dev")) {
-      return apiError("invalid_credentials", "Invalid email or password.", 401);
-    }
-    user = email.endsWith("@admin.zapsters.dev") ? MOCK_ADMIN : MOCK_LEARNER;
+    user = account.user;
   } else if (action === "register") {
-    if (!body.password || body.password.length < 8) {
+    const password = asString(body.password);
+    const email = asString(body.email).trim().toLowerCase();
+    if (password.length < 8) {
       return apiError(
         "weak_password",
         "Password must be at least 8 characters.",
         422,
       );
     }
-    if (body.email === "taken@zapsters.dev") {
+    // Demo surface: taken@zapsters.dev demonstrates the duplicate error.
+    if (email === "taken@zapsters.dev") {
       return apiError(
         "email_taken",
         "An account with this email already exists.",
         409,
       );
     }
-    user = MOCK_LEARNER;
+    const result = createAccount({
+      display_name: asString(body.display_name) || "New Learner",
+      email,
+      password,
+    });
+    if (result.status === "exists") {
+      return apiError(
+        "email_taken",
+        "An account with this email already exists.",
+        409,
+      );
+    }
+    user = result.user;
   } else {
     return apiError("invalid_action", "Unknown session action.", 400);
   }

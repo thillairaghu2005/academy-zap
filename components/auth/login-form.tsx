@@ -27,7 +27,14 @@ import {
 import { Input } from "@/components/ui/input";
 import { Logo } from "@/src/components/Logo/Logo";
 import { useSession } from "@/components/providers/session-provider";
+import { authErrorMessage } from "@/lib/api/auth";
 import { DEMO_MODE } from "@/lib/config";
+import {
+  DEMO_ADMIN_EMAIL,
+  DEMO_ADMIN_PASSWORD,
+  DEMO_EMAIL,
+  DEMO_PASSWORD,
+} from "@/lib/demo-credentials";
 
 const loginSchema = z.object({
   email: z.email("Enter a valid email address."),
@@ -50,9 +57,11 @@ export function LoginForm({ next }: { next?: string }) {
   const [pending, setPending] = React.useState(false);
   const [showPassword, setShowPassword] = React.useState(false);
 
+  // The demo account is seeded server-side (lib/server/accounts.ts); prefill
+  // its credentials so a single click on "Sign in" authenticates.
   const form = useForm<LoginValues>({
     resolver: zodResolver(loginSchema),
-    defaultValues: { email: "", password: "" },
+    defaultValues: { email: DEMO_EMAIL, password: DEMO_PASSWORD },
   });
 
   // Already signed in? Straight back to where they were headed.
@@ -69,7 +78,7 @@ export function LoginForm({ next }: { next?: string }) {
       router.replace(safeNext(next));
     } catch (err) {
       form.setError("password", {
-        message: err instanceof Error ? err.message : "Sign in failed.",
+        message: authErrorMessage(err, "Sign in failed. Please try again later."),
       });
     } finally {
       setPending(false);
@@ -83,7 +92,7 @@ export function LoginForm({ next }: { next?: string }) {
       router.replace(safeNext(next));
     } catch (err) {
       form.setError("password", {
-        message: err instanceof Error ? err.message : "Sign in failed.",
+        message: authErrorMessage(err, "Sign in failed. Please try again later."),
       });
     } finally {
       setPending(false);
@@ -157,6 +166,16 @@ export function LoginForm({ next }: { next?: string }) {
           </form>
         </Form>
 
+        <p className="mt-3 flex items-center gap-1.5 text-center text-xs text-muted-foreground">
+          <Sparkles className="size-3 shrink-0 text-warning-strong" />
+          <span>
+            Demo account —{" "}
+            <code className="rounded bg-secondary px-1 font-mono">{DEMO_EMAIL}</code>{" "}
+            / <code className="rounded bg-secondary px-1 font-mono">{DEMO_PASSWORD}</code>. Just
+            hit Sign in.
+          </span>
+        </p>
+
         <p className="mt-5 text-center text-xs text-muted-foreground">
           New here?{" "}
           <Link href="/register" className="font-medium text-primary hover:underline">
@@ -187,7 +206,10 @@ export function LoginForm({ next }: { next?: string }) {
                 type="button"
                 variant="outline"
                 size="sm"
-                onClick={() => form.setValue("email", "priya@admin.zapsters.dev")}
+                onClick={() => {
+                  form.setValue("email", DEMO_ADMIN_EMAIL);
+                  form.setValue("password", DEMO_ADMIN_PASSWORD);
+                }}
               >
                 Admin demo
               </Button>

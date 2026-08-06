@@ -43,6 +43,13 @@ export const SESSION_MAX_AGE_SECONDS = 7 * 24 * 60 * 60; // 7 days
 export interface SessionPayload {
   uid: string;
   role: string;
+  /**
+   * The email the user authenticated as. Multiple emails can share a uid
+   * (demo@company.com vs aarav@zapsters.dev are the same demo identity),
+   * so the token records WHICH principal signed in — the session resolver
+   * prefers this over uid to present the right account.
+   */
+  email?: string;
   exp: number;
 }
 
@@ -86,16 +93,18 @@ function safeEqual(a: string, b: string): boolean {
   return diff === 0;
 }
 
-/** Issue a signed session token for a user (uid + role travel in the token). */
+/** Issue a signed session token for a user (uid + role + email travel in the token). */
 export async function createSessionToken(user: {
   id: string;
   role: string;
+  email?: string;
 }): Promise<string> {
   const payload: SessionPayload = {
     uid: user.id,
     role: user.role,
     exp: Math.floor(Date.now() / 1000) + SESSION_MAX_AGE_SECONDS,
   };
+  if (user.email) payload.email = user.email;
   const encoded = b64urlEncode(new TextEncoder().encode(JSON.stringify(payload)));
   return `${encoded}.${await sign(encoded)}`;
 }

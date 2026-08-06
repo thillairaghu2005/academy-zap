@@ -4,6 +4,7 @@ import type {
   SessionState,
 } from "@/lib/contracts/session";
 import { MockApiError } from "@/lib/api/errors";
+import { DEMO_EMAIL, DEMO_PASSWORD } from "@/lib/demo-credentials";
 
 /**
  * Auth API client (product-audit Fix 4: real auth boundary).
@@ -13,14 +14,12 @@ import { MockApiError } from "@/lib/api/errors";
  * (see lib/server/session.ts and proxy.ts). Signatures are unchanged
  * from the old all-client mock, so the SessionProvider never changed.
  *
- * Mock rules (now enforced by the route handler, preserved verbatim):
- *  - login rejects passwords shorter than 8 chars and emails ending in
- *    `@error.zapsters.dev` with `invalid_credentials` (the login error
- *    state demo).
- *  - Email ending in `@admin.zapsters.dev` signs in the mock admin
- *    (exercises the role-gated Admin nav).
- *  - `loginDemo()` issues the demo learner session via the route's
- *    `demo` action — the one-click demo affordance.
+ * Auth rules live in the route handler (app/api/auth/session/route.ts):
+ *  - login validates email + password against the seeded account store
+ *    (scrypt hashes — see lib/server/accounts.ts). Unknown emails and
+ *    wrong passwords both return `invalid_credentials` (401).
+ *  - `loginDemo()` signs in the seeded demo account through the SAME real
+ *    credential path (demo@company.com / Demo@123) — no shortcuts.
  *
  * When the real Platform Core auth lands, this module is replaced by the
  * real client SDK — same signatures, zero component changes (build.md §4).
@@ -39,17 +38,37 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
   }
   if (!res.ok) {
     let code = "http_error";
-    let message = `Auth request failed (${res.status}).`;
+    let message = "The auth service is unavailable. Please try again later.";
     try {
       const body = (await res.json()) as { code?: string; message?: string };
       if (body.code) code = body.code;
       if (body.message) message = body.message;
     } catch {
-      // Non-JSON error body — keep the defaults.
+      // Non-JSON error body (e.g. a 500 HTML page) — keep the generic
+      // message; never surface the raw status or server internals.
     }
     throw new MockApiError(code, message, res.status);
   }
   return (await res.json()) as T;
+}
+
+/**
+ * Map an auth failure to a user-facing message. Internal details (status
+ * codes, stack traces, server messages) never reach the UI.
+ */
+export function authErrorMessage(
+  err: unknown,
+  fallback = "Please try again later.",
+): string {
+  if (err instanceof MockApiError) {
+    // Server is unreachable or crashed — never show the internal status.
+    if (err.status >= 500) {
+      return "Server unavailable. Please try again later.";
+    }
+    // Server-provided 4xx messages are already user-facing and vetted.
+    return err.message || fallback;
+  }
+  return fallback;
 }
 
 function post(body: Record<string, unknown>): RequestInit {
@@ -101,7 +120,14 @@ export async function logout(): Promise<void> {
   await request<SessionState>("/api/auth/session", post({ action: "logout" }));
 }
 
-/** One-click demo learner sign-in (route action `demo`). */
+/**
+ * One-click demo sign-in — the seeded demo account through the REAL
+ * credential path (no special action, no bypass).
+ */
 export async function loginDemo(): Promise<SessionState> {
-  return request<SessionState>("/api/auth/session", post({ action: "demo" }));
+  return request<SessionState>("/api/auth/session", post({
+    action: "login",
+    email: DEMO_EMAIL,
+    password: DEMO_PASSWORD,
+  }));
 }
