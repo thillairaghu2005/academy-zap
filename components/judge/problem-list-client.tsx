@@ -5,40 +5,54 @@ import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import {
-  Braces,
-  ChevronRight,
-  CircleCheck,
-  Clock,
-  CodeXml,
-  Gauge,
-  LoaderCircle,
-  Terminal,
+  ArrowUpRight,
+  BarChart3,
+  Brackets,
+  Check,
+  CheckCircle2,
+  CircleDot,
+  Database,
+  Flame,
+  GitBranch,
+  Layers3,
+  ListFilter,
+  Network,
+  RotateCcw,
+  Search,
+  Sparkles,
+  SquareTerminal,
+  Tag,
+  Timer,
+  Type,
+  Trophy,
+  Users,
+  Zap,
 } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 
-import type {
-  Problem,
-  ProblemDifficulty,
-} from "@/lib/contracts/judge";
-import { listProblems } from "@/lib/api/judge";
+import type { Problem, ProblemDifficulty } from "@/lib/contracts/judge";
+import { listProblems, listSolvedProblemIds } from "@/lib/api/judge";
+import { getProgressContext } from "@/lib/api/gamification";
 import { DEMO_MODE } from "@/lib/config";
-import { listSolvedProblemIds } from "@/lib/api/judge";
 import { useSession } from "@/components/providers/session-provider";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
-import { PageContainer } from "@/components/shared/page-container";
 import { EmptyState } from "@/components/shared/empty-state";
 import { ErrorState } from "@/components/shared/error-state";
+import { PageContainer } from "@/components/shared/page-container";
 import { SkeletonProblemRows } from "@/components/shared/skeletons";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 
-/* ------------------------------------------------------------------ */
-/*  Judge — problem list (F2)                                          */
-/*  Wired to the mock listProblems() API. Difficulty filter is a       */
-/*  client-side view over the fixture (mirrors the real catalog-query  */
-/*  shape; full Meilisearch-backed search on the Judge list is a       */
-/*  Content-side concern, not part of the F2 slice).                   */
-/* ------------------------------------------------------------------ */
+type StatusFilter = "all" | "solved" | "unsolved";
+type SortKey = "recommended" | "title" | "difficulty" | "acceptance" | "time";
 
 const DIFFICULTIES: { value: ProblemDifficulty | "all"; label: string }[] = [
   { value: "all", label: "All difficulties" },
@@ -47,81 +61,262 @@ const DIFFICULTIES: { value: ProblemDifficulty | "all"; label: string }[] = [
   { value: "hard", label: "Hard" },
 ];
 
-const DIFFICULTY_STYLE: Record<
-  ProblemDifficulty,
-  { badge: string; text: string }
-> = {
-  easy: { badge: "border-emerald-500/40 bg-emerald-500/10 text-emerald-700", text: "text-emerald-700" },
-  medium: { badge: "border-amber-500/40 bg-amber-500/10 text-amber-700", text: "text-amber-700" },
-  hard: { badge: "border-rose-500/40 bg-rose-500/10 text-rose-700", text: "text-rose-700" },
+const DIFFICULTY_ORDER: Record<ProblemDifficulty, number> = {
+  easy: 1,
+  medium: 2,
+  hard: 3,
 };
 
-function ProblemRow({ problem, index }: { problem: Problem; index: number }) {
-  const diff = DIFFICULTY_STYLE[problem.difficulty];
+const SORT_OPTIONS: { value: SortKey; label: string }[] = [
+  { value: "recommended", label: "Recommended" },
+  { value: "title", label: "Title" },
+  { value: "difficulty", label: "Difficulty" },
+  { value: "acceptance", label: "Acceptance rate" },
+  { value: "time", label: "Estimated time" },
+];
+
+const STATUS_OPTIONS: { value: StatusFilter; label: string }[] = [
+  { value: "all", label: "All problems" },
+  { value: "unsolved", label: "To do" },
+  { value: "solved", label: "Solved" },
+];
+
+const PROBLEM_META: Record<string, { companies: string[]; solves: number; xp: number }> = {
+  "p-two-sum": { companies: ["Google", "Amazon"], solves: 1842, xp: 100 },
+  "p-valid-parens": { companies: ["Meta", "Microsoft"], solves: 1294, xp: 100 },
+  "p-max-subarray": { companies: ["Google", "Stripe"], solves: 987, xp: 160 },
+  "p-reverse-linked-list": { companies: ["Amazon", "Apple"], solves: 821, xp: 100 },
+  "p-binary-tree-inorder": { companies: ["Meta", "Netflix"], solves: 706, xp: 100 },
+  "p-median-two-sorted": { companies: ["Google", "Uber"], solves: 364, xp: 240 },
+  "p-trapping-rain-water": { companies: ["Amazon", "Adobe"], solves: 298, xp: 240 },
+};
+
+const DIFFICULTY_STYLES: Record<ProblemDifficulty, { badge: string; dot: string }> = {
+  easy: { badge: "border-success/20 bg-success/10 text-success-strong", dot: "bg-success" },
+  medium: { badge: "border-warning/25 bg-warning/10 text-warning-strong", dot: "bg-warning" },
+  hard: { badge: "border-danger/20 bg-danger/10 text-danger-strong", dot: "bg-danger" },
+};
+
+const CATEGORY_BY_TOPIC: Record<string, { icon: LucideIcon; label: string }> = {
+  arrays: { icon: Brackets, label: "Arrays" },
+  "hash-maps": { icon: Database, label: "Hash maps" },
+  strings: { icon: Type, label: "Strings" },
+  stack: { icon: Layers3, label: "Stack" },
+  "linked-list": { icon: Network, label: "Linked list" },
+  tree: { icon: GitBranch, label: "Trees" },
+  dfs: { icon: GitBranch, label: "Trees" },
+  "binary-search": { icon: Search, label: "Binary search" },
+  "two-pointers": { icon: Network, label: "Two pointers" },
+  dp: { icon: Layers3, label: "Dynamic programming" },
+  "divide-and-conquer": { icon: GitBranch, label: "Divide and conquer" },
+};
+
+function problemMeta(problem: Problem) {
+  return PROBLEM_META[problem.id] ?? { companies: ["Zapsters"], solves: 0, xp: 100 };
+}
+
+function formatNumber(value: number) {
+  return new Intl.NumberFormat("en-US").format(value);
+}
+
+function categoryFor(problem: Problem) {
+  return problem.topics.map((topic) => CATEGORY_BY_TOPIC[topic]).find(Boolean) ?? {
+    icon: Brackets,
+    label: "Algorithms",
+  };
+}
+
+function Metric({
+  icon: Icon,
+  value,
+  label,
+  valueClassName,
+}: {
+  icon: LucideIcon;
+  value: string;
+  label: string;
+  valueClassName?: string;
+}) {
+  return (
+    <div className="flex min-w-0 items-start gap-2.5">
+      <Icon className="mt-0.5 size-4 shrink-0 text-slate-400" />
+      <div className="min-w-0">
+        <p className={cn("truncate text-sm font-semibold leading-4 text-slate-800", valueClassName)}>{value}</p>
+        <p className="mt-1 truncate text-[10px] font-semibold uppercase tracking-[0.1em] text-slate-400">{label}</p>
+      </div>
+    </div>
+  );
+}
+
+function AcceptanceMetric({ rate }: { rate: number }) {
+  return (
+    <div className="flex min-w-0 items-center gap-2.5">
+      <svg className="size-9 shrink-0 -rotate-90" viewBox="0 0 40 40" aria-label={`${rate}% acceptance rate`} role="img">
+        <circle cx="20" cy="20" r="15" fill="none" stroke="var(--color-muted)" strokeWidth="5" />
+        <circle cx="20" cy="20" r="15" fill="none" stroke="var(--color-success)" strokeWidth="5" pathLength="100" strokeDasharray="100" strokeDashoffset={100 - rate} strokeLinecap="round" />
+      </svg>
+      <div className="min-w-0">
+        <p className="text-sm font-semibold leading-4 text-slate-800">{rate}%</p>
+        <p className="mt-1 truncate text-[10px] font-semibold uppercase tracking-[0.1em] text-slate-400">Acceptance</p>
+      </div>
+    </div>
+  );
+}
+
+function FilterSelect({
+  label,
+  icon: Icon,
+  value,
+  onValueChange,
+  options,
+}: {
+  label: string;
+  icon: React.ComponentType<{ className?: string }>;
+  value: string;
+  onValueChange: (value: string) => void;
+  options: { value: string; label: string }[];
+}) {
+  return (
+    <div className="flex min-w-[148px] flex-1 flex-col gap-1.5 sm:flex-none">
+      <span className="flex items-center gap-1.5 px-1 text-[11px] font-semibold uppercase tracking-[0.12em] text-slate-500">
+        <Icon className="size-3.5" />
+        {label}
+      </span>
+      <Select value={value} onValueChange={onValueChange}>
+        <SelectTrigger className="h-10 rounded-xl border-slate-200 bg-white/80 text-sm shadow-none hover:border-slate-300 hover:bg-white">
+          <SelectValue />
+        </SelectTrigger>
+        <SelectContent>
+          {options.map((option) => (
+            <SelectItem key={option.value} value={option.value}>
+              {option.label}
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
+    </div>
+  );
+}
+
+function StatCard({
+  label,
+  value,
+  detail,
+  icon: Icon,
+  tone,
+}: {
+  label: string;
+  value: string;
+  detail: string;
+  icon: React.ComponentType<{ className?: string }>;
+  tone: string;
+}) {
+  return (
+    <div className="flex min-w-0 items-center gap-3 rounded-2xl border border-white/10 bg-white/[0.07] p-4 backdrop-blur-sm">
+      <div className={cn("grid size-10 shrink-0 place-items-center rounded-xl", tone)}>
+        <Icon className="size-5" />
+      </div>
+      <div className="min-w-0">
+        <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-slate-400">{label}</p>
+        <div className="mt-0.5 flex items-baseline gap-2">
+          <p className="font-display text-xl font-semibold tracking-tight text-white">{value}</p>
+          <p className="truncate text-xs text-slate-400">{detail}</p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function ProblemCard({
+  problem,
+  index,
+  solved,
+}: {
+  problem: Problem;
+  index: number;
+  solved: boolean;
+}) {
+  const meta = problemMeta(problem);
+  const description = problem.statement.split("\n")[0];
+  const category = categoryFor(problem);
+  const CategoryIcon = category.icon;
+  const visibleTopics = problem.topics.slice(0, 3);
+  const hiddenTopicCount = Math.max(problem.topics.length - visibleTopics.length, 0);
+  const difficultyStyle = DIFFICULTY_STYLES[problem.difficulty];
+
   return (
     <motion.div
-      initial={{ opacity: 0, y: 10 }}
+      initial={{ opacity: 0, y: 14 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: 0.04 * index, duration: 0.3, ease: "easeOut" }}
+      transition={{ delay: Math.min(index * 0.045, 0.3), duration: 0.25, ease: "easeOut" }}
+      className="h-full"
     >
-      <Link href={`/judge/${problem.id}`} className="group block outline-none">
-        <Card className="flex items-center gap-4 p-4 transition-all duration-200 group-hover:-translate-y-0.5 group-hover:border-primary/40 group-hover:shadow-lg group-hover:shadow-primary/5 focus-visible:ring-2 focus-visible:ring-ring">
-          <div className="flex size-10 shrink-0 items-center justify-center rounded-lg border border-border bg-muted/50 text-muted-foreground transition-colors group-hover:border-primary/30 group-hover:text-primary">
-            <CodeXml className="size-5" />
-          </div>
-
-          <div className="min-w-0 flex-1">
-            <div className="flex flex-wrap items-center gap-2">
-              <h3 className="truncate font-display text-h3 group-hover:text-primary">
+      <Link
+        href={`/judge/${problem.id}`}
+        className="group block h-full rounded-2xl outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-4"
+      >
+        <Card className="relative flex h-full flex-col overflow-hidden rounded-2xl border-slate-200/90 bg-white/90 p-6 shadow-[0_8px_30px_rgba(15,23,42,0.04)] transition-[transform,box-shadow,border-color] duration-200 ease-out group-hover:-translate-y-1 group-hover:border-primary/30 group-hover:shadow-[0_16px_40px_rgba(15,23,42,0.09)] sm:p-6">
+          <div className="flex items-start gap-4">
+            <div className="grid size-12 shrink-0 place-items-center rounded-xl border border-slate-200 bg-slate-50 text-slate-600 transition-transform duration-200 ease-out group-hover:scale-[1.03]" aria-label={`${category.label} category`}>
+              <CategoryIcon className="size-5" aria-hidden="true" />
+            </div>
+            <div className="min-w-0 flex-1">
+              <div className="flex min-h-5 flex-wrap items-center gap-2">
+                {solved ? (
+                  <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-success-strong">
+                    <Check className="size-3.5" /> Solved
+                  </span>
+                ) : null}
+                <span className={cn("inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-[11px] font-semibold", difficultyStyle.badge)}>
+                  <span className={cn("size-1.5 rounded-full", difficultyStyle.dot)} aria-hidden="true" />
+                  {problem.difficulty}
+                </span>
+              </div>
+              <h3 className="mt-2 truncate font-display text-[21px] font-semibold leading-7 tracking-[-0.025em] text-slate-900 transition-colors duration-200 group-hover:text-primary" title={problem.title}>
                 {problem.title}
               </h3>
-              <span
-                className={cn(
-                  "rounded-full border px-2 py-0.5 text-caption font-semibold uppercase tracking-wide",
-                  diff.badge,
-                )}
-              >
-                {problem.difficulty}
-              </span>
             </div>
-            <p className="mt-0.5 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted-foreground">
-              {problem.topics.map((topic) => (
-                <span key={topic} className="flex items-center gap-1">
-                  <Braces className="size-3" />
+          </div>
+
+          <div className="mt-6">
+            <div className="flex min-w-0 items-center gap-2 overflow-hidden">
+              {visibleTopics.map((topic) => (
+                <span key={topic} className="max-w-[42%] truncate rounded-lg border border-slate-200 bg-slate-50 px-2.5 py-1 text-[11px] font-medium text-slate-600">
                   {topic}
                 </span>
               ))}
-            </p>
-            <div className="mt-2 flex flex-wrap gap-1.5">
-              <Badge variant="outline" className="text-caption">
-                <Clock className="size-3" /> ~{problem.estimated_minutes} min
-              </Badge>
-              <Badge variant="outline" className="text-caption">
-                <CircleCheck className="size-3 text-success-strong" />
-                {problem.success_rate_pct}% success
-              </Badge>
+              {hiddenTopicCount > 0 ? (
+                <span className="shrink-0 rounded-lg border border-slate-200 bg-slate-50 px-2.5 py-1 text-[11px] font-medium text-slate-500">+{hiddenTopicCount}</span>
+              ) : null}
+            </div>
+            <p className="mt-2 truncate text-sm leading-5 text-slate-500" title={description}>{description}</p>
+          </div>
+
+          <div className="mt-6 rounded-xl border border-slate-200/80 bg-slate-50/70 p-4">
+            <div className="mb-4 flex items-center justify-between">
+              <p className="text-[10px] font-semibold uppercase tracking-[0.13em] text-slate-400">Problem signals</p>
+              <span className="text-[11px] font-medium text-slate-400">{formatNumber(meta.solves)} solves</span>
+            </div>
+            <div className="grid grid-cols-2 gap-x-4 gap-y-4 sm:grid-cols-3">
+              <AcceptanceMetric rate={problem.success_rate_pct} />
+              <Metric icon={Timer} value={`~${problem.estimated_minutes} min`} label="Solve time" />
+              <Metric icon={Zap} value={`+${meta.xp} XP`} label="Reward" valueClassName="text-xp-mastery" />
+              <Metric icon={BarChart3} value={`${problem.time_limit_ms} ms`} label="Runtime limit" />
+              <Metric icon={Database} value={`${(problem.memory_limit_kb / 1024).toFixed(0)} MB`} label="Memory limit" />
+              <Metric icon={CircleDot} value={`${problem.hidden_test_count} tests`} label="Test cases" />
             </div>
           </div>
 
-          <div className="hidden shrink-0 items-center gap-4 text-xs text-muted-foreground sm:flex">
-            <span className="flex items-center gap-1" title="Time limit">
-              <Clock className="size-3.5" />
-              {problem.time_limit_ms}ms
-            </span>
-            <span
-              className="flex items-center gap-1"
-              title="Memory limit"
-            >
-              <Gauge className="size-3.5" />
-              {(problem.memory_limit_kb / 1024).toFixed(0)}MB
-            </span>
-            <span className="flex items-center gap-1" title="Hidden test cases">
-              <Terminal className="size-3.5" />
-              {problem.hidden_test_count} cases
+          <div className="mt-6 flex flex-col gap-4 border-t border-slate-200/80 pt-6 sm:flex-row sm:items-center sm:justify-between">
+            <div className="flex min-w-0 items-center gap-2 text-xs text-slate-400">
+              <Users className="size-3.5 shrink-0" />
+              <span className="truncate">Asked at {meta.companies.join(" / ")}</span>
+            </div>
+            <span className="inline-flex h-11 w-full items-center justify-center gap-2 rounded-xl bg-slate-950 px-5 text-sm font-semibold text-white shadow-sm transition-[background-color,box-shadow] duration-200 ease-out group-hover:bg-primary group-hover:shadow-lg group-hover:shadow-primary/20 sm:w-auto">
+              Solve Challenge
+              <ArrowUpRight className="size-4 transition-transform duration-200 ease-out group-hover:translate-x-1" />
             </span>
           </div>
-
-          <ChevronRight className="size-4 shrink-0 text-muted-foreground/50 transition-transform group-hover:translate-x-0.5 group-hover:text-primary" />
         </Card>
       </Link>
     </motion.div>
@@ -130,150 +325,189 @@ function ProblemRow({ problem, index }: { problem: Problem; index: number }) {
 
 export function ProblemListClient() {
   const { user } = useSession();
-  const [difficulty, setDifficulty] = React.useState<
-    ProblemDifficulty | "all"
-  >("all");
-  const [view, setView] = React.useState<"all" | "solved">("all");
+  const [search, setSearch] = React.useState("");
+  const [difficulty, setDifficulty] = React.useState<ProblemDifficulty | "all">("all");
+  const [status, setStatus] = React.useState<StatusFilter>("all");
+  const [tag, setTag] = React.useState("all");
+  const [company, setCompany] = React.useState("all");
+  const [sort, setSort] = React.useState<SortKey>("recommended");
 
   const { data, isLoading, isError, error, refetch } = useQuery({
-    queryKey: ["judge-problems", difficulty],
+    queryKey: ["judge-problems"],
     queryFn: listProblems,
   });
   const solvedQuery = useQuery({
     queryKey: ["solved-problems", user?.id ?? "anonymous"],
     queryFn: () => listSolvedProblemIds(user?.id ?? ""),
-    enabled: view === "solved",
+    enabled: Boolean(user),
+  });
+  const progressQuery = useQuery({
+    queryKey: ["progress-context", user?.id ?? "anonymous"],
+    queryFn: () => getProgressContext(user?.id ?? ""),
+    enabled: Boolean(user),
   });
 
-  const filtered = data
-    ? difficulty === "all"
-      ? data.filter((problem) => view === "all" || (solvedQuery.data ?? []).includes(problem.id))
-      : data.filter((p) => p.difficulty === difficulty && (view === "all" || (solvedQuery.data ?? []).includes(p.id)))
-    : [];
-  const problemsLoading = isLoading || (view === "solved" && solvedQuery.isLoading);
-
+  const solvedIds = React.useMemo(() => solvedQuery.data ?? [], [solvedQuery.data]);
   const counts = React.useMemo(() => {
-    const c: Record<ProblemDifficulty, number> = {
-      easy: 0,
-      medium: 0,
-      hard: 0,
-    };
-    for (const p of data ?? []) c[p.difficulty]++;
-    return c;
+    const result: Record<ProblemDifficulty, number> = { easy: 0, medium: 0, hard: 0 };
+    for (const problem of data ?? []) result[problem.difficulty]++;
+    return result;
   }, [data]);
 
+  const tags = React.useMemo(
+    () => [...new Set((data ?? []).flatMap((problem) => problem.topics))].sort(),
+    [data],
+  );
+  const companies = React.useMemo(
+    () => [...new Set((data ?? []).flatMap((problem) => problemMeta(problem).companies))].sort(),
+    [data],
+  );
+
+  const filtered = React.useMemo(() => {
+    const query = search.trim().toLowerCase();
+    const result = (data ?? []).filter((problem) => {
+      const meta = problemMeta(problem);
+      const matchesSearch = !query || [problem.title, problem.slug, problem.statement, ...problem.topics].join(" ").toLowerCase().includes(query);
+      const matchesDifficulty = difficulty === "all" || problem.difficulty === difficulty;
+      const matchesStatus = status === "all" || (status === "solved" ? solvedIds.includes(problem.id) : !solvedIds.includes(problem.id));
+      const matchesTag = tag === "all" || problem.topics.includes(tag);
+      const matchesCompany = company === "all" || meta.companies.includes(company);
+      return matchesSearch && matchesDifficulty && matchesStatus && matchesTag && matchesCompany;
+    });
+
+    return [...result].sort((a, b) => {
+      switch (sort) {
+        case "title":
+          return a.title.localeCompare(b.title);
+        case "difficulty":
+          return DIFFICULTY_ORDER[a.difficulty] - DIFFICULTY_ORDER[b.difficulty];
+        case "acceptance":
+          return b.success_rate_pct - a.success_rate_pct;
+        case "time":
+          return a.estimated_minutes - b.estimated_minutes;
+        default:
+          return 0;
+      }
+    });
+  }, [company, data, difficulty, search, solvedIds, sort, status, tag]);
+
+  const resetFilters = () => {
+    setSearch("");
+    setDifficulty("all");
+    setStatus("all");
+    setTag("all");
+    setCompany("all");
+    setSort("recommended");
+  };
+
+  const activeFilters = [
+    search ? { label: `Search: ${search}`, clear: () => setSearch("") } : null,
+    difficulty !== "all" ? { label: DIFFICULTIES.find((item) => item.value === difficulty)?.label ?? difficulty, clear: () => setDifficulty("all") } : null,
+    status !== "all" ? { label: STATUS_OPTIONS.find((item) => item.value === status)?.label ?? status, clear: () => setStatus("all") } : null,
+    tag !== "all" ? { label: `Tag: ${tag}`, clear: () => setTag("all") } : null,
+    company !== "all" ? { label: `Company: ${company}`, clear: () => setCompany("all") } : null,
+  ].filter((item): item is { label: string; clear: () => void } => item !== null);
+
+  const problemsLoading = isLoading || solvedQuery.isLoading;
+  const totalProblems = data?.length ?? 0;
+  const solvedCount = solvedIds.length;
+  const totalXp = progressQuery.data
+    ? progressQuery.data.rank.completion_xp + progressQuery.data.rank.mastery_xp
+    : null;
+
   return (
-    <PageContainer>
-      {/* Header */}
-      <div className="flex flex-col gap-2">
-        <h1 className="font-display text-h1">
-          Judge Engine
-        </h1>
-        <p className="text-sm text-muted-foreground">
-          Solve challenges in the Monaco editor, submit, and get deterministic
-          verdicts from the mock judge queue. Python only — the Phase-1
-          language slice.
-        </p>
-      </div>
-
-      {/* Difficulty filter */}
-      <div className="mt-6 flex flex-wrap gap-2">
-        <Button variant={view === "all" ? "default" : "outline"} size="sm" onClick={() => setView("all")} aria-pressed={view === "all"}>All problems</Button>
-        <Button variant={view === "solved" ? "default" : "outline"} size="sm" onClick={() => setView("solved")} aria-pressed={view === "solved"}>Solved</Button>
-        {DIFFICULTIES.map((d) => {
-          const count =
-            d.value === "all"
-              ? data?.length
-              : d.value === "easy"
-                ? counts.easy
-                : d.value === "medium"
-                  ? counts.medium
-                  : counts.hard;
-          const active = difficulty === d.value;
-          return (
-            <Button
-              key={d.value}
-              variant={active ? "default" : "outline"}
-              size="sm"
-              onClick={() => setDifficulty(d.value)}
-              className={cn(
-                !active &&
-                  "text-muted-foreground hover:text-foreground",
-              )}
-            >
-              {d.label}
-              {count !== undefined ? (
-                <span
-                  className={cn(
-                    "ml-1.5 rounded-full px-1.5 text-caption font-semibold",
-                    active
-                      ? "bg-white/20 text-white"
-                      : "bg-muted text-muted-foreground",
-                  )}
-                >
-                  {count}
-                </span>
-              ) : null}
-            </Button>
-          );
-        })}
-      </div>
-
-      {/* Problem rows */}
-      <div className="mt-6 flex flex-col gap-3">
-        {problemsLoading ? (
-          <>
-            <div className="flex items-center gap-2 text-sm text-muted-foreground">
-              <LoaderCircle className="size-4 animate-spin" />
-              Loading problems…
+    <PageContainer className="max-w-[1440px] px-4 py-6 sm:px-6 sm:py-8 lg:px-10 lg:py-10">
+      <section className="relative overflow-hidden rounded-[20px] bg-slate-950 px-5 py-7 shadow-[0_20px_60px_rgba(15,23,42,0.14)] sm:px-8 sm:py-9 lg:px-10 lg:py-10">
+        <div className="pointer-events-none absolute -right-20 -top-32 size-96 rounded-full bg-violet-500/20 blur-3xl" />
+        <div className="pointer-events-none absolute -bottom-40 left-1/3 size-96 rounded-full bg-cyan-400/10 blur-3xl" />
+        <div className="relative">
+          <div className="flex flex-col justify-between gap-7 xl:flex-row xl:items-end">
+            <div className="max-w-2xl">
+              <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-cyan-300/20 bg-cyan-300/10 px-3 py-1.5 text-xs font-semibold text-cyan-200">
+                <Sparkles className="size-3.5" /> Practice with purpose
+              </div>
+              <h1 className="font-display text-4xl font-semibold tracking-[-0.045em] text-white sm:text-5xl">Judge Engine</h1>
+              <p className="mt-3 max-w-xl text-sm leading-6 text-slate-300 sm:text-base">
+                Sharpen your problem-solving instincts with real interview patterns, instant feedback, and a focused Python workspace.
+              </p>
             </div>
-            <SkeletonProblemRows count={5} />
-          </>
+            <div className="flex items-center gap-2 text-xs text-slate-400">
+              <span className="size-2 rounded-full bg-emerald-400 shadow-[0_0_12px_rgba(52,211,153,0.9)]" />
+              Judge queue operational
+            </div>
+          </div>
+          <div className="mt-8 grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4">
+            <StatCard label="Total Problems" value={isLoading ? "—" : formatNumber(totalProblems)} detail="in the library" icon={Layers3} tone="bg-cyan-400/15 text-cyan-300" />
+            <StatCard label="Solved" value={solvedQuery.isLoading ? "—" : formatNumber(solvedCount)} detail={solvedCount === 1 ? "challenge" : "challenges"} icon={CheckCircle2} tone="bg-emerald-400/15 text-emerald-300" />
+            <StatCard label="XP" value={progressQuery.isLoading || totalXp === null ? "—" : formatNumber(totalXp)} detail="total earned" icon={Trophy} tone="bg-violet-400/15 text-violet-300" />
+            <StatCard label="Current Streak" value={progressQuery.isLoading || !progressQuery.data ? "—" : `${progressQuery.data.streak.current_streak_days} days`} detail="keep it going" icon={Flame} tone="bg-amber-400/15 text-amber-300" />
+          </div>
+        </div>
+      </section>
+
+      <section className="mt-8 rounded-2xl border border-slate-200/90 bg-slate-50/80 p-4 shadow-sm sm:p-5" aria-label="Problem filters">
+        <div className="flex flex-col gap-4 xl:flex-row xl:items-end">
+          <label className="relative block min-w-0 flex-1 xl:max-w-[360px]">
+            <span className="mb-1.5 block px-1 text-[11px] font-semibold uppercase tracking-[0.12em] text-slate-500">Search</span>
+            <Search className="pointer-events-none absolute left-3 top-[calc(50%+10px)] size-4 -translate-y-1/2 text-slate-400" />
+            <Input value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Search problems, topics..." className="h-10 rounded-xl border-slate-200 bg-white pl-9 shadow-none placeholder:text-slate-400 focus-visible:ring-primary" />
+          </label>
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-4 xl:flex xl:flex-1 xl:justify-end">
+            <FilterSelect label="Difficulty" icon={BarChart3} value={difficulty} onValueChange={(value) => setDifficulty(value as ProblemDifficulty | "all")} options={DIFFICULTIES.map((item) => ({ ...item, label: item.value === "all" ? `${item.label} (${data?.length ?? "—"})` : `${item.label} (${counts[item.value]})` }))} />
+            <div className="col-span-2 flex min-w-0 flex-col gap-1.5 sm:col-span-2 xl:min-w-[220px]">
+              <span className="flex items-center gap-1.5 px-1 text-[11px] font-semibold uppercase tracking-[0.12em] text-slate-500"><ListFilter className="size-3.5" /> Status</span>
+              <div className="grid h-10 grid-cols-3 rounded-xl border border-slate-200 bg-white p-1">
+                {STATUS_OPTIONS.map((option) => (
+                  <button key={option.value} type="button" onClick={() => setStatus(option.value)} aria-pressed={status === option.value} className={cn("rounded-lg px-2 text-xs font-semibold transition-all", status === option.value ? "bg-slate-950 text-white shadow-sm" : "text-slate-500 hover:bg-slate-100 hover:text-slate-900")}>{option.label}</button>
+                ))}
+              </div>
+            </div>
+            <FilterSelect label="Tags" icon={Tag} value={tag} onValueChange={setTag} options={[{ value: "all", label: "All tags" }, ...tags.map((item) => ({ value: item, label: item }))]} />
+            <FilterSelect label="Company" icon={Users} value={company} onValueChange={setCompany} options={[{ value: "all", label: "All companies" }, ...companies.map((item) => ({ value: item, label: item }))]} />
+          </div>
+        </div>
+        <div className="mt-4 flex flex-col gap-3 border-t border-slate-200/80 pt-4 sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex min-w-0 flex-wrap items-center gap-2">
+            <span className="mr-1 inline-flex items-center gap-1.5 text-xs font-medium text-slate-500"><Timer className="size-3.5" /> Sort by</span>
+            <Select value={sort} onValueChange={(value) => setSort(value as SortKey)}>
+              <SelectTrigger className="h-8 w-[170px] rounded-lg border-slate-200 bg-white text-xs shadow-none"><SelectValue /></SelectTrigger>
+              <SelectContent>{SORT_OPTIONS.map((option) => <SelectItem key={option.value} value={option.value}>{option.label}</SelectItem>)}</SelectContent>
+            </Select>
+            {activeFilters.map((filter) => (
+              <button key={filter.label} type="button" onClick={filter.clear} className="inline-flex h-8 items-center gap-1.5 rounded-full border border-primary/20 bg-primary/5 px-3 text-xs font-medium text-primary transition-colors hover:border-primary/40 hover:bg-primary/10">{filter.label}<span aria-hidden="true">×</span><span className="sr-only">Remove filter</span></button>
+            ))}
+          </div>
+          <Button type="button" variant="ghost" size="sm" onClick={resetFilters} disabled={activeFilters.length === 0 && sort === "recommended"} className="shrink-0 gap-1.5 rounded-lg text-slate-500 hover:bg-white hover:text-slate-900"><RotateCcw className="size-3.5" /> Reset</Button>
+        </div>
+      </section>
+
+      <div className="mt-8 flex items-center justify-between gap-3">
+        <div>
+          <p className="font-display text-lg font-semibold tracking-tight text-slate-900">Explore challenges</p>
+          <p className="mt-1 text-sm text-slate-500">{problemsLoading ? "Loading your practice set..." : `${filtered.length} ${filtered.length === 1 ? "problem" : "problems"} matching your filters`}</p>
+        </div>
+        <div className="hidden items-center gap-1.5 text-xs font-medium text-slate-400 sm:flex"><Zap className="size-3.5 text-amber-500" /> New problems every week</div>
+      </div>
+
+      <div className="mx-auto mt-4 grid w-full max-w-[1120px] gap-4 md:grid-cols-2 xl:gap-5">
+        {problemsLoading ? (
+          <div className="md:col-span-2"><SkeletonProblemRows count={6} /></div>
         ) : isError ? (
-          <ErrorState
-            title="Judge unavailable"
-            message={
-              error instanceof Error
-                ? error.message
-                : "The judge backend is not responding."
-            }
-            code="JUDGE_ERR"
-            onRetry={() => refetch()}
-          />
+          <div className="md:col-span-2"><ErrorState title="Judge unavailable" message={error instanceof Error ? error.message : "The judge backend is not responding."} code="JUDGE_ERR" onRetry={() => refetch()} /></div>
         ) : filtered.length === 0 ? (
-          <EmptyState
-            icon={CircleCheck}
-            title={view === "solved" ? "No solved Judge problems" : "No problems here yet"}
-            description={
-              view === "solved"
-                ? "Solve your first challenge and your accepted submissions will collect here."
-                : difficulty === "all"
-                  ? "The problem set is empty."
-                : `No ${difficulty} problems in the set yet. Try another difficulty.`
-            }
-            primaryAction={<Button variant="gradient" size="sm" onClick={() => { setView("all"); setDifficulty("all"); }}>Browse all problems</Button>}
-            secondaryAction={<Button variant="outline" size="sm" asChild><Link href="/courses">Learn the fundamentals</Link></Button>}
-          />
+          <div className="md:col-span-2">
+            <EmptyState icon={CheckCircle2} title={status === "solved" ? "No solved Judge problems" : "No problems match these filters"} description={status === "solved" ? "Solve your first challenge and your accepted submissions will collect here." : "Try widening your search or resetting the filters."} primaryAction={<Button variant="gradient" size="sm" onClick={resetFilters}>Browse all problems</Button>} secondaryAction={<Button variant="outline" size="sm" asChild><Link href="/courses">Learn the fundamentals</Link></Button>} />
+          </div>
         ) : (
-          filtered.map((problem, i) => (
-            <ProblemRow key={problem.id} problem={problem} index={i} />
-          ))
+          filtered.map((problem, index) => <ProblemCard key={problem.id} problem={problem} index={index} solved={solvedIds.includes(problem.id)} />)
         )}
       </div>
 
-      {/* Mock-hint footer — demo scaffolding, gated in production builds. */}
       {DEMO_MODE ? (
-        <p className="mt-8 rounded-lg border border-dashed border-border bg-muted/30 px-4 py-3 text-xs leading-relaxed text-muted-foreground">
-          <span className="font-semibold text-foreground">Mock hints:</span>{" "}
-          inside the editor, include{" "}
-          <code className="rounded bg-muted px-1">raise </code> for a runtime
-          error, <code className="rounded bg-muted px-1">sleep(</code> for a
-          time limit exceeded,{" "}
-          <code className="rounded bg-muted px-1">wrong_answer</code> for a
-          wrong answer, and{" "}
-          <code className="rounded bg-muted px-1">compile_error</code> for a
-          compile error. The starter code passes cleanly.
-        </p>
+        <div className="mt-8 flex items-start gap-3 rounded-xl border border-dashed border-slate-200 bg-slate-50/70 px-4 py-3 text-xs leading-relaxed text-slate-500">
+          <SquareTerminal className="mt-0.5 size-4 shrink-0 text-slate-400" />
+          <p><span className="font-semibold text-slate-700">Demo mode:</span> use <code className="rounded bg-slate-200/70 px-1">raise </code>, <code className="rounded bg-slate-200/70 px-1">sleep(</code>, <code className="rounded bg-slate-200/70 px-1">wrong_answer</code>, or <code className="rounded bg-slate-200/70 px-1">compile_error</code> in the editor to explore each verdict.</p>
+        </div>
       ) : null}
     </PageContainer>
   );

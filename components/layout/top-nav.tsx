@@ -4,7 +4,6 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ChevronRight } from "lucide-react";
 
-import { Logo } from "@/src/components/Logo/Logo";
 import { MobileNav } from "@/components/layout/side-nav";
 import { UserMenu } from "@/components/layout/user-menu";
 import { CartBadge } from "@/components/commerce/cart-badge";
@@ -80,17 +79,19 @@ function TopNavBreadcrumbs({ pathname }: { pathname: string }) {
 export function TopNav() {
   const pathname = usePathname();
   const { user, isLoading } = useSession();
+  const section = pathname.split("/").filter(Boolean)[0];
+  const sectionLabel = section
+    ? BREADCRUMB_LABELS[section] ?? section.replace(/[-_]/g, " ")
+    : "Dashboard";
 
   return (
     <header className="sticky top-0 z-40 border-b border-border/70 bg-background/80 backdrop-blur-xl">
       <div className="flex h-16 items-center gap-2 px-4 sm:px-6 lg:px-8">
         <MobileNav />
 
-        <Logo
-          size="sm"
-          eager
-          className="p-1.5 [&>img]:h-8 sm:[&>img]:h-9 lg:[&>img]:h-11"
-        />
+        <span className="shrink-0 font-display text-small font-semibold lg:hidden">
+          {sectionLabel}
+        </span>
 
         <div className="hidden min-w-0 flex-1 items-center gap-4 md:flex">
           <div className="hidden min-w-0 shrink-0 lg:flex">
@@ -112,7 +113,12 @@ export function TopNav() {
           {/* Notification center — mock event feed until push/SSE lands */}
           <NotificationCenter />
 
-          <RankXpChip />
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <RankXpChip />
+            </TooltipTrigger>
+            <TooltipContent>Rank and XP progress</TooltipContent>
+          </Tooltip>
 
           <div className="ml-1">
             {isLoading ? (

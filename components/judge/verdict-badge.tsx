@@ -8,19 +8,19 @@ import { Badge } from "@/components/ui/badge";
  */
 const VERDICT_META: Record<
   Verdict,
-  { label: string; variant: "accepted" | "wrong-answer" | "time-limit-exceeded" | "runtime-error" | "compile-error" }
+  { label: string }
 > = {
-  accepted: { label: "Accepted", variant: "accepted" },
-  wrong_answer: { label: "Wrong Answer", variant: "wrong-answer" },
-  time_limit_exceeded: { label: "Time Limit Exceeded", variant: "time-limit-exceeded" },
-  runtime_error: { label: "Runtime Error", variant: "runtime-error" },
-  compile_error: { label: "Compile Error", variant: "compile-error" },
+  accepted: { label: "Accepted" },
+  wrong_answer: { label: "Wrong Answer" },
+  time_limit_exceeded: { label: "Time Limit Exceeded" },
+  runtime_error: { label: "Runtime Error" },
+  compile_error: { label: "Compile Error" },
 };
 
 export function VerdictBadge({ verdict }: { verdict: Verdict }) {
   const meta = VERDICT_META[verdict];
   return (
-    <Badge variant={meta.variant} title={`verdict: ${verdict}`}>
+    <Badge variant="outline" title={`verdict: ${verdict}`}>
       {meta.label}
     </Badge>
   );

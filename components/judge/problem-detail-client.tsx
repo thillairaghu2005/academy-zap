@@ -70,20 +70,11 @@ const VERDICT_TONE: Record<
   Verdict,
   { ring: string; icon: typeof CheckCircle2 }
 > = {
-  accepted: { ring: "border-verdict-accepted/40", icon: CheckCircle2 },
-  wrong_answer: { ring: "border-verdict-wrong-answer/40", icon: TriangleAlert },
-  time_limit_exceeded: {
-    ring: "border-verdict-time-limit-exceeded/40",
-    icon: TriangleAlert,
-  },
-  runtime_error: {
-    ring: "border-verdict-runtime-error/40",
-    icon: TriangleAlert,
-  },
-  compile_error: {
-    ring: "border-verdict-compile-error/40",
-    icon: TriangleAlert,
-  },
+  accepted: { ring: "border-border", icon: CheckCircle2 },
+  wrong_answer: { ring: "border-border", icon: TriangleAlert },
+  time_limit_exceeded: { ring: "border-border", icon: TriangleAlert },
+  runtime_error: { ring: "border-border", icon: TriangleAlert },
+  compile_error: { ring: "border-border", icon: TriangleAlert },
 };
 
 function timeAgo(iso: string): string {
@@ -130,11 +121,11 @@ function StatementPanel({ problem }: { problem: Problem }) {
             className={cn(
               "rounded-full border px-2 py-0.5 text-caption font-semibold uppercase tracking-wide",
               problem.difficulty === "easy" &&
-                "border-emerald-500/40 bg-emerald-500/10 text-emerald-700",
+                "border-border bg-muted/40 text-black",
               problem.difficulty === "medium" &&
-                "border-amber-500/40 bg-amber-500/10 text-amber-700",
+                "border-border bg-muted-foreground/20 text-black",
               problem.difficulty === "hard" &&
-                "border-rose-500/40 bg-rose-500/10 text-rose-700",
+                "border-black bg-black text-white",
             )}
           >
             {problem.difficulty}
@@ -192,7 +183,7 @@ function StatementPanel({ problem }: { problem: Problem }) {
               key={constraint}
               className="flex items-start gap-2 text-sm text-muted-foreground"
             >
-              <span className="mt-1.5 size-1 shrink-0 rounded-full bg-primary/60" />
+              <span className="mt-1.5 size-1 shrink-0 rounded-full bg-foreground/60" />
               <code className="text-[13px]">{constraint}</code>
             </li>
           ))}
@@ -266,14 +257,7 @@ function ResultPanel({ result }: { result: JudgeResult }) {
     >
       <div className="flex items-center justify-between gap-3">
         <div className="flex items-center gap-2.5">
-          <Icon
-            className={cn(
-              "size-5",
-              result.verdict === "accepted"
-                ? "text-verdict-accepted"
-                : "text-verdict-wrong-answer",
-            )}
-          />
+          <Icon className="size-5 text-foreground" />
           <VerdictBadge verdict={result.verdict} />
         </div>
         <span className="font-mono text-[10px] text-muted-foreground">
@@ -294,12 +278,7 @@ function ResultPanel({ result }: { result: JudgeResult }) {
             initial={{ width: 0 }}
             animate={{ width: `${pct}%` }}
             transition={{ duration: 0.5, ease: "easeOut" }}
-            className={cn(
-              "h-full rounded-full",
-              result.verdict === "accepted"
-                ? "bg-verdict-accepted"
-                : "bg-verdict-wrong-answer",
-            )}
+            className="h-full rounded-full bg-foreground"
           />
         </div>
       </div>
@@ -353,9 +332,9 @@ function OutputBlock({
           tone === "muted" &&
             "border-border bg-secondary/40 text-foreground/80",
           tone === "destructive" &&
-            "border-destructive/25 bg-destructive/5 text-destructive",
+            "border-border bg-muted/40 text-foreground",
           tone === "warning" &&
-            "border-verdict-wrong-answer/25 bg-verdict-wrong-answer/5 text-verdict-wrong-answer",
+            "border-border bg-muted/40 text-foreground",
         )}
       >
         {text}
@@ -598,9 +577,9 @@ export function ProblemDetailClient({ problemId }: { problemId: string }) {
         <div className="order-2 flex flex-col gap-6 lg:order-1">
           <StatementPanel problem={problem} />
 
-          <Card className="border-primary/20 bg-primary/5">
+          <Card className="border-border bg-muted/40">
             <div className="flex items-start gap-3 p-4">
-              <MessageCircle className="mt-0.5 size-4 shrink-0 text-primary" />
+              <MessageCircle className="mt-0.5 size-4 shrink-0 text-foreground" />
               <div className="min-w-0 flex-1">
                 <p className="text-sm font-semibold">Stuck? Talk to a mentor</p>
                 <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
@@ -618,7 +597,7 @@ export function ProblemDetailClient({ problemId }: { problemId: string }) {
           {DEMO_MODE ? (
             <div className="rounded-lg border border-dashed border-border bg-muted/30 px-4 py-3">
               <p className="flex items-center gap-1.5 text-xs font-semibold text-foreground">
-                <WandSparkles className="size-3.5 text-primary" />
+                <WandSparkles className="size-3.5 text-foreground" />
                 Verdict demo markers
               </p>
               <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
@@ -711,8 +690,8 @@ export function ProblemDetailClient({ problemId }: { problemId: string }) {
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0 }}
                 >
-                  <Card className="flex flex-col items-center gap-2 border-destructive/25 bg-destructive/5 p-6 text-center">
-                    <TriangleAlert className="size-5 text-destructive" />
+                  <Card className="flex flex-col items-center gap-2 border-border bg-muted/40 p-6 text-center">
+                    <TriangleAlert className="size-5 text-foreground" />
                     <p className="text-sm font-semibold">Judge queue timed out</p>
                     <p className="max-w-sm text-xs text-muted-foreground">
                       The submission spent over {QUEUE_TIMEOUT_S}s in the queue
@@ -743,7 +722,7 @@ export function ProblemDetailClient({ problemId }: { problemId: string }) {
                   exit={{ opacity: 0 }}
                 >
                   <Card className="flex flex-col items-center gap-3 p-6 text-center">
-                    <LoaderCircle className="size-6 animate-spin text-primary" />
+                    <LoaderCircle className="size-6 animate-spin text-foreground" />
                     <div>
                       <p className="text-sm font-semibold">Judging…</p>
                       <p className="mt-0.5 font-mono text-[11px] text-muted-foreground">
@@ -754,7 +733,7 @@ export function ProblemDetailClient({ problemId }: { problemId: string }) {
                       {Array.from({ length: 8 }).map((_, i) => (
                         <motion.span
                           key={i}
-                          className="h-full flex-1 rounded-full bg-primary/70"
+                          className="h-full flex-1 rounded-full bg-foreground/70"
                           animate={{ opacity: [0.25, 1, 0.25] }}
                           transition={{
                             duration: 1.1,
@@ -792,7 +771,7 @@ export function ProblemDetailClient({ problemId }: { problemId: string }) {
                   exit={{ opacity: 0 }}
                 >
                   <Card className="flex items-center gap-3 border-dashed p-4 text-sm text-muted-foreground">
-                    <Send className="size-4 shrink-0 text-primary" />
+                    <Send className="size-4 shrink-0 text-foreground" />
                     <span>
                       Ready to judge. Submit your solution — the mock queue
                       returns a{" "}

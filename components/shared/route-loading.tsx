@@ -9,10 +9,15 @@ import {
 
 export function JudgeListLoading() {
   return (
-    <PageContainer>
-      <SkeletonLines count={2} className="max-w-xl" />
-      <div className="mt-6 flex flex-col gap-3">
-        <SkeletonGrid count={4} className="grid-cols-1" />
+    <PageContainer className="max-w-[1440px] px-4 py-6 sm:px-6 sm:py-8 lg:px-10 lg:py-10">
+      <Card className="h-72 overflow-hidden rounded-[20px] border-slate-200 bg-slate-950 p-8">
+        <SkeletonLines count={3} className="max-w-xl [&>div]:bg-white/10" />
+      </Card>
+      <Card className="mt-8 p-5">
+        <SkeletonLines count={2} className="max-w-full" />
+      </Card>
+      <div className="mt-8 grid gap-5 md:grid-cols-2">
+        <SkeletonGrid count={6} className="col-span-2 grid-cols-1 md:grid-cols-2" />
       </div>
     </PageContainer>
   );
