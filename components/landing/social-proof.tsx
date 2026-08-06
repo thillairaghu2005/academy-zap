@@ -14,13 +14,14 @@ import {
 import {
   getPublicGuildBoard,
   getPublicLeaderboardPreview,
+  getRankLadder,
 } from "@/lib/api/gamification";
 import { Card } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 
 function SocialProofSkeleton() {
   return (
-    <div className="grid gap-4 lg:grid-cols-[1.15fr_0.85fr]">
+    <div className="grid gap-4 lg:grid-cols-3">
       <Card className="p-5 sm:p-6">
         <Skeleton className="h-5 w-40" />
         <Skeleton className="mt-5 h-12 w-full" />
@@ -31,6 +32,12 @@ function SocialProofSkeleton() {
         <Skeleton className="h-5 w-44" />
         <Skeleton className="mt-5 h-20 w-full" />
         <Skeleton className="mt-4 h-4 w-3/4" />
+      </Card>
+      <Card className="p-5 sm:p-6">
+        <Skeleton className="h-5 w-36" />
+        <Skeleton className="mt-5 h-8 w-full" />
+        <Skeleton className="mt-2 h-8 w-full" />
+        <Skeleton className="mt-2 h-8 w-full" />
       </Card>
     </div>
   );
@@ -45,8 +52,13 @@ export function SocialProof() {
     queryKey: ["public-guild-board"],
     queryFn: getPublicGuildBoard,
   });
+  const ladderQuery = useQuery({
+    queryKey: ["public-rank-ladder"],
+    queryFn: getRankLadder,
+  });
 
-  const loading = leaderboardQuery.isLoading || guildQuery.isLoading;
+  const loading =
+    leaderboardQuery.isLoading || guildQuery.isLoading || ladderQuery.isLoading;
   if (loading) {
     return (
       <section className="border-y border-border bg-muted/40">
@@ -60,14 +72,15 @@ export function SocialProof() {
     );
   }
 
-  const entries = leaderboardQuery.data?.entries.slice(0, 3) ?? [];
+  const entries = leaderboardQuery.data?.entries.slice(0, 5) ?? [];
   const guild = guildQuery.data;
+  const ladder = ladderQuery.data?.slice(0, 5) ?? [];
 
   return (
     <section className="border-y border-border bg-muted/40">
       <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 sm:py-20 lg:px-8">
         <SectionIntro />
-        <div className="mt-8 grid gap-4 lg:grid-cols-[1.15fr_0.85fr]">
+        <div className="mt-8 grid gap-4 lg:grid-cols-3">
           <Card className="overflow-hidden">
             <div className="flex items-start justify-between gap-4 border-b border-border p-5 sm:p-6">
               <div>
@@ -82,7 +95,7 @@ export function SocialProof() {
                 href="/leaderboards"
                 className="inline-flex items-center gap-1 text-xs font-semibold text-primary outline-none hover:underline focus-visible:ring-2 focus-visible:ring-ring"
               >
-                Full board <ArrowRight className="size-3.5" />
+                See full leaderboard <ArrowRight className="size-3.5" />
               </Link>
             </div>
             {entries.length > 0 ? (
@@ -114,6 +127,41 @@ export function SocialProof() {
             ) : (
               <div className="p-6 text-sm text-muted-foreground">The board is warming up.</div>
             )}
+          </Card>
+
+          <Card className="p-5 sm:p-6">
+            <div className="flex items-start justify-between gap-3">
+              <div>
+                <p className="flex items-center gap-2 font-display text-h3">
+                  <Medal className="size-5 text-xp-completion" /> Rank ladder
+                </p>
+                <p className="mt-1 text-xs text-muted-foreground">
+                  Ten server-resolved levels from Initiate to Deus.
+                </p>
+              </div>
+              <Link
+                href="/rank"
+                className="text-xs font-semibold text-primary outline-none hover:underline focus-visible:ring-2 focus-visible:ring-ring"
+              >
+                View <ArrowRight className="inline size-3.5" />
+              </Link>
+            </div>
+            <div className="mt-5 flex flex-col gap-2">
+              {ladder.map((rank) => (
+                <div key={rank.level} className="flex items-center gap-3 text-xs">
+                  <span className="grid size-6 place-items-center rounded-md bg-secondary font-mono text-caption text-muted-foreground">
+                    {rank.level}
+                  </span>
+                  <span className="font-medium">{rank.rank_name}</span>
+                  <span className="ml-auto h-1.5 w-16 overflow-hidden rounded-full bg-secondary">
+                    <span
+                      className="block h-full rounded-full bg-gradient-to-r from-primary to-xp-mastery"
+                      style={{ width: `${Math.max(20, rank.level * 18)}%` }}
+                    />
+                  </span>
+                </div>
+              ))}
+            </div>
           </Card>
 
           <Card className="p-5 sm:p-6">
