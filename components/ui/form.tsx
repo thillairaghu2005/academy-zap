@@ -65,17 +65,24 @@ function useFormField() {
 
 type FormItemContextValue = {
   id: string;
+  hasDescription: boolean;
+  setHasDescription: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
 const FormItemContext = React.createContext<FormItemContextValue>(
-  {} as FormItemContextValue,
+  {
+    id: "",
+    hasDescription: false,
+    setHasDescription: () => undefined,
+  },
 );
 
 function FormItem({ className, ...props }: React.ComponentProps<"div">) {
   const id = React.useId();
+  const [hasDescription, setHasDescription] = React.useState(false);
 
   return (
-    <FormItemContext.Provider value={{ id }}>
+    <FormItemContext.Provider value={{ id, hasDescription, setHasDescription }}>
       <div
         data-slot="form-item"
         className={cn("grid gap-2", className)}
@@ -105,16 +112,19 @@ function FormLabel({
 function FormControl({ ...props }: React.ComponentProps<typeof Slot>) {
   const { error, formItemId, formDescriptionId, formMessageId } =
     useFormField();
+  const { hasDescription } = React.useContext(FormItemContext);
+  const describedBy = [
+    hasDescription ? formDescriptionId : null,
+    error ? formMessageId : null,
+  ]
+    .filter(Boolean)
+    .join(" ");
 
   return (
     <Slot
       data-slot="form-control"
       id={formItemId}
-      aria-describedby={
-        !error
-          ? `${formDescriptionId}`
-          : `${formDescriptionId} ${formMessageId}`
-      }
+      aria-describedby={describedBy || undefined}
       aria-invalid={!!error}
       {...props}
     />
@@ -126,6 +136,12 @@ function FormDescription({
   ...props
 }: React.ComponentProps<"p">) {
   const { formDescriptionId } = useFormField();
+  const { setHasDescription } = React.useContext(FormItemContext);
+
+  React.useEffect(() => {
+    setHasDescription(true);
+    return () => setHasDescription(false);
+  }, [setHasDescription]);
 
   return (
     <p

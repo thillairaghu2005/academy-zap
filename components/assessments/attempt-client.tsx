@@ -544,19 +544,29 @@ export function AssessmentAttemptClient({
           </div>
 
           <div className="pt-4">
-            <p className="whitespace-pre-wrap text-sm leading-relaxed">
+            <p
+              id={`question-${question.id}-prompt`}
+              className="whitespace-pre-wrap text-sm leading-relaxed"
+            >
               {question.prompt}
             </p>
 
             {/* Question input by type */}
             <div className="mt-5">
               {question.type === "mcq" && question.options ? (
-                <div className="flex flex-col gap-2">
+                <div
+                  className="flex flex-col gap-2"
+                  role="radiogroup"
+                  aria-labelledby={`question-${question.id}-prompt`}
+                >
                   {question.options.map((option, i) => {
                     const selected = draft?.type === "mcq" && draft.option_index === i;
                     return (
                       <button
                         key={i}
+                        type="button"
+                        role="radio"
+                        aria-checked={selected}
                         onClick={() =>
                           setDraft({ type: "mcq", option_index: i })
                         }
@@ -583,12 +593,23 @@ export function AssessmentAttemptClient({
                   })}
                 </div>
               ) : question.type === "short_answer" ? (
-                <Textarea
-                  placeholder="Type your answer…"
-                  value={draft?.type === "short_answer" ? draft.text : ""}
-                  onChange={(e) => setDraft({ type: "short_answer", text: e.target.value })}
-                  className="min-h-24"
-                />
+                <div>
+                  <label
+                    htmlFor={`answer-${question.id}`}
+                    className="sr-only"
+                  >
+                    Answer for {question.prompt}
+                  </label>
+                  <Textarea
+                    id={`answer-${question.id}`}
+                    placeholder="Type your answer…"
+                    value={draft?.type === "short_answer" ? draft.text : ""}
+                    onChange={(e) =>
+                      setDraft({ type: "short_answer", text: e.target.value })
+                    }
+                    className="min-h-24"
+                  />
+                </div>
               ) : (
                 <div className="overflow-hidden rounded-lg border border-border">
                   <div className="flex items-center justify-between border-b border-border bg-muted/40 px-3 py-2">

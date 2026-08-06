@@ -141,3 +141,4 @@ export * from "./commerce";
 export * from "./support";
 export * from "./search";
 export * from "./notification";
+export * from "./events";

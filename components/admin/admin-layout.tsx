@@ -79,7 +79,7 @@ export function AdminLayout({ children }: { children: React.ReactNode }) {
           setReplayRequested(true);
         }}
       />
-      <main className="min-w-0 flex-1">{children}</main>
+      <div className="min-w-0 flex-1">{children}</div>
       <AdminWalkthrough
         open={walkthroughOpen}
         onOpenChange={(open) => {

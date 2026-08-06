@@ -3,8 +3,9 @@
 The Zapsters learning platform: Udemy-shaped courses, a HackerRank-shaped code judge,
 TryHackMe-shaped virtual labs, assessments, commerce, and a full gamification layer.
 
-**Current state:** the frontend (F0–F7) is complete against a mock data layer; F8 cross-cutting
-work is in progress. **Backend implementation has started** — see Part II of `build.md`.
+**Current state:** the frontend (F0–F7) is complete against a mock data layer and the first F8
+foundations are implemented. F8 accessibility, PWA/offline, and integration-contract work is in
+progress. **Backend implementation has started** — see Part II of `build.md`.
 
 Source-of-truth docs in this repo:
 
@@ -156,6 +157,18 @@ can coexist behind a per-module flag.
 F0–F7 cover the original Udemy + HackerRank + TryHackMe surface area end to end. F8 and the
 "recently added" list below track cross-cutting additions layered on top of that base — see
 `build.md` Part I for the full per-surface checklist.
+
+### F8 Progress
+
+- Accessibility foundations are implemented across the app shell, forms, assessment controls,
+  sortable admin tables, reduced-motion behavior, Monaco, and xterm.js.
+- The PWA shell registers `public/sw.js`, provides an offline fallback, and extends the web
+  manifest. Course players can save course metadata and syllabus/article information for offline
+  reading through `public/offline-course.html`.
+- Versioned public integration event envelopes live in `lib/contracts/events.ts`; the frontend
+  contract is documented in `F8_PUBLIC_API.md`.
+- Real HLS video segment caching is not enabled yet. Signed webhook delivery, retries/dead-letter
+  handling, public API authentication, and event-bus integration remain backend B1/B9 work.
 
 ## Backend build order
 

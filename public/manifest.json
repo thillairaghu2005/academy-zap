@@ -1,9 +1,12 @@
 {
   "name": "Zapsters - Learn. Build. Climb.",
   "short_name": "Zapsters",
+  "id": "/",
   "description": "Courses, coding challenges, virtual labs, and skill progression.",
   "start_url": "/",
+  "scope": "/",
   "display": "standalone",
+  "display_override": ["window-controls-overlay", "standalone"],
   "theme_color": "#f8f9fb",
   "background_color": "#f8f9fb",
   "icons": [

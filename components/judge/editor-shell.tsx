@@ -11,7 +11,10 @@ const EditorPane = dynamic(
   {
     ssr: false,
     loading: () => (
-      <div className="flex h-full min-h-64 items-center justify-center text-sm text-muted-foreground">
+      <div
+        role="status"
+        className="flex h-full min-h-64 items-center justify-center text-sm text-muted-foreground"
+      >
         Loading editor…
       </div>
     ),

@@ -3,6 +3,7 @@ import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import { QueryProvider } from "@/components/providers/query-provider";
 import { SessionProvider } from "@/components/providers/session-provider";
+import { ServiceWorkerProvider } from "@/components/providers/service-worker-provider";
 import { Toaster } from "@/components/ui/sonner";
 
 export const metadata: Metadata = {
@@ -69,6 +70,7 @@ export default function RootLayout({
         <QueryProvider>
           <SessionProvider>{children}</SessionProvider>
         </QueryProvider>
+        <ServiceWorkerProvider />
         <Toaster />
       </body>
     </html>

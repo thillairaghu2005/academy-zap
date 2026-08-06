@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#f8f9fb" />
+    <title>Zapsters offline course</title>
+    <style>
+      :root { color-scheme: light; font-family: Inter, system-ui, sans-serif; }
+      body { margin: 0; background: #f8f9fb; color: #1f2937; }
+      main { box-sizing: border-box; max-width: 760px; margin: 0 auto; padding: 48px 20px; }
+      h1 { margin: 0 0 8px; font-size: 2rem; }
+      p { color: #6b7280; line-height: 1.6; }
+      section { margin-top: 28px; padding: 20px; border: 1px solid #e5e7eb; border-radius: 12px; background: white; }
+      h2 { margin: 0 0 12px; font-size: 1.1rem; }
+      ol { margin: 0; padding-left: 24px; }
+      li { padding: 5px 0; }
+      a { color: #0056d2; }
+      [role="status"] { color: #6b7280; }
+    </style>
+  </head>
+  <body>
+    <main>
+      <a href="/courses">Back to courses</a>
+      <div id="status" role="status" aria-live="polite">Loading saved course...</div>
+      <article id="course" hidden></article>
+    </main>
+    <script>
+      (async () => {
+        const status = document.getElementById("status");
+        const courseElement = document.getElementById("course");
+        const courseId = decodeURIComponent(location.pathname.split("/").pop() || "");
+        try {
+          const cache = await caches.open("zapsters-course-content-v1");
+          const response = await cache.match(
+            new Request(`/__zapsters/offline/courses/${encodeURIComponent(courseId)}`),
+          );
+          if (!response) throw new Error("Course not saved on this device.");
+          const { course } = await response.json();
+          const sections = course.syllabus
+            .map((section) => `<section><h2>${escapeHtml(section.title)}</h2><ol>${section.lessons
+              .map((lesson) => `<li>${escapeHtml(lesson.title)} <small>(${lesson.kind})</small></li>`)
+              .join("")}</ol></section>`)
+            .join("");
+          courseElement.innerHTML = `<h1>${escapeHtml(course.title)}</h1><p>${escapeHtml(course.description)}</p>${sections}`;
+          courseElement.hidden = false;
+          status.hidden = true;
+        } catch (error) {
+          status.textContent = error instanceof Error ? error.message : "Saved course unavailable.";
+        }
+
+        function escapeHtml(value) {
+          return String(value).replace(/[&<>"']/g, (character) => ({
+            "&": "&amp;",
+            "<": "&lt;",
+            ">": "&gt;",
+            '"': "&quot;",
+            "'": "&#039;",
+          })[character]);
+        }
+      })();
+    </script>
+  </body>
+</html>

@@ -292,12 +292,29 @@ export function DataTable<T>({
                       }
                       className={cn(
                         "px-4 py-2.5 font-semibold",
-                        column.sortable ? "cursor-pointer select-none" : "",
                         column.className,
                       )}
-                      onClick={() => toggleSort(column)}
                     >
-                      <span className="inline-flex items-center gap-1">
+                      <button
+                        type="button"
+                        className={cn(
+                          "inline-flex items-center gap-1 text-left outline-none",
+                          column.sortable
+                            ? "cursor-pointer select-none focus-visible:rounded focus-visible:ring-2 focus-visible:ring-ring"
+                            : "cursor-default",
+                        )}
+                        disabled={!column.sortable}
+                        onClick={() => toggleSort(column)}
+                        aria-label={
+                          column.sortable
+                            ? `${column.header}, sort ${
+                                sortKey === column.key && sortDir === "asc"
+                                  ? "descending"
+                                  : "ascending"
+                              }`
+                            : undefined
+                        }
+                      >
                         {column.header}
                         {column.sortable ? (
                           sortKey === column.key ? (
@@ -310,7 +327,7 @@ export function DataTable<T>({
                             <ArrowUpDown className="size-3 opacity-40" />
                           )
                         ) : null}
-                      </span>
+                      </button>
                     </th>
                   ))}
                   {actions ? (

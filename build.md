@@ -237,6 +237,12 @@ completion, credential-issued) plus a documented public API surface — relevant
 partner-community distribution (college clubs, chapter programs) the same way QUANTUM's
 certification rollout needs verifiable, chapter-level completion data
 
+F8 started: shell/editor/terminal accessibility foundations, reduced-motion
+support, a public offline fallback/service-worker shell, explicit offline course
+metadata caching, and the versioned frontend event envelope are now in place.
+Real video segment caching, signed webhook delivery, retries/dead-letter handling,
+and the public read API remain backend B9 work.
+
 ---
 
 ## 3. What to explicitly NOT build yet

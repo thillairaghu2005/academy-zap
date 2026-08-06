@@ -11,7 +11,10 @@ const LabTerminal = dynamic(
   {
     ssr: false,
     loading: () => (
-      <div className="flex h-full min-h-64 items-center justify-center gap-2 bg-[#0b0f14] text-sm text-muted-foreground">
+      <div
+        role="status"
+        className="flex h-full min-h-64 items-center justify-center gap-2 bg-[#0b0f14] text-sm text-muted-foreground"
+      >
         <span className="size-2 animate-pulse rounded-full bg-emerald-400" />
         Booting terminal…
       </div>

@@ -13,6 +13,7 @@ import {
   CheckCircle2,
   ChevronDown,
   Clock,
+  Download,
   FileText,
   Gauge,
   LoaderCircle,
@@ -38,6 +39,10 @@ import {
 } from "@/components/ui/select";
 import { ErrorState } from "@/components/shared/error-state";
 import { cn } from "@/lib/utils";
+import {
+  cacheCourseForOffline,
+  isCourseCached,
+} from "@/lib/offline/course-cache";
 
 // video.js is not SSR-safe — load the wrapper only on the client.
 const VideoPlayer = dynamic(
@@ -103,6 +108,38 @@ export function PlayerClient({ course }: { course: Course }) {
   // Only the user's explicit picks live in state — the resume lesson and the
   // first lesson are derived, so no effect is needed to sync them.
   const [pickedLessonId, setPickedLessonId] = React.useState<string | null>(null);
+  const [offlineSaved, setOfflineSaved] = React.useState(false);
+  const [offlineSaving, setOfflineSaving] = React.useState(false);
+  const [collapsedSections, setCollapsedSections] = React.useState<
+    Record<string, boolean>
+  >({});
+
+  React.useEffect(() => {
+    let cancelled = false;
+    void isCourseCached(course.id).then((cached) => {
+      if (!cancelled) setOfflineSaved(cached);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [course.id]);
+
+  const saveForOffline = async () => {
+    setOfflineSaving(true);
+    try {
+      await cacheCourseForOffline(course);
+      setOfflineSaved(true);
+      toast.success("Course lessons saved for offline reading.");
+    } catch (error) {
+      toast.error(
+        error instanceof Error
+          ? error.message
+          : "Could not save this course offline.",
+      );
+    } finally {
+      setOfflineSaving(false);
+    }
+  };
 
   const {
     data: progress,
@@ -234,6 +271,32 @@ export function PlayerClient({ course }: { course: Course }) {
             Course
           </Link>
         </Button>
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={saveForOffline}
+          disabled={offlineSaving || offlineSaved}
+          aria-label={
+            offlineSaved
+              ? "Course saved for offline reading"
+              : "Save course for offline reading"
+          }
+        >
+          <Download />
+          {offlineSaving
+            ? "Saving..."
+            : offlineSaved
+              ? "Saved offline"
+              : "Save offline"}
+        </Button>
+        {offlineSaved ? (
+          <Link
+            href={`/offline/course/${encodeURIComponent(course.id)}`}
+            className="text-xs font-medium text-primary hover:underline"
+          >
+            Open offline
+          </Link>
+        ) : null}
         <div className="min-w-0 flex-1">
           <p className="truncate text-sm font-medium">{course.title}</p>
           <p className="truncate text-xs text-muted-foreground">
@@ -384,14 +447,29 @@ export function PlayerClient({ course }: { course: Course }) {
               const sectionDone = section.lessons.filter((l) =>
                 completedSet.has(l.id),
               ).length;
+              const collapsed = collapsedSections[section.id] === true;
+              const sectionContentId = `course-section-${section.id}`;
               return (
                 <div key={section.id} className="mb-3">
                   <button
                     className="flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-left hover:bg-accent/60"
                     type="button"
-                    aria-label={`${section.title} (collapsed)`}
+                    aria-expanded={!collapsed}
+                    aria-controls={sectionContentId}
+                    aria-label={`${collapsed ? "Expand" : "Collapse"} ${section.title}`}
+                    onClick={() =>
+                      setCollapsedSections((current) => ({
+                        ...current,
+                        [section.id]: !collapsed,
+                      }))
+                    }
                   >
-                    <ChevronDown className="size-3.5 text-muted-foreground" />
+                    <ChevronDown
+                      className={cn(
+                        "size-3.5 text-muted-foreground transition-transform",
+                        collapsed && "-rotate-90",
+                      )}
+                    />
                     <span className="flex-1 truncate text-xs font-medium">
                       {section.title}
                     </span>
@@ -399,7 +477,11 @@ export function PlayerClient({ course }: { course: Course }) {
                       {sectionDone}/{section.lessons.length}
                     </span>
                   </button>
-                  <div className="mt-1 flex flex-col gap-0.5">
+                  <div
+                    id={sectionContentId}
+                    hidden={collapsed}
+                    className="mt-1 flex flex-col gap-0.5"
+                  >
                     {section.lessons.map((lesson, i) => {
                       const active = lesson.id === activeLesson?.id;
                       const done = completedSet.has(lesson.id);

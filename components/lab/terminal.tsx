@@ -80,6 +80,7 @@ export function LabTerminal({
         white: "#d4dbe6",
         brightWhite: "#ffffff",
       },
+      screenReaderMode: true,
       scrollback: 2000,
       convertEol: true,
     });
@@ -204,10 +205,15 @@ export function LabTerminal({
   return (
     <div
       className={className}
+      role="region"
+      aria-label="Lab terminal"
       style={{ position: "relative", width: "100%", height: "100%" }}
     >
       {!connected ? (
-        <div className="pointer-events-none absolute inset-0 z-10 flex items-center justify-center gap-2 bg-[#0b0f14] text-sm text-muted-foreground">
+        <div
+          role="status"
+          className="pointer-events-none absolute inset-0 z-10 flex items-center justify-center gap-2 bg-[#0b0f14] text-sm text-muted-foreground"
+        >
           <span className="size-2 animate-pulse rounded-full bg-emerald-400" />
           Establishing encrypted session…
         </div>
