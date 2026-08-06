@@ -181,11 +181,33 @@ export async function searchCatalog(
     if (params.price === "paid" && course.price_cents === 0) return false;
     if (params.level && params.level !== "all" && course.level !== params.level)
       return false;
+    if (params.duration === "under_2" && course.estimated_hours >= 2) return false;
+    if (params.duration === "2_to_5" && (course.estimated_hours < 2 || course.estimated_hours > 5)) return false;
+    if (params.duration === "5_to_10" && (course.estimated_hours < 5 || course.estimated_hours > 10)) return false;
+    if (params.duration === "over_10" && course.estimated_hours <= 10) return false;
+    if (params.format && params.format !== "all" && summary.format !== params.format) return false;
+    if (params.careerTrack && params.careerTrack !== "all" && summary.career_track !== params.careerTrack) return false;
+    if (params.projectBased && !summary.is_project_based) return false;
+    if (params.certificateIncluded && !summary.certificate_included) return false;
+    if (params.minRating && summary.rating < params.minRating) return false;
     return summary;
   });
 
+  const sorted = [...filtered].sort((a, b) => {
+    const aSummary = courseToSummary(a);
+    const bSummary = courseToSummary(b);
+    switch (params.sort) {
+      case "rated": return bSummary.rating - aSummary.rating;
+      case "newest": return b.updated_at.localeCompare(a.updated_at);
+      case "shortest": return a.estimated_hours - b.estimated_hours;
+      case "recommended": return (bSummary.rating * 2 + b.enrolled_count / 1000) - (aSummary.rating * 2 + a.enrolled_count / 1000);
+      case "popular":
+      default: return b.enrolled_count - a.enrolled_count;
+    }
+  });
+
   const offset = (page - 1) * pageSize;
-  const hits = filtered.slice(offset, offset + pageSize).map(courseToSummary);
+  const hits = sorted.slice(offset, offset + pageSize).map(courseToSummary);
 
   return {
     hits,
@@ -193,7 +215,7 @@ export async function searchCatalog(
     processingTimeMs: Math.max(1, Date.now() - started + 8),
     limit: pageSize,
     offset,
-    estimatedTotalHits: filtered.length,
+    estimatedTotalHits: sorted.length,
   };
 }
 

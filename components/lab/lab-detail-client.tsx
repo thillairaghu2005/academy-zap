@@ -37,6 +37,7 @@ import { ErrorState } from "@/components/shared/error-state";
 import { SkeletonLines } from "@/components/shared/skeletons";
 import { LabTerminalShell } from "@/components/lab/terminal-shell";
 import { cn } from "@/lib/utils";
+import { TrustBadge } from "@/components/shared/trust-badge";
 
 /* ------------------------------------------------------------------ */
 /*  Lab detail — objectives, meta, and the Start-Lab flow.             */
@@ -190,6 +191,10 @@ export function LabDetailClient({ labId }: { labId: string }) {
             <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
               {lab.description}
             </p>
+            <div className="mt-3 flex flex-wrap gap-2">
+              <TrustBadge kind="security" label="Isolated sandbox" detail="Every session runs on a session-private network with no public egress." />
+              <TrustBadge kind="verified" label="Server-verified objectives" detail="Objective checks read the sandbox state, never a browser claim." />
+            </div>
           </div>
 
           <div className="flex flex-wrap gap-4 border-y border-border py-3 text-xs text-muted-foreground">

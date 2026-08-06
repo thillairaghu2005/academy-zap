@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import { useQuery } from "@tanstack/react-query";
+import Link from "next/link";
 import { motion } from "framer-motion";
 import {
   ChevronLeft,
@@ -108,8 +109,10 @@ export function LeaderboardClient() {
       ) : entries.length === 0 ? (
         <EmptyState
           icon={Trophy}
-          title="No entries yet"
-          description="This board is empty — climb the ladder to be the first name on it."
+          title="No leaderboard ranking yet"
+          description="Complete a course, solve a Judge problem, or finish a lab to earn your first public ranking."
+          primaryAction={<Button size="sm" asChild><Link href="/courses">Start learning</Link></Button>}
+          secondaryAction={<Button size="sm" variant="outline" asChild><Link href="/rank">View rank ladder</Link></Button>}
         />
       ) : (
         <>

@@ -47,6 +47,7 @@ import { EmptyState } from "@/components/shared/empty-state";
 import { ErrorState } from "@/components/shared/error-state";
 import { CodeEditorSkeleton, SkeletonLines } from "@/components/shared/skeletons";
 import { cn } from "@/lib/utils";
+import { TrustBadge } from "@/components/shared/trust-badge";
 
 /* ------------------------------------------------------------------ */
 /*  Judge — problem detail + submit flow (F2)                          */
@@ -143,6 +144,11 @@ function StatementPanel({ problem }: { problem: Problem }) {
               {topic}
             </Badge>
           ))}
+        </div>
+        <div className="mt-3 flex flex-wrap gap-2">
+          <TrustBadge kind="security" label="Secure sandbox" detail="Submissions run in an isolated, network-denied judge environment." />
+          <TrustBadge kind="verified" label="Deterministic grading" detail="Verdicts come from reproducible test cases, not an AI score." />
+          <TrustBadge kind="security" label="Anti-plagiarism review" detail="Similarity checks can flag solutions for review without changing deterministic verdicts." />
         </div>
       </div>
 

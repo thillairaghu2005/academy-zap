@@ -22,6 +22,7 @@ import { ErrorState } from "@/components/shared/error-state";
 import { PageContainer } from "@/components/shared/page-container";
 import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
+import { TrustBadge } from "@/components/shared/trust-badge";
 
 const STATUS_META = {
   verified: {
@@ -212,6 +213,7 @@ export function VerifyClient({ credentialId }: { credentialId: string }) {
               <p className="text-sm font-semibold">Issued and verified by Zapsters</p>
               <p className="mt-0.5 text-xs text-muted-foreground">Independent re-verification against current ledger truth</p>
             </div>
+            <TrustBadge kind="verified" label="Certificate verification" detail="The credential status is checked against the current server-owned record." />
           </div>
           <Button variant="outline" size="sm" asChild>
             <a href="https://linkedin.com" target="_blank" rel="noreferrer">

@@ -3,12 +3,14 @@
 import * as React from "react";
 import { useQuery } from "@tanstack/react-query";
 import { motion } from "framer-motion";
+import Link from "next/link";
 import { ArrowUpRight, Crown, Shield, Swords, Trophy, Users } from "lucide-react";
 
 import type { GuildVsGuild } from "@/lib/contracts/gamification";
 import { getGuildBoard, getGuildVsGuild } from "@/lib/api/gamification";
 import { useSession } from "@/components/providers/session-provider";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { ErrorState } from "@/components/shared/error-state";
 import { EmptyState } from "@/components/shared/empty-state";
 import { PageContainer } from "@/components/shared/page-container";
@@ -56,26 +58,20 @@ export function GuildClient() {
           icon={Users}
           title="Sign in to view your guild"
           description="Guild boards appear once you're signed in."
+          primaryAction={
+            <Button variant="gradient" size="sm" asChild>
+              <Link href="/login">Sign in</Link>
+            </Button>
+          }
         />
       ) : boardQuery.isLoading ? (
         <div className="space-y-4">
           <SkeletonLines count={5} />
         </div>
       ) : boardQuery.isError || !board ? (
-        <ErrorState
-          title="Guild board unavailable"
-          message={
-            boardQuery.error instanceof Error
-              ? boardQuery.error.message
-              : "This learner is not in a guild this season."
-          }
-          code={
-            boardQuery.error instanceof Error
-              ? (boardQuery.error as { code?: string }).code
-              : undefined
-          }
-          onRetry={() => boardQuery.refetch()}
-        />
+        boardQuery.error instanceof Error && (boardQuery.error as { code?: string }).code === "no_guild" ? (
+          <EmptyState icon={Users} title="No guild yet" description="Join a guild to practice with peers and climb the team board." primaryAction={<Button size="sm" asChild><Link href="/courses">Find your path</Link></Button>} secondaryAction={<Button size="sm" variant="outline" onClick={() => boardQuery.refetch()}>Refresh guilds</Button>} />
+        ) : <ErrorState title="Guild board unavailable" message={boardQuery.error instanceof Error ? boardQuery.error.message : "The guild service is not responding."} code={boardQuery.error instanceof Error ? (boardQuery.error as { code?: string }).code : undefined} onRetry={() => boardQuery.refetch()} />
       ) : (
         <div className="grid gap-6 lg:grid-cols-[1fr_360px]">
           {/* Members + rollup */}

@@ -480,6 +480,16 @@ export const MOCK_FRESH_COURSE_ID = "d4e5f6a7-b8c9-4d0e-1f2a-3b4c5d6e7f8a";
 export const MOCK_EXPIRED_MANIFEST_LESSON_ID = "a1b2c3d4-0010";
 
 export function courseToSummary(course: Course): CourseSummary {
+  const format = course.format ?? (
+    course.title.includes("Web App") ? "lab" :
+      course.title.includes("React") ? "project" :
+        course.title.includes("Algorithms") ? "judge" : "video"
+  );
+  const career_track = course.career_track ?? (
+    course.category === "Web Development" ? "web_development" :
+      course.category === "Cloud & DevOps" ? "cloud" :
+        course.category === "Programming" ? "interview_prep" : "cyber_security"
+  );
   return {
     id: course.id,
     title: course.title,
@@ -494,5 +504,9 @@ export function courseToSummary(course: Course): CourseSummary {
     instructor_name: course.instructor.display_name,
     language: course.language,
     cover_hue: hueForId(course.id),
+    format,
+    career_track,
+    is_project_based: course.is_project_based ?? (format === "project" || format === "lab"),
+    certificate_included: course.certificate_included ?? true,
   };
 }

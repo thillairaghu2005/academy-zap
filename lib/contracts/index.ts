@@ -142,3 +142,6 @@ export * from "./support";
 export * from "./search";
 export * from "./notification";
 export * from "./events";
+export * from "./profile";
+export * from "./instructor";
+export * from "./trust";

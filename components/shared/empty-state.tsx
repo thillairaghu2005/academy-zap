@@ -7,6 +7,9 @@ interface EmptyStateProps {
   icon?: LucideIcon;
   title: string;
   description?: string;
+  primaryAction?: React.ReactNode;
+  secondaryAction?: React.ReactNode;
+  /** @deprecated Use primaryAction for new surfaces. */
   action?: React.ReactNode;
   className?: string;
 }
@@ -19,9 +22,12 @@ export function EmptyState({
   icon: Icon,
   title,
   description,
+  primaryAction,
+  secondaryAction,
   action,
   className,
 }: EmptyStateProps) {
+  const primary = primaryAction ?? action;
   return (
     <div
       className={cn(
@@ -42,7 +48,12 @@ export function EmptyState({
           {description}
         </p>
       ) : null}
-      {action ? <div className="mt-5">{action}</div> : null}
+      {primary || secondaryAction ? (
+        <div className="mt-5 flex flex-wrap items-center justify-center gap-2">
+          {primary}
+          {secondaryAction}
+        </div>
+      ) : null}
     </div>
   );
 }

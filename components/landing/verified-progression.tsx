@@ -2,6 +2,7 @@ import Link from "next/link";
 import { ArrowRight, CheckCircle2, ShieldCheck, Trophy } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
+import { TrustBadge } from "@/components/shared/trust-badge";
 
 const ranks = ["Initiate", "Oracle", "Spartan", "Titan", "Atlas", "Hyperion", "Olympian", "Primordial", "Ascendant", "Deus"] as const;
 
@@ -62,6 +63,10 @@ export function VerifiedProgression() {
             <ShieldCheck className="size-3.5 text-success" />
             <CheckCircle2 className="size-3.5 text-success" />
             ledger-derived, publicly verifiable
+          </div>
+          <div className="mt-4 flex flex-wrap gap-2">
+            <TrustBadge kind="verified" label="Verified certificates" detail="Credentials link to an independent verification page." />
+            <TrustBadge kind="community" label="Top companies learning here" detail="Mock partner signal from the current platform projection." />
           </div>
         </div>
       </div>

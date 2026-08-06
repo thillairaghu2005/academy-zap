@@ -47,6 +47,16 @@ export async function listProblems(): Promise<Problem[]> {
   return MOCK_PROBLEMS;
 }
 
+/** Server-owned solved projection used by the Judge catalog filter. */
+export async function listSolvedProblemIds(userId: string): Promise<string[]> {
+  await delay(jitter(120));
+  if (!userId) return [];
+  ensureSeeded();
+  return [...mockSubmissions.values()]
+    .filter((submission) => submission.user_id === userId && submission.verdict === "accepted")
+    .map((submission) => submission.problem_id);
+}
+
 export async function getProblem(problemId: string): Promise<Problem> {
   await delay(jitter(240));
   const problem = MOCK_PROBLEMS_BY_ID.get(problemId);

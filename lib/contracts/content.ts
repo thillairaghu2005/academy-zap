@@ -10,6 +10,10 @@
 
 export type CourseLevel = "beginner" | "intermediate" | "advanced";
 export type LessonKind = "video" | "article";
+export type CourseFormat = "video" | "interactive" | "lab" | "project" | "judge";
+export type CareerTrack = "cyber_security" | "web_development" | "ai_ml" | "cloud" | "data_science" | "game_dev" | "interview_prep";
+export type DurationFilter = "under_2" | "2_to_5" | "5_to_10" | "over_10";
+export type CourseSort = "popular" | "rated" | "newest" | "recommended" | "shortest";
 /**
  * §4.4 — courses are versioned like code: draft vs published.
  * F7 (Admin/CMS) adds `in_review` for the submit-for-review →
@@ -104,6 +108,10 @@ export interface Course {
   syllabus: CourseSection[];
   created_at: string;
   updated_at: string;
+  format?: CourseFormat;
+  career_track?: CareerTrack;
+  is_project_based?: boolean;
+  certificate_included?: boolean;
 }
 
 /** Lightweight card shape for catalog hits */
@@ -122,6 +130,10 @@ export interface CourseSummary {
   language: string;
   /** Seed for the gradient cover art (mock stand-in for poster art) */
   cover_hue: number;
+  format: CourseFormat;
+  career_track: CareerTrack;
+  is_project_based: boolean;
+  certificate_included: boolean;
 }
 
 /**
@@ -180,4 +192,11 @@ export interface CatalogQuery {
   level?: CourseLevel | "all";
   page?: number;
   pageSize?: number;
+  duration?: DurationFilter;
+  format?: CourseFormat | "all";
+  careerTrack?: CareerTrack | "all";
+  projectBased?: boolean;
+  certificateIncluded?: boolean;
+  minRating?: number;
+  sort?: CourseSort;
 }

@@ -21,6 +21,8 @@ import type {
 } from "@/lib/contracts/judge";
 import { listProblems } from "@/lib/api/judge";
 import { DEMO_MODE } from "@/lib/config";
+import { listSolvedProblemIds } from "@/lib/api/judge";
+import { useSession } from "@/components/providers/session-provider";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
@@ -127,20 +129,28 @@ function ProblemRow({ problem, index }: { problem: Problem; index: number }) {
 }
 
 export function ProblemListClient() {
+  const { user } = useSession();
   const [difficulty, setDifficulty] = React.useState<
     ProblemDifficulty | "all"
   >("all");
+  const [view, setView] = React.useState<"all" | "solved">("all");
 
   const { data, isLoading, isError, error, refetch } = useQuery({
     queryKey: ["judge-problems", difficulty],
     queryFn: listProblems,
   });
+  const solvedQuery = useQuery({
+    queryKey: ["solved-problems", user?.id ?? "anonymous"],
+    queryFn: () => listSolvedProblemIds(user?.id ?? ""),
+    enabled: view === "solved",
+  });
 
   const filtered = data
     ? difficulty === "all"
-      ? data
-      : data.filter((p) => p.difficulty === difficulty)
+      ? data.filter((problem) => view === "all" || (solvedQuery.data ?? []).includes(problem.id))
+      : data.filter((p) => p.difficulty === difficulty && (view === "all" || (solvedQuery.data ?? []).includes(p.id)))
     : [];
+  const problemsLoading = isLoading || (view === "solved" && solvedQuery.isLoading);
 
   const counts = React.useMemo(() => {
     const c: Record<ProblemDifficulty, number> = {
@@ -168,6 +178,8 @@ export function ProblemListClient() {
 
       {/* Difficulty filter */}
       <div className="mt-6 flex flex-wrap gap-2">
+        <Button variant={view === "all" ? "default" : "outline"} size="sm" onClick={() => setView("all")} aria-pressed={view === "all"}>All problems</Button>
+        <Button variant={view === "solved" ? "default" : "outline"} size="sm" onClick={() => setView("solved")} aria-pressed={view === "solved"}>Solved</Button>
         {DIFFICULTIES.map((d) => {
           const count =
             d.value === "all"
@@ -209,7 +221,7 @@ export function ProblemListClient() {
 
       {/* Problem rows */}
       <div className="mt-6 flex flex-col gap-3">
-        {isLoading ? (
+        {problemsLoading ? (
           <>
             <div className="flex items-center gap-2 text-sm text-muted-foreground">
               <LoaderCircle className="size-4 animate-spin" />
@@ -231,12 +243,16 @@ export function ProblemListClient() {
         ) : filtered.length === 0 ? (
           <EmptyState
             icon={CircleCheck}
-            title="No problems here yet"
+            title={view === "solved" ? "No solved Judge problems" : "No problems here yet"}
             description={
-              difficulty === "all"
-                ? "The problem set is empty."
+              view === "solved"
+                ? "Solve your first challenge and your accepted submissions will collect here."
+                : difficulty === "all"
+                  ? "The problem set is empty."
                 : `No ${difficulty} problems in the set yet. Try another difficulty.`
             }
+            primaryAction={<Button variant="gradient" size="sm" onClick={() => { setView("all"); setDifficulty("all"); }}>Browse all problems</Button>}
+            secondaryAction={<Button variant="outline" size="sm" asChild><Link href="/courses">Learn the fundamentals</Link></Button>}
           />
         ) : (
           filtered.map((problem, i) => (

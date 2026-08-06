@@ -21,6 +21,7 @@ import {
   Hourglass,
   LoaderCircle,
   Lock,
+  MessageCircle,
   Eye,
   PlayCircle,
   Star,
@@ -47,7 +48,10 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Progress } from "@/components/ui/progress";
 import { PageContainer } from "@/components/shared/page-container";
 import { ErrorState } from "@/components/shared/error-state";
+import { EmptyState } from "@/components/shared/empty-state";
 import { cn } from "@/lib/utils";
+import { InstructorCard } from "@/components/courses/instructor-card";
+import { CourseTrustPanel } from "@/components/courses/course-trust-panel";
 import {
   Dialog,
   DialogContent,
@@ -378,6 +382,7 @@ export function CourseDetailClient({
               {course.description}
             </p>
           </div>
+          <CourseTrustPanel courseId={course.id} />
         </div>
 
         {/* CTA card */}
@@ -522,6 +527,9 @@ export function CourseDetailClient({
               </div>
             </CardContent>
           </Card>
+          <div className="mt-4">
+            <InstructorCard instructorId={course.instructor.id} />
+          </div>
         </div>
       </div>
 
@@ -593,6 +601,19 @@ export function CourseDetailClient({
           if (!open) setPreviewLesson(null);
         }}
       />
+
+      <div className="mt-12">
+        <h2 className="font-display text-h2">Discussion</h2>
+        <div className="mt-4">
+          <EmptyState
+            icon={MessageCircle}
+            title="No discussion posts yet"
+            description="Be part of the first conversation around this course. Keep questions close to the lesson where they came up."
+            primaryAction={<Button size="sm" asChild><Link href={`/courses/${course.id}/learn`}>Open course lessons</Link></Button>}
+            secondaryAction={<Button size="sm" variant="outline" asChild><Link href="/support/new">Ask support</Link></Button>}
+          />
+        </div>
+      </div>
 
       {/* Reviews are a paged Content Engine projection. */}
       <div className="mt-12">

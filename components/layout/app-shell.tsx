@@ -4,6 +4,7 @@ import * as React from "react";
 
 import { TopNav } from "@/components/layout/top-nav";
 import { SideNav } from "@/components/layout/side-nav";
+import { BottomNavigation } from "@/components/layout/bottom-navigation";
 
 /**
  * Global app shell (build.md F0). Every authenticated surface renders inside
@@ -21,10 +22,11 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       <TopNav />
       <div className="flex min-h-0 flex-1">
         <SideNav />
-        <main id="main-content" tabIndex={-1} className="min-w-0 flex-1 outline-none">
+        <main id="main-content" tabIndex={-1} className="min-w-0 flex-1 pb-20 outline-none lg:pb-0">
           {children}
         </main>
       </div>
+      <BottomNavigation />
     </div>
   );
 }

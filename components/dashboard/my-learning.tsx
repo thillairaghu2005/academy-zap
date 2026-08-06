@@ -179,7 +179,7 @@ export function MyLearning() {
             icon={BookOpen}
             title="Sign in to see your learning"
             description="Your enrollments, progress and resume positions live here once you're signed in."
-            action={
+            primaryAction={
               <Button variant="gradient" size="sm" asChild>
                 <Link href="/login">Sign in</Link>
               </Button>
@@ -203,27 +203,48 @@ export function MyLearning() {
             icon={BookOpen}
             title="No courses yet"
             description="Enroll in your first course and it will show up here with live progress."
-            action={
+            primaryAction={
               <Button variant="gradient" size="sm" asChild>
                 <Link href="/courses">
                   Browse the catalog <ArrowRight />
                 </Link>
               </Button>
             }
+            secondaryAction={
+              <Button variant="outline" size="sm" asChild>
+                <Link href="/labs">Explore labs</Link>
+              </Button>
+            }
           />
         ) : data ? (
-          <div className="flex flex-col gap-3">
-            {data.map((item, i) => (
-              <motion.div
-                key={item.course.id}
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.05 * i, duration: 0.35, ease: "easeOut" }}
-              >
-                <MyLearningRow item={item} />
-              </motion.div>
-            ))}
-          </div>
+          <>
+            <div className="flex flex-col gap-3">
+              {data.map((item, i) => (
+                <motion.div
+                  key={item.course.id}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.05 * i, duration: 0.35, ease: "easeOut" }}
+                >
+                  <MyLearningRow item={item} />
+                </motion.div>
+              ))}
+            </div>
+            {!data.some((item) => item.enrollment.status === "completed") ? (
+              <div className="mt-6">
+                <EmptyState
+                  icon={CheckCircle2}
+                  title="No completed courses yet"
+                  description="Keep going. Your first completion will appear here as a milestone."
+                  primaryAction={
+                    <Button variant="outline" size="sm" asChild>
+                      <Link href="/courses">Find your next course</Link>
+                    </Button>
+                  }
+                />
+              </div>
+            ) : null}
+          </>
         ) : null}
       </div>
     </section>

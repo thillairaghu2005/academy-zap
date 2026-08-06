@@ -13,6 +13,8 @@ export const metadata: Metadata = {
   },
   description:
     "Zapsters is a learning platform: Udemy-shaped courses, a HackerRank-shaped code judge, TryHackMe-shaped virtual labs, and a full gamification layer.",
+  keywords: ["Zapsters", "cybersecurity courses", "coding judge", "virtual labs", "learning platform"],
+  alternates: { canonical: "/" },
   metadataBase: new URL(
     process.env.NEXT_PUBLIC_SITE_URL ?? "https://zapsters.dev",
   ),

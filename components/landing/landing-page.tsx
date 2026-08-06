@@ -28,6 +28,7 @@ import { SectionTitle } from "@/components/landing/section-title";
 import { SocialProof } from "@/components/landing/social-proof";
 import { SkillCard } from "@/components/landing/skill-card";
 import { VerifiedProgression } from "@/components/landing/verified-progression";
+import { TrustHighlights } from "@/components/landing/trust-highlights";
 
 export interface LandingPageProps {
   courses: CourseSummary[];
@@ -152,6 +153,7 @@ function LandingSections({ courses }: LandingPageProps) {
 
       <section className="mx-auto max-w-7xl px-4 py-16 sm:px-6 sm:py-20 lg:px-8">
         <VerifiedProgression />
+        <div className="mt-8"><TrustHighlights /></div>
       </section>
       <SocialProof />
     </>

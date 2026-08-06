@@ -30,6 +30,7 @@ function isPublicRoute(pathname: string): boolean {
   if (pathname === "/judge" || pathname === "/labs") return true;
   if (/^\/judge\/[^/]+$/.test(pathname)) return true;
   if (/^\/labs\/[^/]+$/.test(pathname)) return true;
+  if (/^\/mentors\/[^/]+$/.test(pathname)) return true;
   if (/^\/rank\/verify\/[^/]+$/.test(pathname)) return true;
   // Course detail pages are a single segment under /courses (e.g.
   // /courses/<id>); deeper paths like /courses/<id>/learn are enrolled
