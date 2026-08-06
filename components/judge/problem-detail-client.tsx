@@ -13,7 +13,6 @@ import {
   GitCommitHorizontal,
   History,
   LoaderCircle,
-  RotateCcw,
   Send,
   ShieldQuestion,
   Terminal,
@@ -34,7 +33,8 @@ import {
 } from "@/lib/api/judge";
 import { DEMO_MODE } from "@/lib/config";
 import { useSession } from "@/components/providers/session-provider";
-import { EditorShell } from "@/components/judge/editor-shell";
+import { IDE } from "@/components/ide/IDE";
+import { createIDEFile } from "@/hooks/useFiles";
 import {
   VerdictBadge,
   verdictLabel,
@@ -448,8 +448,19 @@ export function ProblemDetailClient({ problemId }: { problemId: string }) {
 
   // 2. Editor state — null means "show starter code"; edits override it.
   const [code, setCode] = React.useState<string | null>(null);
+  const [resetKey, setResetKey] = React.useState(0);
   const editorValue = code ?? problemQuery.data?.starter_code ?? "";
-  const resetCode = () => setCode(null);
+  const resetCode = React.useCallback(() => {
+    setCode(null);
+    setResetKey((current) => current + 1);
+  }, []);
+  const ideFiles = React.useMemo(
+    () => problemQuery.data ? [createIDEFile("solution.py", problemQuery.data.starter_code)] : [],
+    [problemQuery.data],
+  );
+  const handleIDEContentChange = React.useCallback((content: string, file: { path: string } | undefined) => {
+    if (file?.path === "solution.py") setCode(content);
+  }, []);
 
   // 3. Submit flow — 202 → poll → verdict (exactly the real shape).
   const [submissionId, setSubmissionId] = React.useState<string | null>(null);
@@ -613,60 +624,20 @@ export function ProblemDetailClient({ problemId }: { problemId: string }) {
         </div>
 
         {/* Right: editor + verdict panel */}
-        <div className="order-1 flex flex-col gap-4 lg:order-2 lg:sticky lg:top-20">
-          <Card className="overflow-hidden">
-            <div className="flex items-center justify-between border-b border-border bg-muted/40 px-4 py-2.5">
-              <div className="flex items-center gap-2">
-                <span className="flex items-center gap-1.5 text-xs font-medium">
-                  <Terminal className="size-3.5 text-muted-foreground" />
-                  solution.py
-                </span>
-                <Badge variant="secondary" className="text-caption">
-                  Python 3
-                </Badge>
-              </div>
-              <Button
-                variant="ghost"
-                size="sm"
-                className="h-7 gap-1.5 px-2 text-xs"
-                onClick={resetCode}
-                disabled={submitMutation.isPending || judging}
-              >
-                <RotateCcw className="size-3.5" />
-                Reset
-              </Button>
-            </div>
-            <div className="h-[420px]">
-              <EditorShell
-                value={editorValue}
-                onChange={setCode}
-                language="python"
-              />
-            </div>
-            <div className="flex items-center justify-between gap-3 border-t border-border bg-muted/40 px-4 py-3">
-              <p className="hidden text-caption text-muted-foreground sm:block">
-                {code !== null
-                  ? `${code.split("\n").length} lines edited`
-                  : "Editing starter code"}
-              </p>
-              <Button
-                onClick={handleSubmit}
-                disabled={!canSubmit}
-                className="min-w-32 gap-2"
-              >
-                {submitMutation.isPending ? (
-                  <LoaderCircle className="size-4 animate-spin" />
-                ) : (
-                  <Send className="size-4" />
-                )}
-                {submitMutation.isPending
-                  ? "Submitting…"
-                  : userId
-                    ? "Submit"
-                    : "Sign in to submit"}
-              </Button>
-            </div>
-          </Card>
+        <div className="order-1 flex min-w-0 flex-col gap-4 lg:order-2 lg:sticky lg:top-20">
+          <IDE
+            initialFiles={ideFiles}
+            storageKey={`ide:judge:${problemId}`}
+            resetKey={resetKey}
+            resetContent={problem.starter_code}
+            onActiveContentChange={handleIDEContentChange}
+            onReset={resetCode}
+            primaryAction={{
+              label: submitMutation.isPending ? "Submitting…" : userId ? "Submit" : "Sign in to submit",
+              onClick: handleSubmit,
+              disabled: !canSubmit,
+            }}
+          />
 
           {/* Status / verdict area */}
           <div className="flex min-h-40 flex-col">

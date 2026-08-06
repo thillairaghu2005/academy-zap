@@ -501,6 +501,10 @@ export function courseToSummary(course: Course): CourseSummary {
     price_cents: course.price_cents,
     enrolled_count: course.enrolled_count,
     estimated_hours: course.estimated_hours,
+    total_lessons: course.syllabus.reduce(
+      (count, section) => count + section.lessons.length,
+      0,
+    ),
     instructor_name: course.instructor.display_name,
     language: course.language,
     cover_hue: hueForId(course.id),

@@ -126,6 +126,7 @@ export interface CourseSummary {
   price_cents: number;
   enrolled_count: number;
   estimated_hours: number;
+  total_lessons: number;
   instructor_name: string;
   language: string;
   /** Seed for the gradient cover art (mock stand-in for poster art) */
