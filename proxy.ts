@@ -27,6 +27,7 @@ function isPublicRoute(pathname: string): boolean {
   if (pathname === "/" || pathname === "/courses" || pathname === "/offline") {
     return true;
   }
+  if (/^\/rank\/verify\/[^/]+$/.test(pathname)) return true;
   // Course detail pages are a single segment under /courses (e.g.
   // /courses/<id>); deeper paths like /courses/<id>/learn are enrolled
   // learner surfaces and remain gated.
