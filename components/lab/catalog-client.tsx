@@ -141,6 +141,9 @@ function LabCard({
                 <Hourglass className="size-3.5" />
                 ~{lab.estimated_minutes} min
               </span>
+              <Badge variant="outline" className="text-caption">
+                <ShieldCheck className="size-3" /> {lab.success_rate_pct}% success
+              </Badge>
             </div>
 
             <div className="flex items-center justify-between border-t border-border pt-2.5">

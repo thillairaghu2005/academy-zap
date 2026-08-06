@@ -58,6 +58,8 @@ export interface Lab {
   difficulty: LabDifficulty;
   description: string;
   estimated_minutes: number;
+  /** Historical completion percentage from the Lab projection. */
+  success_rate_pct: number;
   /** GUI-required labs get a Guacamole viewer stub (no real RDP/VNC yet). */
   requires_gui: boolean;
   /** Hard timeout in minutes (doc default 60–120). */

@@ -63,6 +63,7 @@ const EMPTY_LAB: Lab = {
   difficulty: "beginner",
   description: "",
   estimated_minutes: 0,
+  success_rate_pct: 0,
   requires_gui: false,
   hard_timeout_minutes: 60,
   objectives: [],

@@ -22,6 +22,7 @@ import type {
 import { listProblems } from "@/lib/api/judge";
 import { DEMO_MODE } from "@/lib/config";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { PageContainer } from "@/components/shared/page-container";
 import { EmptyState } from "@/components/shared/empty-state";
@@ -89,6 +90,15 @@ function ProblemRow({ problem, index }: { problem: Problem; index: number }) {
                 </span>
               ))}
             </p>
+            <div className="mt-2 flex flex-wrap gap-1.5">
+              <Badge variant="outline" className="text-caption">
+                <Clock className="size-3" /> ~{problem.estimated_minutes} min
+              </Badge>
+              <Badge variant="outline" className="text-caption">
+                <CircleCheck className="size-3 text-success-strong" />
+                {problem.success_rate_pct}% success
+              </Badge>
+            </div>
           </div>
 
           <div className="hidden shrink-0 items-center gap-4 text-xs text-muted-foreground sm:flex">

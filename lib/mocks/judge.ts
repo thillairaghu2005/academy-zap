@@ -54,6 +54,8 @@ export const MOCK_PROBLEMS: Problem[] = [
     slug: "two-sum",
     title: "Two Sum",
     difficulty: "easy",
+    estimated_minutes: 12,
+    success_rate_pct: 78,
     topics: ["arrays", "hash-maps"],
     statement:
       "Given an array of integers `nums` and an integer `target`, return the indices of the two numbers that add up to `target`.\n\nYou may assume that each input has exactly one solution, and you may not use the same element twice. Return the answer in any order.",
@@ -89,6 +91,8 @@ export const MOCK_PROBLEMS: Problem[] = [
     slug: "valid-parentheses",
     title: "Valid Parentheses",
     difficulty: "easy",
+    estimated_minutes: 10,
+    success_rate_pct: 84,
     topics: ["stack", "strings"],
     statement:
       "Given a string `s` containing just the characters `(`, `)`, `{`, `}`, `[` and `]`, determine if the input string is valid.\n\nAn input string is valid if: open brackets are closed by the same type of brackets, and open brackets are closed in the correct order.",
@@ -110,6 +114,8 @@ export const MOCK_PROBLEMS: Problem[] = [
     slug: "maximum-subarray",
     title: "Maximum Subarray",
     difficulty: "medium",
+    estimated_minutes: 18,
+    success_rate_pct: 61,
     topics: ["arrays", "divide-and-conquer"],
     statement:
       "Given an integer array `nums`, find the contiguous subarray (containing at least one number) which has the largest sum and return its sum.",
@@ -134,6 +140,8 @@ export const MOCK_PROBLEMS: Problem[] = [
     slug: "reverse-linked-list",
     title: "Reverse Linked List",
     difficulty: "easy",
+    estimated_minutes: 14,
+    success_rate_pct: 72,
     topics: ["linked-list"],
     statement:
       "Given the `head` of a singly linked list, reverse the list and return the reversed list.\n\nThe `ListNode` class is provided in the starter code.",
@@ -154,6 +162,8 @@ export const MOCK_PROBLEMS: Problem[] = [
     slug: "binary-tree-inorder-traversal",
     title: "Binary Tree Inorder Traversal",
     difficulty: "easy",
+    estimated_minutes: 20,
+    success_rate_pct: 54,
     topics: ["tree", "dfs"],
     statement:
       "Given the `root` of a binary tree, return the inorder traversal of its nodes' values. The `TreeNode` class is provided.",
@@ -174,6 +184,8 @@ export const MOCK_PROBLEMS: Problem[] = [
     slug: "median-of-two-sorted-arrays",
     title: "Median of Two Sorted Arrays",
     difficulty: "hard",
+    estimated_minutes: 32,
+    success_rate_pct: 29,
     topics: ["binary-search"],
     statement:
       "Given two sorted arrays `nums1` and `nums2` of size m and n respectively, return the median of the two sorted arrays. The overall run time complexity should be O(log (m+n)).",
@@ -197,6 +209,8 @@ export const MOCK_PROBLEMS: Problem[] = [
     slug: "trapping-rain-water",
     title: "Trapping Rain Water",
     difficulty: "hard",
+    estimated_minutes: 28,
+    success_rate_pct: 33,
     topics: ["two-pointers", "dp"],
     statement:
       "Given `n` non-negative integers representing an elevation map where the width of each bar is 1, compute how much water it can trap after raining.",

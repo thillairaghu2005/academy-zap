@@ -42,6 +42,7 @@ export const MOCK_LABS: Lab[] = [
     description:
       "Get comfortable in a real shell. Navigate the filesystem, read system files, and find your first flag the way an analyst would.",
     estimated_minutes: 25,
+    success_rate_pct: 82,
     requires_gui: false,
     hard_timeout_minutes: 60,
     objectives: [
@@ -74,6 +75,7 @@ export const MOCK_LABS: Lab[] = [
     description:
       "Recon an in-scope web app, find a SQL injection, and pivot to an authenticated session. The target box is on the session-private network.",
     estimated_minutes: 50,
+    success_rate_pct: 57,
     requires_gui: false,
     hard_timeout_minutes: 90,
     objectives: [
@@ -106,6 +108,7 @@ export const MOCK_LABS: Lab[] = [
     description:
       "Map a session-private network, fingerprint live hosts, and capture the traffic that crosses the wire.",
     estimated_minutes: 40,
+    success_rate_pct: 49,
     requires_gui: false,
     hard_timeout_minutes: 90,
     objectives: [
@@ -138,6 +141,7 @@ export const MOCK_LABS: Lab[] = [
     description:
       "A GUI lab: work a SIEM-style console, triage alerts, and contain an incident. Demonstrates the Guacamole GUI viewer surface.",
     estimated_minutes: 70,
+    success_rate_pct: 36,
     requires_gui: true,
     hard_timeout_minutes: 120,
     objectives: [
@@ -166,6 +170,7 @@ export const MOCK_LABS: Lab[] = [
     description:
       "A deliberately short lab to demonstrate the hard timeout: catch the flag before the session is force-terminated.",
     estimated_minutes: 1,
+    success_rate_pct: 68,
     requires_gui: false,
     hard_timeout_minutes: 1,
     objectives: [

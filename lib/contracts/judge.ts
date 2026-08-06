@@ -75,6 +75,10 @@ export interface Problem {
   slug: string;
   title: string;
   difficulty: ProblemDifficulty;
+  /** Server-derived catalog signal, not computed from UI interaction. */
+  estimated_minutes: number;
+  /** Historical accepted-submission percentage from the Judge projection. */
+  success_rate_pct: number;
   /** Topic tags, e.g. ["arrays", "two-pointers"] */
   topics: string[];
   statement: string;
