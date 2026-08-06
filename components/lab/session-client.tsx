@@ -9,6 +9,7 @@ import {
   ArrowLeft,
   CheckCircle2,
   Circle,
+  CircleOff,
   Clock,
   Flag,
   Hourglass,
@@ -38,7 +39,8 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { PageContainer } from "@/components/shared/page-container";
 import { ErrorState } from "@/components/shared/error-state";
-import { SkeletonLines } from "@/components/shared/skeletons";
+import { EmptyState } from "@/components/shared/empty-state";
+import { SkeletonLines, TerminalSkeleton } from "@/components/shared/skeletons";
 import { cn } from "@/lib/utils";
 
 /* ------------------------------------------------------------------ */
@@ -374,8 +376,8 @@ export function LabSessionClient({
       <PageContainer>
         <SkeletonLines count={2} className="max-w-md" />
         <div className="mt-6 grid gap-4 lg:grid-cols-[1fr_300px]">
-          <Card className="h-[420px] p-4">
-            <SkeletonLines count={4} />
+          <Card className="h-[420px] overflow-hidden p-0">
+            <TerminalSkeleton />
           </Card>
           <div className="flex flex-col gap-4">
             <SkeletonLines count={3} />
@@ -396,11 +398,15 @@ export function LabSessionClient({
     return (
       <PageContainer>
         {is404 ? (
-          <ErrorState
+          <EmptyState
+            icon={CircleOff}
             title="Session not found"
-            message="This lab session does not exist or has expired. Start a fresh session from the lab page."
-            code="SESSION_404"
-            onRetry={() => sessionQuery.refetch()}
+            description="This lab session does not exist or has expired. Start a fresh session from the lab page."
+            action={
+              <Button variant="outline" size="sm" asChild>
+                <Link href={`/labs/${labId}`}>Open lab</Link>
+              </Button>
+            }
           />
         ) : (
           <ErrorState
@@ -414,6 +420,36 @@ export function LabSessionClient({
             onRetry={() => sessionQuery.refetch()}
           />
         )}
+      </PageContainer>
+    );
+  }
+
+  if (labQuery.isLoading) {
+    return (
+      <PageContainer>
+        <SkeletonLines count={2} className="max-w-md" />
+        <div className="mt-6 grid gap-4 lg:grid-cols-[1fr_320px]">
+          <Card className="h-[440px] overflow-hidden p-0">
+            <TerminalSkeleton />
+          </Card>
+          <div className="flex flex-col gap-4">
+            <SkeletonLines count={5} />
+            <SkeletonLines count={3} />
+          </div>
+        </div>
+      </PageContainer>
+    );
+  }
+
+  if (labQuery.isError || !labQuery.data) {
+    return (
+      <PageContainer>
+        <ErrorState
+          title="Lab metadata unavailable"
+          message="The session exists, but its lab definition could not be loaded."
+          code="LAB_METADATA_ERR"
+          onRetry={() => labQuery.refetch()}
+        />
       </PageContainer>
     );
   }

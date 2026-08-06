@@ -44,7 +44,7 @@ import { Card } from "@/components/ui/card";
 import { PageContainer } from "@/components/shared/page-container";
 import { EmptyState } from "@/components/shared/empty-state";
 import { ErrorState } from "@/components/shared/error-state";
-import { SkeletonLines } from "@/components/shared/skeletons";
+import { CodeEditorSkeleton, SkeletonLines } from "@/components/shared/skeletons";
 import { cn } from "@/lib/utils";
 
 /* ------------------------------------------------------------------ */
@@ -527,8 +527,8 @@ export function ProblemDetailClient({ problemId }: { problemId: string }) {
               <SkeletonLines count={5} />
               <SkeletonLines count={3} />
             </div>
-            <Card className="h-[520px] p-4">
-              <SkeletonLines count={4} />
+            <Card className="h-[520px] overflow-hidden p-0">
+              <CodeEditorSkeleton />
             </Card>
           </div>
         </div>

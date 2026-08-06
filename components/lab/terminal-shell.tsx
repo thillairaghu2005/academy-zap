@@ -3,6 +3,7 @@
 import dynamic from "next/dynamic";
 
 import type { LabTerminalProps } from "@/components/lab/terminal";
+import { TerminalSkeleton } from "@/components/shared/skeletons";
 
 // xterm is browser-only (DOM + canvas/unicode internals) — never bundle it
 // for the server. The fallback keeps layout stable while the chunk hydrates.
@@ -11,13 +12,7 @@ const LabTerminal = dynamic(
   {
     ssr: false,
     loading: () => (
-      <div
-        role="status"
-        className="flex h-full min-h-64 items-center justify-center gap-2 bg-[#0b0f14] text-sm text-muted-foreground"
-      >
-        <span className="size-2 animate-pulse rounded-full bg-emerald-400" />
-        Booting terminal…
-      </div>
+      <TerminalSkeleton />
     ),
   },
 );

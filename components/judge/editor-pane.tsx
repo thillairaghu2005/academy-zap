@@ -3,6 +3,8 @@
 import * as React from "react";
 import Editor, { loader } from "@monaco-editor/react";
 
+import { CodeEditorSkeleton } from "@/components/shared/skeletons";
+
 // Self-hosted Monaco. The default @monaco-editor/react loader fetches Monaco
 // from a CDN at runtime; instead we point it at the AMD build synced to
 // /public/vs by scripts/sync-monaco.mjs (postinstall/predev/prebuild hook).
@@ -45,14 +47,7 @@ export function EditorPane({
       value={value}
       onChange={(next) => onChange?.(next ?? "")}
       theme={theme}
-      loading={
-        <div
-          role="status"
-          className="flex h-full items-center justify-center text-sm text-muted-foreground"
-        >
-          Loading editor…
-        </div>
-      }
+      loading={<CodeEditorSkeleton />}
       options={{
         ariaLabel: "Code editor",
         accessibilitySupport: "on",

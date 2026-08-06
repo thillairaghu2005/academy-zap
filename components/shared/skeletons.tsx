@@ -78,3 +78,51 @@ export function SkeletonPageHeader({ className }: { className?: string }) {
     </div>
   );
 }
+
+export function CodeEditorSkeleton({ className }: { className?: string }) {
+  return (
+    <div
+      role="status"
+      aria-label="Loading code editor"
+      className={cn(
+        "flex h-full min-h-64 flex-col overflow-hidden rounded-md bg-[#1e1e1e] p-4",
+        className,
+      )}
+    >
+      <div className="flex flex-1 flex-col gap-3 font-mono text-xs">
+        {Array.from({ length: 9 }).map((_, i) => (
+          <div key={i} className="flex gap-4">
+            <Skeleton className="h-3 w-5 bg-white/10" />
+            <Skeleton
+              className={cn(
+                "h-3 bg-white/10",
+                i % 4 === 0 ? "w-3/5" : i % 3 === 0 ? "w-2/5" : "w-4/5",
+              )}
+            />
+          </div>
+        ))}
+      </div>
+      <p className="mt-4 text-center text-xs text-white/50">Loading editor…</p>
+    </div>
+  );
+}
+
+export function TerminalSkeleton({ className }: { className?: string }) {
+  return (
+    <div
+      role="status"
+      aria-label="Loading lab terminal"
+      className={cn(
+        "flex h-full min-h-64 flex-col justify-between bg-[#0b0f14] p-5",
+        className,
+      )}
+    >
+      <div className="space-y-3 font-mono text-xs">
+        <Skeleton className="h-3 w-40 bg-white/10" />
+        <Skeleton className="h-3 w-64 max-w-full bg-white/10" />
+        <Skeleton className="h-3 w-48 max-w-full bg-white/10" />
+      </div>
+      <p className="text-center text-xs text-white/50">Booting terminal…</p>
+    </div>
+  );
+}
