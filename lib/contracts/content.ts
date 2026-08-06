@@ -33,6 +33,29 @@ export interface CourseLesson {
   position: number;
 }
 
+/** Content Engine review projection (build.md F1 course reviews). */
+export interface Review {
+  id: string;
+  course_id: string;
+  author: {
+    id: string;
+    name: string;
+    avatar_url: string | null;
+  };
+  rating: number;
+  date: string;
+  comment: string;
+  helpful_count: number;
+}
+
+export interface ReviewPage {
+  course_id: string;
+  offset: number;
+  total: number;
+  reviews: Review[];
+  has_more: boolean;
+}
+
 export interface CourseSection {
   id: string;
   title: string;
