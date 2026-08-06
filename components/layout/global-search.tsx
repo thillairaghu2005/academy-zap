@@ -6,10 +6,12 @@ import { useRouter } from "next/navigation";
 import {
   ArrowRight,
   BookOpen,
+  ClipboardList,
   CodeXml,
   FlaskConical,
   LoaderCircle,
   Search,
+  UserRound,
 } from "lucide-react";
 
 import type { UnifiedSearchHit } from "@/lib/contracts/search";
@@ -31,6 +33,8 @@ const KIND_ICON = {
   course: BookOpen,
   problem: CodeXml,
   lab: FlaskConical,
+  assessment: ClipboardList,
+  mentor: UserRound,
 } as const;
 
 function SearchResult({
@@ -103,7 +107,7 @@ export function GlobalSearch({ className }: { className?: string }) {
         size="sm"
         className={cn("hidden text-muted-foreground md:inline-flex", className)}
         onClick={() => setOpen(true)}
-        aria-label="Search courses, problems, and labs"
+        aria-label="Search courses, problems, labs, assessments, and mentors"
       >
         <Search />
         <span>Search</span>
@@ -117,7 +121,7 @@ export function GlobalSearch({ className }: { className?: string }) {
           autoFocus
           value={query}
           onValueChange={setQuery}
-          placeholder="Search courses, coding problems, and labs..."
+          placeholder="Search courses, coding problems, labs, assessments, and mentors..."
         />
         <CommandList>
           {search.isLoading ? (
@@ -148,14 +152,14 @@ export function GlobalSearch({ className }: { className?: string }) {
             <CommandEmpty>
               <p>No matches found</p>
               <p className="mt-1 text-xs text-muted-foreground">
-                Try a course topic, problem title, or lab skill.
+                Try a course topic, problem title, lab skill, assessment, or mentor.
               </p>
             </CommandEmpty>
           )}
         </CommandList>
         <CommandSeparator />
         <div className="flex items-center justify-between bg-muted/40 px-5 py-3 text-caption text-muted-foreground">
-          <span>Search across courses, problems, and labs</span>
+          <span>Search across courses, problems, labs, assessments, and mentors</span>
           <span className="font-mono">
             {search.data?.estimatedTotalHits ?? 0} results
           </span>

@@ -9,6 +9,7 @@ import {
   LayoutDashboard,
   ShoppingCart,
   Trophy,
+  UserRound,
   Users,
 } from "lucide-react";
 
@@ -22,14 +23,6 @@ export interface NavGroup {
   label: string;
   items: NavItem[];
 }
-
-/** Top nav — the four primary learning surfaces */
-export const primaryNav: NavItem[] = [
-  { href: "/courses", label: "Courses", icon: BookOpen },
-  { href: "/judge", label: "Judge", icon: CodeXml },
-  { href: "/labs", label: "Labs", icon: FlaskConical },
-  { href: "/assessments", label: "Assessments", icon: ClipboardList },
-];
 
 /** Side nav — full taxonomy, grouped by intent */
 export const sideNavGroups: NavGroup[] = [
@@ -54,6 +47,7 @@ export const sideNavGroups: NavGroup[] = [
       { href: "/rank", label: "Rank Ladder", icon: Trophy },
       { href: "/leaderboards", label: "Leaderboards", icon: ChartColumn },
       { href: "/guilds", label: "Guilds", icon: Users },
+      { href: "/mentors", label: "Mentors", icon: UserRound },
     ],
   },
   {

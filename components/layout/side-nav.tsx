@@ -99,21 +99,47 @@ export function SideNav() {
 }
 
 /** Mobile drawer — trigger lives in the top nav */
-export function MobileNav() {
+export function MobileNav({ variant = "top" }: { variant?: "top" | "bottom" }) {
   const [open, setOpen] = React.useState(false);
   const { user, isLoading } = useSession();
+  const pathname = usePathname();
+  const moreActive = [
+    "/rank",
+    "/leaderboards",
+    "/guilds",
+    "/mentors",
+    "/cart",
+    "/checkout/billing",
+    "/profile",
+  ].some((href) => pathname === href || pathname.startsWith(`${href}/`));
 
   return (
     <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger asChild>
-        <Button
-          variant="ghost"
-          size="icon"
-          className="lg:hidden"
-          aria-label="Open navigation menu"
-        >
-          <Menu />
-        </Button>
+        {variant === "bottom" ? (
+          <Button
+            variant="ghost"
+            size="sm"
+            className={cn(
+              "min-h-14 w-full flex-col gap-1 rounded-lg px-1 text-caption",
+              moreActive ? "text-primary" : "text-muted-foreground",
+            )}
+            aria-label="Open more navigation"
+            aria-current={moreActive ? "page" : undefined}
+          >
+            <Menu className={cn("size-5", moreActive && "stroke-[2.25]")} />
+            <span>More</span>
+          </Button>
+        ) : (
+          <Button
+            variant="ghost"
+            size="icon"
+            className="lg:hidden"
+            aria-label="Open navigation menu"
+          >
+            <Menu />
+          </Button>
+        )}
       </SheetTrigger>
       <SheetContent side="left" className="w-72 gap-0 p-0">
         <SheetTitle className="sr-only">Navigation</SheetTitle>

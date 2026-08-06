@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { ChevronRight } from "lucide-react";
 
 import { Logo } from "@/src/components/Logo/Logo";
 import { MobileNav } from "@/components/layout/side-nav";
@@ -14,12 +15,67 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { cn } from "@/lib/utils";
-import { primaryNav } from "@/lib/navigation";
 import { useSession } from "@/components/providers/session-provider";
 import { GlobalSearch } from "@/components/layout/global-search";
 import { NotificationCenter } from "@/components/layout/notification-center";
 import { RankXpChip } from "@/components/gamification/rank-xp-chip";
+
+const BREADCRUMB_LABELS: Record<string, string> = {
+  dashboard: "Dashboard",
+  courses: "Courses",
+  judge: "Judge",
+  labs: "Labs",
+  assessments: "Assessments",
+  rank: "Rank",
+  leaderboards: "Leaderboards",
+  guilds: "Guilds",
+  mentors: "Mentors",
+  cart: "Cart",
+  checkout: "Checkout",
+  billing: "Billing",
+  profile: "Profile",
+  learn: "Learn",
+  session: "Session",
+  attempt: "Attempt",
+};
+
+function TopNavBreadcrumbs({ pathname }: { pathname: string }) {
+  const segments = pathname.split("/").filter(Boolean);
+  if (segments.length === 0) return null;
+
+  return (
+    <nav
+      aria-label="Breadcrumb"
+      className="flex min-w-0 items-center gap-1.5 overflow-hidden text-xs text-muted-foreground"
+    >
+      {segments.map((segment, index) => {
+        const href = `/${segments.slice(0, index + 1).join("/")}`;
+        const label =
+          BREADCRUMB_LABELS[segment] ??
+          decodeURIComponent(segment).replace(/[-_]/g, " ");
+        const current = index === segments.length - 1;
+
+        return (
+          <span key={href} className="flex min-w-0 shrink-0 items-center gap-1.5">
+            {index > 0 ? <ChevronRight className="size-3.5" aria-hidden="true" /> : null}
+            {current ? (
+              <span className="max-w-36 truncate font-medium text-foreground" aria-current="page">
+                {label}
+              </span>
+            ) : (
+              <Link
+                href={href}
+                className="max-w-36 truncate rounded outline-none hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring"
+              >
+                {label}
+              </Link>
+            )}
+          </span>
+        );
+      })}
+    </nav>
+  );
+}
 
 export function TopNav() {
   const pathname = usePathname();
@@ -36,32 +92,14 @@ export function TopNav() {
           className="p-1.5 [&>img]:h-8 sm:[&>img]:h-9 lg:[&>img]:h-11"
         />
 
-        {/* Primary learning surfaces (desktop) */}
-        <nav className="ml-4 hidden items-center gap-1 lg:flex" aria-label="Primary">
-          {primaryNav.map((item) => {
-            const active =
-              pathname === item.href || pathname.startsWith(`${item.href}/`);
-            return (
-              <Link
-                key={item.href}
-                href={item.href}
-                className={cn(
-                  "rounded-md px-3 py-1.5 text-sm font-medium transition-colors outline-none focus-visible:ring-2 focus-visible:ring-ring",
-                  active
-                    ? "bg-primary/10 text-primary"
-                    : "text-muted-foreground hover:bg-accent hover:text-foreground",
-                )}
-                aria-current={active ? "page" : undefined}
-              >
-                {item.label}
-              </Link>
-            );
-          })}
-        </nav>
+        <div className="hidden min-w-0 flex-1 items-center gap-4 md:flex">
+          <div className="hidden min-w-0 shrink-0 lg:flex">
+            <TopNavBreadcrumbs pathname={pathname} />
+          </div>
+          <GlobalSearch className="w-full justify-start" />
+        </div>
 
         <div className="ml-auto flex items-center gap-1.5">
-          {/* Unified search — courses, problems, and labs */}
-          <GlobalSearch />
 
           {/* Cart — live item count badge (Task 2) */}
           <Tooltip>

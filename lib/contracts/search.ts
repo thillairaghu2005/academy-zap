@@ -6,7 +6,12 @@
  * participate without inventing a second result format.
  */
 
-export type UnifiedSearchKind = "course" | "problem" | "lab";
+export type UnifiedSearchKind =
+  | "course"
+  | "problem"
+  | "lab"
+  | "assessment"
+  | "mentor";
 
 export interface UnifiedSearchHit {
   id: string;

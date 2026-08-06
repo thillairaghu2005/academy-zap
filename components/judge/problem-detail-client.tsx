@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import Link from "next/link";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { AnimatePresence, motion } from "framer-motion";
 import { useRouter } from "next/navigation";
@@ -13,6 +14,7 @@ import {
   GitCommitHorizontal,
   History,
   LoaderCircle,
+  MessageCircle,
   Send,
   ShieldQuestion,
   Terminal,
@@ -595,6 +597,21 @@ export function ProblemDetailClient({ problemId }: { problemId: string }) {
         {/* Left: statement */}
         <div className="order-2 flex flex-col gap-6 lg:order-1">
           <StatementPanel problem={problem} />
+
+          <Card className="border-primary/20 bg-primary/5">
+            <div className="flex items-start gap-3 p-4">
+              <MessageCircle className="mt-0.5 size-4 shrink-0 text-primary" />
+              <div className="min-w-0 flex-1">
+                <p className="text-sm font-semibold">Stuck? Talk to a mentor</p>
+                <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
+                  Get a second pair of eyes on your approach before you submit.
+                </p>
+                <Button variant="link" size="sm" className="mt-2 h-auto px-0" asChild>
+                  <Link href="/mentors">Browse mentors</Link>
+                </Button>
+              </div>
+            </div>
+          </Card>
 
           {/* Verdict demo markers — demo scaffolding, gated (never renders in
               a production-shaped build). */}

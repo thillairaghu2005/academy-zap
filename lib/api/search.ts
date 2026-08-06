@@ -5,6 +5,7 @@ import type {
 import { MOCK_COURSES } from "@/lib/mocks/courses";
 import { MOCK_PROBLEMS } from "@/lib/mocks/judge";
 import { MOCK_LABS } from "@/lib/mocks/labs";
+import { MOCK_SEARCH_SURFACE_HITS } from "@/lib/mocks/search";
 import { MockApiError } from "@/lib/api/errors";
 import { delay, jitter } from "@/lib/api/helpers";
 
@@ -58,6 +59,7 @@ export async function searchAll(
       href: `/labs/${lab.id}`,
       meta: `Lab · ${lab.category} · ${lab.difficulty}`,
     })),
+    ...MOCK_SEARCH_SURFACE_HITS,
   ].filter((hit) => {
     if (!normalized) return true;
     return `${hit.title} ${hit.description} ${hit.meta}`

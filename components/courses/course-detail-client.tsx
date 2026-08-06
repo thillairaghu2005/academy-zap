@@ -602,6 +602,27 @@ export function CourseDetailClient({
         }}
       />
 
+      <Card className="mt-8 border-primary/20 bg-primary/5">
+        <CardContent className="flex flex-col items-start justify-between gap-4 p-5 sm:flex-row sm:items-center">
+          <div className="flex items-start gap-3">
+            <span className="grid size-9 shrink-0 place-items-center rounded-lg bg-primary/10 text-primary">
+              <MessageCircle className="size-4" />
+            </span>
+            <div>
+              <h2 className="font-display text-h3">Stuck? Talk to a mentor</h2>
+              <p className="mt-1 text-sm text-muted-foreground">
+                Get practical guidance from someone who works in the field.
+              </p>
+            </div>
+          </div>
+          <Button variant="outline" asChild>
+            <Link href="/mentors">
+              Browse mentors <ArrowRight />
+            </Link>
+          </Button>
+        </CardContent>
+      </Card>
+
       <div className="mt-12">
         <h2 className="font-display text-h2">Discussion</h2>
         <div className="mt-4">
