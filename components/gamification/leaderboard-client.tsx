@@ -20,7 +20,7 @@ import { Button } from "@/components/ui/button";
 import { EmptyState } from "@/components/shared/empty-state";
 import { ErrorState } from "@/components/shared/error-state";
 import { PageContainer } from "@/components/shared/page-container";
-import { SkeletonLines } from "@/components/shared/skeletons";
+import { SkeletonLeaderboardRows } from "@/components/shared/skeletons";
 import { cn } from "@/lib/utils";
 
 const PAGE_SIZE = 10;
@@ -97,9 +97,7 @@ export function LeaderboardClient() {
       </div>
 
       {isLoading ? (
-        <div className="space-y-2">
-          <SkeletonLines count={6} />
-        </div>
+        <SkeletonLeaderboardRows count={6} />
       ) : isError ? (
         <ErrorState
           title="Could not load leaderboard"

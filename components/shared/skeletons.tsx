@@ -70,6 +70,85 @@ export function SkeletonGrid({
   );
 }
 
+export function SkeletonCourseGrid({ count = 6 }: { count?: number }) {
+  return (
+    <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3" role="status" aria-label="Loading courses">
+      {Array.from({ length: count }).map((_, index) => (
+        <div key={index} className="overflow-hidden rounded-xl border border-border bg-card">
+          <Skeleton className="h-36 rounded-none" />
+          <div className="flex flex-col gap-3 p-4">
+            <Skeleton className="h-5 w-4/5" />
+            <SkeletonLines count={2} />
+            <div className="flex gap-2">
+              <Skeleton className="h-4 w-20" />
+              <Skeleton className="h-4 w-24" />
+              <Skeleton className="h-4 w-12" />
+            </div>
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+export function SkeletonProblemRows({ count = 5 }: { count?: number }) {
+  return (
+    <div className="flex flex-col gap-3" role="status" aria-label="Loading judge problems">
+      {Array.from({ length: count }).map((_, index) => (
+        <div key={index} className="flex items-center gap-4 rounded-xl border border-border bg-card p-4">
+          <Skeleton className="size-10 rounded-lg" />
+          <div className="flex min-w-0 flex-1 flex-col gap-2">
+            <Skeleton className="h-5 w-2/5" />
+            <Skeleton className="h-3 w-3/5" />
+            <div className="flex gap-2">
+              <Skeleton className="h-4 w-20" />
+              <Skeleton className="h-4 w-24" />
+            </div>
+          </div>
+          <Skeleton className="hidden h-4 w-24 sm:block" />
+        </div>
+      ))}
+    </div>
+  );
+}
+
+export function SkeletonLabGrid({ count = 6 }: { count?: number }) {
+  return (
+    <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3" role="status" aria-label="Loading labs">
+      {Array.from({ length: count }).map((_, index) => (
+        <div key={index} className="overflow-hidden rounded-xl border border-border bg-card">
+          <Skeleton className="h-32 rounded-none" />
+          <div className="flex flex-col gap-3 p-4">
+            <Skeleton className="h-5 w-4/5" />
+            <SkeletonLines count={2} />
+            <div className="flex gap-2">
+              <Skeleton className="h-4 w-20" />
+              <Skeleton className="h-4 w-24" />
+            </div>
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+export function SkeletonLeaderboardRows({ count = 6 }: { count?: number }) {
+  return (
+    <div className="flex flex-col gap-2" role="status" aria-label="Loading leaderboard">
+      {Array.from({ length: count }).map((_, index) => (
+        <div key={index} className="flex items-center gap-4 rounded-lg border border-border bg-card px-4 py-3">
+          <Skeleton className="size-8 rounded-lg" />
+          <div className="flex min-w-0 flex-1 flex-col gap-1.5">
+            <Skeleton className="h-4 w-2/5" />
+            <Skeleton className="h-3 w-1/4" />
+          </div>
+          <Skeleton className="h-4 w-16" />
+        </div>
+      ))}
+    </div>
+  );
+}
+
 export function SkeletonPageHeader({ className }: { className?: string }) {
   return (
     <div className={cn("flex flex-col gap-4", className)}>

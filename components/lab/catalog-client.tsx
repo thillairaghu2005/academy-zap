@@ -37,7 +37,7 @@ import {
 import { PageContainer } from "@/components/shared/page-container";
 import { EmptyState } from "@/components/shared/empty-state";
 import { ErrorState } from "@/components/shared/error-state";
-import { SkeletonGrid } from "@/components/shared/skeletons";
+import { SkeletonLabGrid } from "@/components/shared/skeletons";
 import { cn } from "@/lib/utils";
 
 /* ------------------------------------------------------------------ */
@@ -280,7 +280,7 @@ export function LabCatalogClient() {
               <LoaderCircle className="size-4 animate-spin" />
               Loading labs…
             </div>
-            <SkeletonGrid count={6} />
+            <SkeletonLabGrid count={6} />
           </div>
         ) : isError ? (
           <ErrorState

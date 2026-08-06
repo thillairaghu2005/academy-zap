@@ -38,7 +38,7 @@ import {
 import { PageContainer } from "@/components/shared/page-container";
 import { EmptyState } from "@/components/shared/empty-state";
 import { ErrorState } from "@/components/shared/error-state";
-import { SkeletonGrid } from "@/components/shared/skeletons";
+import { SkeletonCourseGrid } from "@/components/shared/skeletons";
 
 /* ------------------------------------------------------------------ */
 /*  Catalog — the main F1 surface                                      */
@@ -351,7 +351,7 @@ export function CatalogClient() {
               <LoaderCircle className="size-4 animate-spin" />
               Searching catalog…
             </div>
-            <SkeletonGrid count={6} />
+            <SkeletonCourseGrid count={6} />
           </div>
         ) : isError ? (
           <ErrorState

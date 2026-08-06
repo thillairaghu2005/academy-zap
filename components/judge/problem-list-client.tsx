@@ -27,7 +27,7 @@ import { Card } from "@/components/ui/card";
 import { PageContainer } from "@/components/shared/page-container";
 import { EmptyState } from "@/components/shared/empty-state";
 import { ErrorState } from "@/components/shared/error-state";
-import { SkeletonCard } from "@/components/shared/skeletons";
+import { SkeletonProblemRows } from "@/components/shared/skeletons";
 import { cn } from "@/lib/utils";
 
 /* ------------------------------------------------------------------ */
@@ -215,9 +215,7 @@ export function ProblemListClient() {
               <LoaderCircle className="size-4 animate-spin" />
               Loading problems…
             </div>
-            <SkeletonCard />
-            <SkeletonCard />
-            <SkeletonCard />
+            <SkeletonProblemRows count={5} />
           </>
         ) : isError ? (
           <ErrorState
