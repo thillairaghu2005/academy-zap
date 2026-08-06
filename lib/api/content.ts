@@ -146,6 +146,8 @@ export async function searchCatalog(
       .toLowerCase();
     if (query && !haystack.includes(query)) return false;
     if (params.category && course.category !== params.category) return false;
+    if (params.price === "free" && course.price_cents !== 0) return false;
+    if (params.price === "paid" && course.price_cents === 0) return false;
     if (params.level && params.level !== "all" && course.level !== params.level)
       return false;
     return summary;

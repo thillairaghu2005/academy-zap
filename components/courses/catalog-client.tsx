@@ -177,10 +177,14 @@ export function CatalogClient() {
 
   const initialQuery = searchParams.get("q") ?? "";
   const initialCategory = searchParams.get("category") ?? "All";
+  const priceParam = searchParams.get("price");
+  const initialPrice: "free" | "paid" | "all" =
+    priceParam === "free" || priceParam === "paid" ? priceParam : "all";
   const initialLevel = (searchParams.get("level") ?? "all") as CourseLevel | "all";
 
   const [query, setQuery] = React.useState(initialQuery);
   const [category, setCategory] = React.useState(initialCategory);
+  const [price, setPrice] = React.useState<"free" | "paid" | "all">(initialPrice);
   const [level, setLevel] = React.useState<CourseLevel | "all">(initialLevel);
   const [page, setPage] = React.useState(1);
 
@@ -191,10 +195,11 @@ export function CatalogClient() {
     const params = new URLSearchParams();
     if (query) params.set("q", query);
     if (category !== "All") params.set("category", category);
+    if (price !== "all") params.set("price", price);
     if (level !== "all") params.set("level", level);
     const str = params.toString();
     router.replace(`/courses${str ? `?${str}` : ""}`, { scroll: false });
-  }, [query, category, level, router]);
+  }, [query, category, price, level, router]);
 
   // Reset page to 1 whenever a filter changes. Done synchronously in the
   // filter handlers (not an effect) — the debounced query resolves after
@@ -207,6 +212,10 @@ export function CatalogClient() {
     setCategory(next);
     setPage(1);
   };
+  const applyPrice = (next: "free" | "paid" | "all") => {
+    setPrice(next);
+    setPage(1);
+  };
   const applyLevel = (next: CourseLevel | "all") => {
     setLevel(next);
     setPage(1);
@@ -214,16 +223,18 @@ export function CatalogClient() {
   const clearFilters = () => {
     setQuery("");
     setCategory("All");
+    setPrice("all");
     setLevel("all");
     setPage(1);
   };
 
   const { data, isLoading, isError, error, refetch } = useQuery({
-    queryKey: ["catalog", debouncedQuery, category, level, page],
+    queryKey: ["catalog", debouncedQuery, category, price, level, page],
     queryFn: () =>
       searchCatalog({
         query: debouncedQuery || undefined,
         category: category === "All" ? undefined : category,
+        price,
         level,
         page,
         pageSize: 6,
@@ -264,8 +275,8 @@ export function CatalogClient() {
             aria-label="Search courses"
             placeholder={
               DEMO_MODE
-                ? 'Search courses… (try "security", "zzzz" for empty, "boom" for error)'
-                : "Search courses…"
+                ? 'Search by title or skill… (try "security", "zzzz" for empty)'
+                : "Search by title or skill…"
             }
             value={query}
             onChange={(e) => applyQuery(e.target.value)}
@@ -282,21 +293,18 @@ export function CatalogClient() {
           ) : null}
         </div>
 
-        <div className="flex gap-2">
-          <Select value={category} onValueChange={applyCategory}>
-            <SelectTrigger className="w-fit min-w-[140px]">
+        <div className="flex flex-wrap gap-2">
+          <Select value={price} onValueChange={(v) => applyPrice(v as "free" | "paid" | "all")}>
+            <SelectTrigger className="w-fit min-w-[130px]" aria-label="Filter courses by price">
               <Filter className="size-3.5" />
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              {CATEGORIES.map((cat) => (
-                <SelectItem key={cat} value={cat}>
-                  {cat}
-                </SelectItem>
-              ))}
+              <SelectItem value="all">All prices</SelectItem>
+              <SelectItem value="free">Free</SelectItem>
+              <SelectItem value="paid">Paid</SelectItem>
             </SelectContent>
           </Select>
-
           <Select
             value={level}
             onValueChange={(v) => applyLevel(v as CourseLevel | "all")}
@@ -313,6 +321,25 @@ export function CatalogClient() {
             </SelectContent>
           </Select>
         </div>
+      </div>
+
+      <div className="mt-4 flex gap-2 overflow-x-auto pb-1" aria-label="Filter courses by discipline">
+        {CATEGORIES.map((cat) => {
+          const active = category === cat;
+          return (
+            <Button
+              key={cat}
+              type="button"
+              size="sm"
+              variant={active ? "default" : "outline"}
+              aria-pressed={active}
+              onClick={() => applyCategory(cat)}
+              className="shrink-0"
+            >
+              {cat}
+            </Button>
+          );
+        })}
       </div>
 
       {/* Results area */}
@@ -347,7 +374,7 @@ export function CatalogClient() {
                 : "No courses match your filters. Try a different category or level."
             }
             action={
-              debouncedQuery || category !== "All" || level !== "all" ? (
+                debouncedQuery || category !== "All" || price !== "all" || level !== "all" ? (
                 <Button
                   variant="outline"
                   size="sm"

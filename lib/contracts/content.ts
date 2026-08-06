@@ -140,6 +140,7 @@ export interface MeilisearchCatalogResponse {
 export interface CatalogQuery {
   query?: string;
   category?: string;
+  price?: "free" | "paid" | "all";
   level?: CourseLevel | "all";
   page?: number;
   pageSize?: number;
