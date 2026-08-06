@@ -22,6 +22,8 @@ import { HeroSection } from "@/components/landing/hero-section";
 import { MarketingFooter } from "@/components/landing/marketing-footer";
 import { MarketingNav } from "@/components/landing/marketing-nav";
 import { PracticeBanner } from "@/components/landing/practice-banner";
+import { PersonalizedHero } from "@/components/landing/personalized-hero";
+import { useSession } from "@/components/providers/session-provider";
 import { SectionTitle } from "@/components/landing/section-title";
 import { SkillCard } from "@/components/landing/skill-card";
 import { SurfaceIndex } from "@/components/landing/surface-index";
@@ -170,11 +172,17 @@ export function LandingPage({ courses }: LandingPageProps) {
       </a>
       <MarketingNav />
       <main id="main-content">
-        <HeroSection />
+        <HomeHero />
         <SurfaceIndex />
         <LandingSections courses={courses} />
       </main>
       <MarketingFooter />
     </div>
   );
+}
+
+function HomeHero() {
+  const { user, isLoading } = useSession();
+  if (isLoading) return <PersonalizedHero />;
+  return user ? <PersonalizedHero /> : <HeroSection />;
 }
