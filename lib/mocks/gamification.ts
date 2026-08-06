@@ -475,7 +475,16 @@ const DEMO_GUILD_ROLLUP = {
 
 async function computeDemoContext(): Promise<ProgressContext> {
   const { completion_xp, mastery_xp } = aggregateXpTracks(await demoLedger());
-  const { level, rank_name } = resolveRank(completion_xp, mastery_xp);
+  const { level, rank_name, equivalent_xp } = resolveRank(completion_xp, mastery_xp);
+  const rankBand = RANK_LADDER[level - 1] ?? RANK_LADDER[0]!;
+  const rankProgressPct =
+    rankBand.max_xp === null
+      ? 100
+      : Math.round(
+          ((equivalent_xp - rankBand.min_xp) /
+            (rankBand.max_xp - rankBand.min_xp)) *
+            100,
+        );
   const streak = resolveStreak(
     MOCK_DEMO_USER_ID,
     0,
@@ -494,6 +503,7 @@ async function computeDemoContext(): Promise<ProgressContext> {
       prestige_tier: 0,
       completion_xp,
       mastery_xp,
+      rank_progress_pct: rankProgressPct,
       percentile_global: 87.4,
       percentile_cohort: 92.1,
       specialization_tag: "Networking & Security",

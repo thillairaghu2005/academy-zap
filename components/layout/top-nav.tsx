@@ -19,6 +19,7 @@ import { primaryNav } from "@/lib/navigation";
 import { useSession } from "@/components/providers/session-provider";
 import { GlobalSearch } from "@/components/layout/global-search";
 import { NotificationCenter } from "@/components/layout/notification-center";
+import { RankXpChip } from "@/components/gamification/rank-xp-chip";
 
 export function TopNav() {
   const pathname = usePathname();
@@ -72,6 +73,8 @@ export function TopNav() {
 
           {/* Notification center — mock event feed until push/SSE lands */}
           <NotificationCenter />
+
+          <RankXpChip />
 
           <div className="ml-1">
             {isLoading ? (

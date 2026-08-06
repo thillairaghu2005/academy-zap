@@ -6,6 +6,7 @@ import { Menu } from "lucide-react";
 
 import { GlobalSearch } from "@/components/layout/global-search";
 import { Logo } from "@/components/layout/logo";
+import { RankXpChip } from "@/components/gamification/rank-xp-chip";
 import { Button } from "@/components/ui/button";
 import {
   Sheet,
@@ -108,6 +109,7 @@ export function MarketingNav() {
 
         <div className="ml-auto flex items-center gap-2">
           <GlobalSearch />
+          <RankXpChip />
           <Link
             href="/login"
             className="hidden rounded-md px-3 py-2 text-sm font-medium text-muted-foreground outline-none transition-colors hover:bg-accent hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring sm:inline-flex"

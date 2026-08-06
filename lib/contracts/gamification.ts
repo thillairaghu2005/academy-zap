@@ -82,6 +82,8 @@ export interface RankState {
   prestige_tier: number;
   completion_xp: number;
   mastery_xp: number;
+  /** Server-derived progress through the current rank band, 0-100. */
+  rank_progress_pct: number;
   percentile_global: number;
   /** within org/guild, if applicable */
   percentile_cohort: number | null;
