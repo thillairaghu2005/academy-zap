@@ -7,11 +7,10 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { motion } from "framer-motion";
 import {
   BookOpen,
-  Filter,
-  Hourglass,
+  ChevronDown,
+  Clock3,
   LoaderCircle,
   Search,
-  SlidersHorizontal,
   Star,
   Users,
   X,
@@ -32,7 +31,6 @@ import { DEMO_MODE } from "@/lib/config";
 import { AddToCartButton } from "@/components/commerce/add-to-cart-button";
 import { BuyNowButton } from "@/components/commerce/buy-now-button";
 import { useDebouncedValue } from "@/lib/hooks/use-debounced-value";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -47,23 +45,20 @@ import { PageContainer } from "@/components/shared/page-container";
 import { EmptyState } from "@/components/shared/empty-state";
 import { ErrorState } from "@/components/shared/error-state";
 import { SkeletonCourseGrid } from "@/components/shared/skeletons";
-import { FilterChip } from "@/components/courses/filter-chip";
-import {
-  Sheet,
-  SheetContent,
-  SheetDescription,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from "@/components/ui/sheet";
 
-/* ------------------------------------------------------------------ */
-/*  Catalog — the main F1 surface                                      */
-/*  Wired to the mock Meilisearch-shaped searchCatalog() API.          */
-/*                                                                     */
-/*  States: loading (skeleton grid), empty (zzzz), error (boom),       */
-/*          happy path, and a draft-banner stand-in.                   */
-/* ------------------------------------------------------------------ */
+/*
+ * Catalog UX spec, distilled from the supplied reference:
+ * - The eye lands on the title, then the single dominant search field, then
+ *   the compact filter row and finally the course cards.
+ * - Search, filters, and categories share one vertical control stack, so the
+ *   refinement path reads as one connected block instead of scattered tools.
+ * - Tight spacing and a high-information card grid avoid dead zones without
+ *   making each control compete with the content.
+ * - Cards begin immediately after the count, keeping useful content within
+ *   the first viewport rather than adding promotional chrome.
+ * - Filters are subordinate to search; category pills are lighter and
+ *   tertiary, sitting between refinement and results.
+ */
 
 const LEVELS: { value: CourseLevel | "all"; label: string }[] = [
   { value: "all", label: "All levels" },
@@ -111,118 +106,13 @@ const SORT_OPTIONS: { value: CourseSort; label: string }[] = [
 const CATEGORIES = [
   "All",
   "Cybersecurity",
-  "Web Development",
-  "Cloud & DevOps",
   "Programming",
+  "Web Development",
+  "Cloud",
+  "AI",
+  "DevOps",
+  "Networking",
 ];
-
-function CourseCard({
-  course,
-  product,
-}: {
-  course: CourseSummary;
-  product?: CatalogProduct;
-}) {
-  const price =
-    course.price_cents === 0
-      ? "Free"
-      : `$${(course.price_cents / 100).toFixed(0)}`;
-
-  return (
-    <Card className="group flex h-full flex-col overflow-hidden transition-all duration-200 group-hover:-translate-y-0.5 group-hover:border-primary/40 group-hover:shadow-xl group-hover:shadow-primary/10">
-      <Link
-        href={`/courses/${course.id}`}
-        className="flex-1 outline-none focus-visible:ring-2 focus-visible:ring-ring"
-      >
-        {/* Cover art gradient */}
-        <div
-          className="relative h-36 w-full"
-          style={{
-            background: `linear-gradient(135deg, hsl(${course.cover_hue}, 60%, 45%), hsl(${(course.cover_hue + 60) % 360}, 50%, 30%))`,
-          }}
-        >
-          <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
-          <div className="absolute bottom-3 left-4 right-4">
-            <h3 className="font-display text-h3 text-white drop-shadow-sm">
-              {course.title}
-            </h3>
-            <p className="mt-0.5 text-xs text-white/80">{course.category}</p>
-          </div>
-          <Badge
-            variant="secondary"
-            className="absolute right-3 top-3 bg-black/40 text-white backdrop-blur-sm"
-          >
-            {price}
-          </Badge>
-        </div>
-
-        <CardContent className="flex flex-col gap-2.5 p-4">
-          <p className="line-clamp-2 text-sm leading-relaxed text-muted-foreground">
-            {course.subtitle}
-          </p>
-
-          <div className="flex items-center gap-3 text-xs text-muted-foreground">
-            <span className="flex items-center gap-1">
-              <Star className="size-3.5 fill-amber-400 text-amber-700" />
-              {course.rating.toFixed(1)}
-              <span className="text-muted-foreground/60">
-                ({course.review_count})
-              </span>
-            </span>
-            <span className="flex items-center gap-1">
-              <Users className="size-3.5" />
-              {course.enrolled_count.toLocaleString()}
-            </span>
-            <span className="flex items-center gap-1">
-              <Hourglass className="size-3.5" />
-              {course.estimated_hours}h
-            </span>
-          </div>
-
-          <div className="flex items-center justify-between border-t border-border pt-2.5">
-            <span className="text-xs text-muted-foreground">
-              {course.instructor_name}
-            </span>
-              <Badge variant="outline" className="text-caption">
-              {course.level}
-            </Badge>
-          </div>
-        </CardContent>
-      </Link>
-
-      {/* Purchasable → Buy now + Add to cart (Task 3) */}
-      {product ? (
-        <div className="flex gap-2 border-t border-border p-3">
-          <AddToCartButton productId={course.id} size="sm" className="flex-1" />
-          <BuyNowButton productId={course.id} size="sm" className="flex-1" />
-        </div>
-      ) : null}
-    </Card>
-  );
-}
-
-function CatalogGrid({
-  courses,
-  products,
-}: {
-  courses: CourseSummary[];
-  products: Map<string, CatalogProduct>;
-}) {
-  return (
-    <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
-      {courses.map((course, i) => (
-        <motion.div
-          key={course.id}
-          initial={{ opacity: 0, y: 12 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.04 * i, duration: 0.35, ease: "easeOut" }}
-        >
-          <CourseCard course={course} product={products.get(course.id)} />
-        </motion.div>
-      ))}
-    </div>
-  );
-}
 
 interface CatalogFilterValues {
   price: "free" | "paid" | "all";
@@ -235,8 +125,100 @@ interface CatalogFilterValues {
   minRating: number;
 }
 
-function FilterControls({
+function SearchBar({
+  value,
+  onChange,
+  onClear,
+}: {
+  value: string;
+  onChange: (value: string) => void;
+  onClear: () => void;
+}) {
+  return (
+    <div className="relative">
+      <Search
+        className="pointer-events-none absolute left-4 top-1/2 size-4 -translate-y-1/2 text-[#666]"
+        aria-hidden="true"
+      />
+      <Input
+        name="q"
+        type="search"
+        aria-label="Search courses"
+        placeholder={
+          DEMO_MODE
+            ? 'Search by title or skill… (try "security", "zzzz" for empty)'
+            : "Search by title or skill…"
+        }
+        value={value}
+        onChange={(event) => onChange(event.target.value)}
+        className="h-12 rounded-2xl border-[#b8b8b8] bg-white pl-11 pr-11 text-[15px] shadow-[0_2px_8px_rgba(0,0,0,0.06)] placeholder:text-[#777] focus-visible:border-black focus-visible:ring-2 focus-visible:ring-black"
+      />
+      {value ? (
+        <button
+          type="button"
+          onClick={onClear}
+          className="absolute right-3 top-1/2 flex size-7 -translate-y-1/2 items-center justify-center rounded-lg text-[#555] transition-colors hover:bg-[#eeeeee] hover:text-black focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black"
+          aria-label="Clear search"
+        >
+          <X className="size-4" aria-hidden="true" />
+        </button>
+      ) : null}
+    </div>
+  );
+}
+
+function FilterSelect({
+  label,
+  value,
+  options,
+  onValueChange,
+}: {
+  label: string;
+  value: string;
+  options: { value: string; label: string }[];
+  onValueChange: (value: string) => void;
+}) {
+  return (
+    <Select value={value} onValueChange={onValueChange}>
+      <SelectTrigger
+        aria-label={`Filter courses by ${label.toLowerCase()}`}
+        className="h-9 w-full rounded-xl border-[#c2c2c2] bg-white px-3 text-[13px] text-[#222] shadow-none focus-visible:border-black focus-visible:ring-2 focus-visible:ring-black sm:w-auto sm:min-w-[128px]"
+      >
+        <span className="sr-only">{label}: </span>
+        <SelectValue />
+      </SelectTrigger>
+      <SelectContent className="rounded-xl border-[#b8b8b8] bg-white text-black shadow-[0_10px_30px_rgba(0,0,0,0.14)]">
+        {options.map((option) => (
+          <SelectItem
+            key={option.value}
+            value={option.value}
+            className="rounded-lg focus:bg-[#eeeeee] focus:text-black"
+          >
+            {option.label}
+          </SelectItem>
+        ))}
+      </SelectContent>
+    </Select>
+  );
+}
+
+function ActiveFilter({ label, onRemove }: { label: string; onRemove: () => void }) {
+  return (
+    <button
+      type="button"
+      onClick={onRemove}
+      className="inline-flex h-7 items-center gap-1.5 rounded-lg border border-[#c5c5c5] bg-[#f0f0f0] px-2.5 text-xs font-medium text-[#222] transition-colors hover:bg-[#e2e2e2] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black"
+    >
+      {label}
+      <X className="size-3" aria-hidden="true" />
+      <span className="sr-only">Remove filter</span>
+    </button>
+  );
+}
+
+function FilterToolbar({
   values,
+  sort,
   onPrice,
   onLevel,
   onDuration,
@@ -245,8 +227,12 @@ function FilterControls({
   onProjectBased,
   onCertificateIncluded,
   onRating,
+  onSort,
+  activeFilters,
+  onClearAll,
 }: {
   values: CatalogFilterValues;
+  sort: CourseSort;
   onPrice: (value: CatalogFilterValues["price"]) => void;
   onLevel: (value: CatalogFilterValues["level"]) => void;
   onDuration: (value: CatalogFilterValues["duration"]) => void;
@@ -255,35 +241,266 @@ function FilterControls({
   onProjectBased: () => void;
   onCertificateIncluded: () => void;
   onRating: (value: number) => void;
+  onSort: (value: CourseSort) => void;
+  activeFilters: { label: string; onRemove: () => void }[];
+  onClearAll: () => void;
 }) {
   return (
-    <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-      <Select value={values.price} onValueChange={(value) => onPrice(value as CatalogFilterValues["price"])}>
-        <SelectTrigger aria-label="Filter courses by price"><Filter className="size-3.5" /><SelectValue /></SelectTrigger>
-        <SelectContent><SelectItem value="all">All prices</SelectItem><SelectItem value="free">Free</SelectItem><SelectItem value="paid">Paid</SelectItem></SelectContent>
-      </Select>
-      <Select value={values.level} onValueChange={(value) => onLevel(value as CatalogFilterValues["level"])}>
-        <SelectTrigger aria-label="Filter courses by difficulty"><SelectValue /></SelectTrigger>
-        <SelectContent>{LEVELS.map((level) => <SelectItem key={level.value} value={level.value}>{level.label}</SelectItem>)}</SelectContent>
-      </Select>
-      <Select value={values.duration} onValueChange={(value) => onDuration(value as CatalogFilterValues["duration"])}>
-        <SelectTrigger aria-label="Filter courses by duration"><SelectValue /></SelectTrigger>
-        <SelectContent>{DURATIONS.map((duration) => <SelectItem key={duration.value} value={duration.value}>{duration.label}</SelectItem>)}</SelectContent>
-      </Select>
-      <Select value={values.format} onValueChange={(value) => onFormat(value as CatalogFilterValues["format"])}>
-        <SelectTrigger aria-label="Filter courses by format"><SelectValue /></SelectTrigger>
-        <SelectContent>{FORMATS.map((format) => <SelectItem key={format.value} value={format.value}>{format.label}</SelectItem>)}</SelectContent>
-      </Select>
-      <Select value={values.careerTrack} onValueChange={(value) => onCareerTrack(value as CatalogFilterValues["careerTrack"])}>
-        <SelectTrigger aria-label="Filter courses by career track"><SelectValue /></SelectTrigger>
-        <SelectContent>{CAREER_TRACKS.map((track) => <SelectItem key={track.value} value={track.value}>{track.label}</SelectItem>)}</SelectContent>
-      </Select>
-      <Select value={String(values.minRating)} onValueChange={(value) => onRating(Number(value))}>
-        <SelectTrigger aria-label="Filter courses by rating"><SelectValue /></SelectTrigger>
-        <SelectContent><SelectItem value="0">Any rating</SelectItem><SelectItem value="4">4.0+ rating</SelectItem><SelectItem value="4.5">4.5+ rating</SelectItem></SelectContent>
-      </Select>
-      <Button type="button" variant={values.projectBased ? "default" : "outline"} aria-pressed={values.projectBased} onClick={onProjectBased} className="justify-start">Project-based</Button>
-      <Button type="button" variant={values.certificateIncluded ? "default" : "outline"} aria-pressed={values.certificateIncluded} onClick={onCertificateIncluded} className="justify-start">Certificate included</Button>
+    <section
+      aria-label="Course filters"
+      className="rounded-2xl border border-[#d0d0d0] bg-[#f7f7f7] p-3 shadow-[0_3px_12px_rgba(0,0,0,0.05)] sm:p-4"
+    >
+      <div className="flex flex-wrap items-center gap-2">
+        <FilterSelect
+          label="Level"
+          value={values.level}
+          options={LEVELS}
+          onValueChange={(value) => onLevel(value as CatalogFilterValues["level"])}
+        />
+        <FilterSelect
+          label="Price"
+          value={values.price}
+          options={[
+            { value: "all", label: "All prices" },
+            { value: "free", label: "Free" },
+            { value: "paid", label: "Paid" },
+          ]}
+          onValueChange={(value) => onPrice(value as CatalogFilterValues["price"])}
+        />
+        <FilterSelect
+          label="Duration"
+          value={values.duration}
+          options={DURATIONS}
+          onValueChange={(value) => onDuration(value as CatalogFilterValues["duration"])}
+        />
+        <FilterSelect
+          label="Format"
+          value={values.format}
+          options={FORMATS}
+          onValueChange={(value) => onFormat(value as CatalogFilterValues["format"])}
+        />
+        <FilterSelect
+          label="Rating"
+          value={String(values.minRating)}
+          options={[
+            { value: "0", label: "Any rating" },
+            { value: "4", label: "4.0+ rating" },
+            { value: "4.5", label: "4.5+ rating" },
+          ]}
+          onValueChange={(value) => onRating(Number(value))}
+        />
+        <FilterSelect
+          label="Sort"
+          value={sort}
+          options={SORT_OPTIONS}
+          onValueChange={(value) => onSort(value as CourseSort)}
+        />
+      </div>
+
+      <details className="mt-3 border-t border-[#d9d9d9] pt-3">
+        <summary className="flex cursor-pointer list-none items-center gap-2 text-xs font-semibold text-[#333] outline-none focus-visible:ring-2 focus-visible:ring-black [&::-webkit-details-marker]:hidden">
+          More filters
+          <ChevronDown className="size-3.5 transition-transform group-open:rotate-180" aria-hidden="true" />
+        </summary>
+        <div className="mt-3 flex flex-wrap items-center gap-2">
+          <FilterSelect
+            label="Career track"
+            value={values.careerTrack}
+            options={CAREER_TRACKS}
+            onValueChange={(value) => onCareerTrack(value as CatalogFilterValues["careerTrack"])}
+          />
+          <button
+            type="button"
+            aria-pressed={values.projectBased}
+            onClick={onProjectBased}
+            className={`h-9 rounded-xl border px-3 text-[13px] font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black ${values.projectBased ? "border-black bg-black text-white" : "border-[#c2c2c2] bg-white text-[#222] hover:bg-[#eeeeee]"}`}
+          >
+            Project-based
+          </button>
+          <button
+            type="button"
+            aria-pressed={values.certificateIncluded}
+            onClick={onCertificateIncluded}
+            className={`h-9 rounded-xl border px-3 text-[13px] font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black ${values.certificateIncluded ? "border-black bg-black text-white" : "border-[#c2c2c2] bg-white text-[#222] hover:bg-[#eeeeee]"}`}
+          >
+            Certificate included
+          </button>
+        </div>
+      </details>
+
+      {activeFilters.length > 0 ? (
+        <div className="mt-3 flex flex-wrap items-center gap-2 border-t border-[#d9d9d9] pt-3" aria-label="Active course filters">
+          {activeFilters.map((filter) => (
+            <ActiveFilter key={filter.label} {...filter} />
+          ))}
+          <button
+            type="button"
+            onClick={onClearAll}
+            className="h-7 px-1 text-xs font-semibold text-[#444] underline decoration-[#aaa] underline-offset-4 transition-colors hover:text-black focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black"
+          >
+            Clear all
+          </button>
+        </div>
+      ) : null}
+    </section>
+  );
+}
+
+function CategoryPills({
+  value,
+  onChange,
+}: {
+  value: string;
+  onChange: (value: string) => void;
+}) {
+  return (
+    <nav aria-label="Course categories" className="-mx-1 overflow-x-auto px-1 pb-1">
+      <div className="flex min-w-max gap-2">
+        {CATEGORIES.map((category) => {
+          const active = value === category;
+          return (
+            <button
+              key={category}
+              type="button"
+              aria-pressed={active}
+              onClick={() => onChange(category)}
+              className={`h-9 rounded-xl border px-3.5 text-[13px] font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black ${active ? "border-black bg-black text-white" : "border-[#c5c5c5] bg-white text-[#333] hover:border-black hover:bg-[#f0f0f0]"}`}
+            >
+              {category}
+            </button>
+          );
+        })}
+      </div>
+    </nav>
+  );
+}
+
+function ResultCount({ count, query }: { count: number; query?: string }) {
+  return (
+    <div className="flex flex-wrap items-baseline justify-between gap-2">
+      <p className="text-sm text-[#555]">
+        Showing <strong className="font-semibold text-black">{count}</strong> {count === 1 ? "Course" : "Courses"}
+        {query ? <span className="text-[#777]"> for &quot;{query}&quot;</span> : null}
+      </p>
+    </div>
+  );
+}
+
+function CourseCard({
+  course,
+  product,
+}: {
+  course: CourseSummary;
+  product?: CatalogProduct;
+}) {
+  const price = course.price_cents === 0 ? "Free" : `$${(course.price_cents / 100).toFixed(0)}`;
+  const difficulty = course.level.charAt(0).toUpperCase() + course.level.slice(1);
+
+  return (
+    <Card className="group flex h-full flex-col overflow-hidden rounded-2xl border-[#d0d0d0] bg-white shadow-[0_4px_14px_rgba(0,0,0,0.07)] transition-all duration-200 hover:-translate-y-1 hover:border-[#888] hover:shadow-[0_14px_32px_rgba(0,0,0,0.13)]">
+      <Link
+        href={`/courses/${course.id}`}
+        className="flex flex-1 flex-col outline-none focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-offset-2 focus-visible:ring-offset-white"
+      >
+        <div className="relative h-36 overflow-hidden bg-[#171717] text-white">
+          <div
+            className="absolute inset-0 opacity-50"
+            style={{
+              backgroundImage:
+                "linear-gradient(135deg, transparent 0 42%, rgba(255,255,255,.22) 42% 43%, transparent 43% 100%), linear-gradient(90deg, rgba(255,255,255,.12) 1px, transparent 1px), linear-gradient(rgba(255,255,255,.12) 1px, transparent 1px)",
+              backgroundSize: "auto, 28px 28px, 28px 28px",
+            }}
+            aria-hidden="true"
+          />
+          <div className="relative flex h-full flex-col justify-between p-4">
+            <div className="flex items-center justify-between gap-3 text-[11px] font-semibold uppercase tracking-[0.14em] text-[#d5d5d5]">
+              <span>Zapsters course</span>
+              <span className="rounded-lg border border-white/30 px-2 py-1 text-white">{price}</span>
+            </div>
+            <p className="max-w-[85%] text-sm font-medium text-white/85">{course.category}</p>
+          </div>
+        </div>
+
+        <CardContent className="flex flex-1 flex-col gap-3 p-4">
+          <div>
+            <h3 className="font-display text-[19px] font-semibold leading-tight tracking-[-0.02em] text-black">
+              {course.title}
+            </h3>
+            <p className="mt-2 line-clamp-2 text-sm leading-relaxed text-[#555]">{course.subtitle}</p>
+          </div>
+
+          <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5 text-xs text-[#555]">
+            <span className="inline-flex items-center gap-1 font-medium text-black">
+              <Star className="size-3.5 fill-current" aria-hidden="true" />
+              {course.rating > 0 ? course.rating.toFixed(1) : "New"}
+              {course.review_count > 0 ? <span className="font-normal text-[#777]">({course.review_count})</span> : null}
+            </span>
+            <span className="inline-flex items-center gap-1">
+              <Users className="size-3.5" aria-hidden="true" />
+              {course.enrolled_count.toLocaleString()} students
+            </span>
+            <span className="inline-flex items-center gap-1">
+              <Clock3 className="size-3.5" aria-hidden="true" />
+              {course.estimated_hours}h
+            </span>
+          </div>
+
+          <div className="mt-auto flex items-center justify-between gap-3 border-t border-[#e0e0e0] pt-3 text-xs text-[#555]">
+            <span className="min-w-0 truncate">{course.instructor_name}</span>
+            <span className="shrink-0 border-l-2 border-black pl-2 font-semibold text-black">{difficulty}</span>
+          </div>
+        </CardContent>
+      </Link>
+
+      {product ? (
+        <div className="flex gap-2 border-t border-[#e0e0e0] p-3">
+          <AddToCartButton
+            productId={course.id}
+            size="sm"
+            className="flex-1 !border-[#b8b8b8] !bg-white !text-black hover:!bg-[#eeeeee]"
+          />
+          <BuyNowButton
+            productId={course.id}
+            size="sm"
+            className="flex-1"
+            buttonClassName="!border-black !bg-black !text-white hover:!bg-[#292929]"
+          />
+        </div>
+      ) : (
+        <div className="border-t border-[#e0e0e0] p-3">
+          <Button
+            asChild
+            size="sm"
+            className="w-full !border-black !bg-black !text-white hover:!bg-[#292929]"
+          >
+            <Link href={`/courses/${course.id}`}>View course</Link>
+          </Button>
+        </div>
+      )}
+    </Card>
+  );
+}
+
+function CourseGrid({
+  courses,
+  products,
+}: {
+  courses: CourseSummary[];
+  products: Map<string, CatalogProduct>;
+}) {
+  return (
+    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4 min-[1440px]:grid-cols-5">
+      {courses.map((course, index) => (
+        <motion.div
+          key={course.id}
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.04 * index, duration: 0.35, ease: "easeOut" }}
+          className="min-w-0"
+        >
+          <CourseCard course={course} product={products.get(course.id)} />
+        </motion.div>
+      ))}
     </div>
   );
 }
@@ -295,8 +512,7 @@ export function CatalogClient() {
   const initialQuery = searchParams.get("q") ?? "";
   const initialCategory = searchParams.get("category") ?? "All";
   const priceParam = searchParams.get("price");
-  const initialPrice: "free" | "paid" | "all" =
-    priceParam === "free" || priceParam === "paid" ? priceParam : "all";
+  const initialPrice: "free" | "paid" | "all" = priceParam === "free" || priceParam === "paid" ? priceParam : "all";
   const initialLevel = (searchParams.get("level") ?? "all") as CourseLevel | "all";
   const initialDuration = (searchParams.get("duration") ?? "all") as DurationFilter | "all";
   const initialFormat = (searchParams.get("format") ?? "all") as CourseFormat | "all";
@@ -319,7 +535,6 @@ export function CatalogClient() {
 
   const debouncedQuery = useDebouncedValue(query, 300);
 
-  // Sync URL params
   React.useEffect(() => {
     const params = new URLSearchParams();
     if (query) params.set("q", query);
@@ -364,25 +579,10 @@ export function CatalogClient() {
     return () => window.clearTimeout(timer);
   }, [searchParams]);
 
-  // Reset page to 1 whenever a filter changes. Done synchronously in the
-  // filter handlers (not an effect) — the debounced query resolves after
-  // `page` is already 1, so the fetch always starts at the first page.
-  const applyQuery = (next: string) => {
-    setQuery(next);
-    setPage(1);
-  };
-  const applyCategory = (next: string) => {
-    setCategory(next);
-    setPage(1);
-  };
-  const applyPrice = (next: "free" | "paid" | "all") => {
-    setPrice(next);
-    setPage(1);
-  };
-  const applyLevel = (next: CourseLevel | "all") => {
-    setLevel(next);
-    setPage(1);
-  };
+  const applyQuery = (next: string) => { setQuery(next); setPage(1); };
+  const applyCategory = (next: string) => { setCategory(next); setPage(1); };
+  const applyPrice = (next: "free" | "paid" | "all") => { setPrice(next); setPage(1); };
+  const applyLevel = (next: CourseLevel | "all") => { setLevel(next); setPage(1); };
   const resetPage = () => setPage(1);
   const clearFilters = () => {
     setQuery("");
@@ -400,242 +600,97 @@ export function CatalogClient() {
   };
 
   const filterValues: CatalogFilterValues = { price, level, duration, format, careerTrack, projectBased, certificateIncluded, minRating };
+  const hasActiveFilters = Boolean(query || category !== "All" || price !== "all" || level !== "all" || duration !== "all" || format !== "all" || careerTrack !== "all" || projectBased || certificateIncluded || minRating > 0 || sort !== "popular");
+  const activeFilters = [
+    ...(query ? [{ label: `Search: ${query}`, onRemove: () => applyQuery("") }] : []),
+    ...(category !== "All" ? [{ label: category, onRemove: () => applyCategory("All") }] : []),
+    ...(price !== "all" ? [{ label: price === "free" ? "Free" : "Paid", onRemove: () => applyPrice("all") }] : []),
+    ...(level !== "all" ? [{ label: level, onRemove: () => applyLevel("all") }] : []),
+    ...(duration !== "all" ? [{ label: DURATIONS.find((item) => item.value === duration)?.label ?? duration, onRemove: () => { setDuration("all"); resetPage(); } }] : []),
+    ...(format !== "all" ? [{ label: FORMATS.find((item) => item.value === format)?.label ?? format, onRemove: () => { setFormat("all"); resetPage(); } }] : []),
+    ...(careerTrack !== "all" ? [{ label: CAREER_TRACKS.find((item) => item.value === careerTrack)?.label ?? careerTrack, onRemove: () => { setCareerTrack("all"); resetPage(); } }] : []),
+    ...(projectBased ? [{ label: "Project-based", onRemove: () => { setProjectBased(false); resetPage(); } }] : []),
+    ...(certificateIncluded ? [{ label: "Certificate", onRemove: () => { setCertificateIncluded(false); resetPage(); } }] : []),
+    ...(minRating > 0 ? [{ label: `${minRating}+ rating`, onRemove: () => { setMinRating(0); resetPage(); } }] : []),
+    ...(sort !== "popular" ? [{ label: SORT_OPTIONS.find((option) => option.value === sort)?.label ?? sort, onRemove: () => { setSort("popular"); resetPage(); } }] : []),
+  ];
 
   const { data, isLoading, isError, error, refetch } = useQuery({
     queryKey: ["catalog", debouncedQuery, category, price, level, duration, format, careerTrack, projectBased, certificateIncluded, minRating, sort, page],
-    queryFn: () =>
-      searchCatalog({
-        query: debouncedQuery || undefined,
-        category: category === "All" ? undefined : category,
-        price,
-        level,
-        duration: duration === "all" ? undefined : duration,
-        format,
-        careerTrack,
-        projectBased,
-        certificateIncluded,
-        minRating,
-        sort,
-        page,
-        pageSize: 6,
-      }),
+    queryFn: () => searchCatalog({ query: debouncedQuery || undefined, category: category === "All" ? undefined : category, price, level, duration: duration === "all" ? undefined : duration, format, careerTrack, projectBased, certificateIncluded, minRating, sort, page, pageSize: 6 }),
   });
 
-  // Purchasable products (pricing + stock) for the card action row.
-  const catalogQuery = useQuery({
-    queryKey: ["catalog-products"],
-    queryFn: () => listCatalogProducts(),
-  });
-  const products = new Map(
-    catalogQuery.data?.map((p) => [p.product_id, p]) ?? [],
-  );
-
-  const totalPages = data
-    ? Math.ceil(data.estimatedTotalHits / data.limit)
-    : 0;
+  const catalogQuery = useQuery({ queryKey: ["catalog-products"], queryFn: () => listCatalogProducts() });
+  const products = new Map(catalogQuery.data?.map((product) => [product.product_id, product]) ?? []);
+  const totalPages = data ? Math.ceil(data.estimatedTotalHits / data.limit) : 0;
 
   return (
-    <PageContainer>
-      {/* Header */}
-      <div className="flex flex-col gap-2">
-        <h1 className="font-display text-h1">
-          Course catalog
-        </h1>
-        <p className="text-sm text-muted-foreground">
-          Browse our library of security, engineering and cloud courses.
-        </p>
-      </div>
+    <main className="min-h-screen bg-white text-black">
+      <PageContainer className="max-w-[1600px] py-6 sm:py-8">
+        <div className="space-y-4">
+          <header>
+            <h1 className="font-display text-[clamp(2rem,3.2vw,3.25rem)] font-semibold tracking-[-0.045em] text-black">Explore courses</h1>
+            <p className="mt-1 max-w-2xl text-sm text-[#555] sm:text-[15px]">Build practical skills in security, engineering, cloud, and beyond.</p>
+          </header>
 
-      {/* Search & filters */}
-      <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:items-center">
-        <div className="relative flex-1">
-          <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
-          <Input
-            name="q"
-            aria-label="Search courses"
-            placeholder={
-              DEMO_MODE
-                ? 'Search by title or skill… (try "security", "zzzz" for empty)'
-                : "Search by title or skill…"
-            }
-            value={query}
-            onChange={(e) => applyQuery(e.target.value)}
-            className="pl-9 pr-9"
+          <SearchBar value={query} onChange={applyQuery} onClear={() => applyQuery("")} />
+
+          <FilterToolbar
+            values={filterValues}
+            sort={sort}
+            onPrice={applyPrice}
+            onLevel={applyLevel}
+            onDuration={(value) => { setDuration(value); resetPage(); }}
+            onFormat={(value) => { setFormat(value); resetPage(); }}
+            onCareerTrack={(value) => { setCareerTrack(value); resetPage(); }}
+            onProjectBased={() => { setProjectBased((value) => !value); resetPage(); }}
+            onCertificateIncluded={() => { setCertificateIncluded((value) => !value); resetPage(); }}
+            onRating={(value) => { setMinRating(value); resetPage(); }}
+            onSort={(value) => { setSort(value); resetPage(); }}
+            activeFilters={activeFilters}
+            onClearAll={clearFilters}
           />
-          {query ? (
-            <button
-              onClick={() => applyQuery("")}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground transition-colors hover:text-foreground"
-              aria-label="Clear search"
-            >
-              <X className="size-4" />
-            </button>
+
+          <CategoryPills value={category} onChange={applyCategory} />
+
+          {isLoading ? (
+            <div className="space-y-3 pt-1">
+              <div className="flex items-center gap-2 text-sm text-[#555]" role="status">
+                <LoaderCircle className="size-4 animate-spin" aria-hidden="true" />
+                Searching catalog…
+              </div>
+              <SkeletonCourseGrid count={6} />
+            </div>
+          ) : isError ? (
+            <ErrorState
+              title="Search unavailable"
+              message={error instanceof Error ? error.message : "The catalog search backend is not responding."}
+              code="SEARCH_ERR"
+              onRetry={() => refetch()}
+            />
+          ) : data && data.hits.length === 0 ? (
+            <EmptyState
+              icon={BookOpen}
+              title="No courses found"
+              description={debouncedQuery ? `No results for "${debouncedQuery}". Try a different search term or clear filters.` : "No courses match your filters. Try a different category or level."}
+              primaryAction={hasActiveFilters ? <Button variant="outline" size="sm" onClick={clearFilters} className="border-[#b8b8b8] bg-white text-black hover:!bg-[#eeeeee] hover:!text-black">Clear all filters</Button> : <Button variant="outline" size="sm" asChild className="border-[#b8b8b8] bg-white text-black hover:!bg-[#eeeeee] hover:!text-black"><Link href="/courses">Browse all courses</Link></Button>}
+              secondaryAction={<Button variant="outline" size="sm" asChild className="border-[#b8b8b8] bg-white text-black hover:!bg-[#eeeeee] hover:!text-black"><Link href="/labs">Explore labs</Link></Button>}
+            />
+          ) : data ? (
+            <section aria-label="Course results" className="space-y-3 pt-1">
+              <ResultCount count={data.estimatedTotalHits} query={data.query} />
+              <CourseGrid courses={data.hits} products={products} />
+              {totalPages > 1 ? (
+                <div className="flex items-center justify-center gap-2 pt-5">
+                  <Button variant="outline" size="sm" disabled={page <= 1} onClick={() => setPage((current) => Math.max(1, current - 1))} className="border-[#b8b8b8] bg-white text-black hover:!bg-[#eeeeee] hover:!text-black">Previous</Button>
+                  <span className="px-3 text-sm text-[#555]">Page {page} of {totalPages}</span>
+                  <Button variant="outline" size="sm" disabled={page >= totalPages} onClick={() => setPage((current) => current + 1)} className="border-[#b8b8b8] bg-white text-black hover:!bg-[#eeeeee] hover:!text-black">Next</Button>
+                </div>
+              ) : null}
+            </section>
           ) : null}
         </div>
-
-        <div className="flex flex-wrap items-center gap-2">
-          <div className="hidden min-w-0 flex-1 lg:block">
-            <FilterControls
-              values={filterValues}
-              onPrice={(value) => { applyPrice(value); }}
-              onLevel={(value) => { applyLevel(value); }}
-              onDuration={(value) => { setDuration(value); resetPage(); }}
-              onFormat={(value) => { setFormat(value); resetPage(); }}
-              onCareerTrack={(value) => { setCareerTrack(value); resetPage(); }}
-              onProjectBased={() => { setProjectBased((value) => !value); resetPage(); }}
-              onCertificateIncluded={() => { setCertificateIncluded((value) => !value); resetPage(); }}
-              onRating={(value) => { setMinRating(value); resetPage(); }}
-            />
-          </div>
-          <div className="lg:hidden">
-            <Sheet>
-              <SheetTrigger asChild><Button variant="outline" size="sm"><SlidersHorizontal /> Filters</Button></SheetTrigger>
-              <SheetContent side="bottom" className="max-h-[85dvh] overflow-y-auto">
-                <SheetHeader><SheetTitle>Filter courses</SheetTitle><SheetDescription>Refine the catalog without losing your place.</SheetDescription></SheetHeader>
-                <div className="mt-5">
-                  <FilterControls
-                    values={filterValues}
-                    onPrice={(value) => { applyPrice(value); }}
-                    onLevel={(value) => { applyLevel(value); }}
-                    onDuration={(value) => { setDuration(value); resetPage(); }}
-                    onFormat={(value) => { setFormat(value); resetPage(); }}
-                    onCareerTrack={(value) => { setCareerTrack(value); resetPage(); }}
-                    onProjectBased={() => { setProjectBased((value) => !value); resetPage(); }}
-                    onCertificateIncluded={() => { setCertificateIncluded((value) => !value); resetPage(); }}
-                    onRating={(value) => { setMinRating(value); resetPage(); }}
-                  />
-                </div>
-              </SheetContent>
-            </Sheet>
-          </div>
-          <Select value={sort} onValueChange={(value) => { setSort(value as CourseSort); resetPage(); }}>
-            <SelectTrigger className="w-fit min-w-[150px]" aria-label="Sort courses"><SelectValue /></SelectTrigger>
-            <SelectContent>{SORT_OPTIONS.map((option) => <SelectItem key={option.value} value={option.value}>{option.label}</SelectItem>)}</SelectContent>
-          </Select>
-        </div>
-      </div>
-
-      <div className="mt-4 flex gap-2 overflow-x-auto pb-1" aria-label="Filter courses by discipline">
-        {CATEGORIES.map((cat) => {
-          const active = category === cat;
-          return (
-            <Button
-              key={cat}
-              type="button"
-              size="sm"
-              variant={active ? "default" : "outline"}
-              aria-pressed={active}
-              onClick={() => applyCategory(cat)}
-              className="shrink-0"
-            >
-              {cat}
-            </Button>
-          );
-        })}
-      </div>
-
-      <div className="mt-4 flex flex-wrap items-center gap-2" aria-label="Active course filters">
-        {query ? <FilterChip label={`Search: ${query}`} onRemove={() => applyQuery("")} /> : null}
-        {category !== "All" ? <FilterChip label={category} onRemove={() => applyCategory("All")} /> : null}
-        {price !== "all" ? <FilterChip label={price === "free" ? "Free" : "Paid"} onRemove={() => applyPrice("all")} /> : null}
-        {level !== "all" ? <FilterChip label={level} onRemove={() => applyLevel("all")} /> : null}
-        {duration !== "all" ? <FilterChip label={DURATIONS.find((item) => item.value === duration)?.label ?? duration} onRemove={() => { setDuration("all"); resetPage(); }} /> : null}
-        {format !== "all" ? <FilterChip label={FORMATS.find((item) => item.value === format)?.label ?? format} onRemove={() => { setFormat("all"); resetPage(); }} /> : null}
-        {careerTrack !== "all" ? <FilterChip label={CAREER_TRACKS.find((item) => item.value === careerTrack)?.label ?? careerTrack} onRemove={() => { setCareerTrack("all"); resetPage(); }} /> : null}
-        {projectBased ? <FilterChip label="Project-based" onRemove={() => { setProjectBased(false); resetPage(); }} /> : null}
-        {certificateIncluded ? <FilterChip label="Certificate" onRemove={() => { setCertificateIncluded(false); resetPage(); }} /> : null}
-        {minRating > 0 ? <FilterChip label={`${minRating}+ rating`} onRemove={() => { setMinRating(0); resetPage(); }} /> : null}
-        {query || category !== "All" || price !== "all" || level !== "all" || duration !== "all" || format !== "all" || careerTrack !== "all" || projectBased || certificateIncluded || minRating > 0 || sort !== "popular" ? <Button type="button" variant="ghost" size="sm" onClick={clearFilters}>Clear all</Button> : null}
-      </div>
-
-      {/* Results area */}
-      <div className="mt-8">
-        {/* Loading */}
-        {isLoading ? (
-          <div className="flex flex-col gap-3">
-            <div className="flex items-center gap-2 text-sm text-muted-foreground">
-              <LoaderCircle className="size-4 animate-spin" />
-              Searching catalog…
-            </div>
-            <SkeletonCourseGrid count={6} />
-          </div>
-        ) : isError ? (
-          <ErrorState
-            title="Search unavailable"
-            message={
-              error instanceof Error
-                ? error.message
-                : "The catalog search backend is not responding."
-            }
-            code="SEARCH_ERR"
-            onRetry={() => refetch()}
-          />
-        ) : data && data.hits.length === 0 ? (
-          <EmptyState
-            icon={BookOpen}
-            title="No courses found"
-            description={
-              debouncedQuery
-                ? `No results for "${debouncedQuery}". Try a different search term or clear filters.`
-                : "No courses match your filters. Try a different category or level."
-            }
-            primaryAction={
-                debouncedQuery || category !== "All" || price !== "all" || level !== "all" || duration !== "all" || format !== "all" || careerTrack !== "all" || projectBased || certificateIncluded || minRating > 0 ? (
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={clearFilters}
-                >
-                  Clear all filters
-                </Button>
-              ) : <Button variant="gradient" size="sm" asChild><Link href="/courses">Browse all courses</Link></Button>
-            }
-            secondaryAction={<Button variant="outline" size="sm" asChild><Link href="/labs">Explore labs</Link></Button>}
-          />
-        ) : data ? (
-          <>
-            <div className="mb-4 flex items-center justify-between">
-              <p className="text-sm text-muted-foreground">
-                {data.estimatedTotalHits}{" "}
-                {data.estimatedTotalHits === 1 ? "course" : "courses"} found
-                {data.query ? ` for "${data.query}"` : ""}
-              </p>
-              {data.processingTimeMs > 0 ? (
-                <span className="text-xs text-muted-foreground/60">
-                  {data.processingTimeMs}ms
-                </span>
-              ) : null}
-            </div>
-
-            <CatalogGrid courses={data.hits} products={products} />
-
-            {/* Pagination */}
-            {totalPages > 1 ? (
-              <div className="mt-8 flex items-center justify-center gap-2">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  disabled={page <= 1}
-                  onClick={() => setPage((p) => Math.max(1, p - 1))}
-                >
-                  Previous
-                </Button>
-                <span className="px-3 text-sm text-muted-foreground">
-                  Page {page} of {totalPages}
-                </span>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  disabled={page >= totalPages}
-                  onClick={() => setPage((p) => p + 1)}
-                >
-                  Next
-                </Button>
-              </div>
-            ) : null}
-          </>
-        ) : null}
-      </div>
-    </PageContainer>
+      </PageContainer>
+    </main>
   );
 }

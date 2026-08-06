@@ -30,11 +30,13 @@ export function BuyNowButton({
   quantity = 1,
   size = "default",
   className,
+  buttonClassName,
 }: {
   productId: string;
   quantity?: number;
   size?: "default" | "sm" | "lg";
   className?: string;
+  buttonClassName?: string;
 }) {
   const pathname = usePathname();
   const router = useRouter();
@@ -84,7 +86,7 @@ export function BuyNowButton({
 
   if (!user) {
     return (
-      <Button variant="gradient" size={size} asChild className={className}>
+      <Button variant="gradient" size={size} asChild className={cn(className, buttonClassName)}>
         <Link href={`/login?next=${encodeURIComponent(pathname)}`}>
           <Zap className="size-4" />
           Buy now
@@ -100,6 +102,7 @@ export function BuyNowButton({
         size={size}
         disabled={outOfStock || mutation.isPending}
         onClick={runBuy}
+        className={buttonClassName}
       >
         {mutation.isPending ? (
           <LoaderCircle className="size-4 animate-spin" />

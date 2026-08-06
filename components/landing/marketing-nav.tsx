@@ -7,7 +7,9 @@ import { Menu } from "lucide-react";
 import { GlobalSearch } from "@/components/layout/global-search";
 import { Logo } from "@/components/layout/logo";
 import { RankXpChip } from "@/components/gamification/rank-xp-chip";
+import { UserMenu } from "@/components/layout/user-menu";
 import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   Sheet,
   SheetContent,
@@ -16,6 +18,7 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
+import { useSession } from "@/components/providers/session-provider";
 import { cn } from "@/lib/utils";
 
 const links = [
@@ -29,6 +32,7 @@ const links = [
 export function MarketingNav() {
   const [scrolled, setScrolled] = React.useState(false);
   const [menuOpen, setMenuOpen] = React.useState(false);
+  const { user, isLoading } = useSession();
 
   React.useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 12);
@@ -78,16 +82,24 @@ export function MarketingNav() {
                 <GlobalSearch className="inline-flex w-full justify-start" />
               </div>
               <div className="mt-3 grid gap-2">
-                <Button variant="outline" asChild>
-                  <Link href="/login" onClick={() => setMenuOpen(false)}>
-                    Sign in
-                  </Link>
-                </Button>
-                <Button variant="gradient" asChild>
-                  <Link href="/register" onClick={() => setMenuOpen(false)}>
-                    Join Zapsters
-                  </Link>
-                </Button>
+                {isLoading ? (
+                  <Skeleton className="h-9 w-full" />
+                ) : user ? (
+                  <UserMenu />
+                ) : (
+                  <>
+                    <Button variant="outline" asChild>
+                      <Link href="/login" onClick={() => setMenuOpen(false)}>
+                        Sign in
+                      </Link>
+                    </Button>
+                    <Button variant="gradient" asChild>
+                      <Link href="/register" onClick={() => setMenuOpen(false)}>
+                        Join Zapsters
+                      </Link>
+                    </Button>
+                  </>
+                )}
               </div>
             </nav>
           </SheetContent>
@@ -110,15 +122,23 @@ export function MarketingNav() {
         <div className="ml-auto flex items-center gap-2">
           <GlobalSearch />
           <RankXpChip />
-          <Link
-            href="/login"
-            className="hidden rounded-md px-3 py-2 text-sm font-medium text-muted-foreground outline-none transition-colors hover:bg-accent hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring sm:inline-flex"
-          >
-            Sign in
-          </Link>
-          <Button variant="gradient" size="sm" asChild>
-            <Link href="/register">Join Zapsters</Link>
-          </Button>
+          {isLoading ? (
+            <Skeleton className="hidden h-9 w-28 rounded-md sm:block" />
+          ) : user ? (
+            <UserMenu />
+          ) : (
+            <>
+              <Link
+                href="/login"
+                className="hidden rounded-md px-3 py-2 text-sm font-medium text-muted-foreground outline-none transition-colors hover:bg-accent hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring sm:inline-flex"
+              >
+                Sign in
+              </Link>
+              <Button variant="gradient" size="sm" asChild>
+                <Link href="/register">Join Zapsters</Link>
+              </Button>
+            </>
+          )}
         </div>
       </div>
     </header>

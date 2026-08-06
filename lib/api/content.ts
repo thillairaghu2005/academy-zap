@@ -176,7 +176,7 @@ export async function searchCatalog(
       .join(" ")
       .toLowerCase();
     if (query && !haystack.includes(query)) return false;
-    if (params.category && course.category !== params.category) return false;
+    if (params.category && !matchesCatalogCategory(course, summary, params.category)) return false;
     if (params.price === "free" && course.price_cents !== 0) return false;
     if (params.price === "paid" && course.price_cents === 0) return false;
     if (params.level && params.level !== "all" && course.level !== params.level)
@@ -217,6 +217,26 @@ export async function searchCatalog(
     offset,
     estimatedTotalHits: sorted.length,
   };
+}
+
+/** UI category labels intentionally stay human-readable while the catalog
+ * keeps matching the existing course taxonomy and career-track projection. */
+function matchesCatalogCategory(
+  course: Course,
+  summary: CourseSummary,
+  category: string,
+): boolean {
+  switch (category) {
+    case "Cloud":
+    case "DevOps":
+      return course.category === "Cloud & DevOps" || summary.career_track === "cloud";
+    case "AI":
+      return summary.career_track === "ai_ml";
+    case "Networking":
+      return course.title.toLowerCase().includes("network");
+    default:
+      return course.category === category;
+  }
 }
 
 export async function getEnrollment(

@@ -72,7 +72,7 @@ export function SkeletonGrid({
 
 export function SkeletonCourseGrid({ count = 6 }: { count?: number }) {
   return (
-    <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3" role="status" aria-label="Loading courses">
+    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4 min-[1440px]:grid-cols-5" role="status" aria-label="Loading courses">
       {Array.from({ length: count }).map((_, index) => (
         <div key={index} className="overflow-hidden rounded-xl border border-border bg-card">
           <Skeleton className="h-36 rounded-none" />
