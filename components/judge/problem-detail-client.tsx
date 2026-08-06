@@ -3,6 +3,7 @@
 import * as React from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { AnimatePresence, motion } from "framer-motion";
+import { useRouter } from "next/navigation";
 import {
   Check,
   CheckCircle2,
@@ -430,6 +431,7 @@ function SubmissionHistory({
 export function ProblemDetailClient({ problemId }: { problemId: string }) {
   const { user } = useSession();
   const userId = user?.id;
+  const router = useRouter();
   const queryClient = useQueryClient();
 
   // 1. Problem fetch — 404 (missing-problem) renders a distinct state.
@@ -505,13 +507,16 @@ export function ProblemDetailClient({ problemId }: { problemId: string }) {
     !timedOut;
 
   const canSubmit =
-    !!userId &&
     !submitMutation.isPending &&
     !judging &&
     !problemQuery.isLoading &&
     !problemQuery.isError;
 
   const handleSubmit = () => {
+    if (!userId) {
+      router.push(`/login?next=/judge/${problemId}`);
+      return;
+    }
     if (!canSubmit) return;
     submitMutation.mutate(editorValue);
   };
@@ -648,7 +653,11 @@ export function ProblemDetailClient({ problemId }: { problemId: string }) {
                 ) : (
                   <Send className="size-4" />
                 )}
-                {submitMutation.isPending ? "Submitting…" : "Submit"}
+                {submitMutation.isPending
+                  ? "Submitting…"
+                  : userId
+                    ? "Submit"
+                    : "Sign in to submit"}
               </Button>
             </div>
           </Card>

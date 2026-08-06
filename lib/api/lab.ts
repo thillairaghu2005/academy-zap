@@ -2,6 +2,7 @@ import type {
   Lab,
   LabSession,
   LabSessionCompletedEvent,
+  LabPreviewSession,
   ObjectiveResult,
 } from "@/lib/contracts/lab";
 import {
@@ -134,6 +135,21 @@ export async function provisionSession(
   }, readyAt - Date.now());
 
   return session;
+}
+
+/** Creates a short-lived guest terminal; it cannot be completed or saved. */
+export async function provisionPreviewSession(
+  labId: string,
+): Promise<LabPreviewSession> {
+  const session = await provisionSession(labId, "guest-preview");
+  return {
+    session_id: session.session_id,
+    lab_id: session.lab_id,
+    status: "running",
+    expires_at: session.expires_at,
+    terminal_url: session.terminal_url,
+    read_only: true,
+  };
 }
 
 export async function getSession(sessionId: string): Promise<LabSession> {

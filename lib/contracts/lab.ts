@@ -95,6 +95,16 @@ export interface LabSession {
   ended_at: string | null;
 }
 
+/** Public, non-persistent terminal session for the unauthenticated try-it mode. */
+export interface LabPreviewSession {
+  session_id: string;
+  lab_id: string;
+  status: "running";
+  expires_at: string;
+  terminal_url: string;
+  read_only: true;
+}
+
 /** Mirrors LabSessionCompletedEvent (§4.3) — emitted via the mock API. */
 export interface LabSessionCompletedEvent {
   event_type: "lab.session_completed";

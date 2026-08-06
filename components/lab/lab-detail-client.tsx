@@ -22,7 +22,7 @@ import {
 } from "lucide-react";
 
 import type { Lab } from "@/lib/contracts/lab";
-import { getLab, provisionSession } from "@/lib/api/lab";
+import { getLab, provisionPreviewSession, provisionSession } from "@/lib/api/lab";
 import { DEMO_MODE } from "@/lib/config";
 import { getCatalogProduct, hasEntitlement } from "@/lib/api/commerce";
 import { AddToCartButton } from "@/components/commerce/add-to-cart-button";
@@ -35,6 +35,7 @@ import { PageContainer } from "@/components/shared/page-container";
 import { EmptyState } from "@/components/shared/empty-state";
 import { ErrorState } from "@/components/shared/error-state";
 import { SkeletonLines } from "@/components/shared/skeletons";
+import { LabTerminalShell } from "@/components/lab/terminal-shell";
 import { cn } from "@/lib/utils";
 
 /* ------------------------------------------------------------------ */
@@ -69,6 +70,14 @@ export function LabDetailClient({ labId }: { labId: string }) {
   const labQuery = useQuery({
     queryKey: ["lab", labId],
     queryFn: () => getLab(labId),
+  });
+
+  const previewSessionQuery = useQuery({
+    queryKey: ["lab-preview-session", labId],
+    queryFn: () => provisionPreviewSession(labId),
+    enabled: Boolean(labQuery.data && !user),
+    staleTime: Number.POSITIVE_INFINITY,
+    retry: false,
   });
 
   // F6 entitlement gate: some labs are sold as lab passes (catalog lookup).
@@ -204,6 +213,31 @@ export function LabDetailClient({ labId }: { labId: string }) {
             </span>
           </div>
 
+          {!user ? (
+            <div>
+              <div className="mb-3 flex items-center justify-between gap-3">
+                <div>
+                  <h2 className="font-display text-h2">Try the shell</h2>
+                  <p className="mt-1 text-xs text-muted-foreground">
+                    Explore the isolated terminal with guest access. Nothing from this session is saved.
+                  </p>
+                </div>
+                <Badge variant="info" className="shrink-0">Read-only preview</Badge>
+              </div>
+              <Card className="h-[320px] overflow-hidden border-foreground/20 bg-[#0b0f14] p-0">
+                {previewSessionQuery.isLoading ? (
+                  <SkeletonLines count={3} className="p-5" />
+                ) : previewSessionQuery.data ? (
+                  <LabTerminalShell sessionId={previewSessionQuery.data.session_id} />
+                ) : (
+                  <p className="p-5 text-sm text-muted-foreground">
+                    The guest terminal is unavailable right now. Sign in to start a full session.
+                  </p>
+                )}
+              </Card>
+            </div>
+          ) : null}
+
           <div>
             <h2 className="font-display text-h2">
               Objectives
@@ -287,10 +321,17 @@ export function LabDetailClient({ labId }: { labId: string }) {
                 <BuyNowButton productId={labId} className="w-full" />
                 <AddToCartButton productId={labId} className="w-full" />
               </div>
+            ) : !user ? (
+              <Button variant="gradient" className="w-full gap-2" asChild>
+                <Link href={`/login?next=/labs/${labId}`}>
+                  <Lock className="size-4" />
+                  Sign in to save progress
+                </Link>
+              </Button>
             ) : (
               <Button
                 onClick={() => provision.mutate()}
-                disabled={!user || provision.isPending}
+                disabled={provision.isPending}
                 className="w-full gap-2"
               >
                 {provision.isPending ? (
@@ -348,7 +389,7 @@ export function LabDetailClient({ labId }: { labId: string }) {
             {!user && !isPaidLab ? (
               <p className="flex items-center gap-1.5 text-xs text-muted-foreground">
                 <Lock className="size-3.5 shrink-0" />
-                Sign in to start a lab session.
+                Guest terminal input is temporary. Sign in to start a saved lab session.
               </p>
             ) : null}
 
