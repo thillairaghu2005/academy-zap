@@ -123,6 +123,12 @@ export async function getLeaderboard(
     : null);
 }
 
+/** Public homepage preview over the same leaderboard projection. */
+export async function getPublicLeaderboardPreview(): Promise<LeaderboardPage> {
+  await delay(jitter(180));
+  return buildLeaderboard("global", 0, null);
+}
+
 /** ZRANK-shaped read of the user's own standing — pinned above the board. */
 export async function getMyStanding(
   scope: LeaderboardScope,
@@ -148,6 +154,12 @@ export async function getGuildBoard(userId: string): Promise<GuildStanding> {
   if (!ctx?.guild) {
     throw new MockApiError("no_guild", "This learner is not in a guild this season.", 404);
   }
+  return buildGuildBoard();
+}
+
+/** Public homepage preview over the current guild projection. */
+export async function getPublicGuildBoard(): Promise<GuildStanding> {
+  await delay(jitter(180));
   return buildGuildBoard();
 }
 
