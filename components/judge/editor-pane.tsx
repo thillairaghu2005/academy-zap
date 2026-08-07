@@ -38,7 +38,7 @@ export function EditorPane({
   language = "python",
   height = "100%",
   readOnly = false,
-  theme = "vs-dark",
+  theme = "vs",
 }: EditorPaneProps) {
   return (
     <Editor
