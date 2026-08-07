@@ -11,7 +11,9 @@ import {
   BookmarkCheck,
   ChevronDown,
   Clock3,
+  LayoutGrid,
   LoaderCircle,
+  List,
   Search,
   Star,
   Users,
@@ -392,9 +394,11 @@ function ResultCount({ count, query }: { count: number; query?: string }) {
 function CourseCard({
   course,
   product,
+  view = "grid",
 }: {
   course: CourseSummary;
   product?: CatalogProduct;
+  view?: "grid" | "list";
 }) {
   const difficulty = course.level.charAt(0).toUpperCase() + course.level.slice(1);
   const [saved, setSaved] = React.useState(false);
@@ -402,13 +406,13 @@ function CourseCard({
   return (
     <Card
       variant="glow"
-      className="group flex h-full flex-col overflow-hidden rounded-3xl border-border bg-card shadow-[0_8px_26px_rgb(17_24_39_/_5%)] transition-all duration-300 hover:-translate-y-1 hover:border-primary/25 hover:shadow-[0_18px_44px_rgb(17_24_39_/_10%)]"
+      className={`group flex h-full flex-col overflow-hidden rounded-3xl border-border bg-card shadow-[0_8px_26px_rgb(17_24_39_/_5%)] transition-all duration-300 hover:-translate-y-1 hover:border-primary/25 hover:shadow-[0_18px_44px_rgb(17_24_39_/_10%)] ${view === "list" ? "sm:flex-row sm:flex-wrap" : ""}`}
     >
-      <Link
-        href={`/courses/${course.id}`}
-        className="flex flex-1 flex-col outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
-      >
-        <div className="relative h-48 overflow-hidden bg-surface-1">
+      <div className={`relative h-48 overflow-hidden bg-surface-1 ${view === "list" ? "sm:h-auto sm:min-h-[220px] sm:w-64 sm:shrink-0" : ""}`}>
+        <Link
+          href={`/courses/${course.id}`}
+          className="absolute inset-0 outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring"
+        >
           <div className="absolute inset-0 aurora opacity-70 transition-transform duration-700 group-hover:scale-105" aria-hidden="true" />
           <div className="absolute inset-0 bg-grid opacity-60" aria-hidden="true" />
           <div className="absolute -right-8 -top-14 size-44 rounded-full border border-primary/20 bg-primary/5 transition-transform duration-700 group-hover:translate-x-2 group-hover:translate-y-2" aria-hidden="true" />
@@ -417,18 +421,6 @@ function CourseCard({
               <Badge variant="outline" className="border-primary/20 bg-white/75 text-primary backdrop-blur-sm">
                 {course.category}
               </Badge>
-              <button
-                type="button"
-                aria-label={saved ? `Remove ${course.title} from saved courses` : `Save ${course.title}`}
-                aria-pressed={saved}
-                onClick={(event) => {
-                  event.preventDefault();
-                  setSaved((current) => !current);
-                }}
-                className="grid size-9 place-items-center rounded-full border border-white/80 bg-white/75 text-muted-foreground shadow-sm backdrop-blur-sm transition-colors hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-              >
-                {saved ? <BookmarkCheck className="size-4 text-primary" /> : <Bookmark className="size-4" />}
-              </button>
             </div>
             <div>
               <span className="inline-flex rounded-full bg-white/75 px-2.5 py-1 text-caption font-medium text-foreground shadow-sm backdrop-blur-sm">
@@ -439,8 +431,22 @@ function CourseCard({
               </p>
             </div>
           </div>
-        </div>
+        </Link>
+        <button
+          type="button"
+          aria-label={saved ? `Remove ${course.title} from saved courses` : `Save ${course.title}`}
+          aria-pressed={saved}
+          onClick={() => setSaved((current) => !current)}
+          className="absolute right-5 top-5 z-10 grid size-9 place-items-center rounded-full border border-white/80 bg-white/75 text-muted-foreground shadow-sm backdrop-blur-sm transition-colors hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+        >
+          {saved ? <BookmarkCheck className="size-4 text-primary" /> : <Bookmark className="size-4" />}
+        </button>
+      </div>
 
+      <Link
+        href={`/courses/${course.id}`}
+        className={`flex flex-1 flex-col outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background ${view === "list" ? "sm:min-w-0 sm:flex-[1_1_0%]" : ""}`}
+      >
         <CardContent className="flex flex-1 flex-col gap-4 p-5">
           <div>
             <h3 className="font-display text-h3 font-semibold leading-tight tracking-[-0.03em] text-foreground transition-colors group-hover:text-primary">
@@ -451,7 +457,7 @@ function CourseCard({
 
           <div className="flex flex-wrap items-center gap-x-3 gap-y-2 text-xs text-muted-foreground">
             <span className="inline-flex items-center gap-1 font-medium text-foreground">
-              <Star className="size-3.5 fill-amber-400 text-amber-400" aria-hidden="true" />
+              <Star className="size-3.5 fill-primary text-primary" aria-hidden="true" />
               {course.rating > 0 ? course.rating.toFixed(1) : "New"}
               {course.review_count > 0 ? <span className="font-normal text-muted-foreground">({course.review_count})</span> : null}
             </span>
@@ -473,7 +479,7 @@ function CourseCard({
       </Link>
 
       {product ? (
-        <div className="flex gap-2 border-t border-border p-3">
+        <div className={`flex gap-2 border-t border-border p-3 ${view === "list" ? "sm:w-full" : ""}`}>
           <AddToCartButton
             productId={course.id}
             size="sm"
@@ -487,7 +493,7 @@ function CourseCard({
           />
         </div>
       ) : (
-        <div className="border-t border-border p-3">
+        <div className={`border-t border-border p-3 ${view === "list" ? "sm:w-full" : ""}`}>
           <Button
             asChild
             size="sm"
@@ -505,14 +511,16 @@ function CourseCard({
 function CourseGrid({
   courses,
   products,
+  view,
 }: {
   courses: CourseSummary[];
   products: Map<string, CatalogProduct>;
+  view: "grid" | "list";
 }) {
   const reducedMotion = useReducedMotion() ?? false;
 
   return (
-    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4 min-[1440px]:grid-cols-5">
+    <div className={view === "grid" ? "grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4" : "grid grid-cols-1 gap-4"}>
       {courses.map((course, index) => (
         <motion.div
           key={course.id}
@@ -521,7 +529,7 @@ function CourseGrid({
            transition={reducedMotion ? undefined : { delay: 0.04 * index, duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
           className="min-w-0"
         >
-          <CourseCard course={course} product={products.get(course.id)} />
+          <CourseCard course={course} product={products.get(course.id)} view={view} />
         </motion.div>
       ))}
     </div>
@@ -554,6 +562,7 @@ export function CatalogClient() {
   const [certificateIncluded, setCertificateIncluded] = React.useState(searchParams.get("certificate") === "1");
   const [minRating, setMinRating] = React.useState(Number.isFinite(initialMinRating) ? initialMinRating : 0);
   const [sort, setSort] = React.useState<CourseSort>(SORT_OPTIONS.some((option) => option.value === initialSort) ? initialSort : "popular");
+  const [view, setView] = React.useState<"grid" | "list">("grid");
   const [page, setPage] = React.useState(1);
 
   const debouncedQuery = useDebouncedValue(query, 300);
@@ -700,10 +709,36 @@ export function CatalogClient() {
                primaryAction={hasActiveFilters ? <Button variant="outline" size="sm" onClick={clearFilters}>Clear all filters</Button> : <Button variant="outline" size="sm" asChild><Link href="/courses">Browse all courses</Link></Button>}
                secondaryAction={<Button variant="outline" size="sm" asChild><Link href="/labs">Explore labs</Link></Button>}
             />
-          ) : data ? (
-            <section aria-label="Course results" className="space-y-3 pt-1">
-              <ResultCount count={data.estimatedTotalHits} query={data.query} />
-              <CourseGrid courses={data.hits} products={products} />
+           ) : data ? (
+             <section aria-label="Course results" className="space-y-3 pt-1">
+               <div className="flex flex-wrap items-center justify-between gap-3">
+                 <ResultCount count={data.estimatedTotalHits} query={data.query} />
+                 <div className="inline-flex items-center rounded-xl border border-border bg-card p-1" role="group" aria-label="Course result layout">
+                   <Button
+                     type="button"
+                     variant={view === "grid" ? "secondary" : "ghost"}
+                     size="icon-sm"
+                     className="rounded-lg"
+                     aria-label="Show courses as a grid"
+                     aria-pressed={view === "grid"}
+                     onClick={() => setView("grid")}
+                   >
+                     <LayoutGrid className="size-4" />
+                   </Button>
+                   <Button
+                     type="button"
+                     variant={view === "list" ? "secondary" : "ghost"}
+                     size="icon-sm"
+                     className="rounded-lg"
+                     aria-label="Show courses as a list"
+                     aria-pressed={view === "list"}
+                     onClick={() => setView("list")}
+                   >
+                     <List className="size-4" />
+                   </Button>
+                 </div>
+               </div>
+               <CourseGrid courses={data.hits} products={products} view={view} />
               {totalPages > 1 ? (
                 <div className="flex items-center justify-center gap-2 pt-5">
                    <Button variant="outline" size="sm" disabled={page <= 1} onClick={() => setPage((current) => Math.max(1, current - 1))}>Previous</Button>

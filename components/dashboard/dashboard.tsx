@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { motion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 import { ArrowRight, BadgeCheck, Gift, Layers } from "lucide-react";
 
 import type { SurfaceMeta } from "@/lib/surfaces";
@@ -16,6 +16,7 @@ import {
 } from "@/components/ui/card";
 import { PageContainer } from "@/components/shared/page-container";
 import { MyLearning } from "@/components/dashboard/my-learning";
+import { useSession } from "@/components/providers/session-provider";
 
 function SurfaceCard({ surface }: { surface: SurfaceMeta }) {
   const Icon = surface.icon;
@@ -69,37 +70,53 @@ const howItClimbs = [
 ];
 
 export function Dashboard() {
+  const { user } = useSession();
+  const reducedMotion = useReducedMotion() ?? false;
+  const firstName = user?.display_name.split(" ")[0] ?? "there";
+
   return (
-    <PageContainer className="pt-10">
+    <PageContainer className="pt-8 sm:pt-10">
       {/* Hero */}
       <motion.section
-        initial={{ opacity: 0, y: 16 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, ease: "easeOut" }}
-        className="relative overflow-hidden rounded-2xl border border-border bg-card"
+        initial={reducedMotion ? false : { opacity: 0, y: 16 }}
+        animate={reducedMotion ? undefined : { opacity: 1, y: 0 }}
+        transition={reducedMotion ? undefined : { duration: 0.5, ease: "easeOut" }}
+        className="relative overflow-hidden rounded-3xl border border-border/80 bg-card"
       >
-        <div className="pointer-events-none absolute inset-0 bg-grid opacity-70 [mask-image:radial-gradient(ellipse_at_top_left,black,transparent_75%)]" />
-        <div className="pointer-events-none absolute -right-24 -top-24 size-96 rounded-full bg-primary/10 blur-3xl animate-glow-pulse" />
-        <div className="pointer-events-none absolute -bottom-20 -left-16 size-72 rounded-full bg-primary-light/60 blur-3xl" />
+        <div className="pointer-events-none absolute inset-0 bg-grid opacity-45 [mask-image:radial-gradient(ellipse_at_top_left,black,transparent_75%)]" />
+        <div className="pointer-events-none absolute -right-24 -top-24 size-96 rounded-full bg-primary/8 blur-3xl" />
 
-        <div className="relative z-10 px-6 py-14 sm:px-10 sm:py-16">
-          <h1 className="max-w-2xl font-display text-h1">
-            Learn. Build. <span className="text-primary">Climb.</span>
-          </h1>
-          <p className="mt-4 max-w-xl text-base leading-relaxed text-muted-foreground">
-            Learn in hands-on courses, prove it in the code judge, and break
-            things in isolated virtual labs — every effort feeds a single rank
-            climb.
-          </p>
-          <div className="mt-7 flex flex-wrap gap-3">
-             <Button variant="default" size="lg" sheen glow asChild>
-              <Link href="/courses">
-                Start learning <ArrowRight />
-              </Link>
-            </Button>
-            <Button variant="outline" size="lg" asChild>
-              <Link href="/judge">Explore the Judge</Link>
-            </Button>
+        <div className="relative z-10 grid gap-8 px-6 py-9 sm:px-10 sm:py-11 lg:grid-cols-[1fr_auto] lg:items-center">
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-[0.16em] text-primary">Your learning workspace</p>
+            <h1 className="mt-4 max-w-2xl font-display text-[clamp(2.2rem,4vw,3.8rem)] font-semibold leading-[1.02] tracking-[-0.055em]">
+              Good morning, {firstName}.
+              <br />
+              <span className="text-muted-foreground">Keep the momentum.</span>
+            </h1>
+            <p className="mt-4 max-w-xl text-base leading-7 text-muted-foreground">
+              One focused lesson today is enough to keep your skills moving forward. Your next step is waiting below.
+            </p>
+            <div className="mt-7 flex flex-wrap gap-3">
+              <Button variant="default" size="lg" sheen glow asChild>
+                <Link href="/courses">Find your next lesson <ArrowRight /></Link>
+              </Button>
+              <Button variant="outline" size="lg" asChild>
+                <Link href="/judge">Practice a skill</Link>
+              </Button>
+            </div>
+          </div>
+          <div className="grid min-w-[230px] gap-3 sm:grid-cols-2 lg:grid-cols-1">
+            <div className="rounded-2xl border border-border bg-white/75 p-4 backdrop-blur-sm">
+              <div className="flex items-center gap-2 text-xs font-medium text-muted-foreground"><span className="size-2 rounded-full bg-success" /> Current focus</div>
+              <p className="mt-3 font-display text-xl font-semibold tracking-[-0.03em]">One lesson at a time</p>
+              <p className="mt-1 text-xs leading-relaxed text-muted-foreground">Short sessions beat perfect plans.</p>
+            </div>
+            <div className="rounded-2xl border border-primary/15 bg-primary/5 p-4">
+              <p className="text-xs font-medium text-primary">Platform rhythm</p>
+              <p className="mt-2 font-display text-2xl font-semibold tracking-[-0.04em]">Learn → apply</p>
+              <p className="mt-1 text-xs leading-relaxed text-muted-foreground">Every surface connects to the next.</p>
+            </div>
           </div>
         </div>
       </motion.section>
@@ -125,9 +142,9 @@ export function Dashboard() {
           {surfaces.map((surface, i) => (
             <motion.div
               key={surface.slug}
-              initial={{ opacity: 0, y: 12 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.04 * i, duration: 0.4, ease: "easeOut" }}
+              initial={reducedMotion ? false : { opacity: 0, y: 12 }}
+              animate={reducedMotion ? undefined : { opacity: 1, y: 0 }}
+              transition={reducedMotion ? undefined : { delay: 0.04 * i, duration: 0.4, ease: "easeOut" }}
             >
               <SurfaceCard surface={surface} />
             </motion.div>
@@ -144,9 +161,9 @@ export function Dashboard() {
           {howItClimbs.map((item, i) => (
             <motion.div
               key={item.title}
-              initial={{ opacity: 0, y: 12 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.05 * i, duration: 0.4, ease: "easeOut" }}
+              initial={reducedMotion ? false : { opacity: 0, y: 12 }}
+              animate={reducedMotion ? undefined : { opacity: 1, y: 0 }}
+              transition={reducedMotion ? undefined : { delay: 0.05 * i, duration: 0.4, ease: "easeOut" }}
             >
               <Card className="h-full">
                 <CardHeader className="flex-row items-center gap-3 space-y-0">

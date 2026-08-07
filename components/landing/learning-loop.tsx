@@ -66,7 +66,7 @@ export function LearningLoop() {
   }, [isInView, reducedMotion]);
 
   return (
-    <section ref={sectionRef} className="border-y border-border bg-muted/40">
+    <section id="how-it-works" ref={sectionRef} className="border-y border-border bg-muted/40">
       <div className="mx-auto max-w-7xl px-4 py-14 sm:px-6 sm:py-16 lg:px-8">
         <div className="flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
           <div>

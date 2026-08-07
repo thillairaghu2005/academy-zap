@@ -50,7 +50,7 @@ function isSandboxMessage(value: unknown): value is SandboxMessage {
 }
 
 export function useIDE() {
-  const [theme, setTheme] = React.useState<IDETheme>("zapsters-ide-dark");
+  const [theme, setTheme] = React.useState<IDETheme>("vs-light");
   const [hydrated, setHydrated] = React.useState(false);
   const [sidebarOpen, setSidebarOpen] = React.useState(true);
   const [sidebarWidth, setSidebarWidth] = React.useState(248);
@@ -71,9 +71,7 @@ export function useIDE() {
       const parsed = savedChrome ? JSON.parse(savedChrome) as Partial<{ sidebarWidth: number; bottomPanelHeight: number }> : {};
       timer = window.setTimeout(() => {
         if (savedTheme && [
-          "zapsters-ide-dark", "vs-dark", "vs-light", "github-dark", "github-light",
-          "one-dark-pro", "dracula", "monokai", "solarized-dark", "solarized-light",
-          "nord", "material-dark", "material-light",
+          "vs-light", "github-light", "solarized-light", "material-light",
         ].includes(savedTheme)) setTheme(savedTheme as IDETheme);
         if (typeof parsed.sidebarWidth === "number") setSidebarWidth(parsed.sidebarWidth);
         if (typeof parsed.bottomPanelHeight === "number") setBottomPanelHeight(parsed.bottomPanelHeight);

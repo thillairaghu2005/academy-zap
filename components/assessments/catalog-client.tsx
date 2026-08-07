@@ -3,7 +3,7 @@
 import * as React from "react";
 import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
-import { motion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 import {
   ClipboardList,
   Clock,
@@ -38,34 +38,29 @@ const TYPE_META: Record<QuestionType, { label: string; icon: typeof Code2 }> = {
 };
 
 function AssessmentCard({ assessment, index }: { assessment: Assessment; index: number }) {
+  const reducedMotion = useReducedMotion() ?? false;
   const types = [...new Set(assessment.questions.map((q) => q.type))];
   const totalPoints = assessment.questions.reduce(
     (sum, q) =>
       sum + (q.difficulty === "hard" ? 25 : q.difficulty === "medium" ? 15 : 10),
     0,
   );
-  const hue = (assessment.id.length * 53 + index * 70) % 360;
-
   return (
     <motion.div
-      initial={{ opacity: 0, y: 12 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: 0.04 * index, duration: 0.35, ease: "easeOut" }}
+      initial={reducedMotion ? false : { opacity: 0, y: 12 }}
+      animate={reducedMotion ? undefined : { opacity: 1, y: 0 }}
+      transition={reducedMotion ? undefined : { delay: 0.04 * index, duration: 0.35, ease: "easeOut" }}
     >
       <Link href={`/assessments/${assessment.id}`} className="group block h-full outline-none">
-        <Card className="h-full overflow-hidden transition-all duration-200 group-hover:-translate-y-0.5 group-hover:border-amber-500/40 group-hover:shadow-xl group-hover:shadow-amber-500/10 focus-visible:ring-2 focus-visible:ring-ring">
-          <div
-            className="relative h-28 w-full"
-            style={{
-              background: `linear-gradient(135deg, hsl(${hue}, 55%, 42%), hsl(${(hue + 60) % 360}, 45%, 24%))`,
-            }}
-          >
-            <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
+          <Card className="h-full overflow-hidden transition-all duration-200 group-hover:-translate-y-0.5 group-hover:border-primary/30 group-hover:shadow-[0_18px_40px_rgb(37_99_235_/_10%)] focus-visible:ring-2 focus-visible:ring-ring">
+          <div className="relative h-28 w-full overflow-hidden bg-surface-1">
+            <div className="absolute inset-0 aurora opacity-70" aria-hidden="true" />
+            <div className="absolute inset-0 bg-grid opacity-60" aria-hidden="true" />
             <div className="absolute bottom-3 left-4 right-4 flex items-end justify-between gap-2">
-              <h3 className="font-display text-h3 text-white drop-shadow-sm">
+              <h3 className="font-display text-h3 text-foreground">
                 {assessment.title}
               </h3>
-              <span className="shrink-0 rounded-full border border-white/20 bg-black/40 px-2 py-0.5 font-mono text-[10px] text-white/90 backdrop-blur-sm">
+              <span className="shrink-0 rounded-full border border-primary/15 bg-white/80 px-2 py-0.5 font-mono text-[10px] text-primary backdrop-blur-sm">
                 v{assessment.version}
               </span>
             </div>

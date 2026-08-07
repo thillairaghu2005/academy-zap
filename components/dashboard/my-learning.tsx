@@ -3,13 +3,14 @@
 import * as React from "react";
 import Link from "next/link";
 import { useQuery } from "@tanstack/react-query";
-import { motion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 import {
   ArrowRight,
   BookOpen,
   Check,
   CheckCircle2,
   Clock3,
+  Compass,
   Flame,
   Layers3,
   Play,
@@ -194,16 +195,16 @@ function ContinueLearning({ item }: { item: MyLearningItem }) {
           </Button>
         </div>
 
-        <div className="relative flex min-h-[180px] items-end overflow-hidden rounded-xl border border-white/60 p-5 shadow-inner lg:min-h-[220px] lg:p-6" style={{ background: coverGradient(hueForId(course.id)) }}>
-          <div className="absolute inset-0 bg-gradient-to-t from-black/65 via-black/10 to-white/10" />
-          <div className="absolute right-5 top-5 rounded-full border border-white/20 bg-black/15 px-3 py-1.5 text-xs font-medium text-white/90 backdrop-blur-sm">
+        <div className="relative flex min-h-[180px] items-end overflow-hidden rounded-xl border border-primary/10 p-5 shadow-inner lg:min-h-[220px] lg:p-6" style={{ background: coverGradient(hueForId(course.id)) }}>
+          <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-transparent to-white/60" />
+          <div className="absolute right-5 top-5 rounded-full border border-primary/15 bg-white/75 px-3 py-1.5 text-xs font-medium text-foreground backdrop-blur-sm">
             {course.level} level
           </div>
           <div className="relative z-10">
-            <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-white/70">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-primary">
               Your next milestone
             </p>
-            <p className="mt-2 max-w-[17rem] font-display text-lg font-semibold leading-snug text-white">
+            <p className="mt-2 max-w-[17rem] font-display text-lg font-semibold leading-snug text-foreground">
               Keep the momentum going. You&apos;re building a skill that compounds.
             </p>
           </div>
@@ -231,8 +232,8 @@ function LearningCard({ item }: { item: MyLearningItem }) {
             className="relative size-12 shrink-0 overflow-hidden rounded-lg shadow-sm transition-transform duration-300 group-hover:scale-[1.04] sm:size-14"
             style={{ background: coverGradient(hueForId(course.id)) }}
           >
-            <div className="absolute inset-0 bg-gradient-to-t from-black/45 to-transparent" />
-            <span className="absolute bottom-1 left-1.5 right-1.5 truncate text-[9px] font-semibold uppercase tracking-wide text-white/90">
+            <div className="absolute inset-0 bg-gradient-to-br from-primary/10 to-transparent" />
+            <span className="absolute bottom-1 left-1.5 right-1.5 truncate text-[9px] font-semibold uppercase tracking-wide text-primary">
               {course.category}
             </span>
           </div>
@@ -282,6 +283,75 @@ function LearningCard({ item }: { item: MyLearningItem }) {
   );
 }
 
+function LearningJourney({ items }: { items: MyLearningItem[] }) {
+  const hasStarted = items.some((item) => item.enrollment.progress_pct > 0);
+  const hasCompleted = items.some((item) => item.enrollment.status === "completed");
+  const totalProgress = items.length
+    ? Math.round(items.reduce((total, item) => total + item.enrollment.progress_pct, 0) / items.length)
+    : 0;
+  const milestones = [
+    {
+      label: "Choose a direction",
+      detail: `${items.length} ${items.length === 1 ? "course" : "courses"} in your library`,
+      icon: Compass,
+      complete: items.length > 0,
+    },
+    {
+      label: "Build the habit",
+      detail: hasStarted ? "You have momentum. Keep the next session small." : "Start one lesson to make progress visible.",
+      icon: Flame,
+      complete: hasStarted,
+    },
+    {
+      label: "Prove the skill",
+      detail: hasCompleted ? "A completed course is now part of your record." : "Finish a course to unlock your first verified milestone.",
+      icon: Trophy,
+      complete: hasCompleted,
+    },
+    {
+      label: "Keep compounding",
+      detail: totalProgress >= 75 ? "You are close to the next meaningful milestone." : "Your next focused session is the shortest path forward.",
+      icon: ArrowRight,
+      complete: totalProgress >= 75,
+    },
+  ];
+
+  return (
+    <Card variant="glass" className="mt-8 overflow-hidden rounded-3xl p-5 sm:p-7">
+      <div className="flex flex-wrap items-end justify-between gap-4">
+        <div>
+          <p className="text-xs font-semibold uppercase tracking-[0.14em] text-primary">Learning journey</p>
+          <h3 className="mt-2 font-display text-2xl font-semibold tracking-[-0.035em]">Small steps, visible momentum.</h3>
+          <p className="mt-2 max-w-xl text-sm leading-relaxed text-muted-foreground">The platform keeps the next action close. Follow the line, finish the work, and let each verified effort open the next door.</p>
+        </div>
+        <div className="rounded-2xl bg-primary/5 px-4 py-3 text-right">
+          <p className="text-[11px] font-medium uppercase tracking-[0.1em] text-muted-foreground">Library average</p>
+          <p className="mt-1 font-display text-2xl font-semibold tabular-nums text-primary">{totalProgress}%</p>
+        </div>
+      </div>
+
+      <div className="relative mt-8 grid gap-5 sm:grid-cols-4 sm:gap-3">
+        <div className="pointer-events-none absolute left-[12.5%] right-[12.5%] top-5 hidden h-px bg-border sm:block" aria-hidden="true" />
+        {milestones.map((milestone, index) => {
+          const Icon = milestone.icon;
+          return (
+            <div key={milestone.label} className="relative flex items-start gap-3 sm:block sm:text-center">
+              <span className={cn("relative z-10 grid size-10 shrink-0 place-items-center rounded-full border-4 border-card text-sm transition-colors", milestone.complete ? "bg-primary text-primary-foreground shadow-[0_0_0_4px_rgb(37_99_235_/_10%)]" : "bg-surface-1 text-muted-foreground")}>
+                {milestone.complete ? <Check className="size-4" /> : <Icon className="size-4" />}
+              </span>
+              <div className="min-w-0 sm:mt-3 sm:px-2">
+                <p className={cn("text-sm font-semibold", milestone.complete ? "text-foreground" : "text-muted-foreground")}>{milestone.label}</p>
+                <p className="mt-1 text-xs leading-relaxed text-muted-foreground">{milestone.detail}</p>
+              </div>
+              {index < milestones.length - 1 ? <span className="absolute bottom-[-1.25rem] left-5 top-10 w-px bg-border sm:hidden" aria-hidden="true" /> : null}
+            </div>
+          );
+        })}
+      </div>
+    </Card>
+  );
+}
+
 function MyLearningSkeleton() {
   return (
     <div className="space-y-5">
@@ -303,6 +373,7 @@ function MyLearningSkeleton() {
 /** "My learning" — the learner's active journey with live progress. */
 export function MyLearning() {
   const { user } = useSession();
+  const reducedMotion = useReducedMotion() ?? false;
   const userId = user?.id ?? "";
 
   const { data, isLoading, isError, error, refetch } = useQuery({
@@ -392,12 +463,12 @@ export function MyLearning() {
               if (!featured) return null;
               const secondary = data.filter((item) => item !== featured);
 
-              return (
-                <div className="mt-6 space-y-10">
+               return (
+                 <div className="mt-6 space-y-10">
                   <motion.div
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.4, ease: "easeOut" }}
+                    initial={reducedMotion ? false : { opacity: 0, y: 10 }}
+                    animate={reducedMotion ? undefined : { opacity: 1, y: 0 }}
+                    transition={reducedMotion ? undefined : { duration: 0.4, ease: "easeOut" }}
                   >
                     <ContinueLearning item={featured} />
                   </motion.div>
@@ -421,18 +492,19 @@ export function MyLearning() {
                         {secondary.map((item, i) => (
                           <motion.div
                             key={item.course.id}
-                            initial={{ opacity: 0, y: 10 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ delay: 0.05 * (i + 1), duration: 0.35, ease: "easeOut" }}
+                            initial={reducedMotion ? false : { opacity: 0, y: 10 }}
+                            animate={reducedMotion ? undefined : { opacity: 1, y: 0 }}
+                            transition={reducedMotion ? undefined : { delay: 0.05 * (i + 1), duration: 0.35, ease: "easeOut" }}
                           >
                             <LearningCard item={item} />
                           </motion.div>
                         ))}
                       </div>
                     </div>
-                  ) : null}
-                </div>
-              );
+                   ) : null}
+                   <LearningJourney items={data} />
+                 </div>
+               );
             })()}
           </>
         ) : null}

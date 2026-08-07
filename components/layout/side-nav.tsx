@@ -89,9 +89,10 @@ export function NavLinks({ onNavigate }: { onNavigate?: () => void }) {
 /** Desktop side rail — hidden below lg, replaced by the mobile sheet */
 export function SideNav() {
   return (
-    <aside className="sticky top-0 hidden h-[calc(100dvh-1rem)] w-64 shrink-0 flex-col overflow-y-auto px-4 py-5 lg:flex">
-      <div className="px-1 pb-3">
-        <Logo size="sm" />
+    <aside className="sticky top-0 hidden h-[calc(100dvh-1rem)] w-60 shrink-0 flex-col overflow-y-auto border-r border-border/70 px-3 py-5 lg:flex">
+      <div className="mb-2 rounded-xl bg-surface-1 px-3 py-2.5 text-xs text-muted-foreground">
+        <span className="font-medium text-foreground">Your workspace</span>
+        <span className="mt-0.5 block">Learn, practice, and track progress.</span>
       </div>
       <NavLinks />
     </aside>

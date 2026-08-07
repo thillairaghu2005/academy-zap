@@ -1,103 +1,198 @@
+"use client";
+
 import Link from "next/link";
+import { motion, useReducedMotion } from "framer-motion";
 import {
   ArrowRight,
-  CheckCircle2,
+  BookOpen,
+  Check,
   ChevronRight,
+  CirclePlay,
   Code2,
-  GitCommitHorizontal,
-  ShieldCheck,
-  Trophy,
-  Zap,
+  Flame,
+  LineChart,
+  Sparkles,
 } from "lucide-react";
 
+import { Magnetic } from "@/components/motion/magnetic";
+import { Spotlight } from "@/components/motion/spotlight";
 import { Button } from "@/components/ui/button";
 
-/** The landing signature: an accepted submission rendered as a rank-producing artifact. */
-export function HeroSection() {
+const glyphs = [
+  { value: "</>", className: "left-[8%] top-[21%] rotate-[-10deg]" },
+  { value: "01", className: "right-[10%] top-[18%] rotate-[8deg]" },
+  { value: "∑", className: "right-[5%] bottom-[24%] rotate-[-7deg]" },
+  { value: "{ }", className: "left-[4%] bottom-[18%] rotate-[9deg]" },
+] as const;
+
+function WorkspacePreview() {
   return (
-    <section className="relative overflow-hidden border-b border-border bg-background text-foreground">
-      <div className="pointer-events-none absolute -right-32 -top-48 size-[34rem] rounded-full bg-primary/5 blur-3xl" aria-hidden="true" />
-      <div className="mx-auto grid max-w-7xl items-center gap-12 px-4 py-16 sm:px-6 sm:py-24 lg:grid-cols-[0.9fr_1.1fr] lg:gap-20 lg:px-8 lg:py-28">
-        <div className="max-w-2xl motion-safe:animate-fade-up">
-          <p className="font-mono text-xs font-medium uppercase tracking-widest text-primary">
-            F2 / Judge Engine
-          </p>
-          <h1 className="mt-5 max-w-xl font-display text-hero text-foreground">
-            Submit code.
+    <Spotlight className="rounded-[28px]">
+      <div className="relative overflow-hidden rounded-[28px] border border-border/80 bg-white shadow-[0_30px_80px_rgb(17_24_39_/_12%)]">
+        <div className="flex items-center justify-between border-b border-border px-4 py-3.5 sm:px-5">
+          <div className="flex items-center gap-2.5">
+            <span className="grid size-8 place-items-center rounded-[10px] bg-primary/10 text-primary">
+              <Sparkles className="size-4" />
+            </span>
+            <div>
+              <p className="text-xs font-semibold text-foreground">Today&apos;s workspace</p>
+              <p className="mt-0.5 text-[11px] text-muted-foreground">Tuesday, 14 May</p>
+            </div>
+          </div>
+          <span className="inline-flex items-center gap-1.5 rounded-full border border-success/20 bg-success/10 px-2.5 py-1 text-[11px] font-medium text-success-strong">
+            <span className="size-1.5 rounded-full bg-success" /> On track
+          </span>
+        </div>
+
+        <div className="grid gap-4 p-4 sm:p-5 lg:grid-cols-[1.05fr_0.95fr]">
+          <div className="rounded-2xl bg-surface-1 p-4">
+            <div className="flex items-center justify-between gap-3">
+              <span className="inline-flex items-center gap-2 text-xs font-medium text-foreground">
+                <BookOpen className="size-4 text-primary" />
+                Your next lesson
+              </span>
+              <span className="font-mono text-[10px] text-muted-foreground">12 min</span>
+            </div>
+            <h2 className="mt-5 max-w-[15rem] font-display text-xl font-semibold leading-tight tracking-[-0.03em]">
+              Threat modeling for real products
+            </h2>
+            <p className="mt-2 text-xs leading-relaxed text-muted-foreground">
+              Turn a vague risk into a useful engineering decision.
+            </p>
+            <div className="mt-6 flex items-center gap-3">
+              <div className="relative size-12 shrink-0">
+                <svg className="size-12 -rotate-90" viewBox="0 0 44 44" aria-hidden="true">
+                  <circle cx="22" cy="22" r="18" fill="none" stroke="var(--color-border)" strokeWidth="3" />
+                  <circle cx="22" cy="22" r="18" fill="none" stroke="var(--color-primary)" strokeDasharray="113" strokeDashoffset="25" strokeLinecap="round" strokeWidth="3" />
+                </svg>
+                <span className="absolute inset-0 grid place-items-center text-[11px] font-semibold text-primary">78%</span>
+              </div>
+              <div>
+                <p className="text-xs font-semibold text-foreground">Security foundations</p>
+                <p className="mt-1 text-[11px] text-muted-foreground">8 of 10 lessons complete</p>
+              </div>
+            </div>
+            <Button size="sm" className="mt-6 w-full" asChild>
+              <Link href="/courses">Continue learning <ArrowRight /></Link>
+            </Button>
+          </div>
+
+          <div className="flex flex-col gap-3">
+            <div className="rounded-2xl border border-border bg-card p-4">
+              <div className="flex items-center justify-between">
+                <span className="inline-flex items-center gap-2 text-xs font-medium">
+                  <LineChart className="size-4 text-primary" /> Weekly rhythm
+                </span>
+                <span className="text-[11px] font-medium text-success-strong">+24%</span>
+              </div>
+              <div className="mt-5 flex h-16 items-end gap-1.5" aria-label="Learning activity across the week">
+                {[34, 48, 42, 68, 55, 84, 62, 92, 74, 100, 82, 91].map((height, index) => (
+                  <span key={index} className="min-w-0 flex-1 rounded-t-md bg-primary/15" style={{ height: `${height}%` }}>
+                    <span className="block h-full rounded-t-md bg-primary" style={{ opacity: index > 7 ? 0.9 : 0.34 }} />
+                  </span>
+                ))}
+              </div>
+              <div className="mt-3 flex justify-between text-[10px] text-muted-foreground"><span>Mon</span><span>Today</span><span>Sun</span></div>
+            </div>
+
+            <div className="rounded-2xl border border-border bg-card p-4">
+              <div className="flex items-center justify-between gap-3">
+                <span className="text-xs font-medium">Recent milestones</span>
+                <span className="text-[11px] text-muted-foreground">This week</span>
+              </div>
+              <div className="mt-4 space-y-3">
+                <div className="flex items-center gap-2.5 text-xs">
+                  <span className="grid size-6 place-items-center rounded-full bg-success/10 text-success-strong"><Check className="size-3.5" /></span>
+                  <span className="min-w-0 flex-1 truncate">Completed access control lab</span>
+                  <span className="font-mono text-[10px] text-muted-foreground">+120 XP</span>
+                </div>
+                <div className="flex items-center gap-2.5 text-xs">
+                  <span className="grid size-6 place-items-center rounded-full bg-primary/10 text-primary"><CirclePlay className="size-3.5" /></span>
+                  <span className="min-w-0 flex-1 truncate">Started API security track</span>
+                  <span className="font-mono text-[10px] text-muted-foreground">2h ago</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="flex items-center gap-2 border-t border-border px-4 py-3 text-[11px] text-muted-foreground sm:px-5">
+          <Flame className="size-3.5 text-primary" />
+          <span>4 day learning streak</span>
+          <ChevronRight className="ml-auto size-3.5" />
+        </div>
+      </div>
+    </Spotlight>
+  );
+}
+
+/** The public landing signature: a calm workspace preview instead of a generic LMS banner. */
+export function HeroSection() {
+  const reducedMotion = useReducedMotion() ?? false;
+
+  return (
+    <section className="relative isolate overflow-hidden border-b border-border bg-background text-foreground">
+      <div className="pointer-events-none absolute inset-0 bg-grid opacity-40 [mask-image:linear-gradient(to_bottom,black,transparent_82%)]" aria-hidden="true" />
+      <div className="pointer-events-none absolute left-1/2 top-[-18rem] size-[38rem] -translate-x-1/2 rounded-full bg-primary/10 blur-3xl" aria-hidden="true" />
+      {glyphs.map((glyph, index) => (
+        <span
+          key={glyph.value}
+          aria-hidden="true"
+          className={`pointer-events-none absolute hidden font-mono text-sm text-muted-foreground/25 motion-safe:animate-drift sm:block ${glyph.className}`}
+          style={{ animationDelay: `${index * -2.4}s` }}
+        >
+          {glyph.value}
+        </span>
+      ))}
+
+      <div className="relative mx-auto grid max-w-7xl items-center gap-12 px-5 py-16 sm:px-8 sm:py-24 lg:grid-cols-[0.88fr_1.12fr] lg:gap-16 lg:px-10 lg:py-28">
+        <motion.div
+          initial={reducedMotion ? false : { opacity: 0, y: 18, filter: "blur(5px)" }}
+          animate={reducedMotion ? undefined : { opacity: 1, y: 0, filter: "blur(0px)" }}
+          transition={{ duration: 0.65, ease: [0.22, 1, 0.36, 1] }}
+          className="relative z-10 max-w-2xl"
+        >
+          <div className="inline-flex items-center gap-2 rounded-full border border-primary/15 bg-primary/5 px-3 py-1.5 text-xs font-medium text-primary">
+            <span className="size-1.5 rounded-full bg-primary" /> A better place to get good at hard things
+          </div>
+          <h1 className="mt-7 max-w-xl font-display text-[clamp(2.9rem,6vw,5.4rem)] font-semibold leading-[0.98] tracking-[-0.065em]">
+            Learn with intent.
             <br />
-            <span className="text-primary">Get a verdict.</span>
-            <br />
-            Move up.
+            <span className="text-primary">Build with confidence.</span>
           </h1>
-          <p className="mt-6 max-w-lg text-base leading-7 text-muted-foreground sm:text-lg">
-            Learn the pattern in a course, send the solution to the Judge, then take the same skill into an isolated Lab. Accepted work becomes part of your climb.
+          <p className="mt-7 max-w-lg text-base leading-7 text-muted-foreground sm:text-lg sm:leading-8">
+            A focused learning workspace for people who want practical skills, useful feedback, and visible progress that compounds over time.
           </p>
           <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-            <Button variant="default" size="lg" sheen glow asChild>
-              <Link href="/judge">
-                Open the Judge <ArrowRight />
-              </Link>
-            </Button>
+            <Magnetic>
+              <Button size="lg" sheen glow asChild>
+                <Link href="/courses">Start learning <ArrowRight /></Link>
+              </Button>
+            </Magnetic>
             <Button variant="outline" size="lg" asChild>
-              <Link href="/courses">Browse courses</Link>
+              <Link href="#how-it-works">See how it works</Link>
             </Button>
           </div>
-          <div className="mt-8 flex flex-wrap gap-x-5 gap-y-2 font-mono text-xs text-muted-foreground">
-            <span className="flex items-center gap-2"><span className="size-1.5 rounded-full bg-success" /> Python first</span>
-            <span className="flex items-center gap-2"><span className="size-1.5 rounded-full bg-primary" /> deterministic verdicts</span>
-            <span className="flex items-center gap-2"><span className="size-1.5 rounded-full bg-secondary-accent" /> dual XP tracks</span>
+          <div className="mt-8 flex flex-wrap gap-x-5 gap-y-2 text-xs text-muted-foreground">
+            <span className="inline-flex items-center gap-2"><Check className="size-3.5 text-success-strong" /> Short, focused lessons</span>
+            <span className="inline-flex items-center gap-2"><Check className="size-3.5 text-success-strong" /> Hands-on practice</span>
+            <span className="inline-flex items-center gap-2"><Check className="size-3.5 text-success-strong" /> Progress you can see</span>
           </div>
-        </div>
+        </motion.div>
 
-        <div className="relative motion-safe:animate-fade-in">
-          <div className="rounded-3xl border border-border bg-surface-1 font-mono text-xs shadow-[0_24px_70px_rgb(37_99_235_/_10%)]">
-            <div className="flex items-center justify-between border-b border-border px-4 py-3 text-muted-foreground sm:px-5">
-              <span className="flex items-center gap-2"><Code2 className="size-3.5" /> two-sum.py</span>
-              <span>PYTHON / F2</span>
-            </div>
-            <div className="grid gap-6 p-4 sm:p-6 lg:grid-cols-[1fr_0.85fr]">
-              <div className="min-w-0">
-                <div className="space-y-2 text-muted-foreground">
-                  <p><span className="text-primary">01</span> &nbsp;seen = {"{}"}</p>
-                  <p><span className="text-primary">02</span> &nbsp;for i, num in enumerate(nums):</p>
-                  <p><span className="text-primary">03</span> &nbsp;&nbsp;complement = target - num</p>
-                  <p><span className="text-primary">04</span> &nbsp;&nbsp;if complement in seen:</p>
-                  <p className="text-foreground"><span className="text-primary">05</span> &nbsp;&nbsp;&nbsp;&nbsp;return [seen[complement], i]</p>
-                  <p><span className="text-primary">06</span> &nbsp;&nbsp;seen[num] = i</p>
-                </div>
-                <div className="mt-7 flex items-center gap-2 border-t border-border pt-4 text-muted-foreground">
-                  <GitCommitHorizontal className="size-3.5" /> submit solution
-                  <ChevronRight className="ml-auto size-3.5" />
-                </div>
-              </div>
-
-              <div className="border-t border-border pt-5 lg:border-l lg:border-t-0 lg:pl-6 lg:pt-0">
-                <div className="flex items-center gap-2 text-success-strong">
-                  <CheckCircle2 className="size-4" />
-                  <span className="font-semibold">verdict: accepted</span>
-                </div>
-                <dl className="mt-5 space-y-3 text-[11px]">
-                  <div className="flex justify-between gap-4 text-muted-foreground"><dt>test_cases_passed</dt><dd className="text-foreground">12 / 12</dd></div>
-                  <div className="flex justify-between gap-4 text-muted-foreground"><dt>runtime_ms</dt><dd className="text-foreground">31</dd></div>
-                  <div className="flex justify-between gap-4 text-muted-foreground"><dt>xp_type</dt><dd className="text-primary">mastery</dd></div>
-                </dl>
-                <div className="mt-6 border-t border-border pt-4">
-                  <p className="text-[10px] uppercase tracking-widest text-muted-foreground">rank ladder preview</p>
-                  <div className="mt-3 flex items-center gap-2 text-foreground">
-                    <Trophy className="size-4 text-primary" /><span>Olympian</span><Zap className="ml-auto size-3.5 text-primary" />
-                  </div>
-                  <div className="mt-3 grid grid-cols-2 gap-2">
-                    <div className="border-l-2 border-primary pl-2"><p className="text-[10px] text-muted-foreground">completion_xp</p><p className="mt-1 text-primary">4,180</p></div>
-                    <div className="border-l-2 border-secondary-accent pl-2"><p className="text-[10px] text-muted-foreground">mastery_xp</p><p className="mt-1 text-secondary-accent">3,240</p></div>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div className="flex items-center gap-2 border-t border-border px-4 py-3 text-[11px] text-muted-foreground sm:px-5">
-              <ShieldCheck className="size-3.5 text-success" /> accepted work is written to the XP ledger
-            </div>
+        <motion.div
+          initial={reducedMotion ? false : { opacity: 0, y: 24, scale: 0.98 }}
+          animate={reducedMotion ? undefined : { opacity: 1, y: 0, scale: 1 }}
+          transition={{ delay: reducedMotion ? 0 : 0.12, duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+          className="relative z-10 lg:pt-6"
+        >
+          <div className="absolute -inset-6 rounded-[40px] bg-primary/5 blur-2xl" aria-hidden="true" />
+          <WorkspacePreview />
+          <div className="absolute -bottom-5 -left-5 hidden items-center gap-3 rounded-2xl border border-border bg-white px-3.5 py-3 shadow-[0_16px_35px_rgb(17_24_39_/_10%)] sm:flex">
+            <span className="grid size-8 place-items-center rounded-xl bg-primary text-primary-foreground"><Code2 className="size-4" /></span>
+            <div><p className="text-xs font-semibold">Practice, not passive watching</p><p className="mt-0.5 text-[11px] text-muted-foreground">Apply the idea while it&apos;s fresh</p></div>
           </div>
-        </div>
+        </motion.div>
       </div>
     </section>
   );

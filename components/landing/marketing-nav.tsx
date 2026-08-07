@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { Menu } from "lucide-react";
 
 import { GlobalSearch } from "@/components/layout/global-search";
@@ -32,6 +33,7 @@ const links = [
 export function MarketingNav() {
   const [scrolled, setScrolled] = React.useState(false);
   const [menuOpen, setMenuOpen] = React.useState(false);
+  const pathname = usePathname();
   const { user, isLoading } = useSession();
 
   React.useEffect(() => {
@@ -108,15 +110,19 @@ export function MarketingNav() {
         <Logo size="sm" eager className="lg:[&>img]:h-10" />
 
         <nav className="ml-6 hidden items-center gap-1 lg:flex" aria-label="Primary navigation">
-          {links.map((link) => (
-            <Link
-              key={link.href}
-              href={link.href}
-               className="rounded-xl px-3 py-2 text-sm font-medium text-muted-foreground outline-none transition-colors hover:bg-accent hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring"
-            >
-              {link.label}
-            </Link>
-          ))}
+           {links.map((link) => (
+             <Link
+               key={link.href}
+               href={link.href}
+               aria-current={pathname === link.href || pathname.startsWith(`${link.href}/`) ? "page" : undefined}
+               className={cn(
+                 "relative rounded-xl px-3 py-2 text-sm font-medium outline-none transition-colors hover:bg-accent hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring",
+                 pathname === link.href || pathname.startsWith(`${link.href}/`) ? "text-foreground after:absolute after:inset-x-3 after:-bottom-1 after:h-0.5 after:rounded-full after:bg-primary" : "text-muted-foreground",
+               )}
+             >
+               {link.label}
+             </Link>
+           ))}
         </nav>
 
         <div className="ml-auto flex items-center gap-2">

@@ -8,6 +8,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     <NextThemesProvider
       attribute="class"
       defaultTheme="light"
+      forcedTheme="light"
       disableTransitionOnChange
       enableSystem={false}
       storageKey="zapsters-theme"

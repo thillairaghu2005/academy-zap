@@ -1,28 +1,28 @@
 # Zapsters Design System
 
-The interface defaults to a soft light canvas with blue as the accent. Dark remains available
-through the theme toggle, using the same semantic token system and restrained glow language.
+The interface uses a soft light canvas with blue as the accent. Light is the only product theme
+in this pass; dark presentation is reserved for code syntax themes inside the IDE only.
 Components consume semantic tokens instead of page-level color literals.
 
 ## Color Tokens
 
-| Token | Light | Dark |
-| --- | --- | --- |
-| `background` | `#ffffff` | `#07090c` |
-| `surface-1` | `#fafbfc` | `#0b0f15` |
-| `surface-2` / `card` | `#ffffff` | `#10151d` |
-| `surface-3` | `#f5f7fa` | `#161d27` |
-| `foreground` | `#111827` | `#e8ecf2` |
-| `muted-foreground` | `#6b7280` | `#8b96a8` |
-| `border` | `#e5e7eb` | `#ffffff14` |
-| `border-strong` | `#cbd5e1` | `#ffffff26` |
-| `primary` | `#2563eb` | `#2f7bff` |
-| `primary-hover` | `#3b82f6` | `#5b9dff` |
-| `secondary-accent` | `#60a5fa` | `#5b9dff` |
-| `primary-deep` | `#1d4ed8` | `#0056d2` |
-| `primary-glow` | `#60a5fa` | `#5b9dff` |
-| `primary-light` | `#eff6ff` | `#12284d` |
-| `ring` | `#2563eb` | `#5b9dff` |
+| Token | Value |
+| --- | --- |
+| `background` | `#ffffff` |
+| `surface-1` | `#fafbfc` |
+| `surface-2` / `card` | `#ffffff` |
+| `surface-3` | `#f5f7fa` |
+| `foreground` | `#111827` |
+| `muted-foreground` | `#6b7280` |
+| `border` | `#e5e7eb` |
+| `border-strong` | `#cbd5e1` |
+| `primary` | `#2563eb` |
+| `primary-hover` | `#3b82f6` |
+| `secondary-accent` | `#60a5fa` |
+| `primary-deep` | `#1d4ed8` |
+| `primary-glow` | `#60a5fa` |
+| `primary-light` | `#eff6ff` |
+| `ring` | `#2563eb` |
 
 The following values are spec-locked and appear verbatim in both theme definitions: verdict
 colors, bronze/silver/gold/platinum/obsidian tier colors, `xp-completion` `#0284c7`,
@@ -48,6 +48,16 @@ colors, bronze/silver/gold/platinum/obsidian tier colors, `xp-completion` `#0284
 The primary ease-out is `[0.22, 1, 0.36, 1]`; the shared in-out ease is `[0.65, 0, 0.35, 1]`.
 Framer surfaces use `useReducedMotion()` and become static, fully legible content when motion is
 disabled. Global CSS also disables loops and transitions under `prefers-reduced-motion`.
+
+## Responsive And Accessibility
+
+- `sm` / 640px: two-column card grids and larger control groups.
+- `md` / 768px: comfortable tablet spacing and split list layouts.
+- `lg` / 1024px: desktop navigation rail, IDE split panes, and sticky detail CTAs.
+- `xl` / 1280px: full content density and four-column catalog grids.
+- Every interactive control keeps a visible `focus-visible` ring and keyboard target.
+- Loading, empty, and error states preserve the final layout shape instead of falling back to spinners.
+- Motion-heavy surfaces use `useReducedMotion()`; CSS also disables decorative loops and transitions.
 
 ## Primitives
 

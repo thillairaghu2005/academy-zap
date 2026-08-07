@@ -10,8 +10,8 @@ import {
 export function JudgeListLoading() {
   return (
     <PageContainer className="max-w-[1440px] px-4 py-6 sm:px-6 sm:py-8 lg:px-10 lg:py-10">
-      <Card className="h-72 overflow-hidden rounded-[20px] border-slate-200 bg-slate-950 p-8">
-        <SkeletonLines count={3} className="max-w-xl [&>div]:bg-white/10" />
+      <Card className="h-72 overflow-hidden rounded-3xl border-border bg-card p-8">
+        <SkeletonLines count={3} className="max-w-xl" />
       </Card>
       <Card className="mt-8 p-5">
         <SkeletonLines count={2} className="max-w-full" />

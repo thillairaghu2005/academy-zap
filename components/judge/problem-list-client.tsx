@@ -3,7 +3,7 @@
 import * as React from "react";
 import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
-import { motion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 import {
   ArrowUpRight,
   BarChart3,
@@ -139,10 +139,10 @@ function Metric({
 }) {
   return (
     <div className="flex min-w-0 items-start gap-2.5">
-      <Icon className="mt-0.5 size-4 shrink-0 text-slate-400" />
+      <Icon className="mt-0.5 size-4 shrink-0 text-muted-foreground" />
       <div className="min-w-0">
-        <p className={cn("truncate text-sm font-semibold leading-4 text-slate-800", valueClassName)}>{value}</p>
-        <p className="mt-1 truncate text-[10px] font-semibold uppercase tracking-[0.1em] text-slate-400">{label}</p>
+        <p className={cn("truncate text-sm font-semibold leading-4 text-foreground", valueClassName)}>{value}</p>
+        <p className="mt-1 truncate text-[10px] font-semibold uppercase tracking-[0.1em] text-muted-foreground">{label}</p>
       </div>
     </div>
   );
@@ -156,8 +156,8 @@ function AcceptanceMetric({ rate }: { rate: number }) {
         <circle cx="20" cy="20" r="15" fill="none" stroke="var(--color-success)" strokeWidth="5" pathLength="100" strokeDasharray="100" strokeDashoffset={100 - rate} strokeLinecap="round" />
       </svg>
       <div className="min-w-0">
-        <p className="text-sm font-semibold leading-4 text-slate-800">{rate}%</p>
-        <p className="mt-1 truncate text-[10px] font-semibold uppercase tracking-[0.1em] text-slate-400">Acceptance</p>
+        <p className="text-sm font-semibold leading-4 text-foreground">{rate}%</p>
+        <p className="mt-1 truncate text-[10px] font-semibold uppercase tracking-[0.1em] text-muted-foreground">Acceptance</p>
       </div>
     </div>
   );
@@ -178,7 +178,7 @@ function FilterSelect({
 }) {
   return (
     <div className="flex min-w-[148px] flex-1 flex-col gap-1.5 sm:flex-none">
-      <span className="flex items-center gap-1.5 px-1 text-[11px] font-semibold uppercase tracking-[0.12em] text-slate-500">
+      <span className="flex items-center gap-1.5 px-1 text-[11px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">
         <Icon className="size-3.5" />
         {label}
       </span>
@@ -212,15 +212,15 @@ function StatCard({
   tone: string;
 }) {
   return (
-    <div className="flex min-w-0 items-center gap-3 rounded-2xl border border-white/10 bg-white/[0.07] p-4 backdrop-blur-sm">
+    <div className="flex min-w-0 items-center gap-3 rounded-2xl border border-border bg-white/80 p-4 backdrop-blur-sm">
       <div className={cn("grid size-10 shrink-0 place-items-center rounded-xl", tone)}>
         <Icon className="size-5" />
       </div>
       <div className="min-w-0">
-        <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-slate-400">{label}</p>
+        <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">{label}</p>
         <div className="mt-0.5 flex items-baseline gap-2">
-          <p className="font-display text-xl font-semibold tracking-tight text-white">{value}</p>
-          <p className="truncate text-xs text-slate-400">{detail}</p>
+          <p className="font-display text-xl font-semibold tracking-tight text-foreground">{value}</p>
+          <p className="truncate text-xs text-muted-foreground">{detail}</p>
         </div>
       </div>
     </div>
@@ -236,6 +236,7 @@ function ProblemCard({
   index: number;
   solved: boolean;
 }) {
+  const reducedMotion = useReducedMotion() ?? false;
   const meta = problemMeta(problem);
   const description = problem.statement.split("\n")[0];
   const category = categoryFor(problem);
@@ -246,18 +247,18 @@ function ProblemCard({
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 14 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: Math.min(index * 0.045, 0.3), duration: 0.25, ease: "easeOut" }}
+      initial={reducedMotion ? false : { opacity: 0, y: 14 }}
+      animate={reducedMotion ? undefined : { opacity: 1, y: 0 }}
+      transition={reducedMotion ? undefined : { delay: Math.min(index * 0.045, 0.3), duration: 0.25, ease: "easeOut" }}
       className="h-full"
     >
       <Link
         href={`/judge/${problem.id}`}
         className="group block h-full rounded-2xl outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-4"
       >
-        <Card className="relative flex h-full flex-col overflow-hidden rounded-2xl border-slate-200/90 bg-white/90 p-6 shadow-[0_8px_30px_rgba(15,23,42,0.04)] transition-[transform,box-shadow,border-color] duration-200 ease-out group-hover:-translate-y-1 group-hover:border-primary/30 group-hover:shadow-[0_16px_40px_rgba(15,23,42,0.09)] sm:p-6">
+          <Card className="relative flex h-full flex-col overflow-hidden rounded-2xl border-border bg-card p-6 shadow-[0_8px_30px_rgb(17_24_39_/_4%)] transition-[transform,box-shadow,border-color] duration-200 ease-out group-hover:-translate-y-1 group-hover:border-primary/30 group-hover:shadow-[0_16px_40px_rgb(17_24_39_/_9%)] sm:p-6">
           <div className="flex items-start gap-4">
-            <div className="grid size-12 shrink-0 place-items-center rounded-xl border border-slate-200 bg-slate-50 text-slate-600 transition-transform duration-200 ease-out group-hover:scale-[1.03]" aria-label={`${category.label} category`}>
+            <div className="grid size-12 shrink-0 place-items-center rounded-xl border border-border bg-surface-1 text-muted-foreground transition-transform duration-200 ease-out group-hover:scale-[1.03]" aria-label={`${category.label} category`}>
               <CategoryIcon className="size-5" aria-hidden="true" />
             </div>
             <div className="min-w-0 flex-1">
@@ -272,7 +273,7 @@ function ProblemCard({
                   {problem.difficulty}
                 </span>
               </div>
-              <h3 className="mt-2 truncate font-display text-[21px] font-semibold leading-7 tracking-[-0.025em] text-slate-900 transition-colors duration-200 group-hover:text-primary" title={problem.title}>
+              <h3 className="mt-2 truncate font-display text-[21px] font-semibold leading-7 tracking-[-0.025em] text-foreground transition-colors duration-200 group-hover:text-primary" title={problem.title}>
                 {problem.title}
               </h3>
             </div>
@@ -281,21 +282,21 @@ function ProblemCard({
           <div className="mt-6">
             <div className="flex min-w-0 items-center gap-2 overflow-hidden">
               {visibleTopics.map((topic) => (
-                <span key={topic} className="max-w-[42%] truncate rounded-lg border border-slate-200 bg-slate-50 px-2.5 py-1 text-[11px] font-medium text-slate-600">
+                <span key={topic} className="max-w-[42%] truncate rounded-lg border border-border bg-surface-1 px-2.5 py-1 text-[11px] font-medium text-muted-foreground">
                   {topic}
                 </span>
               ))}
               {hiddenTopicCount > 0 ? (
-                <span className="shrink-0 rounded-lg border border-slate-200 bg-slate-50 px-2.5 py-1 text-[11px] font-medium text-slate-500">+{hiddenTopicCount}</span>
+                <span className="shrink-0 rounded-lg border border-border bg-surface-1 px-2.5 py-1 text-[11px] font-medium text-muted-foreground">+{hiddenTopicCount}</span>
               ) : null}
             </div>
-            <p className="mt-2 truncate text-sm leading-5 text-slate-500" title={description}>{description}</p>
+            <p className="mt-2 truncate text-sm leading-5 text-muted-foreground" title={description}>{description}</p>
           </div>
 
-          <div className="mt-6 rounded-xl border border-slate-200/80 bg-slate-50/70 p-4">
+          <div className="mt-6 rounded-xl border border-border/80 bg-surface-1/70 p-4">
             <div className="mb-4 flex items-center justify-between">
-              <p className="text-[10px] font-semibold uppercase tracking-[0.13em] text-slate-400">Problem signals</p>
-              <span className="text-[11px] font-medium text-slate-400">{formatNumber(meta.solves)} solves</span>
+            <p className="text-[10px] font-semibold uppercase tracking-[0.13em] text-muted-foreground">Problem signals</p>
+              <span className="text-[11px] font-medium text-muted-foreground">{formatNumber(meta.solves)} solves</span>
             </div>
             <div className="grid grid-cols-2 gap-x-4 gap-y-4 sm:grid-cols-3">
               <AcceptanceMetric rate={problem.success_rate_pct} />
@@ -307,12 +308,12 @@ function ProblemCard({
             </div>
           </div>
 
-          <div className="mt-6 flex flex-col gap-4 border-t border-slate-200/80 pt-6 sm:flex-row sm:items-center sm:justify-between">
-            <div className="flex min-w-0 items-center gap-2 text-xs text-slate-400">
+          <div className="mt-6 flex flex-col gap-4 border-t border-border/80 pt-6 sm:flex-row sm:items-center sm:justify-between">
+            <div className="flex min-w-0 items-center gap-2 text-xs text-muted-foreground">
               <Users className="size-3.5 shrink-0" />
               <span className="truncate">Asked at {meta.companies.join(" / ")}</span>
             </div>
-            <span className="inline-flex h-11 w-full items-center justify-center gap-2 rounded-xl bg-slate-950 px-5 text-sm font-semibold text-white shadow-sm transition-[background-color,box-shadow] duration-200 ease-out group-hover:bg-primary group-hover:shadow-lg group-hover:shadow-primary/20 sm:w-auto">
+            <span className="inline-flex h-11 w-full items-center justify-center gap-2 rounded-xl bg-primary px-5 text-sm font-semibold text-primary-foreground shadow-sm transition-[background-color,box-shadow] duration-200 ease-out group-hover:bg-primary-hover group-hover:shadow-lg group-hover:shadow-primary/20 sm:w-auto">
               Solve Challenge
               <ArrowUpRight className="size-4 transition-transform duration-200 ease-out group-hover:translate-x-1" />
             </span>
@@ -417,30 +418,30 @@ export function ProblemListClient() {
 
   return (
     <PageContainer className="max-w-[1440px] px-4 py-6 sm:px-6 sm:py-8 lg:px-10 lg:py-10">
-      <section className="relative overflow-hidden rounded-[20px] bg-slate-950 px-5 py-7 shadow-[0_20px_60px_rgba(15,23,42,0.14)] sm:px-8 sm:py-9 lg:px-10 lg:py-10">
-        <div className="pointer-events-none absolute -right-20 -top-32 size-96 rounded-full bg-violet-500/20 blur-3xl" />
-        <div className="pointer-events-none absolute -bottom-40 left-1/3 size-96 rounded-full bg-cyan-400/10 blur-3xl" />
+      <section className="relative overflow-hidden rounded-3xl border border-border bg-card px-5 py-7 shadow-[0_20px_60px_rgb(17_24_39_/_7%)] sm:px-8 sm:py-9 lg:px-10 lg:py-10">
+        <div className="pointer-events-none absolute -right-20 -top-32 size-96 rounded-full bg-primary/8 blur-3xl" />
+        <div className="pointer-events-none absolute -bottom-40 left-1/3 size-96 rounded-full bg-primary-light/60 blur-3xl" />
         <div className="relative">
           <div className="flex flex-col justify-between gap-7 xl:flex-row xl:items-end">
             <div className="max-w-2xl">
-              <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-cyan-300/20 bg-cyan-300/10 px-3 py-1.5 text-xs font-semibold text-cyan-200">
+                <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-primary/15 bg-primary/5 px-3 py-1.5 text-xs font-semibold text-primary">
                 <Sparkles className="size-3.5" /> Practice with purpose
               </div>
-              <h1 className="font-display text-4xl font-semibold tracking-[-0.045em] text-white sm:text-5xl">Judge Engine</h1>
-              <p className="mt-3 max-w-xl text-sm leading-6 text-slate-300 sm:text-base">
+              <h1 className="font-display text-4xl font-semibold tracking-[-0.045em] text-foreground sm:text-5xl">Judge Engine</h1>
+              <p className="mt-3 max-w-xl text-sm leading-6 text-muted-foreground sm:text-base">
                 Sharpen your problem-solving instincts with real interview patterns, instant feedback, and a focused Python workspace.
               </p>
             </div>
-            <div className="flex items-center gap-2 text-xs text-slate-400">
-              <span className="size-2 rounded-full bg-emerald-400 shadow-[0_0_12px_rgba(52,211,153,0.9)]" />
+            <div className="flex items-center gap-2 text-xs text-muted-foreground">
+              <span className="size-2 rounded-full bg-success" />
               Judge queue operational
             </div>
           </div>
           <div className="mt-8 grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4">
-            <StatCard label="Total Problems" value={isLoading ? "—" : formatNumber(totalProblems)} detail="in the library" icon={Layers3} tone="bg-cyan-400/15 text-cyan-300" />
-            <StatCard label="Solved" value={solvedQuery.isLoading ? "—" : formatNumber(solvedCount)} detail={solvedCount === 1 ? "challenge" : "challenges"} icon={CheckCircle2} tone="bg-emerald-400/15 text-emerald-300" />
-            <StatCard label="XP" value={progressQuery.isLoading || totalXp === null ? "—" : formatNumber(totalXp)} detail="total earned" icon={Trophy} tone="bg-violet-400/15 text-violet-300" />
-            <StatCard label="Current Streak" value={progressQuery.isLoading || !progressQuery.data ? "—" : `${progressQuery.data.streak.current_streak_days} days`} detail="keep it going" icon={Flame} tone="bg-amber-400/15 text-amber-300" />
+            <StatCard label="Total Problems" value={isLoading ? "—" : formatNumber(totalProblems)} detail="in the library" icon={Layers3} tone="bg-primary/10 text-primary" />
+            <StatCard label="Solved" value={solvedQuery.isLoading ? "—" : formatNumber(solvedCount)} detail={solvedCount === 1 ? "challenge" : "challenges"} icon={CheckCircle2} tone="bg-success/10 text-success-strong" />
+            <StatCard label="XP" value={progressQuery.isLoading || totalXp === null ? "—" : formatNumber(totalXp)} detail="total earned" icon={Trophy} tone="bg-secondary text-primary" />
+            <StatCard label="Current Streak" value={progressQuery.isLoading || !progressQuery.data ? "—" : `${progressQuery.data.streak.current_streak_days} days`} detail="keep it going" icon={Flame} tone="bg-warning/10 text-warning-strong" />
           </div>
         </div>
       </section>
@@ -448,17 +449,17 @@ export function ProblemListClient() {
       <section className="mt-8 rounded-2xl border border-slate-200/90 bg-slate-50/80 p-4 shadow-sm sm:p-5" aria-label="Problem filters">
         <div className="flex flex-col gap-4 xl:flex-row xl:items-end">
           <label className="relative block min-w-0 flex-1 xl:max-w-[360px]">
-            <span className="mb-1.5 block px-1 text-[11px] font-semibold uppercase tracking-[0.12em] text-slate-500">Search</span>
-            <Search className="pointer-events-none absolute left-3 top-[calc(50%+10px)] size-4 -translate-y-1/2 text-slate-400" />
-            <Input value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Search problems, topics..." className="h-10 rounded-xl border-slate-200 bg-white pl-9 shadow-none placeholder:text-slate-400 focus-visible:ring-primary" />
+            <span className="mb-1.5 block px-1 text-[11px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">Search</span>
+            <Search className="pointer-events-none absolute left-3 top-[calc(50%+10px)] size-4 -translate-y-1/2 text-muted-foreground" />
+            <Input value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Search problems, topics..." className="h-10 rounded-xl border-border bg-white pl-9 shadow-none placeholder:text-muted-foreground focus-visible:ring-primary" />
           </label>
           <div className="grid grid-cols-2 gap-3 sm:grid-cols-4 xl:flex xl:flex-1 xl:justify-end">
             <FilterSelect label="Difficulty" icon={BarChart3} value={difficulty} onValueChange={(value) => setDifficulty(value as ProblemDifficulty | "all")} options={DIFFICULTIES.map((item) => ({ ...item, label: item.value === "all" ? `${item.label} (${data?.length ?? "—"})` : `${item.label} (${counts[item.value]})` }))} />
             <div className="col-span-2 flex min-w-0 flex-col gap-1.5 sm:col-span-2 xl:min-w-[220px]">
-              <span className="flex items-center gap-1.5 px-1 text-[11px] font-semibold uppercase tracking-[0.12em] text-slate-500"><ListFilter className="size-3.5" /> Status</span>
+              <span className="flex items-center gap-1.5 px-1 text-[11px] font-semibold uppercase tracking-[0.12em] text-muted-foreground"><ListFilter className="size-3.5" /> Status</span>
               <div className="grid h-10 grid-cols-3 rounded-xl border border-slate-200 bg-white p-1">
                 {STATUS_OPTIONS.map((option) => (
-                  <button key={option.value} type="button" onClick={() => setStatus(option.value)} aria-pressed={status === option.value} className={cn("rounded-lg px-2 text-xs font-semibold transition-all", status === option.value ? "bg-slate-950 text-white shadow-sm" : "text-slate-500 hover:bg-slate-100 hover:text-slate-900")}>{option.label}</button>
+                  <button key={option.value} type="button" onClick={() => setStatus(option.value)} aria-pressed={status === option.value} className={cn("rounded-lg px-2 text-xs font-semibold transition-all", status === option.value ? "bg-primary text-primary-foreground shadow-sm" : "text-muted-foreground hover:bg-surface-3 hover:text-foreground")}>{option.label}</button>
                 ))}
               </div>
             </div>
@@ -468,7 +469,7 @@ export function ProblemListClient() {
         </div>
         <div className="mt-4 flex flex-col gap-3 border-t border-slate-200/80 pt-4 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex min-w-0 flex-wrap items-center gap-2">
-            <span className="mr-1 inline-flex items-center gap-1.5 text-xs font-medium text-slate-500"><Timer className="size-3.5" /> Sort by</span>
+            <span className="mr-1 inline-flex items-center gap-1.5 text-xs font-medium text-muted-foreground"><Timer className="size-3.5" /> Sort by</span>
             <Select value={sort} onValueChange={(value) => setSort(value as SortKey)}>
               <SelectTrigger className="h-8 w-[170px] rounded-lg border-slate-200 bg-white text-xs shadow-none"><SelectValue /></SelectTrigger>
               <SelectContent>{SORT_OPTIONS.map((option) => <SelectItem key={option.value} value={option.value}>{option.label}</SelectItem>)}</SelectContent>
@@ -477,16 +478,16 @@ export function ProblemListClient() {
               <button key={filter.label} type="button" onClick={filter.clear} className="inline-flex h-8 items-center gap-1.5 rounded-full border border-primary/20 bg-primary/5 px-3 text-xs font-medium text-primary transition-colors hover:border-primary/40 hover:bg-primary/10">{filter.label}<span aria-hidden="true">×</span><span className="sr-only">Remove filter</span></button>
             ))}
           </div>
-          <Button type="button" variant="ghost" size="sm" onClick={resetFilters} disabled={activeFilters.length === 0 && sort === "recommended"} className="shrink-0 gap-1.5 rounded-lg text-slate-500 hover:bg-white hover:text-slate-900"><RotateCcw className="size-3.5" /> Reset</Button>
+          <Button type="button" variant="ghost" size="sm" onClick={resetFilters} disabled={activeFilters.length === 0 && sort === "recommended"} className="shrink-0 gap-1.5 rounded-lg text-muted-foreground hover:bg-white hover:text-foreground"><RotateCcw className="size-3.5" /> Reset</Button>
         </div>
       </section>
 
       <div className="mt-8 flex items-center justify-between gap-3">
         <div>
-          <p className="font-display text-lg font-semibold tracking-tight text-slate-900">Explore challenges</p>
-          <p className="mt-1 text-sm text-slate-500">{problemsLoading ? "Loading your practice set..." : `${filtered.length} ${filtered.length === 1 ? "problem" : "problems"} matching your filters`}</p>
+          <p className="font-display text-lg font-semibold tracking-tight text-foreground">Explore challenges</p>
+          <p className="mt-1 text-sm text-muted-foreground">{problemsLoading ? "Loading your practice set..." : `${filtered.length} ${filtered.length === 1 ? "problem" : "problems"} matching your filters`}</p>
         </div>
-        <div className="hidden items-center gap-1.5 text-xs font-medium text-slate-400 sm:flex"><Zap className="size-3.5 text-amber-500" /> New problems every week</div>
+        <div className="hidden items-center gap-1.5 text-xs font-medium text-muted-foreground sm:flex"><Zap className="size-3.5 text-primary" /> New problems every week</div>
       </div>
 
       <div className="mx-auto mt-4 grid w-full max-w-[1120px] gap-4 md:grid-cols-2 xl:gap-5">
@@ -504,9 +505,9 @@ export function ProblemListClient() {
       </div>
 
       {DEMO_MODE ? (
-        <div className="mt-8 flex items-start gap-3 rounded-xl border border-dashed border-slate-200 bg-slate-50/70 px-4 py-3 text-xs leading-relaxed text-slate-500">
-          <SquareTerminal className="mt-0.5 size-4 shrink-0 text-slate-400" />
-          <p><span className="font-semibold text-slate-700">Demo mode:</span> use <code className="rounded bg-slate-200/70 px-1">raise </code>, <code className="rounded bg-slate-200/70 px-1">sleep(</code>, <code className="rounded bg-slate-200/70 px-1">wrong_answer</code>, or <code className="rounded bg-slate-200/70 px-1">compile_error</code> in the editor to explore each verdict.</p>
+        <div className="mt-8 flex items-start gap-3 rounded-xl border border-dashed border-border bg-surface-1/70 px-4 py-3 text-xs leading-relaxed text-muted-foreground">
+          <SquareTerminal className="mt-0.5 size-4 shrink-0 text-muted-foreground" />
+          <p><span className="font-semibold text-foreground">Demo mode:</span> use <code className="rounded bg-secondary px-1">raise </code>, <code className="rounded bg-secondary px-1">sleep(</code>, <code className="rounded bg-secondary px-1">wrong_answer</code>, or <code className="rounded bg-secondary px-1">compile_error</code> in the editor to explore each verdict.</p>
         </div>
       ) : null}
     </PageContainer>

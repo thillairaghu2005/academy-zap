@@ -54,7 +54,7 @@ export function SeasonPassCard() {
     <div className="overflow-hidden rounded-2xl border border-border bg-gradient-to-r from-primary/5 via-card to-card">
       <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border bg-card/60 px-5 py-3.5">
         <div className="flex items-center gap-2.5">
-          <span className="grid size-8 place-items-center rounded-lg bg-violet-500/15 text-violet-600">
+          <span className="grid size-8 place-items-center rounded-lg bg-xp-mastery/15 text-xp-mastery">
             <Ticket className="size-4" />
           </span>
           <div>
@@ -67,7 +67,7 @@ export function SeasonPassCard() {
           </div>
         </div>
         {data.premium_owned ? (
-          <Badge className="border-violet-500/40 bg-violet-500/10 text-violet-600">
+          <Badge className="border-xp-mastery/40 bg-xp-mastery/10 text-xp-mastery">
             <Crown className="size-3" /> Premium track
           </Badge>
         ) : (
@@ -95,7 +95,7 @@ export function SeasonPassCard() {
                   className={cn(
                     "grid size-7 place-items-center rounded-full border-2 bg-card transition-colors",
                     reached
-                      ? "border-violet-500 bg-violet-500 text-white"
+                      ? "border-xp-mastery bg-xp-mastery text-white"
                       : m.premium
                         ? "border-amber-500/60 text-amber-700"
                         : "border-secondary text-muted-foreground",

@@ -35,18 +35,9 @@ const LANGUAGE_OPTIONS: Array<{ value: IDELanguage | "plaintext"; label: string 
 ];
 
 const THEME_OPTIONS: Array<{ value: IDETheme; label: string }> = [
-  { value: "zapsters-ide-dark", label: "Zapsters Dark" },
-  { value: "vs-dark", label: "VS Dark" },
-  { value: "vs-light", label: "VS Light" },
-  { value: "github-dark", label: "GitHub Dark" },
+  { value: "vs-light", label: "Zapsters Light" },
   { value: "github-light", label: "GitHub Light" },
-  { value: "one-dark-pro", label: "One Dark Pro" },
-  { value: "dracula", label: "Dracula" },
-  { value: "monokai", label: "Monokai" },
-  { value: "solarized-dark", label: "Solarized Dark" },
   { value: "solarized-light", label: "Solarized Light" },
-  { value: "nord", label: "Nord" },
-  { value: "material-dark", label: "Material Dark" },
   { value: "material-light", label: "Material Light" },
 ];
 
@@ -89,7 +80,7 @@ function MenuSelect<T extends string>({
         aria-haspopup="listbox"
         aria-expanded={open}
       >
-        <span>{optionLabel(options, value)}</span>
+        <span>{optionLabel(options, value === "zapsters-ide-dark" ? ("vs-light" as T) : value)}</span>
         <ChevronDown size={12} aria-hidden="true" />
       </button>
       {open ? (

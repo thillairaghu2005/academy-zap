@@ -64,14 +64,8 @@ export const viewport: Viewport = {
 
 const themeScript = `
 (function () {
-  try {
-    var stored = localStorage.getItem("zapsters-theme");
-    var theme = stored === "dark" ? "dark" : "light";
-    document.documentElement.classList.remove("light", "dark");
-    document.documentElement.classList.add(theme);
-  } catch {
-    document.documentElement.classList.add("light");
-  }
+  document.documentElement.classList.remove("dark");
+  document.documentElement.classList.add("light");
 })();
 `;
 

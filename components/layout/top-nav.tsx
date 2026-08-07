@@ -87,7 +87,7 @@ export function TopNav() {
 
   return (
     <header className="sticky top-0 z-40 px-3 py-3 sm:px-5 lg:px-6">
-      <div className="mx-auto flex h-14 max-w-[1440px] items-center gap-2 rounded-2xl border border-white/80 bg-white/85 px-2 shadow-[0_8px_30px_rgb(17_24_39_/_6%)] backdrop-blur-xl sm:px-3">
+      <div className="mx-auto flex h-14 max-w-[1440px] items-center gap-2 rounded-2xl border border-border/80 bg-white/82 px-2 shadow-[0_8px_30px_rgb(17_24_39_/_6%)] backdrop-blur-xl sm:px-3">
         <MobileNav />
 
         <Logo size="sm" className="hidden lg:flex lg:mr-2" />
