@@ -3,30 +3,20 @@
 import * as React from "react";
 import Link from "next/link";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { AnimatePresence, motion } from "framer-motion";
 import { useRouter } from "next/navigation";
 import {
   Check,
-  CheckCircle2,
   Clock,
   Copy,
   Gauge,
-  GitCommitHorizontal,
   History,
-  LoaderCircle,
   MessageCircle,
-  Send,
   ShieldQuestion,
   Terminal,
-  TriangleAlert,
   WandSparkles,
 } from "lucide-react";
 
-import type {
-  JudgeResult,
-  Problem,
-  Verdict,
-} from "@/lib/contracts/judge";
+import type { Problem } from "@/lib/contracts/judge";
 import {
   getProblem,
   getResult,
@@ -35,11 +25,10 @@ import {
 } from "@/lib/api/judge";
 import { DEMO_MODE } from "@/lib/config";
 import { useSession } from "@/components/providers/session-provider";
-import { IDE } from "@/components/ide/IDE";
+import { IDE, type IDEExecution } from "@/components/ide/IDE";
 import { createIDEFile } from "@/hooks/useFiles";
 import {
   VerdictBadge,
-  verdictLabel,
 } from "@/components/judge/verdict-badge";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -65,17 +54,6 @@ import { TrustBadge } from "@/components/shared/trust-badge";
 
 const POLL_INTERVAL_MS = 1100;
 const QUEUE_TIMEOUT_S = 15;
-
-const VERDICT_TONE: Record<
-  Verdict,
-  { ring: string; icon: typeof CheckCircle2 }
-> = {
-  accepted: { ring: "border-border", icon: CheckCircle2 },
-  wrong_answer: { ring: "border-border", icon: TriangleAlert },
-  time_limit_exceeded: { ring: "border-border", icon: TriangleAlert },
-  runtime_error: { ring: "border-border", icon: TriangleAlert },
-  compile_error: { ring: "border-border", icon: TriangleAlert },
-};
 
 function timeAgo(iso: string): string {
   const seconds = Math.max(
@@ -233,112 +211,6 @@ function StatementPanel({ problem }: { problem: Problem }) {
           ))}
         </div>
       </div>
-    </div>
-  );
-}
-
-/** Verdict panel — rendered once a JudgeResult lands. */
-function ResultPanel({ result }: { result: JudgeResult }) {
-  const tone = VERDICT_TONE[result.verdict];
-  const Icon = tone.icon;
-  const passed = result.test_cases_passed;
-  const total = result.test_cases_total;
-  const pct = total > 0 ? Math.round((passed / total) * 100) : 0;
-
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 8 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.25 }}
-      className={cn(
-        "flex flex-col gap-3 rounded-xl border bg-card p-4",
-        tone.ring,
-      )}
-    >
-      <div className="flex items-center justify-between gap-3">
-        <div className="flex items-center gap-2.5">
-          <Icon className="size-5 text-foreground" />
-          <VerdictBadge verdict={result.verdict} />
-        </div>
-        <span className="font-mono text-[10px] text-muted-foreground">
-          {timeAgo(result.graded_at)}
-        </span>
-      </div>
-
-      {/* Test-case progress */}
-      <div>
-        <div className="mb-1 flex items-center justify-between text-xs">
-          <span className="text-muted-foreground">Test cases</span>
-          <span className="font-mono font-medium">
-            {passed} / {total} passed
-          </span>
-        </div>
-        <div className="h-1.5 w-full overflow-hidden rounded-full bg-secondary">
-          <motion.div
-            initial={{ width: 0 }}
-            animate={{ width: `${pct}%` }}
-            transition={{ duration: 0.5, ease: "easeOut" }}
-            className="h-full rounded-full bg-foreground"
-          />
-        </div>
-      </div>
-
-      <div className="flex gap-4 text-xs text-muted-foreground">
-        <span className="flex items-center gap-1.5">
-          <Clock className="size-3.5" />
-          <span className="font-mono">{result.runtime_ms}ms</span>
-        </span>
-        <span className="flex items-center gap-1.5">
-          <Gauge className="size-3.5" />
-          <span className="font-mono">{(result.memory_kb / 1024).toFixed(1)}MB</span>
-        </span>
-      </div>
-
-      {/* Raw output blocks — the "never discard raw" law */}
-      {result.stdout ? (
-        <OutputBlock label="stdout" text={result.stdout} tone="muted" />
-      ) : null}
-      {result.stderr ? (
-        <OutputBlock label="stderr" text={result.stderr} tone="destructive" />
-      ) : null}
-      {result.compile_output ? (
-        <OutputBlock
-          label="compile output"
-          text={result.compile_output}
-          tone="warning"
-        />
-      ) : null}
-    </motion.div>
-  );
-}
-
-function OutputBlock({
-  label,
-  text,
-  tone,
-}: {
-  label: string;
-  text: string;
-  tone: "muted" | "destructive" | "warning";
-}) {
-  return (
-    <div className="flex flex-col gap-1">
-      <span className="font-mono text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">
-        {label}
-      </span>
-      <pre
-        className={cn(
-          "overflow-x-auto rounded-md border px-3 py-2 font-mono text-[12px] leading-relaxed",
-          tone === "muted" &&
-            "border-border bg-secondary/40 text-foreground/80",
-          tone === "destructive" &&
-            "border-border bg-muted/40 text-foreground",
-          tone === "warning" &&
-            "border-border bg-muted/40 text-foreground",
-        )}
-      >
-        {text}
-      </pre>
     </div>
   );
 }
@@ -504,6 +376,18 @@ export function ProblemDetailClient({ problemId }: { problemId: string }) {
     !resultQuery.isError &&
     !timedOut;
 
+  const ideExecution = React.useMemo<IDEExecution>(() => {
+    if (submitMutation.isPending || judging) return { status: "running", detail: `${submissionId ? "Polling the judge queue" : "Sending your solution"} · ${elapsed}s` };
+    if (timedOut) return { status: "runtime_error", detail: `Judge queue timed out after ${QUEUE_TIMEOUT_S}s` };
+    if (resultQuery.data) {
+      const result = resultQuery.data;
+      const status = result.verdict === "accepted" ? "accepted" : result.verdict === "wrong_answer" ? "wrong_answer" : result.verdict === "compile_error" ? "compile_error" : "runtime_error";
+      return { status, passed: result.test_cases_passed, total: result.test_cases_total, runtimeMs: result.runtime_ms, memoryMb: result.memory_kb / 1024, xp: status === "accepted" ? 80 : 0, detail: status === "accepted" ? "Deterministic checks complete" : "Open the failing case for a hint" };
+    }
+    if (submitMutation.isError || resultQuery.isError) return { status: "runtime_error", detail: "The judge could not finish this attempt" };
+    return { status: "idle" };
+  }, [elapsed, judging, resultQuery.data, resultQuery.isError, submitMutation.isError, submitMutation.isPending, submissionId, timedOut]);
+
   const canSubmit =
     !submitMutation.isPending &&
     !judging &&
@@ -572,9 +456,9 @@ export function ProblemDetailClient({ problemId }: { problemId: string }) {
 
   return (
     <PageContainer>
-      <div className="grid items-start gap-6 lg:grid-cols-2">
-        {/* Left: statement */}
-        <div className="order-2 flex flex-col gap-6 lg:order-1">
+      <div className="flex flex-col gap-8">
+        {/* Challenge context stays available below the focused workspace. */}
+        <div className="order-2 flex max-w-4xl flex-col gap-6">
           <StatementPanel problem={problem} />
 
           <Card className="border-border bg-muted/40">
@@ -619,15 +503,17 @@ export function ProblemDetailClient({ problemId }: { problemId: string }) {
           <SubmissionHistory problemId={problemId} userId={userId ?? "demo-user"} />
         </div>
 
-        {/* Right: editor + verdict panel */}
-        <div className="order-1 flex min-w-0 flex-col gap-4 lg:order-2 lg:sticky lg:top-20">
+        {/* The workspace gets the full content width so all five surfaces remain usable together. */}
+        <div className="order-1 flex min-w-0 flex-col gap-4">
           <IDE
             initialFiles={ideFiles}
             storageKey={`ide:judge:${problemId}`}
+            problemTitle={problem.title}
             resetKey={resetKey}
             resetContent={problem.starter_code}
             onActiveContentChange={handleIDEContentChange}
             onReset={resetCode}
+            execution={ideExecution}
             primaryAction={{
               label: submitMutation.isPending ? "Submitting…" : userId ? "Submit" : "Sign in to submit",
               onClick: handleSubmit,
@@ -635,158 +521,6 @@ export function ProblemDetailClient({ problemId }: { problemId: string }) {
             }}
           />
 
-          {/* Status / verdict area */}
-          <div className="flex min-h-40 flex-col">
-            <AnimatePresence mode="wait">
-              {submitMutation.isError ? (
-                <motion.div
-                  key="submit-error"
-                  initial={{ opacity: 0, y: 8 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0 }}
-                >
-                  <ErrorState
-                    title="Submission failed"
-                    message={
-                      submitMutation.error instanceof Error
-                        ? submitMutation.error.message
-                        : "The judge queue rejected the submission."
-                    }
-                    code="SUBMIT_ERR"
-                    onRetry={handleSubmit}
-                  />
-                </motion.div>
-              ) : resultQuery.data ? (
-                <motion.div
-                  key="result"
-                  initial={{ opacity: 0, y: 8 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0 }}
-                >
-                  <ResultPanel result={resultQuery.data} />
-                  <p className="mt-2 text-center font-mono text-[11px] text-muted-foreground">
-                    {verdictLabel(resultQuery.data.verdict)} ·{" "}
-                    {resultQuery.data.submission_id}
-                  </p>
-                </motion.div>
-              ) : resultQuery.isError ? (
-                <motion.div
-                  key="result-error"
-                  initial={{ opacity: 0, y: 8 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0 }}
-                >
-                  <ErrorState
-                    title="Result unavailable"
-                    message="Could not fetch the grading result for this submission."
-                    code="RESULT_ERR"
-                    onRetry={() => resultQuery.refetch()}
-                  />
-                </motion.div>
-              ) : timedOut ? (
-                <motion.div
-                  key="timeout"
-                  initial={{ opacity: 0, y: 8 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0 }}
-                >
-                  <Card className="flex flex-col items-center gap-2 border-border bg-muted/40 p-6 text-center">
-                    <TriangleAlert className="size-5 text-foreground" />
-                    <p className="text-sm font-semibold">Judge queue timed out</p>
-                    <p className="max-w-sm text-xs text-muted-foreground">
-                      The submission spent over {QUEUE_TIMEOUT_S}s in the queue
-                      without a result — a simulated hang (add{" "}
-                      <code className="rounded bg-muted px-1">queue_hang</code>{" "}
-                      to the source to demo it). The grade may still be coming;
-                      resume polling to keep waiting on this same submission.
-                    </p>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="mt-2"
-                      onClick={() => {
-                        setTimedOut(false);
-                        setElapsed(0);
-                      }}
-                    >
-                      <GitCommitHorizontal className="size-3.5" />
-                      Resume polling
-                    </Button>
-                  </Card>
-                </motion.div>
-              ) : judging ? (
-                <motion.div
-                  key="judging"
-                  initial={{ opacity: 0, y: 8 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0 }}
-                >
-                  <Card className="flex flex-col items-center gap-3 p-6 text-center">
-                    <LoaderCircle className="size-6 animate-spin text-foreground" />
-                    <div>
-                      <p className="text-sm font-semibold">Judging…</p>
-                      <p className="mt-0.5 font-mono text-[11px] text-muted-foreground">
-                        {submissionId} · {elapsed}s in queue
-                      </p>
-                    </div>
-                    <div className="flex h-1 w-40 gap-1">
-                      {Array.from({ length: 8 }).map((_, i) => (
-                        <motion.span
-                          key={i}
-                          className="h-full flex-1 rounded-full bg-foreground/70"
-                          animate={{ opacity: [0.25, 1, 0.25] }}
-                          transition={{
-                            duration: 1.1,
-                            repeat: Infinity,
-                            delay: i * 0.12,
-                          }}
-                        />
-                      ))}
-                    </div>
-                    <p className="text-xs text-muted-foreground">
-                      202 accepted — polling the mock queue for a result…
-                    </p>
-                  </Card>
-                </motion.div>
-              ) : !userId ? (
-                <motion.div
-                  key="sign-in"
-                  initial={{ opacity: 0, y: 8 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0 }}
-                >
-                  <Card className="flex items-center gap-3 border-dashed p-4 text-sm text-muted-foreground">
-                    <ShieldQuestion className="size-4 shrink-0" />
-                    <span>
-                      Sign in to submit — submissions and history are
-                      attributed to your account.
-                    </span>
-                  </Card>
-                </motion.div>
-              ) : (
-                <motion.div
-                  key="idle"
-                  initial={{ opacity: 0, y: 8 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0 }}
-                >
-                  <Card className="flex items-center gap-3 border-dashed p-4 text-sm text-muted-foreground">
-                    <Send className="size-4 shrink-0 text-foreground" />
-                    <span>
-                      Ready to judge. Submit your solution — the mock queue
-                      returns a{" "}
-                      <code className="rounded bg-muted px-1">
-                        SubmissionAccepted
-                      </code>{" "}
-                      (202) first, then a{" "}
-                      <code className="rounded bg-muted px-1">JudgeResult</code>{" "}
-                      when grading finishes.
-                    </span>
-                  </Card>
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </div>
         </div>
       </div>
     </PageContainer>

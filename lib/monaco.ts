@@ -18,12 +18,13 @@ export const MONACO_THEME_NAMES: Record<IDETheme, string> = {
 };
 
 const darkRules: editor.IStandaloneThemeData["rules"] = [
-  { token: "comment", foreground: "6A9955" },
-  { token: "keyword", foreground: "C586C0" },
-  { token: "string", foreground: "CE9178" },
-  { token: "number", foreground: "B5CEA8" },
-  { token: "type", foreground: "4EC9B0" },
-  { token: "function", foreground: "DCDCAA" },
+  { token: "comment", foreground: "667898", fontStyle: "italic" },
+  { token: "keyword", foreground: "B9A6FF" },
+  { token: "string", foreground: "8EE6BF" },
+  { token: "number", foreground: "F2BF79" },
+  { token: "type", foreground: "83D8F2" },
+  { token: "function", foreground: "F4D58D" },
+  { token: "variable", foreground: "E8EEFA" },
 ];
 
 const lightRules: editor.IStandaloneThemeData["rules"] = [
@@ -89,7 +90,7 @@ const lightColors = (background: string, foreground: string, active: string) => 
 });
 
 export const MONACO_THEMES: Record<IDETheme, ThemeDefinition> = {
-  "vs-dark": { base: "vs-dark", inherit: true, colors: darkColors("1E1E1E", "D4D4D4", "264F78"), rules: darkRules },
+  "vs-dark": { base: "vs-dark", inherit: true, colors: { ...darkColors("0B1120", "E8EEFA", "253957"), "editorLineNumber.foreground": "52617A", "editorLineNumber.activeForeground": "8EE6BF", "editorCursor.foreground": "8EE6BF", "editorIndentGuide.background1": "17233A", "editorIndentGuide.activeBackground1": "2D4161" }, rules: darkRules },
   "vs-light": { base: "vs", inherit: true, colors: lightColors("FFFFFF", "1F2937", "ADD6FF"), rules: lightRules },
   "github-dark": { base: "vs-dark", inherit: true, colors: darkColors("0D1117", "E6EDF3", "1F3A5F"), rules: [{ token: "comment", foreground: "8B949E" }, { token: "keyword", foreground: "FF7B72" }, { token: "string", foreground: "A5D6FF" }, { token: "type", foreground: "79C0FF" }] },
   "github-light": { base: "vs", inherit: true, colors: lightColors("FFFFFF", "24292F", "B6D7FF"), rules: [{ token: "comment", foreground: "6E7781" }, { token: "keyword", foreground: "CF222E" }, { token: "string", foreground: "0A3069" }, { token: "type", foreground: "8250DF" }] },

@@ -1,5 +1,8 @@
 "use client";
 
+import * as React from "react";
+import { Check, ChevronDown } from "lucide-react";
+
 import type { IDELanguage } from "@/types/ide";
 import styles from "./ide.module.css";
 
@@ -17,12 +20,23 @@ const LANGUAGES: Array<{ value: IDELanguage; label: string }> = [
 ];
 
 export function LanguageSelector({ language, onChange }: LanguageSelectorProps) {
+  const [open, setOpen] = React.useState(false);
+  const current = LANGUAGES.find((item) => item.value === language)?.label ?? language;
+
+  React.useEffect(() => {
+    if (!open) return;
+    const close = () => setOpen(false);
+    document.addEventListener("click", close);
+    return () => document.removeEventListener("click", close);
+  }, [open]);
+
   return (
-    <label className={styles.languageSelect} title="Language mode">
+    <div className={styles.languageSelect} title="Language mode">
       <span className={styles.srOnly}>Language</span>
-      <select value={language} onChange={(event) => onChange(event.target.value as IDELanguage)} aria-label="Language mode">
-        {LANGUAGES.map((item) => <option value={item.value} key={item.value}>{item.label}</option>)}
-      </select>
-    </label>
+      <button className={styles.selectTrigger} onClick={(event) => { event.stopPropagation(); setOpen((currentOpen) => !currentOpen); }} aria-label="Language mode" aria-expanded={open}>
+        <span className={styles.languageDot} /> {current} <ChevronDown size={12} />
+      </button>
+      {open ? <div className={styles.selectMenu} role="menu">{LANGUAGES.map((item) => <button key={item.value} className={styles.selectOption} onClick={() => { onChange(item.value); setOpen(false); }} role="menuitem"><span>{item.label}</span>{item.value === language ? <Check size={13} /> : null}</button>)}</div> : null}
+    </div>
   );
 }

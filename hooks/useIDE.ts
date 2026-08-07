@@ -56,7 +56,7 @@ export function useIDE() {
   const [bottomPanelOpen, setBottomPanelOpen] = React.useState(true);
   const [bottomPanelHeight, setBottomPanelHeight] = React.useState(214);
   const [bottomPanel, setBottomPanel] = React.useState<IDEPanel>("console");
-  const [previewOpen, setPreviewOpen] = React.useState(false);
+  const [previewOpen, setPreviewOpen] = React.useState(true);
   const [output, setOutput] = React.useState<IDEOutputEntry[]>([]);
   const [lastRunAt, setLastRunAt] = React.useState<string | null>(null);
   const frameRef = React.useRef<HTMLIFrameElement>(null);

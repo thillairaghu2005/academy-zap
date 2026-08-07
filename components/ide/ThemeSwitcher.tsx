@@ -1,5 +1,8 @@
 "use client";
 
+import * as React from "react";
+import { Check, ChevronDown } from "lucide-react";
+
 import type { IDETheme } from "@/types/ide";
 import styles from "./ide.module.css";
 
@@ -24,12 +27,14 @@ const THEMES: Array<{ value: IDETheme; label: string }> = [
 ];
 
 export function ThemeSwitcher({ theme, onChange }: ThemeSwitcherProps) {
+  const [open, setOpen] = React.useState(false);
+  const current = THEMES.find((item) => item.value === theme)?.label ?? theme;
+
   return (
-    <label className={styles.themeSelect} title="IDE theme">
+    <div className={styles.themeSelect} title="IDE theme">
       <span className={styles.srOnly}>IDE theme</span>
-      <select value={theme} onChange={(event) => onChange(event.target.value as IDETheme)} aria-label="IDE theme">
-        {THEMES.map((item) => <option value={item.value} key={item.value}>{item.label}</option>)}
-      </select>
-    </label>
+      <button className={styles.selectTrigger} onClick={() => setOpen((currentOpen) => !currentOpen)} aria-label="IDE theme" aria-expanded={open}>{current}<ChevronDown size={12} /></button>
+      {open ? <div className={styles.selectMenu} role="menu">{THEMES.map((item) => <button key={item.value} className={styles.selectOption} onClick={() => { onChange(item.value); setOpen(false); }} role="menuitem"><span>{item.label}</span>{item.value === theme ? <Check size={13} /> : null}</button>)}</div> : null}
+    </div>
   );
 }

@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { ExternalLink, Maximize2, RefreshCw, Smartphone, Tablet, Monitor } from "lucide-react";
+import { AlertTriangle, ExternalLink, Maximize2, RefreshCw, Smartphone, Tablet, Monitor, Sparkles } from "lucide-react";
 
 import type { IDEFile } from "@/types/ide";
 import styles from "./ide.module.css";
@@ -20,6 +20,8 @@ export function Preview({ files, onClose }: PreviewProps) {
   const [key, setKey] = React.useState(0);
   const [width, setWidth] = React.useState<"phone" | "tablet" | "desktop">("desktop");
   const document = React.useMemo(() => previewDocument(files), [files]);
+  const hasHtml = files.some((file) => file.path === "index.html");
+  const hasRenderError = hasHtml && files.some((file) => (file.language === "javascript" || file.language === "typescript") && /throw new Error|syntax error/i.test(file.content));
   const openNewTab = () => {
     const blob = new Blob([document], { type: "text/html" });
     window.open(URL.createObjectURL(blob), "_blank", "noopener,noreferrer");
@@ -27,7 +29,7 @@ export function Preview({ files, onClose }: PreviewProps) {
   return (
     <aside className={`${styles.previewPane} ${styles[`preview${width.charAt(0).toUpperCase()}${width.slice(1)}`]}`} aria-label="Live preview">
       <div className={styles.previewHeader}><div><span className={styles.previewDot} /><strong>Live Preview</strong><span className={styles.previewUrl}>localhost:3000</span></div><div className={styles.previewActions}><button onClick={() => setWidth("phone")} className={width === "phone" ? styles.previewActive : ""} aria-label="Phone preview"><Smartphone size={14} /></button><button onClick={() => setWidth("tablet")} className={width === "tablet" ? styles.previewActive : ""} aria-label="Tablet preview"><Tablet size={14} /></button><button onClick={() => setWidth("desktop")} className={width === "desktop" ? styles.previewActive : ""} aria-label="Desktop preview"><Monitor size={14} /></button><button onClick={() => setKey((current) => current + 1)} aria-label="Reload preview"><RefreshCw size={14} /></button><button onClick={openNewTab} aria-label="Open preview in new tab"><ExternalLink size={14} /></button><button onClick={onClose} aria-label="Close preview"><Maximize2 size={14} /></button></div></div>
-      <div className={styles.previewFrameWrap}><iframe key={key} title="HTML live preview" className={styles.previewFrame} srcDoc={document} /></div>
+       <div className={styles.previewFrameWrap}>{!hasHtml ? <div className={styles.previewEmpty}><Sparkles size={20} /><strong>Preview is waiting</strong><span>Run your code to see a live surface here.</span><small>Add an <code>index.html</code> entry point to begin.</small></div> : hasRenderError ? <div className={`${styles.previewEmpty} ${styles.previewError}`}><AlertTriangle size={20} /><strong>Render was interrupted</strong><span>The preview could not safely mount this output.</span><small>Check the Console for the first failing line.</small></div> : <iframe key={key} title="HTML live preview" className={styles.previewFrame} srcDoc={document} />}</div>
     </aside>
   );
 }
