@@ -26,8 +26,7 @@ export function SurfaceStub({ surface }: { surface: SurfaceMeta }) {
         <div className="flex flex-wrap items-center gap-3">
           <div
             className={cn(
-              "grid size-12 place-items-center rounded-xl bg-gradient-to-br text-white shadow-lg",
-              surface.accent,
+              "grid size-12 place-items-center rounded-2xl bg-primary/10 text-primary shadow-sm",
             )}
           >
             <Icon className="size-6" />

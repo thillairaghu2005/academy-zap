@@ -1,46 +1,51 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "@fontsource-variable/inter";
-@import "@fontsource-variable/space-grotesk";
 @import "@fontsource-variable/geist";
+@import "@fontsource-variable/jetbrains-mono";
+@import "katex/dist/katex.min.css";
 @import "../src/styles/typography.css";
 
 /* ------------------------------------------------------------------ */
-/*  Zapsters design system — F0 (Track B: Coursera-inspired retheme)   */
-/*  Light-first, clean academic look: generous whitespace, typographic */
-/*  hierarchy, blue primary (#0056D2), neutral surfaces on a soft      */
-/*  background. Shared @theme tokens every subsystem surface consumes. */
-/*  All functional behavior is untouched — tokens only.               */
+/* Zapsters design system: semantic tokens shared by every surface.    */
+/* Light is the default application mode; dark remains available by toggle. */
 /* ------------------------------------------------------------------ */
 
 @theme {
-  /* Core surface tokens — light, academic */
-  --color-background: #f8f9fb;
-  --color-foreground: #1f2937;
+  /* Light theme tokens */
+  --color-background: #ffffff;
+  --color-foreground: #111827;
   --color-card: #ffffff;
-  --color-card-foreground: #1f2937;
+  --color-card-foreground: #111827;
   --color-popover: #ffffff;
-  --color-popover-foreground: #1f2937;
-  --color-muted: #f1f3f6;
+  --color-popover-foreground: #111827;
+  --color-muted: #f5f7fa;
   --color-muted-foreground: #6b7280;
-  --color-secondary: #edf1f7;
-  --color-secondary-foreground: #1f2937;
-  --color-accent: #eaf2ff; /* primary-light */
-  --color-accent-foreground: #0056d2;
+  --color-secondary: #f5f7fa;
+  --color-secondary-foreground: #111827;
+  --color-accent: #eff6ff;
+  --color-accent-foreground: #2563eb;
   --color-border: #e5e7eb;
+  --color-border-strong: #cbd5e1;
   --color-input: #d1d5db;
-  --color-ring: #0056d2;
+  --color-ring: #2563eb;
+  --color-surface-1: #fafbfc;
+  --color-surface-2: #ffffff;
+  --color-surface-3: #f5f7fa;
 
   /* Brand / action */
-  --color-primary: #0056d2;
-  --color-primary-hover: #00419e;
-  --color-primary-light: #eaf2ff;
+  --color-primary: #2563eb;
+  --color-primary-deep: #1d4ed8;
+  --color-primary-glow: #60a5fa;
+  --color-primary-hover: #3b82f6;
+  --color-primary-light: #eff6ff;
+  --color-secondary-accent: #60a5fa;
   --color-primary-foreground: #ffffff;
   --color-destructive: #dc2626;
   --color-destructive-foreground: #ffffff;
 
   /* Semantic status (shared across surfaces) */
-  --color-success: #16a34a;
+  --color-success: #22c55e;
   --color-warning: #f59e0b;
   --color-danger: #dc2626;
   --color-info: #0284c7;
@@ -52,6 +57,12 @@
   --color-warning-strong: #b45309;
   --color-danger-strong: #b91c1c;
   --color-info-strong: #0369a1;
+
+  /* Readable status text on dark surfaces; literals above remain locked. */
+  --color-success-on-dark: #4ade80;
+  --color-warning-on-dark: #fbbf24;
+  --color-danger-on-dark: #f87171;
+  --color-info-on-dark: #38bdf8;
 
   /* Dual XP tracks — NEVER blended (gamification §5.2) */
   --color-xp-completion: #0284c7;
@@ -77,14 +88,20 @@
   --color-status-reversed: #dc2626;
   --color-status-revoked: #dc2626;
 
-  /* Radius scale — tighter, academic (Coursera ~4-8px corners) */
+  /* Radius scale */
   --radius-sm: 0.375rem;
-  --radius-md: 0.5rem;
-  --radius-lg: 0.625rem;
-  --radius-xl: 0.75rem;
-  --radius-2xl: 1rem;
+  --radius-md: 0.75rem;
+  --radius-lg: 1rem;
+  --radius-xl: 1.25rem;
+  --radius-2xl: 1.5rem;
 
-  /* Motion */
+  /* Motion tokens */
+  --duration-fast: 160ms;
+  --duration-base: 320ms;
+  --duration-slow: 640ms;
+  --duration-cinematic: 1100ms;
+  --ease-zap-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-zap-in-out: cubic-bezier(0.65, 0, 0.35, 1);
   --animate-fade-up: fade-up 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
   --animate-fade-in: fade-in 0.4s ease-out both;
   --animate-scale-in: scale-in 0.25s cubic-bezier(0.22, 1, 0.36, 1) both;
@@ -138,6 +155,48 @@
   }
 }
 
+/* Dark is applied by next-themes before the first paint. */
+.dark,
+[data-theme="dark"] {
+  --color-background: #07090c;
+  --color-foreground: #e8ecf2;
+  --color-card: #10151d;
+  --color-card-foreground: #e8ecf2;
+  --color-popover: #10151d;
+  --color-popover-foreground: #e8ecf2;
+  --color-muted: #161d27;
+  --color-muted-foreground: #8b96a8;
+  --color-secondary: #161d27;
+  --color-secondary-foreground: #e8ecf2;
+  --color-accent: #12284d;
+  --color-accent-foreground: #b8d3ff;
+  --color-border: #ffffff14;
+  --color-border-strong: #ffffff26;
+  --color-input: #ffffff20;
+  --color-ring: #5b9dff;
+  --color-surface-1: #0b0f15;
+  --color-surface-2: #10151d;
+  --color-surface-3: #161d27;
+
+  --color-primary: #2f7bff;
+  --color-primary-deep: #0056d2;
+  --color-primary-glow: #5b9dff;
+  --color-primary-hover: #5b9dff;
+  --color-primary-light: #12284d;
+  --color-primary-foreground: #ffffff;
+
+  --color-destructive: #dc2626;
+  --color-destructive-foreground: #ffffff;
+  --color-success: #16a34a;
+  --color-warning: #f59e0b;
+  --color-danger: #dc2626;
+  --color-info: #0284c7;
+  --color-success-strong: #15803d;
+  --color-warning-strong: #b45309;
+  --color-danger-strong: #b91c1c;
+  --color-info-strong: #0369a1;
+}
+
 @layer base {
   * {
     @apply border-border;
@@ -147,9 +206,24 @@
     scroll-behavior: smooth;
   }
 
+  html.dark,
+  html[data-theme="dark"] {
+    color-scheme: dark;
+  }
+
   body {
     @apply bg-background font-sans text-foreground antialiased;
     text-rendering: optimizeLegibility;
+    background-image: radial-gradient(
+      ellipse 90% 55% at 50% -15%,
+      color-mix(in oklab, var(--color-primary-glow) 8%, transparent),
+      transparent 70%
+    );
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-ring);
+    outline-offset: 3px;
   }
 
   @media (prefers-reduced-motion: reduce) {
@@ -164,7 +238,8 @@
   }
 
   ::selection {
-    @apply bg-primary-light text-primary;
+    background: rgb(37 99 235 / 12%);
+    color: var(--color-primary-deep);
   }
 
   /* Slim, theme-aware scrollbars */
@@ -193,12 +268,57 @@
   background-image: linear-gradient(
     100deg,
     var(--color-primary),
-    var(--color-xp-mastery) 55%,
-    var(--color-xp-completion)
+    var(--color-primary-hover) 55%,
+    var(--color-secondary-accent)
   );
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
+}
+
+@utility text-glow {
+  text-shadow: 0 0 24px color-mix(in oklab, var(--color-primary-glow) 26%, transparent);
+}
+
+@utility glass {
+  background: linear-gradient(
+    180deg,
+    color-mix(in oklab, var(--color-surface-3) 72%, transparent),
+    color-mix(in oklab, var(--color-surface-1) 84%, transparent)
+  );
+  border: 1px solid var(--color-border);
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 7%), 0 18px 60px rgb(0 0 0 / 12%);
+  backdrop-filter: blur(14px);
+}
+
+@utility glow-primary {
+  box-shadow: 0 0 44px color-mix(in oklab, var(--color-primary-glow) 28%, transparent);
+}
+
+@utility glow-subtle {
+  box-shadow: 0 0 28px color-mix(in oklab, var(--color-primary-glow) 15%, transparent);
+}
+
+@utility glow-card {
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 8%), 0 0 34px color-mix(in oklab, var(--color-primary-glow) 14%, transparent);
+}
+
+@utility hairline {
+  border: 1px solid var(--color-border);
+}
+
+@utility aurora {
+  background-image:
+    radial-gradient(ellipse at 50% 0%, color-mix(in oklab, var(--color-primary-glow) 27%, transparent), transparent 56%),
+    radial-gradient(ellipse at 15% 50%, color-mix(in oklab, var(--color-primary) 14%, transparent), transparent 48%),
+    radial-gradient(ellipse at 85% 60%, color-mix(in oklab, var(--color-primary-deep) 16%, transparent), transparent 48%);
+}
+
+@utility bg-grid-dark {
+  background-image:
+    linear-gradient(to right, rgb(255 255 255 / 5%) 1px, transparent 1px),
+    linear-gradient(to bottom, rgb(255 255 255 / 5%) 1px, transparent 1px);
+  background-size: 44px 44px;
 }
 
 @utility bg-grid {

@@ -85,7 +85,7 @@ export function SocialProof() {
             <div className="flex items-start justify-between gap-4 border-b border-border p-5 sm:p-6">
               <div>
                 <p className="flex items-center gap-2 font-display text-h3">
-                  <Trophy className="size-5 text-xp-mastery" /> Global climb
+                   <Trophy className="size-5 text-primary" /> Global climb
                 </p>
                 <p className="mt-1 text-xs text-muted-foreground">
                   The top of this week&apos;s server-derived board.
@@ -133,7 +133,7 @@ export function SocialProof() {
             <div className="flex items-start justify-between gap-3">
               <div>
                 <p className="flex items-center gap-2 font-display text-h3">
-                  <Medal className="size-5 text-xp-completion" /> Rank ladder
+                   <Medal className="size-5 text-primary" /> Rank ladder
                 </p>
                 <p className="mt-1 text-xs text-muted-foreground">
                   Ten server-resolved levels from Initiate to Deus.
@@ -155,7 +155,7 @@ export function SocialProof() {
                   <span className="font-medium">{rank.rank_name}</span>
                   <span className="ml-auto h-1.5 w-16 overflow-hidden rounded-full bg-secondary">
                     <span
-                      className="block h-full rounded-full bg-gradient-to-r from-primary to-xp-mastery"
+                       className="block h-full rounded-full bg-primary"
                       style={{ width: `${Math.max(20, rank.level * 18)}%` }}
                     />
                   </span>

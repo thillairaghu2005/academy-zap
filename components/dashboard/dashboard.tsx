@@ -26,8 +26,7 @@ function SurfaceCard({ surface }: { surface: SurfaceMeta }) {
         <CardHeader className="flex-row items-center gap-3 space-y-0">
           <div
             className={cn(
-              "grid size-11 shrink-0 place-items-center rounded-lg bg-gradient-to-br text-white shadow-md transition-transform duration-300 group-hover:scale-105",
-              surface.accent,
+              "grid size-11 shrink-0 place-items-center rounded-2xl bg-primary/10 text-primary shadow-sm transition-transform duration-300 group-hover:scale-105",
             )}
           >
             <Icon className="size-5" />
@@ -85,7 +84,7 @@ export function Dashboard() {
 
         <div className="relative z-10 px-6 py-14 sm:px-10 sm:py-16">
           <h1 className="max-w-2xl font-display text-h1">
-            Learn. Build. <span className="text-gradient-zap">Climb.</span>
+            Learn. Build. <span className="text-primary">Climb.</span>
           </h1>
           <p className="mt-4 max-w-xl text-base leading-relaxed text-muted-foreground">
             Learn in hands-on courses, prove it in the code judge, and break
@@ -93,7 +92,7 @@ export function Dashboard() {
             climb.
           </p>
           <div className="mt-7 flex flex-wrap gap-3">
-            <Button variant="gradient" size="lg" asChild>
+             <Button variant="default" size="lg" sheen glow asChild>
               <Link href="/courses">
                 Start learning <ArrowRight />
               </Link>

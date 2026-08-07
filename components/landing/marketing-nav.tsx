@@ -44,11 +44,11 @@ export function MarketingNav() {
   return (
     <header
       className={cn(
-        "sticky top-0 z-40 border-b border-transparent transition-all duration-300 motion-reduce:transition-none",
-        scrolled && "border-border/70 bg-background/85 shadow-sm backdrop-blur-xl",
+        "sticky top-0 z-40 border-b border-transparent px-3 py-3 transition-all duration-300 motion-reduce:transition-none sm:px-5",
+        scrolled && "border-border/70 bg-background/85 backdrop-blur-xl",
       )}
     >
-      <div className="mx-auto flex h-16 max-w-7xl items-center gap-3 px-4 sm:px-6 lg:h-20 lg:px-8">
+      <div className={cn("mx-auto flex h-14 max-w-7xl items-center gap-3 rounded-2xl border border-transparent px-2 sm:px-3 lg:h-16", scrolled && "border-border/80 bg-white/85 shadow-[0_8px_30px_rgb(17_24_39_/_6%)]") }>
         <Sheet open={menuOpen} onOpenChange={setMenuOpen}>
           <SheetTrigger asChild>
             <Button
@@ -112,7 +112,7 @@ export function MarketingNav() {
             <Link
               key={link.href}
               href={link.href}
-              className="rounded-md px-3 py-2 text-sm font-medium text-muted-foreground outline-none transition-colors hover:bg-accent hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring"
+               className="rounded-xl px-3 py-2 text-sm font-medium text-muted-foreground outline-none transition-colors hover:bg-accent hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring"
             >
               {link.label}
             </Link>
@@ -134,7 +134,7 @@ export function MarketingNav() {
               >
                 Sign in
               </Link>
-              <Button variant="gradient" size="sm" asChild>
+               <Button variant="default" size="sm" sheen glow asChild>
                 <Link href="/register">Join Zapsters</Link>
               </Button>
             </>

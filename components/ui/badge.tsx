@@ -4,7 +4,7 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 
 const badgeVariants = cva(
-  "inline-flex w-fit shrink-0 items-center justify-center gap-1 overflow-hidden whitespace-nowrap rounded-md border px-2 py-0.5 text-caption font-medium transition-colors [&>svg]:pointer-events-none [&>svg]:size-3 [&>svg]:shrink-0",
+  "inline-flex w-fit shrink-0 items-center justify-center gap-1 overflow-hidden whitespace-nowrap rounded-full border px-2.5 py-1 text-caption font-medium transition-colors [&>svg]:pointer-events-none [&>svg]:size-3 [&>svg]:shrink-0",
   {
     variants: {
       variant: {
@@ -14,19 +14,19 @@ const badgeVariants = cva(
           "border-transparent bg-destructive text-destructive-foreground",
         outline: "border-border text-foreground",
         // Small text on white cards needs the darker -strong shade for WCAG AA.
-        success: "border-transparent bg-success/15 text-success-strong-strong",
-        warning: "border-transparent bg-warning/15 text-warning-strong-strong",
-        info: "border-transparent bg-info/15 text-info-strong-strong",
+        success: "border-transparent bg-success/10 text-success-strong",
+        warning: "border-transparent bg-warning/10 text-warning-strong",
+        info: "border-transparent bg-info/10 text-info-strong",
         // Verdict literals (F2) — styled distinctly, used verbatim
-        accepted: "border-transparent bg-verdict-accepted/15 text-success-strong-strong",
+        accepted: "border-transparent bg-verdict-accepted/10 text-success-strong",
         "wrong-answer":
-          "border-transparent bg-verdict-wrong-answer/15 text-danger-strong-strong",
+          "border-transparent bg-verdict-wrong-answer/10 text-danger-strong",
         "time-limit-exceeded":
-          "border-transparent bg-verdict-time-limit-exceeded/15 text-warning-strong-strong",
+          "border-transparent bg-verdict-time-limit-exceeded/10 text-warning-strong",
         "runtime-error":
-          "border-transparent bg-verdict-runtime-error/15 text-warning-strong-strong",
+          "border-transparent bg-verdict-runtime-error/10 text-warning-strong",
         "compile-error":
-          "border-transparent bg-verdict-compile-error/15 text-warning-strong-strong",
+          "border-transparent bg-verdict-compile-error/10 text-warning-strong",
       },
     },
     defaultVariants: {

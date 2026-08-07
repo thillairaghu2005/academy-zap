@@ -3,6 +3,7 @@ import type { editor } from "monaco-editor";
 import type { IDETheme } from "@/types/ide";
 
 export const MONACO_THEME_NAMES: Record<IDETheme, string> = {
+  "zapsters-ide-dark": "zapsters-ide-dark",
   "vs-dark": "ide-vs-dark",
   "vs-light": "ide-vs-light",
   "github-dark": "ide-github-dark",
@@ -18,13 +19,13 @@ export const MONACO_THEME_NAMES: Record<IDETheme, string> = {
 };
 
 const darkRules: editor.IStandaloneThemeData["rules"] = [
-  { token: "comment", foreground: "667898", fontStyle: "italic" },
-  { token: "keyword", foreground: "B9A6FF" },
-  { token: "string", foreground: "8EE6BF" },
-  { token: "number", foreground: "F2BF79" },
-  { token: "type", foreground: "83D8F2" },
-  { token: "function", foreground: "F4D58D" },
-  { token: "variable", foreground: "E8EEFA" },
+  { token: "comment", foreground: "5F708C", fontStyle: "italic" },
+  { token: "keyword", foreground: "7FB2FF" },
+  { token: "string", foreground: "7DD3A0" },
+  { token: "number", foreground: "FBBF24" },
+  { token: "type", foreground: "67D3F0" },
+  { token: "function", foreground: "F0D48A" },
+  { token: "variable", foreground: "E8EFFA" },
 ];
 
 const lightRules: editor.IStandaloneThemeData["rules"] = [
@@ -90,8 +91,42 @@ const lightColors = (background: string, foreground: string, active: string) => 
 });
 
 export const MONACO_THEMES: Record<IDETheme, ThemeDefinition> = {
+  "zapsters-ide-dark": {
+    base: "vs-dark",
+    inherit: true,
+    colors: {
+      "editor.background": "#0A1120",
+      "editor.foreground": "#E8EFFA",
+      "editorCursor.foreground": "#7FB2FF",
+      "editor.selectionBackground": "rgba(77,147,255,0.22)",
+      "editor.inactiveSelectionBackground": "rgba(77,147,255,0.14)",
+      "editor.lineHighlightBackground": "rgba(255,255,255,0.030)",
+      "editor.lineHighlightBorder": "transparent",
+      "editorLineNumber.foreground": "#5F708C",
+      "editorLineNumber.activeForeground": "#E8EFFA",
+      "editorIndentGuide.background1": "rgba(125,155,205,0.10)",
+      "editorIndentGuide.activeBackground1": "rgba(125,155,205,0.26)",
+      "editorGutter.background": "#0A1120",
+      "editorWidget.background": "#16233B",
+      "editorWidget.border": "rgba(125,155,205,0.22)",
+      "editorSuggestWidget.background": "#16233B",
+      "editorSuggestWidget.selectedBackground": "rgba(77,147,255,0.16)",
+      "editorSuggestWidget.border": "rgba(125,155,205,0.22)",
+      "editorHoverWidget.background": "#16233B",
+      "editorHoverWidget.border": "rgba(125,155,205,0.22)",
+      "editorBracketHighlight.foreground1": "#7FB2FF",
+      "editorBracketHighlight.foreground2": "#A78BFA",
+      "editorBracketHighlight.foreground3": "#FBBF24",
+      "editorError.foreground": "#F87171",
+      "editorWarning.foreground": "#FBBF24",
+      "scrollbarSlider.background": "rgba(125,155,205,0.14)",
+      "scrollbarSlider.hoverBackground": "rgba(125,155,205,0.24)",
+      "minimap.background": "#0A1120",
+    },
+    rules: darkRules,
+  },
   "vs-dark": { base: "vs-dark", inherit: true, colors: { ...darkColors("0B1120", "E8EEFA", "253957"), "editorLineNumber.foreground": "52617A", "editorLineNumber.activeForeground": "8EE6BF", "editorCursor.foreground": "8EE6BF", "editorIndentGuide.background1": "17233A", "editorIndentGuide.activeBackground1": "2D4161" }, rules: darkRules },
-  "vs-light": { base: "vs", inherit: true, colors: lightColors("FFFFFF", "1F2937", "ADD6FF"), rules: lightRules },
+  "vs-light": { base: "vs", inherit: true, colors: lightColors("FFFFFF", "111827", "DCE9FF"), rules: lightRules },
   "github-dark": { base: "vs-dark", inherit: true, colors: darkColors("0D1117", "E6EDF3", "1F3A5F"), rules: [{ token: "comment", foreground: "8B949E" }, { token: "keyword", foreground: "FF7B72" }, { token: "string", foreground: "A5D6FF" }, { token: "type", foreground: "79C0FF" }] },
   "github-light": { base: "vs", inherit: true, colors: lightColors("FFFFFF", "24292F", "B6D7FF"), rules: [{ token: "comment", foreground: "6E7781" }, { token: "keyword", foreground: "CF222E" }, { token: "string", foreground: "0A3069" }, { token: "type", foreground: "8250DF" }] },
   "one-dark-pro": { base: "vs-dark", inherit: true, colors: darkColors("282C34", "ABB2BF", "3E4451"), rules: [{ token: "comment", foreground: "7F848E" }, { token: "keyword", foreground: "C678DD" }, { token: "string", foreground: "98C379" }, { token: "type", foreground: "E5C07B" }] },

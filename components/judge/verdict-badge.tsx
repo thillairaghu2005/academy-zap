@@ -6,7 +6,7 @@ import { Badge } from "@/components/ui/badge";
  * verbatim; only the label + styling vary. Verdict literals must never be
  * renamed or remapped in the UI.
  */
-const VERDICT_META: Record<
+export const VERDICT_META: Record<
   Verdict,
   { label: string }
 > = {

@@ -4,6 +4,7 @@ import "./globals.css";
 import { QueryProvider } from "@/components/providers/query-provider";
 import { SessionProvider } from "@/components/providers/session-provider";
 import { ServiceWorkerProvider } from "@/components/providers/service-worker-provider";
+import { ThemeProvider } from "@/components/providers/theme-provider";
 import { Toaster } from "@/components/ui/sonner";
 
 export const metadata: Metadata = {
@@ -61,19 +62,42 @@ export const viewport: Viewport = {
   themeColor: "#f8f9fb",
 };
 
+const themeScript = `
+(function () {
+  try {
+    var stored = localStorage.getItem("zapsters-theme");
+    var theme = stored === "dark" ? "dark" : "light";
+    document.documentElement.classList.remove("light", "dark");
+    document.documentElement.classList.add(theme);
+  } catch {
+    document.documentElement.classList.add("light");
+  }
+})();
+`;
+
 export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="h-full" data-scroll-behavior="smooth">
+    <html
+      lang="en"
+      className="h-full light"
+      data-scroll-behavior="smooth"
+      suppressHydrationWarning
+    >
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: themeScript }} />
+      </head>
       <body className="min-h-full">
-        <QueryProvider>
-          <SessionProvider>{children}</SessionProvider>
-        </QueryProvider>
+        <ThemeProvider>
+          <QueryProvider>
+            <SessionProvider>{children}</SessionProvider>
+          </QueryProvider>
+          <Toaster />
+        </ThemeProvider>
         <ServiceWorkerProvider />
-        <Toaster />
       </body>
     </html>
   );

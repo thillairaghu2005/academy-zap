@@ -1,4 +1,4 @@
-import type { Problem, SubmissionAccepted } from "@/lib/contracts/judge";
+import type { JudgeResult, Problem, SubmissionAccepted, Verdict } from "@/lib/contracts/judge";
 
 /**
  * Judge Engine fixtures + in-memory submission store.
@@ -36,6 +36,10 @@ export interface StoredSubmission {
   memory_kb: number | null;
   test_cases_passed: number | null;
   test_cases_total: number | null;
+  stdout: string | null;
+  stderr: string | null;
+  compile_output: string | null;
+  cases: JudgeResult["cases"] | null;
   graded_at: string | null;
 }
 
@@ -58,7 +62,7 @@ export const MOCK_PROBLEMS: Problem[] = [
     success_rate_pct: 78,
     topics: ["arrays", "hash-maps"],
     statement:
-      "Given an array of integers `nums` and an integer `target`, return the indices of the two numbers that add up to `target`.\n\nYou may assume that each input has exactly one solution, and you may not use the same element twice. Return the answer in any order.",
+      "Given an array of integers `nums` and an integer `target`, return the indices of the two numbers that add up to `target`.\n\nYou may assume that each input has exactly one solution, and you may not use the same element twice. Return the answer in any order.\n\nFor an input `X`, think of the complement as $f(X) = target - X$. The pair is valid when $nums[i] + nums[j] = target$.",
     constraints: [
       "2 ≤ nums.length ≤ 10⁴",
       "-10⁹ ≤ nums[i] ≤ 10⁹",
@@ -244,9 +248,55 @@ export const MOCK_BOOM_PROBLEM_ID = "boom";
  */
 export const mockSubmissions = new Map<string, StoredSubmission>();
 
+function buildCases(
+  verdict: Verdict,
+  total: number,
+  passed: number,
+  runtimeMs: number,
+  memoryKb: number,
+  problem?: Problem,
+): NonNullable<JudgeResult["cases"]> {
+  const visibleCount = Math.min(problem?.sample_cases.length ?? 3, total);
+  const failedVisibleIndex = Math.min(visibleCount, Math.max(1, passed + 1));
+  let acceptedRemaining = passed;
+  const cases: NonNullable<JudgeResult["cases"]> = [];
+
+  for (let index = 1; index <= total; index += 1) {
+    const hidden = index > visibleCount;
+    let status: Verdict = verdict;
+    if (verdict === "accepted") {
+      status = "accepted";
+    } else if (verdict === "wrong_answer") {
+      if (index === failedVisibleIndex) {
+        status = "wrong_answer";
+      } else if (acceptedRemaining > 0) {
+        status = "accepted";
+        acceptedRemaining -= 1;
+      }
+    }
+
+    const sample = problem?.sample_cases[index - 1];
+    const expected = sample?.output;
+    cases.push({
+      index,
+      status,
+      hidden,
+      runtime_ms: runtimeMs,
+      memory_kb: memoryKb,
+      ...(hidden || !sample ? {} : {
+        input: sample.input,
+        expected,
+        received: status === "wrong_answer" ? "[0, 3]" : expected,
+      }),
+    });
+  }
+
+  return cases;
+}
+
 /** Scripted verdict derivation — deterministic, no client logic involved. */
-export function gradeSubmission(source: string): {
-  verdict: StoredSubmission["verdict"];
+export function gradeSubmission(source: string, problem?: Problem): {
+  verdict: Verdict;
   runtime_ms: number;
   memory_kb: number;
   test_cases_passed: number;
@@ -254,7 +304,10 @@ export function gradeSubmission(source: string): {
   stdout: string;
   stderr: string | null;
   compile_output: string | null;
+  cases: NonNullable<JudgeResult["cases"]>;
 } {
+  const total = problem?.hidden_test_count ?? 12;
+
   if (source.includes("compile_error")) {
     return {
       verdict: "compile_error",
@@ -265,6 +318,7 @@ export function gradeSubmission(source: string): {
       stdout: "",
       stderr: null,
       compile_output: "SyntaxError: invalid syntax (line 2)\n  return [seen[comp",
+      cases: buildCases("compile_error", 1, 0, 0, 1024, problem),
     };
   }
   if (source.includes("sleep(")) {
@@ -273,10 +327,11 @@ export function gradeSubmission(source: string): {
       runtime_ms: 1000,
       memory_kb: 1024,
       test_cases_passed: 0,
-      test_cases_total: 12,
+      test_cases_total: total,
       stdout: "",
       stderr: "Execution timed out after 1000ms.",
       compile_output: null,
+      cases: buildCases("time_limit_exceeded", total, 0, 1000, 1024, problem),
     };
   }
   if (source.includes("raise ")) {
@@ -285,10 +340,11 @@ export function gradeSubmission(source: string): {
       runtime_ms: 42,
       memory_kb: 9216,
       test_cases_passed: 0,
-      test_cases_total: 12,
+      test_cases_total: total,
       stdout: "",
       stderr: "IndexError: list index out of range\n  at two_sum (line 12)",
       compile_output: null,
+      cases: buildCases("runtime_error", total, 0, 42, 9216, problem),
     };
   }
   if (source.includes("wrong_answer")) {
@@ -297,21 +353,23 @@ export function gradeSubmission(source: string): {
       runtime_ms: 36,
       memory_kb: 8192,
       test_cases_passed: 7,
-      test_cases_total: 12,
-      stdout: "case 8: expected [0, 2] but got [0, 3]",
+      test_cases_total: total,
+      stdout: "case 3: expected [0, 1] but got [0, 3]",
       stderr: null,
       compile_output: null,
+      cases: buildCases("wrong_answer", total, Math.min(7, Math.max(0, total - 1)), 36, 8192, problem),
     };
   }
   return {
     verdict: "accepted",
     runtime_ms: 31,
     memory_kb: 9216,
-    test_cases_passed: 12,
-    test_cases_total: 12,
-    stdout: "All 12 test cases passed.",
+    test_cases_passed: total,
+    test_cases_total: total,
+    stdout: `All ${total} test cases passed.`,
     stderr: null,
     compile_output: null,
+    cases: buildCases("accepted", total, total, 31, 9216, problem),
   };
 }
 
@@ -325,7 +383,8 @@ export function seedSubmissionHistory(): void {
     { problemId: "p-valid-parens", source: "def is_valid(s):\n    return False  # wrong_answer\n", agoMs: 90 * 60_000 },
   ];
   seeds.forEach((seed, i) => {
-    const graded = gradeSubmission(seed.source);
+    const problem = MOCK_PROBLEMS_BY_ID.get(seed.problemId);
+    const graded = gradeSubmission(seed.source, problem);
     mockSubmissions.set(`seed-${i}`, {
       submission: {
         submission_id: `seed-${i}`,
@@ -340,6 +399,10 @@ export function seedSubmissionHistory(): void {
       memory_kb: graded.memory_kb,
       test_cases_passed: graded.test_cases_passed,
       test_cases_total: graded.test_cases_total,
+      stdout: graded.stdout,
+      stderr: graded.stderr,
+      compile_output: graded.compile_output,
+      cases: graded.cases,
       graded_at: new Date(now - seed.agoMs + 400).toISOString(),
     });
   });

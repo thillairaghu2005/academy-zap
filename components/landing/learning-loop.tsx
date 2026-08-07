@@ -23,7 +23,7 @@ const steps = [
     detail: "Courses give you the syntax, reasoning, and operating context before you practice.",
     href: "/courses",
     icon: BookOpen,
-    tone: "text-xp-completion",
+     tone: "text-primary",
   },
   {
     label: "02 / Build",
@@ -39,15 +39,15 @@ const steps = [
     detail: "Verified work feeds your rank, streaks, guild, and two independent XP tracks.",
     href: "/rank",
     icon: Trophy,
-    tone: "text-xp-mastery",
+     tone: "text-secondary-accent",
   },
 ] as const;
 
 const flow = [
-  { label: "Course lesson", icon: BookOpen, tone: "text-xp-completion" },
+   { label: "Course lesson", icon: BookOpen, tone: "text-primary" },
   { label: "Judge submission", icon: Code2, tone: "text-primary" },
   { label: "Lab objective", icon: FlaskConical, tone: "text-success-strong" },
-  { label: "Rank tick", icon: Trophy, tone: "text-xp-mastery" },
+   { label: "Rank tick", icon: Trophy, tone: "text-secondary-accent" },
 ] as const;
 
 /** One compact explanation of the platform loop, from content to rank. */
@@ -184,13 +184,13 @@ export function LearningLoop() {
           })}
         </div>
 
-        <div className="mt-5 grid gap-3 rounded-xl border border-border bg-foreground p-4 font-mono text-xs text-background sm:grid-cols-[1fr_auto] sm:items-center sm:p-5">
-          <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-background/65">
-            <span className="flex items-center gap-2">
-              <FlaskConical className="size-3.5 text-primary-light" />
-              lab-session / objective-check
-            </span>
-            <span className="text-background/35">→</span>
+         <div className="mt-5 grid gap-3 rounded-2xl border border-border bg-card p-4 font-mono text-xs sm:grid-cols-[1fr_auto] sm:items-center sm:p-5">
+           <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-muted-foreground">
+             <span className="flex items-center gap-2">
+               <FlaskConical className="size-3.5 text-primary" />
+               lab-session / objective-check
+             </span>
+             <span className="text-border-strong">→</span>
             <span className="flex items-center gap-2 text-success">
               <CheckCircle2 className="size-3.5" />
               server verified
@@ -198,7 +198,7 @@ export function LearningLoop() {
           </div>
           <Link
             href="/labs"
-            className="inline-flex items-center gap-1.5 text-primary-light outline-none hover:text-background focus-visible:ring-2 focus-visible:ring-ring"
+             className="inline-flex items-center gap-1.5 text-primary outline-none hover:text-primary-hover focus-visible:ring-2 focus-visible:ring-ring"
           >
             Open a lab <ArrowRight className="size-3.5" />
           </Link>

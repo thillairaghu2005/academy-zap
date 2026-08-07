@@ -69,7 +69,7 @@ function PlayerSkeleton() {
 /** Mock article body — real article content ships with the Content backend. */
 function ArticleBody({ lesson }: { lesson: CourseLesson }) {
   return (
-    <div className="rounded-lg border border-border bg-card p-6 sm:p-8">
+    <div className="rounded-3xl border border-border bg-card p-6 shadow-[0_10px_30px_rgb(17_24_39_/_5%)] sm:p-10">
       <div className="flex items-center gap-2 text-xs text-muted-foreground">
         <FileText className="size-4" />
         Article lesson · ~{lesson.duration_seconds} words · 5 min read
@@ -82,7 +82,7 @@ function ArticleBody({ lesson }: { lesson: CourseLesson }) {
         the real Content Engine this text ships as authored markdown with the
         course payload — the same contract, no client-side mockery.
       </p>
-      <div className="mt-4 rounded-md border border-border bg-secondary/40 p-4 font-mono text-xs leading-relaxed text-muted-foreground">
+      <div className="mt-4 rounded-2xl border border-border bg-surface-1 p-4 font-mono text-xs leading-relaxed text-muted-foreground">
         $ python3 -c &quot;print(&apos;mock content payload&apos;)&quot;
         <br />
         mock content payload
@@ -262,9 +262,9 @@ export function PlayerClient({ course }: { course: Course }) {
       : 0;
 
   return (
-    <div className="flex min-h-[calc(100vh-4rem)] flex-col">
+    <div className="flex min-h-[calc(100vh-1rem)] flex-col bg-surface-1">
       {/* Player top bar */}
-      <div className="flex flex-wrap items-center gap-3 border-b border-border bg-card/60 px-4 py-3 sm:px-6">
+      <div className="sticky top-0 z-20 flex flex-wrap items-center gap-3 border-b border-border bg-white/90 px-4 py-3 shadow-[0_4px_18px_rgb(17_24_39_/_4%)] backdrop-blur-xl sm:px-6">
         <Button variant="ghost" size="sm" asChild>
           <Link href={`/courses/${course.id}`}>
             <ArrowLeft />
@@ -318,7 +318,7 @@ export function PlayerClient({ course }: { course: Course }) {
 
       <div className="flex flex-1 flex-col lg:flex-row">
         {/* Player / article main column */}
-        <div className="flex-1 p-4 sm:p-6">
+        <div className="flex-1 p-4 sm:p-8 lg:p-10">
           {progressLoading ? (
             <PlayerSkeleton />
           ) : progressError ? (
@@ -435,14 +435,14 @@ export function PlayerClient({ course }: { course: Course }) {
         </div>
 
         {/* Lesson sidebar */}
-        <aside className="w-full border-t border-border bg-card/40 lg:w-80 lg:shrink-0 lg:border-l lg:border-t-0">
-          <div className="flex items-center justify-between px-4 py-3">
+        <aside className="w-full border-t border-border bg-white lg:w-96 lg:shrink-0 lg:border-l lg:border-t-0">
+          <div className="flex items-center justify-between border-b border-border px-5 py-4">
             <h2 className="text-sm font-semibold">Course content</h2>
             <span className="text-xs text-muted-foreground">
               {completedSet.size}/{allLessons.length} done
             </span>
           </div>
-          <div className="max-h-[60vh] overflow-y-auto px-2 pb-4 lg:max-h-[calc(100vh-8rem)]">
+          <div className="max-h-[60vh] overflow-y-auto px-3 pb-5 lg:max-h-[calc(100vh-6rem)]">
             {course.syllabus.map((section) => {
               const sectionDone = section.lessons.filter((l) =>
                 completedSet.has(l.id),

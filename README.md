@@ -55,7 +55,7 @@ Browser/PWA → Next.js web app
 
 Next.js 16 App Router + Turbopack · TypeScript strict (`noUncheckedIndexedAccess`) ·
 Tailwind v4 + shadcn/ui · TanStack Query 5 · react-hook-form + zod · Framer Motion ·
-Fontsource Inter + Space Grotesk · Monaco (F2) · xterm.js (F3) · video.js (F1) ·
+Fontsource Inter + Geist · Monaco (F2) · xterm.js (F3) · video.js (F1) ·
 recharts/d3 (F5) · SSE for judge results and leaderboard ticks, WebSocket only for the lab
 terminal.
 
@@ -118,12 +118,21 @@ even when the diff looks like a bug fix.
 Typography is centralized in `src/styles/typography.css`, imported once by `app/globals.css`:
 
 - Inter is the body and interface font.
-- Space Grotesk is the display and heading font.
+- Geist is the display and heading font, with SF Pro Display as the system fallback.
 - The existing monospace stack remains reserved for code, terminals, IDs, and technical values.
 - Semantic fluid utilities include `text-hero`, `text-h1`, `text-h2`, `text-h3`, `text-body`,
 `text-small`, and `text-caption`.
 - Fontsource provides local loading with `font-display: swap`; fonts are not loaded through
-Google Fonts or `next/font`.
+  Google Fonts or `next/font`.
+
+## Design System
+
+Zapsters defaults to the light theme, with dark mode retained as a user-controlled toggle. The
+shared foundation lives in `app/globals.css`: soft neutral surfaces, blue accents, low-opacity
+ hairlines, optional glass treatments, and reduced-motion-safe timing tokens. Geist is
+reserved for display type and Inter for body/interface text. Reusable surface and motion
+primitives live in `components/ui/` and `components/motion/`. See `DESIGN_SYSTEM.md` for the
+complete token table, locked gamification values, variants, and usage rules.
 
 ---
 

@@ -4,9 +4,11 @@ import * as React from "react";
 import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { motion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 import {
   BookOpen,
+  Bookmark,
+  BookmarkCheck,
   ChevronDown,
   Clock3,
   LoaderCircle,
@@ -32,6 +34,7 @@ import { AddToCartButton } from "@/components/commerce/add-to-cart-button";
 import { BuyNowButton } from "@/components/commerce/buy-now-button";
 import { useDebouncedValue } from "@/lib/hooks/use-debounced-value";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import {
@@ -137,7 +140,7 @@ function SearchBar({
   return (
     <div className="relative">
       <Search
-        className="pointer-events-none absolute left-4 top-1/2 size-4 -translate-y-1/2 text-[#666]"
+        className="pointer-events-none absolute left-4 top-1/2 size-4 -translate-y-1/2 text-muted-foreground"
         aria-hidden="true"
       />
       <Input
@@ -151,13 +154,13 @@ function SearchBar({
         }
         value={value}
         onChange={(event) => onChange(event.target.value)}
-        className="h-12 rounded-2xl border-[#b8b8b8] bg-white pl-11 pr-11 text-[15px] shadow-[0_2px_8px_rgba(0,0,0,0.06)] placeholder:text-[#777] focus-visible:border-black focus-visible:ring-2 focus-visible:ring-black"
+        className="h-14 rounded-2xl border-border bg-card pl-11 pr-11 text-[15px] shadow-[0_8px_24px_rgb(17_24_39_/_5%)] placeholder:text-muted-foreground focus-visible:border-primary focus-visible:ring-4 focus-visible:ring-primary/10"
       />
       {value ? (
         <button
           type="button"
           onClick={onClear}
-          className="absolute right-3 top-1/2 flex size-7 -translate-y-1/2 items-center justify-center rounded-lg text-[#555] transition-colors hover:bg-[#eeeeee] hover:text-black focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black"
+          className="absolute right-3 top-1/2 flex size-8 -translate-y-1/2 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-accent hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
           aria-label="Clear search"
         >
           <X className="size-4" aria-hidden="true" />
@@ -182,17 +185,17 @@ function FilterSelect({
     <Select value={value} onValueChange={onValueChange}>
       <SelectTrigger
         aria-label={`Filter courses by ${label.toLowerCase()}`}
-        className="h-9 w-full rounded-xl border-[#c2c2c2] bg-white px-3 text-[13px] text-[#222] shadow-none focus-visible:border-black focus-visible:ring-2 focus-visible:ring-black sm:w-auto sm:min-w-[128px]"
+        className="h-10 w-full rounded-xl border-border bg-card px-3 text-[13px] text-foreground shadow-sm focus-visible:border-primary focus-visible:ring-4 focus-visible:ring-primary/10 sm:w-auto sm:min-w-[128px]"
       >
         <span className="sr-only">{label}: </span>
         <SelectValue />
       </SelectTrigger>
-      <SelectContent className="rounded-xl border-[#b8b8b8] bg-white text-black shadow-[0_10px_30px_rgba(0,0,0,0.14)]">
+      <SelectContent className="rounded-xl border-border bg-card text-foreground shadow-[0_16px_40px_rgb(17_24_39_/_12%)]">
         {options.map((option) => (
           <SelectItem
             key={option.value}
             value={option.value}
-            className="rounded-lg focus:bg-[#eeeeee] focus:text-black"
+            className="rounded-lg focus:bg-accent focus:text-foreground"
           >
             {option.label}
           </SelectItem>
@@ -207,7 +210,7 @@ function ActiveFilter({ label, onRemove }: { label: string; onRemove: () => void
     <button
       type="button"
       onClick={onRemove}
-      className="inline-flex h-7 items-center gap-1.5 rounded-lg border border-[#c5c5c5] bg-[#f0f0f0] px-2.5 text-xs font-medium text-[#222] transition-colors hover:bg-[#e2e2e2] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black"
+      className="inline-flex h-8 items-center gap-1.5 rounded-full border border-primary/15 bg-primary/5 px-3 text-xs font-medium text-primary transition-colors hover:bg-primary/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
     >
       {label}
       <X className="size-3" aria-hidden="true" />
@@ -248,7 +251,7 @@ function FilterToolbar({
   return (
     <section
       aria-label="Course filters"
-      className="rounded-2xl border border-[#d0d0d0] bg-[#f7f7f7] p-3 shadow-[0_3px_12px_rgba(0,0,0,0.05)] sm:p-4"
+      className="rounded-2xl border border-border bg-surface-1 p-3 shadow-[0_8px_24px_rgb(17_24_39_/_4%)] sm:p-4"
     >
       <div className="flex flex-wrap items-center gap-2">
         <FilterSelect
@@ -297,8 +300,8 @@ function FilterToolbar({
         />
       </div>
 
-      <details className="mt-3 border-t border-[#d9d9d9] pt-3">
-        <summary className="flex cursor-pointer list-none items-center gap-2 text-xs font-semibold text-[#333] outline-none focus-visible:ring-2 focus-visible:ring-black [&::-webkit-details-marker]:hidden">
+      <details className="group mt-3 border-t border-border pt-3">
+        <summary className="flex cursor-pointer list-none items-center gap-2 text-xs font-semibold text-foreground outline-none focus-visible:ring-2 focus-visible:ring-ring [&::-webkit-details-marker]:hidden">
           More filters
           <ChevronDown className="size-3.5 transition-transform group-open:rotate-180" aria-hidden="true" />
         </summary>
@@ -313,7 +316,7 @@ function FilterToolbar({
             type="button"
             aria-pressed={values.projectBased}
             onClick={onProjectBased}
-            className={`h-9 rounded-xl border px-3 text-[13px] font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black ${values.projectBased ? "border-black bg-black text-white" : "border-[#c2c2c2] bg-white text-[#222] hover:bg-[#eeeeee]"}`}
+             className={`h-10 rounded-full border px-3.5 text-[13px] font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${values.projectBased ? "border-primary bg-primary text-primary-foreground shadow-sm" : "border-border bg-card text-foreground hover:bg-accent"}`}
           >
             Project-based
           </button>
@@ -321,7 +324,7 @@ function FilterToolbar({
             type="button"
             aria-pressed={values.certificateIncluded}
             onClick={onCertificateIncluded}
-            className={`h-9 rounded-xl border px-3 text-[13px] font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black ${values.certificateIncluded ? "border-black bg-black text-white" : "border-[#c2c2c2] bg-white text-[#222] hover:bg-[#eeeeee]"}`}
+             className={`h-10 rounded-full border px-3.5 text-[13px] font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${values.certificateIncluded ? "border-primary bg-primary text-primary-foreground shadow-sm" : "border-border bg-card text-foreground hover:bg-accent"}`}
           >
             Certificate included
           </button>
@@ -329,14 +332,14 @@ function FilterToolbar({
       </details>
 
       {activeFilters.length > 0 ? (
-        <div className="mt-3 flex flex-wrap items-center gap-2 border-t border-[#d9d9d9] pt-3" aria-label="Active course filters">
+         <div className="mt-3 flex flex-wrap items-center gap-2 border-t border-border pt-3" aria-label="Active course filters">
           {activeFilters.map((filter) => (
             <ActiveFilter key={filter.label} {...filter} />
           ))}
           <button
             type="button"
             onClick={onClearAll}
-            className="h-7 px-1 text-xs font-semibold text-[#444] underline decoration-[#aaa] underline-offset-4 transition-colors hover:text-black focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black"
+             className="h-8 px-1 text-xs font-semibold text-muted-foreground underline decoration-border-strong underline-offset-4 transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
           >
             Clear all
           </button>
@@ -364,7 +367,7 @@ function CategoryPills({
               type="button"
               aria-pressed={active}
               onClick={() => onChange(category)}
-              className={`h-9 rounded-xl border px-3.5 text-[13px] font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black ${active ? "border-black bg-black text-white" : "border-[#c5c5c5] bg-white text-[#333] hover:border-black hover:bg-[#f0f0f0]"}`}
+               className={`h-10 rounded-full border px-4 text-[13px] font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${active ? "border-primary bg-primary text-primary-foreground shadow-sm" : "border-border bg-card text-muted-foreground hover:border-primary/30 hover:bg-accent hover:text-primary"}`}
             >
               {category}
             </button>
@@ -378,9 +381,9 @@ function CategoryPills({
 function ResultCount({ count, query }: { count: number; query?: string }) {
   return (
     <div className="flex flex-wrap items-baseline justify-between gap-2">
-      <p className="text-sm text-[#555]">
-        Showing <strong className="font-semibold text-black">{count}</strong> {count === 1 ? "Course" : "Courses"}
-        {query ? <span className="text-[#777]"> for &quot;{query}&quot;</span> : null}
+      <p className="text-sm text-muted-foreground">
+        Showing <strong className="font-semibold text-foreground">{count}</strong> {count === 1 ? "course" : "courses"}
+        {query ? <span> for &quot;{query}&quot;</span> : null}
       </p>
     </div>
   );
@@ -393,47 +396,64 @@ function CourseCard({
   course: CourseSummary;
   product?: CatalogProduct;
 }) {
-  const price = course.price_cents === 0 ? "Free" : `$${(course.price_cents / 100).toFixed(0)}`;
   const difficulty = course.level.charAt(0).toUpperCase() + course.level.slice(1);
+  const [saved, setSaved] = React.useState(false);
 
   return (
-    <Card className="group flex h-full flex-col overflow-hidden rounded-2xl border-[#d0d0d0] bg-white shadow-[0_4px_14px_rgba(0,0,0,0.07)] transition-all duration-200 hover:-translate-y-1 hover:border-[#888] hover:shadow-[0_14px_32px_rgba(0,0,0,0.13)]">
+    <Card
+      variant="glow"
+      className="group flex h-full flex-col overflow-hidden rounded-3xl border-border bg-card shadow-[0_8px_26px_rgb(17_24_39_/_5%)] transition-all duration-300 hover:-translate-y-1 hover:border-primary/25 hover:shadow-[0_18px_44px_rgb(17_24_39_/_10%)]"
+    >
       <Link
         href={`/courses/${course.id}`}
-        className="flex flex-1 flex-col outline-none focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-offset-2 focus-visible:ring-offset-white"
+        className="flex flex-1 flex-col outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
       >
-        <div className="relative h-36 overflow-hidden bg-[#171717] text-white">
-          <div
-            className="absolute inset-0 opacity-50"
-            style={{
-              backgroundImage:
-                "linear-gradient(135deg, transparent 0 42%, rgba(255,255,255,.22) 42% 43%, transparent 43% 100%), linear-gradient(90deg, rgba(255,255,255,.12) 1px, transparent 1px), linear-gradient(rgba(255,255,255,.12) 1px, transparent 1px)",
-              backgroundSize: "auto, 28px 28px, 28px 28px",
-            }}
-            aria-hidden="true"
-          />
-          <div className="relative flex h-full flex-col justify-between p-4">
-            <div className="flex items-center justify-between gap-3 text-[11px] font-semibold uppercase tracking-[0.14em] text-[#d5d5d5]">
-              <span>Zapsters course</span>
-              <span className="rounded-lg border border-white/30 px-2 py-1 text-white">{price}</span>
+        <div className="relative h-48 overflow-hidden bg-surface-1">
+          <div className="absolute inset-0 aurora opacity-70 transition-transform duration-700 group-hover:scale-105" aria-hidden="true" />
+          <div className="absolute inset-0 bg-grid opacity-60" aria-hidden="true" />
+          <div className="absolute -right-8 -top-14 size-44 rounded-full border border-primary/20 bg-primary/5 transition-transform duration-700 group-hover:translate-x-2 group-hover:translate-y-2" aria-hidden="true" />
+          <div className="relative flex h-full flex-col justify-between p-5">
+            <div className="flex items-center justify-between gap-3">
+              <Badge variant="outline" className="border-primary/20 bg-white/75 text-primary backdrop-blur-sm">
+                {course.category}
+              </Badge>
+              <button
+                type="button"
+                aria-label={saved ? `Remove ${course.title} from saved courses` : `Save ${course.title}`}
+                aria-pressed={saved}
+                onClick={(event) => {
+                  event.preventDefault();
+                  setSaved((current) => !current);
+                }}
+                className="grid size-9 place-items-center rounded-full border border-white/80 bg-white/75 text-muted-foreground shadow-sm backdrop-blur-sm transition-colors hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+              >
+                {saved ? <BookmarkCheck className="size-4 text-primary" /> : <Bookmark className="size-4" />}
+              </button>
             </div>
-            <p className="max-w-[85%] text-sm font-medium text-white/85">{course.category}</p>
+            <div>
+              <span className="inline-flex rounded-full bg-white/75 px-2.5 py-1 text-caption font-medium text-foreground shadow-sm backdrop-blur-sm">
+                {course.format}
+              </span>
+              <p className="mt-3 max-w-[85%] font-display text-h3 font-semibold tracking-tight text-foreground">
+                Build practical fluency.
+              </p>
+            </div>
           </div>
         </div>
 
-        <CardContent className="flex flex-1 flex-col gap-3 p-4">
+        <CardContent className="flex flex-1 flex-col gap-4 p-5">
           <div>
-            <h3 className="font-display text-[19px] font-semibold leading-tight tracking-[-0.02em] text-black">
+            <h3 className="font-display text-h3 font-semibold leading-tight tracking-[-0.03em] text-foreground transition-colors group-hover:text-primary">
               {course.title}
             </h3>
-            <p className="mt-2 line-clamp-2 text-sm leading-relaxed text-[#555]">{course.subtitle}</p>
+            <p className="mt-2 line-clamp-2 text-sm leading-relaxed text-muted-foreground">{course.subtitle}</p>
           </div>
 
-          <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5 text-xs text-[#555]">
-            <span className="inline-flex items-center gap-1 font-medium text-black">
-              <Star className="size-3.5 fill-current" aria-hidden="true" />
+          <div className="flex flex-wrap items-center gap-x-3 gap-y-2 text-xs text-muted-foreground">
+            <span className="inline-flex items-center gap-1 font-medium text-foreground">
+              <Star className="size-3.5 fill-amber-400 text-amber-400" aria-hidden="true" />
               {course.rating > 0 ? course.rating.toFixed(1) : "New"}
-              {course.review_count > 0 ? <span className="font-normal text-[#777]">({course.review_count})</span> : null}
+              {course.review_count > 0 ? <span className="font-normal text-muted-foreground">({course.review_count})</span> : null}
             </span>
             <span className="inline-flex items-center gap-1">
               <Users className="size-3.5" aria-hidden="true" />
@@ -445,33 +465,34 @@ function CourseCard({
             </span>
           </div>
 
-          <div className="mt-auto flex items-center justify-between gap-3 border-t border-[#e0e0e0] pt-3 text-xs text-[#555]">
+          <div className="mt-auto flex items-center justify-between gap-3 border-t border-border pt-3 text-xs text-muted-foreground">
             <span className="min-w-0 truncate">{course.instructor_name}</span>
-            <span className="shrink-0 border-l-2 border-black pl-2 font-semibold text-black">{difficulty}</span>
+            <span className="shrink-0 rounded-full bg-surface-1 px-2.5 py-1 font-medium text-foreground">{difficulty}</span>
           </div>
         </CardContent>
       </Link>
 
       {product ? (
-        <div className="flex gap-2 border-t border-[#e0e0e0] p-3">
+        <div className="flex gap-2 border-t border-border p-3">
           <AddToCartButton
             productId={course.id}
             size="sm"
-            className="flex-1 !border-[#b8b8b8] !bg-white !text-black hover:!bg-[#eeeeee]"
+            className="flex-1"
           />
           <BuyNowButton
             productId={course.id}
             size="sm"
             className="flex-1"
-            buttonClassName="!border-black !bg-black !text-white hover:!bg-[#292929]"
+             buttonClassName="flex-1"
           />
         </div>
       ) : (
-        <div className="border-t border-[#e0e0e0] p-3">
+        <div className="border-t border-border p-3">
           <Button
             asChild
             size="sm"
-            className="w-full !border-black !bg-black !text-white hover:!bg-[#292929]"
+            sheen
+            className="w-full"
           >
             <Link href={`/courses/${course.id}`}>View course</Link>
           </Button>
@@ -488,14 +509,16 @@ function CourseGrid({
   courses: CourseSummary[];
   products: Map<string, CatalogProduct>;
 }) {
+  const reducedMotion = useReducedMotion() ?? false;
+
   return (
     <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4 min-[1440px]:grid-cols-5">
       {courses.map((course, index) => (
         <motion.div
           key={course.id}
-          initial={{ opacity: 0, y: 12 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.04 * index, duration: 0.35, ease: "easeOut" }}
+           initial={reducedMotion ? false : { opacity: 0, y: 12, filter: "blur(4px)" }}
+           animate={reducedMotion ? undefined : { opacity: 1, y: 0, filter: "blur(0px)" }}
+           transition={reducedMotion ? undefined : { delay: 0.04 * index, duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
           className="min-w-0"
         >
           <CourseCard course={course} product={products.get(course.id)} />
@@ -625,12 +648,13 @@ export function CatalogClient() {
   const totalPages = data ? Math.ceil(data.estimatedTotalHits / data.limit) : 0;
 
   return (
-    <main className="min-h-screen bg-white text-black">
+    <main className="min-h-screen bg-background text-foreground">
       <PageContainer className="max-w-[1600px] py-6 sm:py-8">
         <div className="space-y-4">
           <header>
-            <h1 className="font-display text-[clamp(2rem,3.2vw,3.25rem)] font-semibold tracking-[-0.045em] text-black">Explore courses</h1>
-            <p className="mt-1 max-w-2xl text-sm text-[#555] sm:text-[15px]">Build practical skills in security, engineering, cloud, and beyond.</p>
+             <p className="text-xs font-semibold uppercase tracking-[0.16em] text-primary">Learning library</p>
+             <h1 className="mt-3 font-display text-[clamp(2rem,3.2vw,3.25rem)] font-semibold tracking-[-0.045em] text-foreground">Explore courses</h1>
+             <p className="mt-2 max-w-2xl text-sm text-muted-foreground sm:text-[15px]">Build practical skills in security, engineering, cloud, and beyond.</p>
           </header>
 
           <SearchBar value={query} onChange={applyQuery} onClear={() => applyQuery("")} />
@@ -655,7 +679,7 @@ export function CatalogClient() {
 
           {isLoading ? (
             <div className="space-y-3 pt-1">
-              <div className="flex items-center gap-2 text-sm text-[#555]" role="status">
+               <div className="flex items-center gap-2 text-sm text-muted-foreground" role="status">
                 <LoaderCircle className="size-4 animate-spin" aria-hidden="true" />
                 Searching catalog…
               </div>
@@ -673,8 +697,8 @@ export function CatalogClient() {
               icon={BookOpen}
               title="No courses found"
               description={debouncedQuery ? `No results for "${debouncedQuery}". Try a different search term or clear filters.` : "No courses match your filters. Try a different category or level."}
-              primaryAction={hasActiveFilters ? <Button variant="outline" size="sm" onClick={clearFilters} className="border-[#b8b8b8] bg-white text-black hover:!bg-[#eeeeee] hover:!text-black">Clear all filters</Button> : <Button variant="outline" size="sm" asChild className="border-[#b8b8b8] bg-white text-black hover:!bg-[#eeeeee] hover:!text-black"><Link href="/courses">Browse all courses</Link></Button>}
-              secondaryAction={<Button variant="outline" size="sm" asChild className="border-[#b8b8b8] bg-white text-black hover:!bg-[#eeeeee] hover:!text-black"><Link href="/labs">Explore labs</Link></Button>}
+               primaryAction={hasActiveFilters ? <Button variant="outline" size="sm" onClick={clearFilters}>Clear all filters</Button> : <Button variant="outline" size="sm" asChild><Link href="/courses">Browse all courses</Link></Button>}
+               secondaryAction={<Button variant="outline" size="sm" asChild><Link href="/labs">Explore labs</Link></Button>}
             />
           ) : data ? (
             <section aria-label="Course results" className="space-y-3 pt-1">
@@ -682,9 +706,9 @@ export function CatalogClient() {
               <CourseGrid courses={data.hits} products={products} />
               {totalPages > 1 ? (
                 <div className="flex items-center justify-center gap-2 pt-5">
-                  <Button variant="outline" size="sm" disabled={page <= 1} onClick={() => setPage((current) => Math.max(1, current - 1))} className="border-[#b8b8b8] bg-white text-black hover:!bg-[#eeeeee] hover:!text-black">Previous</Button>
-                  <span className="px-3 text-sm text-[#555]">Page {page} of {totalPages}</span>
-                  <Button variant="outline" size="sm" disabled={page >= totalPages} onClick={() => setPage((current) => current + 1)} className="border-[#b8b8b8] bg-white text-black hover:!bg-[#eeeeee] hover:!text-black">Next</Button>
+                   <Button variant="outline" size="sm" disabled={page <= 1} onClick={() => setPage((current) => Math.max(1, current - 1))}>Previous</Button>
+                   <span className="px-3 text-sm text-muted-foreground">Page {page} of {totalPages}</span>
+                   <Button variant="outline" size="sm" disabled={page >= totalPages} onClick={() => setPage((current) => current + 1)}>Next</Button>
                 </div>
               ) : null}
             </section>

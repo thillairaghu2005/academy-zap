@@ -164,24 +164,24 @@ export function CodeEditorSkeleton({ className }: { className?: string }) {
       role="status"
       aria-label="Loading code editor"
       className={cn(
-        "flex h-full min-h-64 flex-col overflow-hidden rounded-md bg-[#1e1e1e] p-4",
+        "flex h-full min-h-64 flex-col overflow-hidden rounded-2xl border border-border bg-surface-1 p-4",
         className,
       )}
     >
       <div className="flex flex-1 flex-col gap-3 font-mono text-xs">
         {Array.from({ length: 9 }).map((_, i) => (
           <div key={i} className="flex gap-4">
-            <Skeleton className="h-3 w-5 bg-white/10" />
+            <Skeleton className="h-3 w-5" />
             <Skeleton
               className={cn(
-                "h-3 bg-white/10",
+                "h-3",
                 i % 4 === 0 ? "w-3/5" : i % 3 === 0 ? "w-2/5" : "w-4/5",
               )}
             />
           </div>
         ))}
       </div>
-      <p className="mt-4 text-center text-xs text-white/50">Loading editor…</p>
+      <p className="mt-4 text-center text-xs text-muted-foreground">Loading editor…</p>
     </div>
   );
 }

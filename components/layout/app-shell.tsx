@@ -12,7 +12,7 @@ import { BottomNavigation } from "@/components/layout/bottom-navigation";
  */
 export function AppShell({ children }: { children: React.ReactNode }) {
   return (
-    <div className="relative flex min-h-dvh flex-col bg-background">
+    <div className="relative flex min-h-dvh flex-col bg-background bg-[radial-gradient(circle_at_70%_-10%,rgba(96,165,250,.08),transparent_32rem)]">
       <a
         href="#main-content"
         className="sr-only z-50 rounded-md bg-primary px-4 py-2 text-primary-foreground focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"

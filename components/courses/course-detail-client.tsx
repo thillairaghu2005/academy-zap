@@ -82,7 +82,8 @@ function initials(name: string): string {
 }
 
 function coverGradient(hue: number): string {
-  return `linear-gradient(135deg, hsl(${hue}, 60%, 45%), hsl(${(hue + 60) % 360}, 50%, 30%))`;
+  void hue;
+  return "linear-gradient(135deg, var(--color-primary-light), var(--color-surface-3))";
 }
 
 
@@ -280,11 +281,11 @@ export function CourseDetailClient({
   const reviewRows = reviewsQuery.data?.pages.flatMap((page) => page.reviews) ?? [];
 
   return (
-    <PageContainer className="max-w-5xl">
+    <PageContainer className="max-w-7xl">
       {/* Back link */}
       <Link
         href="/courses"
-        className="inline-flex items-center gap-1.5 text-sm text-muted-foreground transition-colors hover:text-foreground"
+        className="inline-flex items-center gap-1.5 rounded-full border border-border bg-card px-3 py-2 text-sm text-muted-foreground shadow-sm transition-colors hover:border-primary/25 hover:text-primary"
       >
         <ArrowRight className="size-4 rotate-180" />
         Back to catalog
@@ -314,7 +315,7 @@ export function CourseDetailClient({
       ) : null}
 
       {/* Header */}
-      <div className="mt-6 grid gap-8 lg:grid-cols-[1fr_320px]">
+      <div className="mt-8 grid gap-10 lg:grid-cols-[minmax(0,1fr)_380px] lg:items-start">
         <div className="flex flex-col gap-4">
           <div className="flex flex-wrap items-center gap-2">
             <Badge variant="secondary">{course.category}</Badge>
@@ -328,14 +329,14 @@ export function CourseDetailClient({
             </Badge>
           </div>
 
-          <h1 className="font-display text-h1">
+           <h1 className="max-w-4xl font-display text-h1 tracking-[-0.05em]">
             {course.title}
           </h1>
           <p className="text-lg text-muted-foreground">{course.subtitle}</p>
 
           <div className="flex flex-wrap items-center gap-x-5 gap-y-2 text-sm text-muted-foreground">
             <span className="flex items-center gap-1.5">
-              <Star className="size-4 fill-amber-400 text-amber-700" />
+               <Star className="size-4 fill-primary text-primary" />
               <span className="font-medium text-foreground">
                 {course.rating > 0 ? course.rating.toFixed(1) : "New"}
               </span>
@@ -359,7 +360,7 @@ export function CourseDetailClient({
 
           {/* Instructor */}
           <div className="flex items-center gap-3">
-            <div className="grid size-10 place-items-center rounded-full bg-gradient-to-br from-violet-500 to-fuchsia-500 font-display text-small font-bold text-white">
+             <div className="grid size-10 place-items-center rounded-full bg-primary/10 font-display text-small font-bold text-primary ring-4 ring-primary/5">
               {course.instructor.display_name
                 .split(" ")
                 .map((n) => n[0])
@@ -387,22 +388,22 @@ export function CourseDetailClient({
 
         {/* CTA card */}
         <div className="sticky top-20 z-20 self-start lg:top-24">
-          <Card className="overflow-hidden">
+           <Card variant="glow" className="overflow-hidden rounded-3xl border-primary/10 shadow-[0_18px_50px_rgb(17_24_39_/_10%)]">
             <div
               className="relative h-36 w-full"
               style={{ background: coverGradient(hueForId(course.id)) }}
             >
-              <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
+               <div className="absolute inset-0 bg-gradient-to-t from-primary/15 to-transparent" />
               {enrollment ? (
                 <div className="absolute bottom-3 left-4 right-4">
                   <p className="text-xs font-medium text-white/80">Your progress</p>
                   <div className="mt-1.5 flex items-center gap-2">
                     <Progress
                       value={enrollment.progress_pct}
-                      className="h-1.5 bg-black/30"
-                      indicatorClassName="bg-white"
+                       className="h-1.5 bg-primary/15"
+                       indicatorClassName="bg-primary"
                     />
-                    <span className="text-xs font-semibold text-white">
+                     <span className="text-xs font-semibold text-foreground">
                       {enrollment.progress_pct}%
                     </span>
                   </div>
@@ -411,7 +412,7 @@ export function CourseDetailClient({
             </div>
 
             <CardContent className="flex flex-col gap-4 p-5">
-              <div className="flex items-baseline justify-between">
+               <div className="flex items-baseline justify-between border-b border-border pb-4">
                 <span className="font-display text-h2">
                   {isFree ? "Free" : `$${(course.price_cents / 100).toFixed(0)}`}
                 </span>
@@ -511,7 +512,7 @@ export function CourseDetailClient({
                 </Button>
               ) : null}
 
-              <div className="flex flex-col gap-1.5 text-xs text-muted-foreground">
+               <div className="flex flex-col gap-2 border-t border-border pt-4 text-xs text-muted-foreground">
                 <span className="flex items-center gap-1.5">
                   <Check className="size-3.5 text-success-strong" />
                   Lifetime access
@@ -551,7 +552,7 @@ export function CourseDetailClient({
               (l) => completedSet.has(l.id),
             ).length;
             return (
-              <Card key={section.id}>
+               <Card key={section.id} variant="glass">
                 <CardHeader className="flex flex-row items-center justify-between gap-3 p-4">
                   <div className="flex items-center gap-3">
                     <span className="grid size-7 place-items-center rounded-md bg-primary/10 font-display text-small font-bold text-primary">
@@ -641,7 +642,7 @@ export function CourseDetailClient({
         <h2 className="font-display text-h2">
           Reviews
         </h2>
-        <div className="mt-4 flex flex-col items-start gap-6 rounded-xl border border-border bg-card/40 p-6 sm:flex-row sm:items-start">
+         <div className="mt-4 flex flex-col items-start gap-6 rounded-2xl border border-border bg-surface-1 p-6 sm:flex-row sm:items-start">
           <div className="text-center sm:text-left">
             <p className="font-display text-h1">
               {course.rating > 0 ? course.rating.toFixed(1) : "—"}
@@ -653,7 +654,7 @@ export function CourseDetailClient({
                   className={cn(
                     "size-4",
                     i < Math.round(course.rating)
-                      ? "fill-amber-400 text-amber-700"
+                       ? "fill-primary text-primary"
                       : "text-muted-foreground/30",
                   )}
                 />
@@ -693,7 +694,7 @@ export function CourseDetailClient({
                               className={cn(
                                 "size-3.5",
                                 index < review.rating
-                                  ? "fill-amber-400 text-amber-700"
+                                   ? "fill-primary text-primary"
                                   : "text-muted-foreground/30",
                               )}
                             />

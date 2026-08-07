@@ -1,15 +1,31 @@
 import * as React from "react";
+import { cva, type VariantProps } from "class-variance-authority";
 
 import { cn } from "@/lib/utils";
 
-function Card({ className, ...props }: React.ComponentProps<"div">) {
+const cardVariants = cva(
+  "rounded-xl border text-card-foreground transition-[border-color,background-color,box-shadow] duration-base",
+  {
+    variants: {
+      variant: {
+        default: "border-border bg-card shadow-sm",
+        glass: "glass border-border/80 bg-card/55",
+        glow: "border-border bg-card shadow-[0_0_34px_color-mix(in_oklab,var(--color-primary-glow)_14%,transparent)] hover:border-border-strong",
+        bento: "glass border-border/80 bg-surface-2/80 shadow-none",
+        outline: "border-border bg-transparent shadow-none",
+      },
+    },
+    defaultVariants: {
+      variant: "default",
+    },
+  },
+);
+
+function Card({ className, variant, ...props }: React.ComponentProps<"div"> & VariantProps<typeof cardVariants>) {
   return (
     <div
       data-slot="card"
-      className={cn(
-        "rounded-xl border border-border bg-card text-card-foreground shadow-sm",
-        className,
-      )}
+      className={cn(cardVariants({ variant }), className)}
       {...props}
     />
   );
@@ -63,6 +79,7 @@ function CardFooter({ className, ...props }: React.ComponentProps<"div">) {
 
 export {
   Card,
+  cardVariants,
   CardHeader,
   CardTitle,
   CardDescription,

@@ -17,7 +17,7 @@ const items = [
 export function BottomNavigation() {
   const pathname = usePathname();
   return (
-    <nav className="fixed inset-x-0 bottom-0 z-40 border-t border-border/80 bg-background/95 px-2 pb-[env(safe-area-inset-bottom)] shadow-[0_-6px_24px_rgba(15,23,42,0.06)] backdrop-blur-xl lg:hidden" aria-label="Mobile primary navigation">
+    <nav className="fixed inset-x-3 bottom-3 z-40 rounded-2xl border border-border/80 bg-white/90 px-2 pb-[env(safe-area-inset-bottom)] shadow-[0_10px_34px_rgb(17_24_39_/_12%)] backdrop-blur-xl lg:hidden" aria-label="Mobile primary navigation">
       <div className="mx-auto grid max-w-md grid-cols-5 gap-1">
         {items.map(({ href, label, icon: Icon }) => {
           const active = pathname === href || pathname.startsWith(`${href}/`);

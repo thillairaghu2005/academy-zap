@@ -35,28 +35,28 @@ export interface LandingPageProps {
 }
 
 const categoryVisuals: Record<string, { icon: typeof Code2; tone: string }> = {
-  Cybersecurity: { icon: ShieldCheck, tone: "bg-primary" },
-  "Web Development": { icon: Globe2, tone: "bg-xp-completion" },
-  "Cloud & DevOps": { icon: Cloud, tone: "bg-xp-mastery" },
-  Programming: { icon: Code2, tone: "bg-foreground" },
+  Cybersecurity: { icon: ShieldCheck, tone: "text-primary" },
+  "Web Development": { icon: Globe2, tone: "text-primary" },
+  "Cloud & DevOps": { icon: Cloud, tone: "text-secondary-accent" },
+  Programming: { icon: Code2, tone: "text-foreground" },
 };
 
 const skillCards = [
-  { name: "Python", description: "Automate analysis, parse data, and build useful tools.", icon: FileCode2, tone: "bg-primary", href: "/courses" },
-  { name: "Threat detection", description: "Turn telemetry into rules that survive real-world noise.", icon: ShieldCheck, tone: "bg-xp-mastery", href: "/courses" },
-  { name: "Web application security", description: "Recon, test, and report against deliberately vulnerable apps.", icon: LockKeyhole, tone: "bg-danger", href: "/labs" },
-  { name: "React & TypeScript", description: "Model state and data layers for production interfaces.", icon: Layers3, tone: "bg-xp-completion", href: "/courses" },
-  { name: "Cloud security", description: "Build defensible identity, network, and logging foundations.", icon: ServerCog, tone: "bg-success", href: "/courses" },
-  { name: "Linux and networking", description: "Feel at home in the shell, processes, packets, and services.", icon: Terminal, tone: "bg-foreground", href: "/labs" },
+  { name: "Python", description: "Automate analysis, parse data, and build useful tools.", icon: FileCode2, tone: "text-primary", href: "/courses" },
+  { name: "Threat detection", description: "Turn telemetry into rules that survive real-world noise.", icon: ShieldCheck, tone: "text-primary", href: "/courses" },
+  { name: "Web application security", description: "Recon, test, and report against deliberately vulnerable apps.", icon: LockKeyhole, tone: "text-primary", href: "/labs" },
+  { name: "React & TypeScript", description: "Model state and data layers for production interfaces.", icon: Layers3, tone: "text-primary", href: "/courses" },
+  { name: "Cloud security", description: "Build defensible identity, network, and logging foundations.", icon: ServerCog, tone: "text-primary", href: "/courses" },
+  { name: "Linux and networking", description: "Feel at home in the shell, processes, packets, and services.", icon: Terminal, tone: "text-foreground", href: "/labs" },
 ] as const;
 
 const visualClasses = [
-  "bg-gradient-to-br from-primary to-xp-mastery",
-  "bg-gradient-to-br from-foreground to-primary",
-  "bg-gradient-to-br from-xp-completion to-primary",
-  "bg-gradient-to-br from-xp-mastery to-danger",
-  "bg-gradient-to-br from-success to-xp-completion",
-  "bg-gradient-to-br from-primary to-foreground",
+  "bg-surface-1",
+  "bg-surface-1",
+  "bg-surface-1",
+  "bg-surface-1",
+  "bg-surface-1",
+  "bg-surface-1",
 ] as const;
 
 function LandingSections({ courses }: LandingPageProps) {
@@ -123,7 +123,7 @@ function LandingSections({ courses }: LandingPageProps) {
             {filteredCourses.slice(0, 6).map((course, index) => {
               const visualClass =
                 visualClasses[index % visualClasses.length] ??
-                "bg-gradient-to-br from-primary to-xp-mastery";
+                 "bg-surface-1";
               return (
                 <FeaturedCourseCard
                   key={course.id}

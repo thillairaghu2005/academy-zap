@@ -18,6 +18,7 @@ import { useSession } from "@/components/providers/session-provider";
 import { GlobalSearch } from "@/components/layout/global-search";
 import { NotificationCenter } from "@/components/layout/notification-center";
 import { RankXpChip } from "@/components/gamification/rank-xp-chip";
+import { Logo } from "@/components/layout/logo";
 
 const BREADCRUMB_LABELS: Record<string, string> = {
   dashboard: "Dashboard",
@@ -85,19 +86,21 @@ export function TopNav() {
     : "Dashboard";
 
   return (
-    <header className="sticky top-0 z-40 border-b border-border/70 bg-background/80 backdrop-blur-xl">
-      <div className="flex h-16 items-center gap-2 px-4 sm:px-6 lg:px-8">
+    <header className="sticky top-0 z-40 px-3 py-3 sm:px-5 lg:px-6">
+      <div className="mx-auto flex h-14 max-w-[1440px] items-center gap-2 rounded-2xl border border-white/80 bg-white/85 px-2 shadow-[0_8px_30px_rgb(17_24_39_/_6%)] backdrop-blur-xl sm:px-3">
         <MobileNav />
+
+        <Logo size="sm" className="hidden lg:flex lg:mr-2" />
 
         <span className="shrink-0 font-display text-small font-semibold lg:hidden">
           {sectionLabel}
         </span>
 
         <div className="hidden min-w-0 flex-1 items-center gap-4 md:flex">
-          <div className="hidden min-w-0 shrink-0 lg:flex">
-            <TopNavBreadcrumbs pathname={pathname} />
-          </div>
-          <GlobalSearch className="w-full justify-start" />
+           <div className="hidden min-w-0 shrink-0 lg:flex">
+             <TopNavBreadcrumbs pathname={pathname} />
+           </div>
+           <GlobalSearch className="w-full justify-start rounded-xl bg-surface-1/70" />
         </div>
 
         <div className="ml-auto flex items-center gap-1.5">
@@ -126,7 +129,7 @@ export function TopNav() {
             ) : user ? (
               <UserMenu />
             ) : (
-              <Button variant="gradient" size="sm" asChild>
+                <Button variant="default" size="sm" sheen glow asChild>
                 <Link href="/login">Sign in</Link>
               </Button>
             )}

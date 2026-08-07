@@ -38,10 +38,10 @@ function NavLink({
       href={href}
       onClick={onNavigate}
       className={cn(
-        "relative flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors outline-none focus-visible:ring-2 focus-visible:ring-ring",
+        "relative flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm transition-[background-color,color,transform] outline-none focus-visible:ring-2 focus-visible:ring-ring",
         active
-          ? "bg-primary/10 font-medium text-primary"
-          : "text-muted-foreground hover:bg-accent hover:text-foreground",
+          ? "bg-primary/10 font-medium text-primary shadow-[inset_0_0_0_1px_rgb(37_99_235_/_8%)]"
+          : "text-muted-foreground hover:-translate-y-px hover:bg-surface-3 hover:text-foreground",
       )}
       aria-current={active ? "page" : undefined}
     >
@@ -89,7 +89,7 @@ export function NavLinks({ onNavigate }: { onNavigate?: () => void }) {
 /** Desktop side rail — hidden below lg, replaced by the mobile sheet */
 export function SideNav() {
   return (
-    <aside className="sticky top-16 hidden h-[calc(100dvh-4rem)] w-60 shrink-0 flex-col overflow-y-auto border-r border-border/70 px-3 py-5 lg:flex">
+    <aside className="sticky top-0 hidden h-[calc(100dvh-1rem)] w-64 shrink-0 flex-col overflow-y-auto px-4 py-5 lg:flex">
       <div className="px-1 pb-3">
         <Logo size="sm" />
       </div>

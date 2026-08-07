@@ -311,7 +311,7 @@ function renderPlans(plans: Plan[], currentPlanId?: string) {
                 <Badge className="absolute -top-2.5 right-4">Current plan</Badge>
               ) : null}
               <div className="flex items-center gap-3">
-                <div className="grid size-9 place-items-center rounded-lg bg-gradient-to-br from-emerald-500 to-teal-600 text-white">
+                <div className="grid size-9 place-items-center rounded-lg bg-primary/10 text-primary">
                   <Building2 className="size-4" />
                 </div>
                 <div>

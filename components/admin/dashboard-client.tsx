@@ -27,12 +27,12 @@ import { SkeletonCard } from "@/components/shared/skeletons";
 import { formatDate } from "@/lib/format-admin";
 
 const STATS = [
-  { key: "courses", label: "Courses", href: "/admin/courses", icon: BookOpen, accent: "from-violet-500 to-fuchsia-500" },
-  { key: "labs", label: "Labs", href: "/admin/labs", icon: FlaskConical, accent: "from-emerald-400 to-teal-500" },
-  { key: "problems", label: "Problems", href: "/admin/problems", icon: CodeXml, accent: "from-cyan-400 to-blue-500" },
-  { key: "orders", label: "Orders", href: "/admin/orders", icon: ShoppingCart, accent: "from-amber-400 to-orange-500" },
-  { key: "users", label: "Users", href: "/admin/users", icon: Users, accent: "from-sky-400 to-cyan-500" },
-  { key: "tickets", label: "Tickets", href: "/admin/support", icon: LifeBuoy, accent: "from-rose-400 to-pink-500" },
+  { key: "courses", label: "Courses", href: "/admin/courses", icon: BookOpen, accent: "from-primary to-primary-hover" },
+  { key: "labs", label: "Labs", href: "/admin/labs", icon: FlaskConical, accent: "from-primary to-secondary-accent" },
+  { key: "problems", label: "Problems", href: "/admin/problems", icon: CodeXml, accent: "from-primary to-primary-hover" },
+  { key: "orders", label: "Orders", href: "/admin/orders", icon: ShoppingCart, accent: "from-primary to-secondary-accent" },
+  { key: "users", label: "Users", href: "/admin/users", icon: Users, accent: "from-primary to-primary-hover" },
+  { key: "tickets", label: "Tickets", href: "/admin/support", icon: LifeBuoy, accent: "from-primary to-secondary-accent" },
 ] as const;
 
 export function AdminDashboardClient() {
@@ -177,7 +177,7 @@ export function AdminDashboardClient() {
                 <CardContent className="flex flex-col gap-2 p-5">
                   <p className="font-display text-small font-semibold">Signed in as</p>
                   <div className="flex items-center gap-3">
-                    <div className="grid size-9 place-items-center rounded-full bg-gradient-to-br from-primary to-fuchsia-500 text-xs font-bold text-white">
+                    <div className="grid size-9 place-items-center rounded-full bg-primary/10 text-xs font-bold text-primary">
                       {user?.display_name
                         .split(" ")
                         .map((n) => n[0])

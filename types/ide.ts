@@ -19,6 +19,7 @@ export type IDELanguage =
   | "shell";
 
 export type IDETheme =
+  | "zapsters-ide-dark"
   | "vs-dark"
   | "vs-light"
   | "github-dark"
@@ -32,7 +33,15 @@ export type IDETheme =
   | "material-dark"
   | "material-light";
 
-export type IDEPanel = "console" | "output" | "problems" | "terminal" | "preview";
+export type IDEPanel =
+  | "console"
+  | "output"
+  | "testcases"
+  | "results"
+  | "logs"
+  | "problems"
+  | "terminal"
+  | "preview";
 
 export interface IDEFile {
   path: string;

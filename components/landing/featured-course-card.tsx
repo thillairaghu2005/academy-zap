@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import Link from "next/link";
-import { ArrowUpRight, Clock3, Heart } from "lucide-react";
+import { ArrowUpRight, Bookmark, BookmarkCheck, Clock3, Star, Users } from "lucide-react";
 
 import type { CourseSummary } from "@/lib/contracts/content";
 import { Badge } from "@/components/ui/badge";
@@ -15,63 +15,39 @@ export interface FeaturedCourseCardProps {
   index: number;
 }
 
-/** Editorial course row: useful course information, no simulated social-proof stack. */
 export function FeaturedCourseCard({ course, visualClass, index }: FeaturedCourseCardProps) {
   const [saved, setSaved] = React.useState(false);
-  const cta = course.price_cents === 0
-    ? "Start free"
-    : course.category === "Cybersecurity"
-      ? "Open syllabus"
-      : "View course";
-  const price = course.price_cents === 0 ? "FREE" : `$${(course.price_cents / 100).toFixed(0)}`;
+  const price = course.price_cents === 0 ? "Free" : `$${(course.price_cents / 100).toFixed(0)}`;
 
   return (
-    <article className="group border-t border-border py-5 transition-colors duration-200 hover:border-foreground motion-reduce:transition-none">
+    <article className="group overflow-hidden rounded-3xl border border-border bg-card shadow-[0_8px_24px_rgb(17_24_39_/_5%)] transition-[border-color,box-shadow,transform] duration-300 hover:-translate-y-1 hover:border-primary/25 hover:shadow-[0_18px_44px_rgb(17_24_39_/_10%)]">
       <Link href={`/courses/${course.id}`} className="block outline-none focus-visible:ring-2 focus-visible:ring-ring">
-        <div className={cn("relative flex aspect-[1.8] items-end overflow-hidden p-4", visualClass)}>
-          <span className="absolute right-4 top-4 font-mono text-xs text-primary-foreground/70">
-            {String(index + 1).padStart(2, "0")}
-          </span>
-          <div className="absolute -right-8 -top-10 size-36 rounded-full border-4 border-primary-foreground/20" />
-          <div className="relative max-w-md">
-            <Badge className="border-primary-foreground/20 bg-foreground/20 font-mono text-[10px] uppercase text-primary-foreground backdrop-blur-sm">
-              {course.category}
-            </Badge>
-            <h3 className="mt-3 font-display text-h3 text-primary-foreground">
-              {course.title}
-            </h3>
+        <div className={cn("relative flex aspect-[1.8] items-end overflow-hidden p-5", visualClass)}>
+          <div className="absolute inset-0 aurora opacity-75 transition-transform duration-700 group-hover:scale-105" aria-hidden="true" />
+          <div className="absolute inset-0 bg-grid opacity-60" aria-hidden="true" />
+          <span className="absolute right-5 top-5 font-mono text-xs text-muted-foreground">{String(index + 1).padStart(2, "0")}</span>
+          <div className="relative">
+            <Badge variant="outline" className="border-primary/20 bg-white/80 text-primary backdrop-blur-sm">{course.category}</Badge>
+            <h3 className="mt-3 max-w-md font-display text-h3 font-semibold text-foreground">{course.title}</h3>
           </div>
         </div>
       </Link>
 
-      <div className="pt-4">
-        <p className="line-clamp-2 min-h-10 text-sm leading-relaxed text-muted-foreground">
-          {course.subtitle}
-        </p>
-        <div className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-2 font-mono text-xs text-muted-foreground">
-          <span className="text-foreground">{course.instructor_name}</span>
-          <span>{course.level}</span>
-          <span className="flex items-center gap-1">
-            <Clock3 className="size-3.5" /> {course.estimated_hours}h
-          </span>
-          <span className="text-foreground">{price}</span>
+      <div className="p-5">
+        <p className="line-clamp-2 min-h-10 text-sm leading-relaxed text-muted-foreground">{course.subtitle}</p>
+        <div className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-2 text-xs text-muted-foreground">
+          <span className="font-medium text-foreground">{course.instructor_name}</span>
+          <span className="inline-flex items-center gap-1"><Star className="size-3.5 fill-primary text-primary" /> {course.rating > 0 ? course.rating.toFixed(1) : "New"}</span>
+          <span className="inline-flex items-center gap-1"><Users className="size-3.5" /> {course.enrolled_count.toLocaleString()}</span>
+          <span className="inline-flex items-center gap-1"><Clock3 className="size-3.5" /> {course.estimated_hours}h</span>
         </div>
-        <div className="mt-4 flex items-center gap-3">
+        <div className="mt-5 flex items-center gap-3 border-t border-border pt-4">
           <Button variant="link" className="h-auto p-0 font-semibold" asChild>
-            <Link href={`/courses/${course.id}`}>
-              {cta} <ArrowUpRight />
-            </Link>
+            <Link href={`/courses/${course.id}`}>View course <ArrowUpRight /></Link>
           </Button>
-          <Button
-            type="button"
-            variant="ghost"
-            size="icon-sm"
-            aria-label={saved ? `Remove ${course.title} from wishlist` : `Save ${course.title} to wishlist`}
-            aria-pressed={saved}
-            onClick={() => setSaved((current) => !current)}
-            className={cn("ml-auto", saved && "text-danger")}
-          >
-            <Heart className={cn(saved && "fill-current")} />
+          <span className="ml-auto font-display text-h3 font-semibold">{price}</span>
+          <Button type="button" variant="ghost" size="icon-sm" aria-label={saved ? `Remove ${course.title} from saved courses` : `Save ${course.title}`} aria-pressed={saved} onClick={() => setSaved((current) => !current)} className={cn(saved && "text-primary")}>
+            {saved ? <BookmarkCheck className="fill-primary/10" /> : <Bookmark />}
           </Button>
         </div>
       </div>

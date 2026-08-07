@@ -14,7 +14,7 @@
  *  - full `Problem` / `CodeSubmission` field lists (the `problems` /
  *    `submissions` / `test_cases` tables are referenced, not schematized).
  *  - `JudgeResult` carries the raw stdout/stderr (the doc's "never discard
- *    raw" law implies it) plus a `status` on the accepted envelope.
+ *    raw" law implies it) plus optional per-case evidence for rich judge UIs.
  */
 
 /** Verdict literals — verbatim from the event schema (§4.3). Do not rename. */
@@ -61,6 +61,20 @@ export interface JudgeResult {
   stderr: string | null;
   /** Compiler diagnostics for compile_error verdicts. */
   compile_output: string | null;
+  /**
+   * Per-case evidence when the judge backend exposes it. Production rollout
+   * still needs the grader/API to populate this optional field.
+   */
+  cases?: Array<{
+    index: number;
+    status: Verdict;
+    hidden: boolean;
+    runtime_ms: number;
+    memory_kb: number;
+    input?: string;
+    expected?: string;
+    received?: string;
+  }>;
   graded_at: string;
 }
 
@@ -81,6 +95,7 @@ export interface Problem {
   success_rate_pct: number;
   /** Topic tags, e.g. ["arrays", "two-pointers"] */
   topics: string[];
+  /** Authored problem content in Markdown, including optional math notation. */
   statement: string;
   constraints: string[];
   starter_code: string;

@@ -245,7 +245,7 @@ function VsRow({
           className={cn(
             "h-full rounded-full",
             ours
-              ? "bg-gradient-to-r from-purple-600 to-violet-500"
+              ? "bg-primary"
               : "bg-muted-foreground/40",
           )}
         />

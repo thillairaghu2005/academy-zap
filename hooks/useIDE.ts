@@ -50,13 +50,14 @@ function isSandboxMessage(value: unknown): value is SandboxMessage {
 }
 
 export function useIDE() {
-  const [theme, setTheme] = React.useState<IDETheme>("vs-dark");
+  const [theme, setTheme] = React.useState<IDETheme>("zapsters-ide-dark");
+  const [hydrated, setHydrated] = React.useState(false);
   const [sidebarOpen, setSidebarOpen] = React.useState(true);
   const [sidebarWidth, setSidebarWidth] = React.useState(248);
   const [bottomPanelOpen, setBottomPanelOpen] = React.useState(true);
   const [bottomPanelHeight, setBottomPanelHeight] = React.useState(214);
   const [bottomPanel, setBottomPanel] = React.useState<IDEPanel>("console");
-  const [previewOpen, setPreviewOpen] = React.useState(true);
+  const [previewOpen, setPreviewOpen] = React.useState(false);
   const [output, setOutput] = React.useState<IDEOutputEntry[]>([]);
   const [lastRunAt, setLastRunAt] = React.useState<string | null>(null);
   const frameRef = React.useRef<HTMLIFrameElement>(null);
@@ -69,9 +70,14 @@ export function useIDE() {
       const savedChrome = window.localStorage.getItem(CHROME_STORAGE_KEY);
       const parsed = savedChrome ? JSON.parse(savedChrome) as Partial<{ sidebarWidth: number; bottomPanelHeight: number }> : {};
       timer = window.setTimeout(() => {
-        if (savedTheme) setTheme(savedTheme);
+        if (savedTheme && [
+          "zapsters-ide-dark", "vs-dark", "vs-light", "github-dark", "github-light",
+          "one-dark-pro", "dracula", "monokai", "solarized-dark", "solarized-light",
+          "nord", "material-dark", "material-light",
+        ].includes(savedTheme)) setTheme(savedTheme as IDETheme);
         if (typeof parsed.sidebarWidth === "number") setSidebarWidth(parsed.sidebarWidth);
         if (typeof parsed.bottomPanelHeight === "number") setBottomPanelHeight(parsed.bottomPanelHeight);
+        setHydrated(true);
       }, 0);
     } catch {
       // Local storage is optional.
@@ -80,12 +86,22 @@ export function useIDE() {
   }, []);
 
   React.useEffect(() => {
-    window.localStorage.setItem(THEME_STORAGE_KEY, theme);
-  }, [theme]);
+    try {
+      if (!hydrated) return;
+      window.localStorage.setItem(THEME_STORAGE_KEY, theme);
+    } catch {
+      // Local storage is optional.
+    }
+  }, [hydrated, theme]);
 
   React.useEffect(() => {
-    window.localStorage.setItem(CHROME_STORAGE_KEY, JSON.stringify({ sidebarWidth, bottomPanelHeight }));
-  }, [bottomPanelHeight, sidebarWidth]);
+    try {
+      if (!hydrated) return;
+      window.localStorage.setItem(CHROME_STORAGE_KEY, JSON.stringify({ sidebarWidth, bottomPanelHeight }));
+    } catch {
+      // Local storage is optional.
+    }
+  }, [bottomPanelHeight, hydrated, sidebarWidth]);
 
   React.useEffect(() => {
     const onMessage = (event: MessageEvent<unknown>) => {
@@ -147,8 +163,8 @@ export function useIDE() {
     setSidebarWidth: (value: number) => setSidebarWidth(Math.min(380, Math.max(190, value))),
     bottomPanelOpen,
     setBottomPanelOpen,
-    bottomPanelHeight,
-    setBottomPanelHeight: (value: number) => setBottomPanelHeight(Math.min(440, Math.max(150, value))),
+     bottomPanelHeight,
+     setBottomPanelHeight: (value: number) => setBottomPanelHeight(Math.min(520, Math.max(140, value))),
     bottomPanel,
     setBottomPanel,
     previewOpen,

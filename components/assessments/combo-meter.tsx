@@ -62,7 +62,7 @@ export function ComboMeter({ combo }: { combo: ComboState }) {
         </div>
         <div className="h-1.5 w-full overflow-hidden rounded-full bg-secondary">
           <motion.div
-            className="h-full rounded-full bg-gradient-to-r from-amber-400 to-orange-500"
+            className="h-full rounded-full bg-primary"
             initial={{ width: 0 }}
             animate={{ width: `${pct}%` }}
             transition={{ duration: 0.4, ease: "easeOut" }}

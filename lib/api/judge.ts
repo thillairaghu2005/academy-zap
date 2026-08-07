@@ -105,6 +105,10 @@ export async function submit(
     memory_kb: null,
     test_cases_passed: null,
     test_cases_total: null,
+    stdout: null,
+    stderr: null,
+    compile_output: null,
+    cases: null,
     graded_at: null,
   });
 
@@ -118,12 +122,19 @@ export async function submit(
   setTimeout(() => {
     const stored = mockSubmissions.get(submissionId);
     if (!stored) return;
-    const graded = gradeSubmission(submission.source_code);
+    const graded = gradeSubmission(
+      submission.source_code,
+      MOCK_PROBLEMS_BY_ID.get(submission.problem_id),
+    );
     stored.verdict = graded.verdict;
     stored.runtime_ms = graded.runtime_ms;
     stored.memory_kb = graded.memory_kb;
     stored.test_cases_passed = graded.test_cases_passed;
     stored.test_cases_total = graded.test_cases_total;
+    stored.stdout = graded.stdout;
+    stored.stderr = graded.stderr;
+    stored.compile_output = graded.compile_output;
+    stored.cases = graded.cases;
     stored.graded_at = new Date().toISOString();
   }, readyAt - Date.now());
 
@@ -155,12 +166,10 @@ export async function getResult(
     memory_kb: stored.memory_kb ?? 0,
     test_cases_passed: stored.test_cases_passed ?? 0,
     test_cases_total: stored.test_cases_total ?? 0,
-    stdout:
-      stored.verdict === "accepted"
-        ? `All ${stored.test_cases_total ?? 0} test cases passed.`
-        : `Expected output differs.`,
-    stderr: stored.verdict === "accepted" ? null : "Check the failed case above.",
-    compile_output: stored.verdict === "compile_error" ? stored.source_code : null,
+    stdout: stored.stdout ?? "",
+    stderr: stored.stderr,
+    compile_output: stored.compile_output,
+    cases: stored.cases ?? undefined,
     graded_at: stored.graded_at,
   };
 }
@@ -188,9 +197,10 @@ export async function listSubmissions(
       memory_kb: stored.memory_kb ?? 0,
       test_cases_passed: stored.test_cases_passed ?? 0,
       test_cases_total: stored.test_cases_total ?? 0,
-      stdout: "",
-      stderr: null,
-      compile_output: null,
+      stdout: stored.stdout ?? "",
+      stderr: stored.stderr,
+      compile_output: stored.compile_output,
+      cases: stored.cases ?? undefined,
       graded_at: stored.graded_at ?? stored.submission.received_at,
     });
   }
