@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 
 import type { SessionState, SessionUser } from "@/lib/contracts/session";
-import { MOCK_LEARNER } from "@/lib/mocks/users";
 import { DEMO_MODE } from "@/lib/config";
 import {
   createSessionToken,
@@ -14,12 +13,16 @@ import {
 } from "@/lib/server/session";
 import {
   createAccount,
+  DEMO_EMAIL,
   findAccountByEmail,
   findUserByEmail,
   findUserByUid,
   verifyPassword,
 } from "@/lib/server/accounts";
 import { delay, jitter } from "@/lib/api/helpers";
+
+export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
 
 const MAX_AUTH_BODY_BYTES = 16 * 1024;
 const MAX_EMAIL_LENGTH = 254;
@@ -64,6 +67,18 @@ function apiError(code: string, message: string, status: number): NextResponse {
       status,
       headers: { "Cache-Control": "no-store" },
     },
+  );
+}
+
+function authInfrastructureError(action: string, error: unknown): NextResponse {
+  console.error("[auth] infrastructure failure", {
+    action,
+    error: error instanceof Error ? error.name : "unknown",
+  });
+  return apiError(
+    "auth_unavailable",
+    "Something went wrong, please try again.",
+    500,
   );
 }
 
@@ -343,16 +358,24 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
   }
 
   if (payload) {
-    const user = await resolveSessionUser(payload);
-    if (user) return sessionResponse(user);
+    try {
+      const user = await resolveSessionUser(payload);
+      if (user) return sessionResponse(user);
+    } catch (error) {
+      return authInfrastructureError("session_lookup", error);
+    }
   }
 
   if (DEMO_MODE && !request.cookies.get(SIGNED_OUT_COOKIE)) {
-    const demoUser = findUserByEmail(MOCK_LEARNER.email);
-    if (demoUser) {
-      const res = sessionResponse(demoUser);
-      setSessionCookie(res, await createSessionToken(demoUser));
-      return res;
+    try {
+      const demoUser = findUserByEmail(DEMO_EMAIL);
+      if (demoUser) {
+        const res = sessionResponse(demoUser);
+        setSessionCookie(res, await createSessionToken(demoUser));
+        return res;
+      }
+    } catch (error) {
+      return authInfrastructureError("demo_session", error);
     }
   }
 
@@ -389,11 +412,15 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
   if (rateLimitErrorResponse) return rateLimitErrorResponse;
 
   if (action === "logout") {
-    await revokeSessionToken(request.cookies.get(SESSION_COOKIE)?.value);
-    const res = sessionResponse(null);
-    clearSessionCookie(res);
-    setSignedOutCookie(res);
-    return res;
+    try {
+      await revokeSessionToken(request.cookies.get(SESSION_COOKIE)?.value);
+      const res = sessionResponse(null);
+      clearSessionCookie(res);
+      setSignedOutCookie(res);
+      return res;
+    } catch (error) {
+      return authInfrastructureError(action, error);
+    }
   }
 
   let user: SessionUser | null = null;
@@ -402,7 +429,11 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     if (!DEMO_MODE || process.env.NODE_ENV !== "development") {
       return apiError("demo_unavailable", "Demo sign-in is disabled.", 403);
     }
-    user = findUserByEmail(MOCK_LEARNER.email);
+    try {
+      user = findUserByEmail(DEMO_EMAIL);
+    } catch (error) {
+      return authInfrastructureError(action, error);
+    }
     if (!user) {
       return apiError(
         "demo_unavailable",
@@ -419,15 +450,19 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
         401,
       );
     }
-    const account = findAccountByEmail(email);
-    if (!account || !verifyPassword(password, account)) {
-      return apiError(
-        "invalid_credentials",
-        "Incorrect email or password.",
-        401,
-      );
+    try {
+      const account = findAccountByEmail(email);
+      if (!account || !verifyPassword(password, account)) {
+        return apiError(
+          "invalid_credentials",
+          "Incorrect email or password.",
+          401,
+        );
+      }
+      user = account.user;
+    } catch (error) {
+      return authInfrastructureError(action, error);
     }
-    user = account.user;
   } else if (action === "register") {
     if (!email) {
       return apiError("invalid_email", "Enter a valid email address.", 422);
@@ -468,11 +503,16 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
         409,
       );
     }
-    const result = createAccount({
-      display_name: displayName,
-      email,
-      password,
-    });
+    let result: ReturnType<typeof createAccount>;
+    try {
+      result = createAccount({
+        display_name: displayName,
+        email,
+        password,
+      });
+    } catch (error) {
+      return authInfrastructureError(action, error);
+    }
     if (result.status === "exists") {
       return apiError(
         "email_taken",
@@ -493,9 +533,13 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     );
   }
 
-  await revokeSessionToken(request.cookies.get(SESSION_COOKIE)?.value);
-  const res = sessionResponse(user);
-  setSessionCookie(res, await createSessionToken(user));
-  clearSignedOutCookie(res);
-  return res;
+  try {
+    await revokeSessionToken(request.cookies.get(SESSION_COOKIE)?.value);
+    const res = sessionResponse(user);
+    setSessionCookie(res, await createSessionToken(user));
+    clearSignedOutCookie(res);
+    return res;
+  } catch (error) {
+    return authInfrastructureError(action, error);
+  }
 }

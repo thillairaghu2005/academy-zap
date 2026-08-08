@@ -17,7 +17,9 @@ function isSessionUser(value: unknown): value is SessionUser {
     typeof value.display_name === "string" &&
     typeof value.email === "string" &&
     (value.avatar_url === null || typeof value.avatar_url === "string") &&
-    (value.role === "learner" || value.role === "admin") &&
+    (value.role === "student" ||
+      value.role === "learner" ||
+      value.role === "admin") &&
     (value.org_id === null || typeof value.org_id === "string")
   );
 }
@@ -82,7 +84,7 @@ export function authErrorMessage(
 ): string {
   if (err instanceof MockApiError) {
     if (err.status >= 500) {
-      return "Server unavailable. Please try again later.";
+      return "Something went wrong, please try again.";
     }
     return err.message || fallback;
   }

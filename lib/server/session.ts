@@ -15,10 +15,14 @@ interface StoredSession {
 interface SessionEnvelope {
   sid: string;
   exp: number;
+  uid: string;
+  role: string;
+  email?: string;
 }
 
 declare global {
   var __zapstersSessionStore: Map<string, StoredSession> | undefined;
+  var __zapstersRevokedSessionIds: Set<string> | undefined;
 }
 
 // A global registry keeps the in-memory stand-in shared between Next server
@@ -27,6 +31,9 @@ declare global {
 const activeSessions =
   globalThis.__zapstersSessionStore ??
   (globalThis.__zapstersSessionStore = new Map<string, StoredSession>());
+const revokedSessionIds =
+  globalThis.__zapstersRevokedSessionIds ??
+  (globalThis.__zapstersRevokedSessionIds = new Set<string>());
 
 const developmentSecretBytes = new Uint8Array(32);
 globalThis.crypto.getRandomValues(developmentSecretBytes);
@@ -110,7 +117,15 @@ function isSessionEnvelope(value: unknown): value is SessionEnvelope {
     value.sid.length > 0 &&
     value.sid.length <= 128 &&
     typeof value.exp === "number" &&
-    Number.isSafeInteger(value.exp)
+    Number.isSafeInteger(value.exp) &&
+    typeof value.uid === "string" &&
+    value.uid.length > 0 &&
+    value.uid.length <= 256 &&
+    typeof value.role === "string" &&
+    value.role.length > 0 &&
+    value.role.length <= 32 &&
+    (value.email === undefined ||
+      (typeof value.email === "string" && value.email.length <= 254))
   );
 }
 
@@ -120,7 +135,7 @@ function purgeExpiredSessions(now: number): void {
   }
 }
 
-/** Issue a signed token containing an opaque, revocable session ID. */
+/** Issue a signed token containing a revocable session ID and its claims. */
 export async function createSessionToken(user: {
   id: string;
   role: string;
@@ -131,6 +146,9 @@ export async function createSessionToken(user: {
   const envelope: SessionEnvelope = {
     sid: globalThis.crypto.randomUUID(),
     exp: now + SESSION_MAX_AGE_SECONDS,
+    uid: user.id,
+    role: user.role,
+    ...(user.email ? { email: user.email } : {}),
   };
   const stored: StoredSession = {
     uid: user.id,
@@ -167,6 +185,7 @@ export async function verifySessionToken(
       new TextDecoder().decode(b64urlDecode(encoded)),
     );
     if (!isSessionEnvelope(parsed)) return null;
+    if (revokedSessionIds.has(parsed.sid)) return null;
 
     const now = Math.floor(Date.now() / 1000);
     if (parsed.exp <= now) {
@@ -175,17 +194,28 @@ export async function verifySessionToken(
     }
 
     const stored = activeSessions.get(parsed.sid);
-    if (!stored || stored.exp !== parsed.exp || stored.exp <= now) {
-      if (stored?.exp && stored.exp <= now) activeSessions.delete(parsed.sid);
+    if (stored && (stored.exp !== parsed.exp || stored.exp <= now)) {
+      activeSessions.delete(parsed.sid);
       return null;
     }
 
+    // The signed envelope keeps verification working across serverless
+    // instances. The local registry still provides revocation within one
+    // running instance, which is the strongest guarantee available without a
+    // shared backend.
+    const resolved = stored ?? {
+      uid: parsed.uid,
+      role: parsed.role,
+      ...(parsed.email ? { email: parsed.email } : {}),
+      exp: parsed.exp,
+    };
+
     return {
       sid: parsed.sid,
-      uid: stored.uid,
-      role: stored.role,
-      ...(stored.email ? { email: stored.email } : {}),
-      exp: stored.exp,
+      uid: resolved.uid,
+      role: resolved.role,
+      ...(resolved.email ? { email: resolved.email } : {}),
+      exp: resolved.exp,
     };
   } catch {
     return null;
@@ -197,5 +227,8 @@ export async function revokeSessionToken(
   token: string | undefined | null,
 ): Promise<void> {
   const session = await verifySessionToken(token);
-  if (session) activeSessions.delete(session.sid);
+  if (session) {
+    activeSessions.delete(session.sid);
+    revokedSessionIds.add(session.sid);
+  }
 }

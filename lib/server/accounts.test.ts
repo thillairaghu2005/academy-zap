@@ -1,7 +1,8 @@
 import { describe, expect, it } from "vitest";
 
-import { MOCK_LEARNER } from "@/lib/mocks/users";
 import {
+  DEMO_EMAIL,
+  DEMO_PASSWORD,
   createAccount,
   ensureSeeded,
   findAccountByEmail,
@@ -17,14 +18,20 @@ function accountOrThrow(email: string) {
 }
 
 describe("account store", () => {
-  it("does not seed demo, admin, or reviewer accounts by default", () => {
+  it("seeds the requested demo account idempotently", () => {
     ensureSeeded();
     ensureSeeded();
 
-    expect(findUserByEmail(MOCK_LEARNER.email)).toBeNull();
-    expect(findUserByEmail("priya@zapsters.dev")).toBeNull();
-    expect(findUserByEmail("meera@zapsters.dev")).toBeNull();
-    expect(findUserByEmail("diego@zapsters.dev")).toBeNull();
+    const demo = findUserByEmail(DEMO_EMAIL);
+    expect(demo).toMatchObject({
+      display_name: "Demo User",
+      email: DEMO_EMAIL,
+      role: "student",
+    });
+    expect(findUserByEmail(" DEMO@ZAPSTERS.DEV ")).toEqual(demo);
+    expect(findAccountByEmail(DEMO_EMAIL)).not.toBeNull();
+    expect(verifyPassword(DEMO_PASSWORD, findAccountByEmail(DEMO_EMAIL)!)).toBe(true);
+    expect(verifyPassword("WrongPassword123", findAccountByEmail(DEMO_EMAIL)!)).toBe(false);
   });
 
   it("hashes and validates a registered password without exposing it", () => {
@@ -39,7 +46,7 @@ describe("account store", () => {
     const account = accountOrThrow("riya@example.com");
     expect(result.user.email).toBe("riya@example.com");
     expect(result.user.role).toBe("learner");
-    expect(result.user.id).not.toBe(MOCK_LEARNER.id);
+    expect(result.user.id).not.toBe(demoUserId());
     expect(verifyPassword("RiyaPass123", account)).toBe(true);
     expect(verifyPassword("WrongPassword1", account)).toBe(false);
     expect(verifyPassword("", account)).toBe(false);
@@ -78,3 +85,9 @@ describe("account store", () => {
     expect(findAccountByEmail("ALIASTEST@EXAMPLE.COM")).not.toBeNull();
   });
 });
+
+function demoUserId(): string {
+  const user = findUserByEmail(DEMO_EMAIL);
+  if (!user) throw new Error("Expected demo account");
+  return user.id;
+}

@@ -3,6 +3,10 @@ import { randomBytes, scryptSync, timingSafeEqual } from "node:crypto";
 import type { SessionUser } from "@/lib/contracts/session";
 import { MOCK_LEARNER } from "@/lib/mocks/users";
 
+/** Intentionally public credentials for the frontend-only demo account. */
+export const DEMO_EMAIL = "demo@zapsters.dev";
+export const DEMO_PASSWORD = "Zapsters@Demo123";
+
 interface AccountRecord {
   user: SessionUser;
   salt: string;
@@ -38,27 +42,37 @@ function insertAccount(user: SessionUser, password: string): void {
   byUid.set(user.id, record);
 }
 
-let demoSeeded = false;
-
-function isDevelopmentDemoMode(): boolean {
-  return (
-    process.env.NODE_ENV === "development" &&
-    process.env.VERCEL_ENV !== "production" &&
-    process.env.APP_ENV !== "production" &&
-    process.env.APP_ENV !== "staging" &&
-    process.env.NEXT_PUBLIC_DEMO_MODE === "true"
-  );
+function upsertAccount(user: SessionUser, password: string): void {
+  const key = canonicalEmail(user.email);
+  const existing = byEmail.get(key);
+  const salt = randomBytes(16).toString("hex");
+  const record: AccountRecord = {
+    user: { ...user, email: key },
+    salt,
+    passwordHash: hashPassword(password, salt),
+  };
+  byEmail.set(key, record);
+  byUid.set(user.id, record);
+  if (existing && existing.user.id !== user.id) byUid.delete(existing.user.id);
 }
 
-/** Seed only the learner fixture, and only for an explicit local demo. */
-function seedDevelopmentDemo(): void {
-  insertAccount(MOCK_LEARNER, randomBytes(32).toString("base64url"));
+const demoUser: SessionUser = {
+  id: MOCK_LEARNER.id,
+  display_name: "Demo User",
+  email: DEMO_EMAIL,
+  avatar_url: null,
+  role: "student",
+  org_id: null,
+};
+
+/** Seed the intentionally public demo account through the normal account path. */
+function seedDemoAccount(): void {
+  upsertAccount(demoUser, DEMO_PASSWORD);
 }
 
 export function ensureSeeded(): void {
-  if (isDevelopmentDemoMode() && !demoSeeded) {
-    seedDevelopmentDemo();
-    demoSeeded = true;
+  if (!byEmail.has(DEMO_EMAIL)) {
+    seedDemoAccount();
   }
 }
 
