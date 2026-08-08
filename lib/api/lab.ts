@@ -1,281 +1,82 @@
 import type {
   Lab,
+  LabPreviewSession,
   LabSession,
   LabSessionCompletedEvent,
-  LabPreviewSession,
   ObjectiveResult,
 } from "@/lib/contracts/lab";
 import {
-  checkObjectiveServerSide,
-  enforceHardTimeout,
-  MOCK_BOOM_LAB_ID,
-  MOCK_LABS,
-  MOCK_LABS_BY_ID,
-  mockLabSessions,
-  nextHintServerSide,
-  type StoredLabSession,
-} from "@/lib/mocks/labs";
-import { MockApiError } from "@/lib/api/errors";
-import { delay, jitter } from "@/lib/api/helpers";
-
-/**
- * Mock Lab Engine API.
- *
- * Signatures mirror the LabEngine Protocol (platform §4.1) exactly:
- *   provision_session(lab_id, user_id) -> LabSession
- *   terminate_session(session_id) -> None
- *   check_objective(session_id, objective_id) -> ObjectiveResult
- *
- * Objective completion is derived SERVER-SIDE from the session store (the
- * terminal bridge writes discovered flags into it; check_objective reads the
- * store back out) — the component never decides an objective is complete.
- * This mirrors §6's "never trust a value the browser sends".
- *
- * Mock rules (deterministic, demoable):
- *  - lab id "missing-lab" → 404 (detail error state)
- *  - lab id "boom"        → 503 on provision (start-lab error state)
- */
+  jsonBody,
+  requestJson,
+  requestVoid,
+  segment,
+  withQuery,
+} from "@/lib/api/client";
 
 export async function listLabs(): Promise<Lab[]> {
-  await delay(jitter(280));
-  return MOCK_LABS;
+  return requestJson<Lab[]>("/api/labs/catalog");
 }
 
-/**
- * Catalog search — Meilisearch-shaped (the docs pin self-hosted Meilisearch
- * for catalog search, §2.1). Empty query returns the whole catalog.
- * Deterministic demo hook: query "boom" → 503 (search error state).
- */
 export async function searchLabs(query: string): Promise<Lab[]> {
-  await delay(jitter(240));
-  const q = query.trim().toLowerCase();
-  if (q === "boom") {
-    throw new MockApiError(
-      "search_unavailable",
-      "Lab search is unavailable (simulated).",
-      503,
-    );
-  }
-  if (!q) return MOCK_LABS;
-  return MOCK_LABS.filter((lab) =>
-    [lab.title, lab.category, lab.description]
-      .join(" ")
-      .toLowerCase()
-      .includes(q),
-  );
+  return requestJson<Lab[]>(withQuery("/api/labs/catalog", { query }));
 }
 
 export async function getLab(labId: string): Promise<Lab> {
-  await delay(jitter(240));
-  const lab = MOCK_LABS_BY_ID.get(labId);
-  if (!lab) {
-    throw new MockApiError(
-      "lab_not_found",
-      `Lab ${labId} was not found.`,
-      404,
-    );
-  }
-  return lab;
+  return requestJson<Lab>(`/api/labs/${segment(labId)}`);
 }
 
-/** Provisions a session — the mock's version of the K8s microVM spin-up. */
 export async function provisionSession(
   labId: string,
   userId: string,
 ): Promise<LabSession> {
-  await delay(jitter(260));
-  // Boom check first: "boom" is a demo id, not a real lab, so the 503 must
-  // win over the 404 lookup (same ordering as the judge's submit hook).
-  if (labId === MOCK_BOOM_LAB_ID) {
-    throw new MockApiError(
-      "lab_orchestrator_down",
-      "Lab orchestrator unreachable (simulated).",
-      503,
-    );
-  }
-  const lab = MOCK_LABS_BY_ID.get(labId);
-  if (!lab) {
-    throw new MockApiError("lab_not_found", "Lab was not found.", 404);
-  }
-  if (!userId) {
-    throw new MockApiError("auth_required", "Sign in to start a lab.", 401);
-  }
-
-  const sessionId = `lab-${crypto.randomUUID()}`;
-  const now = new Date();
-  const expiresAt = new Date(
-    now.getTime() + lab.hard_timeout_minutes * 60_000,
+  void userId;
+  return requestJson<LabSession>(
+    `/api/labs/${segment(labId)}/sessions`,
+    jsonBody({}),
   );
-  const session: LabSession = {
-    session_id: sessionId,
-    lab_id: lab.id,
-    user_id: userId,
-    status: "provisioning",
-    provisioned_at: now.toISOString(),
-    expires_at: expiresAt.toISOString(),
-    objectives_completed: [],
-    checks: [],
-    hints_used: 0,
-    terminal_url: `ws://mock.zapsters.dev/labs/${sessionId}/tty`,
-    ended_at: null,
-  };
-
-  mockLabSessions.set(sessionId, {
-    ...session,
-    discovered: new Set(),
-  });
-
-  // Simulated provision → running transition (microVM boot).
-  const readyAt = Date.now() + 1200 + Math.floor(Math.random() * 900);
-  setTimeout(() => {
-    const stored = mockLabSessions.get(sessionId);
-    if (stored && stored.status === "provisioning") {
-      stored.status = "running";
-    }
-  }, readyAt - Date.now());
-
-  return session;
 }
 
-/** Creates a short-lived guest terminal; it cannot be completed or saved. */
 export async function provisionPreviewSession(
   labId: string,
 ): Promise<LabPreviewSession> {
-  const session = await provisionSession(labId, "guest-preview");
-  return {
-    session_id: session.session_id,
-    lab_id: session.lab_id,
-    status: "running",
-    expires_at: session.expires_at,
-    terminal_url: session.terminal_url,
-    read_only: true,
-  };
+  return requestJson<LabPreviewSession>(
+    `/api/labs/${segment(labId)}/preview-session`,
+    jsonBody({}),
+  );
 }
 
 export async function getSession(sessionId: string): Promise<LabSession> {
-  await delay(jitter(180));
-  const session = mockLabSessions.get(sessionId);
-  if (!session) {
-    throw new MockApiError(
-      "session_not_found",
-      "Lab session was not found or expired.",
-      404,
-    );
-  }
-  // Server-side hard-timeout enforcement (§6.6): a late poll flips the status
-  // exactly like the real Arq timeout job would. The client never decides.
-  enforceHardTimeout(session);
-  return toPublic(session);
+  return requestJson<LabSession>(`/api/labs/sessions/${segment(sessionId)}`);
 }
 
-/** Terminates a session — the mock's version of the namespace teardown. */
 export async function terminateSession(sessionId: string): Promise<void> {
-  await delay(jitter(200));
-  const session = mockLabSessions.get(sessionId);
-  if (!session) {
-    throw new MockApiError(
-      "session_not_found",
-      "Lab session was not found or expired.",
-      404,
-    );
-  }
-  session.status = "terminated";
-  session.ended_at = new Date().toISOString();
+  return requestVoid(`/api/labs/sessions/${segment(sessionId)}`, {
+    method: "DELETE",
+  });
 }
 
-/** Server-side objective check (the "scoped read against session state"). */
 export async function checkObjective(
   sessionId: string,
   objectiveId: string,
 ): Promise<ObjectiveResult> {
-  await delay(jitter(160));
-  const session = mockLabSessions.get(sessionId);
-  if (!session) {
-    throw new MockApiError(
-      "session_not_found",
-      "Lab session was not found or expired.",
-      404,
-    );
-  }
-  enforceHardTimeout(session);
-  return checkObjectiveServerSide(session, objectiveId);
+  return requestJson<ObjectiveResult>(
+    `/api/labs/sessions/${segment(sessionId)}/objectives/${segment(objectiveId)}/check`,
+    jsonBody({}),
+  );
 }
 
-/** Request the next hint — shared server-side derivation with the terminal. */
 export async function requestHint(sessionId: string): Promise<string> {
-  await delay(jitter(160));
-  const session = mockLabSessions.get(sessionId);
-  if (!session) {
-    throw new MockApiError(
-      "session_not_found",
-      "Lab session was not found or expired.",
-      404,
-    );
-  }
-  enforceHardTimeout(session);
-  return nextHintServerSide(session);
+  return requestJson<string>(
+    `/api/labs/sessions/${segment(sessionId)}/hint`,
+    jsonBody({}),
+  );
 }
 
-/**
- * Completes the session — emits the lab.session_completed event shape
- * (§4.3). Only allowed when every objective is verified.
- */
 export async function completeSession(
   sessionId: string,
 ): Promise<LabSessionCompletedEvent> {
-  await delay(jitter(200));
-  const session = mockLabSessions.get(sessionId);
-  if (!session) {
-    throw new MockApiError(
-      "session_not_found",
-      "Lab session was not found or expired.",
-      404,
-    );
-  }
-  const lab = MOCK_LABS_BY_ID.get(session.lab_id);
-  const all = lab?.objectives.every((o) =>
-    session.discovered.has(o.id),
+  return requestJson<LabSessionCompletedEvent>(
+    `/api/labs/sessions/${segment(sessionId)}/complete`,
+    jsonBody({}),
   );
-  if (!all) {
-    throw new MockApiError(
-      "objectives_incomplete",
-      "Complete every objective before ending the session.",
-      409,
-    );
-  }
-  session.status = "completed";
-  session.ended_at = new Date().toISOString();
-  return {
-    event_type: "lab.session_completed",
-    lab_id: session.lab_id,
-    session_id: session.session_id,
-    objectives_completed: [...session.discovered],
-    time_taken_seconds: Math.max(
-      0,
-      Math.round(
-        (new Date(session.ended_at).getTime() -
-          new Date(session.provisioned_at).getTime()) /
-          1000,
-      ),
-    ),
-    hints_used: session.hints_used,
-  };
-}
-
-/** The public LabSession view — strips the internal server-side flag set. */
-function toPublic(session: StoredLabSession): LabSession {
-  const publicSession: LabSession = {
-    session_id: session.session_id,
-    lab_id: session.lab_id,
-    user_id: session.user_id,
-    status: session.status,
-    provisioned_at: session.provisioned_at,
-    expires_at: session.expires_at,
-    objectives_completed: session.objectives_completed,
-    checks: session.checks,
-    hints_used: session.hints_used,
-    terminal_url: session.terminal_url,
-    ended_at: session.ended_at,
-  };
-  return publicSession;
 }

@@ -53,6 +53,15 @@ const CATEGORY_LABELS: Record<"all" | NotificationCategory, string> = {
   system: "System",
 };
 
+const CATEGORY_VALUES: Array<"all" | NotificationCategory> = [
+  "all",
+  "learning",
+  "judge",
+  "labs",
+  "achievements",
+  "system",
+];
+
 function formatNotificationTime(createdAt: string): string {
   return new Intl.DateTimeFormat("en", { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" }).format(new Date(createdAt));
 }
@@ -110,6 +119,7 @@ export function NotificationCenter() {
   const [open, setOpen] = React.useState(false);
   const [category, setCategory] = React.useState<"all" | NotificationCategory>("all");
   const loadMoreRef = React.useRef<HTMLDivElement>(null);
+  const categoryRefs = React.useRef<Array<HTMLButtonElement | null>>([]);
   const queryClient = useQueryClient();
   const notifications = useInfiniteQuery({
     queryKey: ["notifications"],
@@ -125,6 +135,20 @@ export function NotificationCenter() {
   const visibleNotifications = category === "all" ? allNotifications : allNotifications.filter((notification) => notification.category === category);
   const unreadCount = notifications.data?.pages[0]?.unread_count ?? 0;
   const { fetchNextPage, hasNextPage, isFetchingNextPage } = notifications;
+
+  const moveCategory = (index: number, direction: "next" | "previous" | "first" | "last") => {
+    const nextIndex = direction === "next"
+      ? (index + 1) % CATEGORY_VALUES.length
+      : direction === "previous"
+        ? (index - 1 + CATEGORY_VALUES.length) % CATEGORY_VALUES.length
+        : direction === "first"
+          ? 0
+          : CATEGORY_VALUES.length - 1;
+    const next = CATEGORY_VALUES[nextIndex];
+    if (!next) return;
+    setCategory(next);
+    categoryRefs.current[nextIndex]?.focus();
+  };
 
   React.useEffect(() => {
     const target = loadMoreRef.current;
@@ -153,17 +177,43 @@ export function NotificationCenter() {
           <SheetDescription>Updates from your learning journey.</SheetDescription>
         </SheetHeader>
 
-        <div className="flex gap-1 overflow-x-auto border-b border-border px-4 py-2" role="tablist" aria-label="Notification categories">
-          {(Object.keys(CATEGORY_LABELS) as Array<"all" | NotificationCategory>).map((value) => (
-            <button key={value} type="button" role="tab" aria-selected={category === value} onClick={() => setCategory(value)} className={cn("min-h-9 shrink-0 rounded-md px-3 text-xs font-medium outline-none transition-colors focus-visible:ring-2 focus-visible:ring-ring", category === value ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:bg-accent hover:text-foreground")}>
+        <div className="flex gap-1 overflow-x-auto border-b border-border px-4 py-2" role="tablist" aria-label="Notification categories" aria-orientation="horizontal">
+          {CATEGORY_VALUES.map((value, index) => (
+            <button
+              key={value}
+              ref={(element) => { categoryRefs.current[index] = element; }}
+              type="button"
+              id={`notification-tab-${value}`}
+              role="tab"
+              aria-selected={category === value}
+              aria-controls="notification-panel"
+              tabIndex={category === value ? 0 : -1}
+              onClick={() => setCategory(value)}
+              onKeyDown={(event) => {
+                if (event.key === "ArrowRight") {
+                  event.preventDefault();
+                  moveCategory(index, "next");
+                } else if (event.key === "ArrowLeft") {
+                  event.preventDefault();
+                  moveCategory(index, "previous");
+                } else if (event.key === "Home") {
+                  event.preventDefault();
+                  moveCategory(index, "first");
+                } else if (event.key === "End") {
+                  event.preventDefault();
+                  moveCategory(index, "last");
+                }
+              }}
+              className={cn("min-h-9 shrink-0 rounded-md px-3 text-xs font-medium outline-none transition-colors focus-visible:ring-2 focus-visible:ring-ring", category === value ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:bg-accent hover:text-foreground")}
+            >
               {CATEGORY_LABELS[value]}
             </button>
           ))}
         </div>
 
-        <div className="flex-1 overflow-y-auto p-2">
+        <div id="notification-panel" role="tabpanel" aria-labelledby={`notification-tab-${category}`} tabIndex={0} className="flex-1 overflow-y-auto p-2 outline-none">
           {notifications.isLoading ? (
-            <div className="flex items-center justify-center gap-2 px-3 py-12 text-sm text-muted-foreground"><LoaderCircle className="size-4 animate-spin" /> Loading notifications...</div>
+            <div role="status" className="flex items-center justify-center gap-2 px-3 py-12 text-sm text-muted-foreground"><LoaderCircle className="size-4 animate-spin" /> Loading notifications...</div>
           ) : notifications.isError ? (
             <EmptyState icon={Bell} title="Notifications unavailable" description="We could not load your notification feed." primaryAction={<Button variant="outline" size="sm" onClick={() => void notifications.refetch()}>Try again</Button>} />
           ) : visibleNotifications.length ? (

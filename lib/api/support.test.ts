@@ -11,14 +11,14 @@ import {
   listMyTickets,
   replyToTicket,
   updateTicketStatus,
-} from "./support";
+} from "@/lib/server/domains/support";
 import type { CreateTicketInput } from "@/lib/contracts/support";
 
 /**
  * Support state-machine tests (audit Track A2). Covers the server-side
- * workflow rules in lib/api/support.ts: learner isolation, internal-note
- * stripping, the open → pending ↔ open → resolved/closed machine with
- * 409s, and role-gated admin ops.
+ * domain (lib/server/domains/support.ts) behind the /api/support routes:
+ * learner isolation, internal-note stripping, the open → pending ↔ open →
+ * resolved/closed machine with 409s, and role-gated admin ops.
  */
 
 const TICKET: CreateTicketInput = {

@@ -27,6 +27,7 @@ import type {
   CourseSort,
   CourseSummary,
   DurationFilter,
+  MeilisearchCatalogResponse,
 } from "@/lib/contracts/content";
 import type { CatalogProduct } from "@/lib/contracts/commerce";
 import { searchCatalog } from "@/lib/api/content";
@@ -445,7 +446,7 @@ function CourseCard({
 
       <Link
         href={`/courses/${course.id}`}
-        className={`flex flex-1 flex-col outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background ${view === "list" ? "sm:min-w-0 sm:flex-[1_1_0%]" : ""}`}
+        className={`flex flex-1 flex-col rounded-[inherit] outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background ${view === "list" ? "sm:min-w-0 sm:flex-[1_1_0%]" : ""}`}
       >
         <CardContent className="flex flex-1 flex-col gap-4 p-5">
           <div>
@@ -536,7 +537,11 @@ function CourseGrid({
   );
 }
 
-export function CatalogClient() {
+export function CatalogClient({
+  initialData,
+}: {
+  initialData?: MeilisearchCatalogResponse;
+}) {
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -569,7 +574,7 @@ export function CatalogClient() {
 
   React.useEffect(() => {
     const params = new URLSearchParams();
-    if (query) params.set("q", query);
+    if (debouncedQuery) params.set("q", debouncedQuery);
     if (category !== "All") params.set("category", category);
     if (price !== "all") params.set("price", price);
     if (level !== "all") params.set("level", level);
@@ -582,7 +587,7 @@ export function CatalogClient() {
     if (sort !== "popular") params.set("sort", sort);
     const str = params.toString();
     router.replace(`/courses${str ? `?${str}` : ""}`, { scroll: false });
-  }, [query, category, price, level, duration, format, careerTrack, projectBased, certificateIncluded, minRating, sort, router]);
+  }, [debouncedQuery, category, price, level, duration, format, careerTrack, projectBased, certificateIncluded, minRating, sort, router]);
 
   React.useEffect(() => {
     const timer = window.setTimeout(() => {
@@ -650,6 +655,21 @@ export function CatalogClient() {
   const { data, isLoading, isError, error, refetch } = useQuery({
     queryKey: ["catalog", debouncedQuery, category, price, level, duration, format, careerTrack, projectBased, certificateIncluded, minRating, sort, page],
     queryFn: () => searchCatalog({ query: debouncedQuery || undefined, category: category === "All" ? undefined : category, price, level, duration: duration === "all" ? undefined : duration, format, careerTrack, projectBased, certificateIncluded, minRating, sort, page, pageSize: 6 }),
+    initialData:
+      page === 1 &&
+      !debouncedQuery &&
+      category === "All" &&
+      price === "all" &&
+      level === "all" &&
+      duration === "all" &&
+      format === "all" &&
+      careerTrack === "all" &&
+      !projectBased &&
+      !certificateIncluded &&
+      minRating === 0 &&
+      sort === "popular"
+        ? initialData
+        : undefined,
   });
 
   const catalogQuery = useQuery({ queryKey: ["catalog-products"], queryFn: () => listCatalogProducts() });
@@ -657,7 +677,7 @@ export function CatalogClient() {
   const totalPages = data ? Math.ceil(data.estimatedTotalHits / data.limit) : 0;
 
   return (
-    <main className="min-h-screen bg-background text-foreground">
+    <div className="min-h-screen bg-background text-foreground">
       <PageContainer className="max-w-[1600px] py-6 sm:py-8">
         <div className="space-y-4">
           <header>
@@ -750,6 +770,6 @@ export function CatalogClient() {
           ) : null}
         </div>
       </PageContainer>
-    </main>
+    </div>
   );
 }

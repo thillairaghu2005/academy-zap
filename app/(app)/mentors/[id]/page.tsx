@@ -12,7 +12,7 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
   const { id } = await params;
   try {
     const instructor = await getInstructor(id);
-    return buildMetadata({ title: `${instructor.name} · Instructor`, description: instructor.bio, path: `/mentors/${id}`, keywords: instructor.skill_tags });
+    return buildMetadata({ title: `${instructor.name} · Instructor`, description: instructor.bio, path: `/mentors/${id}`, keywords: instructor.skill_tags, index: true });
   } catch { return { title: "Instructor" }; }
 }
 

@@ -7,6 +7,7 @@ import { Check, Compass, ExternalLink, X } from "lucide-react";
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
@@ -87,8 +88,20 @@ export function AdminWalkthrough({
   onComplete: () => void;
 }) {
   const [stepIndex, setStepIndex] = React.useState(0);
-  const step = ADMIN_WALKTHROUGH_STEPS[stepIndex]!;
+  const [lastOpen, setLastOpen] = React.useState(open);
+
+  // Re-open the tour always starts at step 0. This is the documented
+  // "adjust state when a prop changes" pattern (no effect → no cascade).
+  if (open !== lastOpen) {
+    setLastOpen(open);
+    if (open) setStepIndex(0);
+  }
+
+  const step = ADMIN_WALKTHROUGH_STEPS[stepIndex];
+  const previousStep = stepIndex > 0 ? ADMIN_WALKTHROUGH_STEPS[stepIndex - 1] : undefined;
   const isLast = stepIndex === ADMIN_WALKTHROUGH_STEPS.length - 1;
+
+  if (!step) return null;
 
   const close = () => onOpenChange(false);
 
@@ -117,6 +130,9 @@ export function AdminWalkthrough({
               <p className="text-xs text-muted-foreground">
                 Step {stepIndex + 1} of {ADMIN_WALKTHROUGH_STEPS.length}
               </p>
+              <DialogDescription className="sr-only">
+                A guided tour of the available admin console surfaces.
+              </DialogDescription>
             </div>
           </div>
         </DialogHeader>
@@ -151,14 +167,20 @@ export function AdminWalkthrough({
             {isLast ? "Done" : "Skip tour"}
           </Button>
           <div className="flex items-center gap-2">
-            <Button variant="outline" size="sm" disabled={stepIndex === 0} asChild>
-              <Link
-                href={ADMIN_WALKTHROUGH_STEPS[stepIndex - 1]!.href}
-                onClick={() => setStepIndex((i) => Math.max(0, i - 1))}
-              >
+            {previousStep ? (
+              <Button variant="outline" size="sm" asChild>
+                <Link
+                  href={previousStep.href}
+                  onClick={() => setStepIndex((i) => Math.max(0, i - 1))}
+                >
+                  Back
+                </Link>
+              </Button>
+            ) : (
+              <Button variant="outline" size="sm" disabled>
                 Back
-              </Link>
-            </Button>
+              </Button>
+            )}
             {isLast ? (
               <Button variant="gradient" size="sm" onClick={finish}>
                 <Check className="size-4" />
@@ -180,7 +202,7 @@ export function AdminWalkthrough({
 
         <button
           onClick={close}
-          className="absolute right-4 top-4 rounded-md p-1 text-muted-foreground transition-colors hover:text-foreground"
+          className="absolute right-4 top-4 rounded-md p-1 text-muted-foreground outline-none transition-colors hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring"
           aria-label="Close tour"
         >
           <X className="size-4" />

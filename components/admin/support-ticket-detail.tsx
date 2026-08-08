@@ -357,6 +357,7 @@ export function AdminSupportTicketDetail({ ticketId }: { ticketId: string }) {
           </div>
 
           <Textarea
+            aria-label="Reply to this support ticket"
             rows={4}
             value={body}
             onChange={(e) => setBody(e.target.value)}

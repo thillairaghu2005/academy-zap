@@ -231,6 +231,7 @@ export function TicketThreadClient({ ticketId }: { ticketId: string }) {
           ) : null}
 
           <Textarea
+            aria-label="Reply to this ticket"
             rows={4}
             value={body}
             onChange={(e) => setBody(e.target.value)}

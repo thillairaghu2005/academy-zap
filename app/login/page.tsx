@@ -6,6 +6,8 @@ import { AuthBackdrop } from "@/components/auth/auth-backdrop";
 export const metadata: Metadata = {
   title: "Sign in",
   description: "Sign in to Zapsters.",
+  alternates: { canonical: "/login" },
+  robots: { index: false, follow: false },
 };
 
 /**

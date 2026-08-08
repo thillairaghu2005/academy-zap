@@ -64,13 +64,20 @@ const DIFFICULTY_STYLES: Record<
   },
 };
 
-export function LabDetailClient({ labId }: { labId: string }) {
+export function LabDetailClient({
+  labId,
+  initialLab,
+}: {
+  labId: string;
+  initialLab?: Lab;
+}) {
   const router = useRouter();
   const { user } = useSession();
 
   const labQuery = useQuery({
     queryKey: ["lab", labId],
     queryFn: () => getLab(labId),
+    initialData: initialLab,
   });
 
   const previewSessionQuery = useQuery({

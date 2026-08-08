@@ -14,6 +14,7 @@ import { MOCK_LEARNER } from "@/lib/mocks/users";
  * fetch calls; nothing in the component layer changes.
  */
 
+/** Keyed `${userId}:${courseId}` so one learner can never read another's row. */
 export const mockEnrollments = new Map<string, Enrollment>();
 
 /** Keyed `${userId}:${courseId}` → set of completed lesson ids. */
@@ -24,7 +25,7 @@ export const mockCompletedLessons = new Map<string, Set<string>>();
 // always derived from the completed-lesson sets below — the `progress_pct`
 // fields in these snapshots are just the last server-side writes.
 
-mockEnrollments.set(MOCK_ENROLLED_COURSE_ID, {
+mockEnrollments.set(`${MOCK_LEARNER.id}:${MOCK_ENROLLED_COURSE_ID}`, {
   course_id: MOCK_ENROLLED_COURSE_ID,
   user_id: MOCK_LEARNER.id,
   status: "active",
@@ -36,7 +37,7 @@ mockEnrollments.set(MOCK_ENROLLED_COURSE_ID, {
   updated_at: "2026-07-30T18:42:00Z",
 });
 
-mockEnrollments.set(MOCK_COMPLETED_COURSE_ID, {
+mockEnrollments.set(`${MOCK_LEARNER.id}:${MOCK_COMPLETED_COURSE_ID}`, {
   course_id: MOCK_COMPLETED_COURSE_ID,
   user_id: MOCK_LEARNER.id,
   status: "completed",
@@ -47,7 +48,7 @@ mockEnrollments.set(MOCK_COMPLETED_COURSE_ID, {
   updated_at: "2026-06-14T17:05:00Z",
 });
 
-mockEnrollments.set(MOCK_FRESH_COURSE_ID, {
+mockEnrollments.set(`${MOCK_LEARNER.id}:${MOCK_FRESH_COURSE_ID}`, {
   course_id: MOCK_FRESH_COURSE_ID,
   user_id: MOCK_LEARNER.id,
   status: "active",

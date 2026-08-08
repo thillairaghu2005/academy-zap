@@ -6,7 +6,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { History, MessageCircle, ShieldQuestion, WandSparkles } from "lucide-react";
 
-import type { Verdict } from "@/lib/contracts/judge";
+import type { Problem, Verdict } from "@/lib/contracts/judge";
 import { getProblem, getResult, listSubmissions, submit } from "@/lib/api/judge";
 import { DEMO_MODE } from "@/lib/config";
 import { useSession } from "@/components/providers/session-provider";
@@ -67,12 +67,18 @@ function SubmissionHistory({ problemId, userId }: { problemId: string; userId: s
   );
 }
 
-export function ProblemDetailClient({ problemId }: { problemId: string }) {
+export function ProblemDetailClient({
+  problemId,
+  initialProblem,
+}: {
+  problemId: string;
+  initialProblem?: Problem;
+}) {
   const { user } = useSession();
   const userId = user?.id;
   const router = useRouter();
   const queryClient = useQueryClient();
-  const problemQuery = useQuery({ queryKey: ["judge-problem", problemId], queryFn: () => getProblem(problemId) });
+  const problemQuery = useQuery({ queryKey: ["judge-problem", problemId], queryFn: () => getProblem(problemId), initialData: initialProblem });
   const [code, setCode] = React.useState<string | null>(null);
   const [resetKey, setResetKey] = React.useState(0);
   const editorValue = code ?? problemQuery.data?.starter_code ?? "";

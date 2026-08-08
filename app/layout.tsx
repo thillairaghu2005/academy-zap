@@ -5,6 +5,7 @@ import { QueryProvider } from "@/components/providers/query-provider";
 import { SessionProvider } from "@/components/providers/session-provider";
 import { ServiceWorkerProvider } from "@/components/providers/service-worker-provider";
 import { ThemeProvider } from "@/components/providers/theme-provider";
+import { MotionProvider } from "@/components/providers/motion-provider";
 import { Toaster } from "@/components/ui/sonner";
 
 export const metadata: Metadata = {
@@ -15,7 +16,7 @@ export const metadata: Metadata = {
   description:
     "Zapsters is a learning platform: Udemy-shaped courses, a HackerRank-shaped code judge, TryHackMe-shaped virtual labs, and a full gamification layer.",
   keywords: ["Zapsters", "cybersecurity courses", "coding judge", "virtual labs", "learning platform"],
-  alternates: { canonical: "/" },
+  robots: { index: false, follow: false },
   metadataBase: new URL(
     process.env.NEXT_PUBLIC_SITE_URL ?? "https://zapsters.dev",
   ),
@@ -85,12 +86,14 @@ export default function RootLayout({
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />
       </head>
       <body className="min-h-full">
-        <ThemeProvider>
-          <QueryProvider>
-            <SessionProvider>{children}</SessionProvider>
-          </QueryProvider>
-          <Toaster />
-        </ThemeProvider>
+        <MotionProvider>
+          <ThemeProvider>
+            <QueryProvider>
+              <SessionProvider>{children}</SessionProvider>
+            </QueryProvider>
+            <Toaster />
+          </ThemeProvider>
+        </MotionProvider>
         <ServiceWorkerProvider />
       </body>
     </html>

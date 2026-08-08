@@ -22,8 +22,8 @@ function SurfaceCard({ surface }: { surface: SurfaceMeta }) {
   const Icon = surface.icon;
 
   return (
-    <Link href={surface.href} className="group block h-full outline-none">
-      <Card className="h-full transition-all duration-200 group-hover:-translate-y-0.5 group-hover:border-primary/40 group-hover:shadow-xl group-hover:shadow-primary/10 focus-visible:ring-2 focus-visible:ring-ring">
+    <Link href={surface.href} className="group block h-full rounded-[inherit] outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background">
+      <Card className="h-full transition-all duration-200 group-hover:-translate-y-0.5 group-hover:border-primary/40 group-hover:shadow-xl group-hover:shadow-primary/10">
         <CardHeader className="flex-row items-center gap-3 space-y-0">
           <div
             className={cn(

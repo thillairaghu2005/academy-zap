@@ -1,54 +1,60 @@
-/**
- * Server-side session utilities (product-audit Fix 4: real auth boundary).
- *
- * The session is a signed, expiring cookie token (HMAC-SHA256) issued by the
- * /api/auth/session route handler and verified by proxy.ts on every
- * protected request. That gives the mock frontend a REAL boundary shape:
- * HttpOnly cookie, SameSite=Lax, server-issued, middleware-enforced — the
- * exact contract the future Platform Core auth replaces (build.md §4).
- *
- * Security note (flagged): the signing secret falls back to a mock constant
- * when SESSION_SECRET is not set — except in production, where the first
- * sign/verify THROWS (fail-closed, audit A4) rather than signing with a
- * publicly-known constant. Note the failure mode: verifySessionToken calls
- * sign() inside proxy.ts, which has no try/catch, so a misconfigured
- * production box 500s every protected request until SESSION_SECRET is set.
- * Real Platform Core auth will own tokens entirely; this is the swappable
- * stand-in.
- *
- * This module is edge-safe (Web Crypto only) so the Node route handler and
- * the edge middleware can both import it. It must never import client code.
- */
-
 export const SESSION_COOKIE = "zapsters_session";
-/** Set on logout so the demo auto-auth does not immediately re-issue. */
+/** Prevents development demo auto-auth from undoing a logout. */
 export const SIGNED_OUT_COOKIE = "zapsters_signed_out";
 
-// Fail fast when the signing boundary is actually used (audit A4): a
-// production deployment that forgets SESSION_SECRET must not silently sign
-// tokens with a publicly-known constant. The check is lazy (inside
-// getSecret) so `next build` page-data collection and dev runs stay
-// frictionless — the first real sign/verify in production without the env
-// var throws a clear error instead of booting insecure.
-function getSecret(): string {
-  if (!process.env.SESSION_SECRET && process.env.NODE_ENV === "production") {
-    throw new Error(
-      "SESSION_SECRET must be set in production — refusing to sign sessions with the mock secret.",
-    );
-  }
-  return process.env.SESSION_SECRET ?? "zapsters-mock-session-secret";
-}
 export const SESSION_MAX_AGE_SECONDS = 7 * 24 * 60 * 60; // 7 days
+const MAX_TOKEN_LENGTH = 2048;
 
-export interface SessionPayload {
+interface StoredSession {
   uid: string;
   role: string;
-  /**
-   * The email the user authenticated as. Multiple emails can share a uid
-   * (demo@company.com vs aarav@zapsters.dev are the same demo identity),
-   * so the token records WHICH principal signed in — the session resolver
-   * prefers this over uid to present the right account.
-   */
+  email?: string;
+  exp: number;
+}
+
+interface SessionEnvelope {
+  sid: string;
+  exp: number;
+}
+
+declare global {
+  var __zapstersSessionStore: Map<string, StoredSession> | undefined;
+}
+
+// A global registry keeps the in-memory stand-in shared between Next server
+// bundles in the same process. A real deployment should replace this with a
+// shared session store so revocation works across replicas.
+const activeSessions =
+  globalThis.__zapstersSessionStore ??
+  (globalThis.__zapstersSessionStore = new Map<string, StoredSession>());
+
+const developmentSecretBytes = new Uint8Array(32);
+globalThis.crypto.getRandomValues(developmentSecretBytes);
+
+export function isProductionLikeRuntime(): boolean {
+  return (
+    process.env.NODE_ENV === "production" ||
+    process.env.VERCEL_ENV === "production" ||
+    process.env.APP_ENV === "production" ||
+    process.env.APP_ENV === "staging"
+  );
+}
+
+function getSecret(): string {
+  const configured = process.env.SESSION_SECRET?.trim();
+  if (configured) return configured;
+  if (isProductionLikeRuntime()) {
+    throw new Error(
+      "SESSION_SECRET must be set in production-like runtimes.",
+    );
+  }
+  return b64urlEncode(developmentSecretBytes);
+}
+
+export interface SessionPayload {
+  sid: string;
+  uid: string;
+  role: string;
   email?: string;
   exp: number;
 }
@@ -93,19 +99,49 @@ function safeEqual(a: string, b: string): boolean {
   return diff === 0;
 }
 
-/** Issue a signed session token for a user (uid + role + email travel in the token). */
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null && !Array.isArray(value);
+}
+
+function isSessionEnvelope(value: unknown): value is SessionEnvelope {
+  return (
+    isRecord(value) &&
+    typeof value.sid === "string" &&
+    value.sid.length > 0 &&
+    value.sid.length <= 128 &&
+    typeof value.exp === "number" &&
+    Number.isSafeInteger(value.exp)
+  );
+}
+
+function purgeExpiredSessions(now: number): void {
+  for (const [sid, session] of activeSessions) {
+    if (session.exp <= now) activeSessions.delete(sid);
+  }
+}
+
+/** Issue a signed token containing an opaque, revocable session ID. */
 export async function createSessionToken(user: {
   id: string;
   role: string;
   email?: string;
 }): Promise<string> {
-  const payload: SessionPayload = {
+  const now = Math.floor(Date.now() / 1000);
+  purgeExpiredSessions(now);
+  const envelope: SessionEnvelope = {
+    sid: globalThis.crypto.randomUUID(),
+    exp: now + SESSION_MAX_AGE_SECONDS,
+  };
+  const stored: StoredSession = {
     uid: user.id,
     role: user.role,
-    exp: Math.floor(Date.now() / 1000) + SESSION_MAX_AGE_SECONDS,
+    exp: envelope.exp,
   };
-  if (user.email) payload.email = user.email;
-  const encoded = b64urlEncode(new TextEncoder().encode(JSON.stringify(payload)));
+  if (user.email) stored.email = user.email;
+  activeSessions.set(envelope.sid, stored);
+  const encoded = b64urlEncode(
+    new TextEncoder().encode(JSON.stringify(envelope)),
+  );
   return `${encoded}.${await sign(encoded)}`;
 }
 
@@ -116,29 +152,50 @@ export async function createSessionToken(user: {
 export async function verifySessionToken(
   token: string | undefined | null,
 ): Promise<SessionPayload | null> {
-  if (!token) return null;
+  if (!token || token.length > MAX_TOKEN_LENGTH) return null;
   const dot = token.indexOf(".");
   if (dot <= 0) return null;
   const encoded = token.slice(0, dot);
   const signature = token.slice(dot + 1);
-  if (!encoded || !signature) return null;
+  if (!encoded || !signature || token.indexOf(".", dot + 1) !== -1) return null;
 
   const expected = await sign(encoded);
   if (!safeEqual(signature, expected)) return null;
 
   try {
-    const payload = JSON.parse(
+    const parsed: unknown = JSON.parse(
       new TextDecoder().decode(b64urlDecode(encoded)),
-    ) as SessionPayload;
-    if (
-      !payload ||
-      typeof payload.exp !== "number" ||
-      payload.exp < Math.floor(Date.now() / 1000)
-    ) {
+    );
+    if (!isSessionEnvelope(parsed)) return null;
+
+    const now = Math.floor(Date.now() / 1000);
+    if (parsed.exp <= now) {
+      activeSessions.delete(parsed.sid);
       return null;
     }
-    return payload;
+
+    const stored = activeSessions.get(parsed.sid);
+    if (!stored || stored.exp !== parsed.exp || stored.exp <= now) {
+      if (stored?.exp && stored.exp <= now) activeSessions.delete(parsed.sid);
+      return null;
+    }
+
+    return {
+      sid: parsed.sid,
+      uid: stored.uid,
+      role: stored.role,
+      ...(stored.email ? { email: stored.email } : {}),
+      exp: stored.exp,
+    };
   } catch {
     return null;
   }
+}
+
+/** Revoke a session before clearing its browser cookie. */
+export async function revokeSessionToken(
+  token: string | undefined | null,
+): Promise<void> {
+  const session = await verifySessionToken(token);
+  if (session) activeSessions.delete(session.sid);
 }

@@ -2,13 +2,13 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
 import { VerifyClient } from "@/components/gamification/verify-client";
-import { verifyBadge } from "@/lib/api/gamification";
+import { verifyBadge } from "@/lib/server/domains/gamification";
 import { buildMetadata } from "@/lib/seo";
 import { JsonLd } from "@/components/seo/json-ld";
 
 export async function generateMetadata({ params }: { params: Promise<{ credentialId: string }> }): Promise<Metadata> {
   const { credentialId } = await params;
-  try { const credential = await verifyBadge(credentialId); return buildMetadata({ title: `${credential.badge_name} · Credential`, description: `Verify ${credential.badge_name} awarded to ${credential.subject.display_name}.`, path: `/rank/verify/${credentialId}`, keywords: ["certificate", "credential", credential.claim.category] }); }
+  try { const credential = await verifyBadge(credentialId); return buildMetadata({ title: `${credential.badge_name} · Credential`, description: `Verify ${credential.badge_name} awarded to ${credential.subject.display_name}.`, path: `/rank/verify/${credentialId}`, keywords: ["certificate", "credential", credential.claim.category], index: true }); }
   catch { return buildMetadata({ title: "Credential Verify", description: "Independent credential re-verification.", path: `/rank/verify/${credentialId}` }); }
 }
 

@@ -2,33 +2,46 @@ import type {
   LoginInput,
   RegisterInput,
   SessionState,
+  SessionUser,
 } from "@/lib/contracts/session";
 import { MockApiError } from "@/lib/api/errors";
-import { DEMO_EMAIL, DEMO_PASSWORD } from "@/lib/demo-credentials";
 
-/**
- * Auth API client (product-audit Fix 4: real auth boundary).
- *
- * A thin fetch wrapper over the /api/auth/session route handler — the mock
- * auth rules moved SERVER-side, behind a signed HttpOnly session cookie
- * (see lib/server/session.ts and proxy.ts). Signatures are unchanged
- * from the old all-client mock, so the SessionProvider never changed.
- *
- * Auth rules live in the route handler (app/api/auth/session/route.ts):
- *  - login validates email + password against the seeded account store
- *    (scrypt hashes — see lib/server/accounts.ts). Unknown emails and
- *    wrong passwords both return `invalid_credentials` (401).
- *  - `loginDemo()` signs in the seeded demo account through the SAME real
- *    credential path (demo@company.com / Demo@123) — no shortcuts.
- *
- * When the real Platform Core auth lands, this module is replaced by the
- * real client SDK — same signatures, zero component changes (build.md §4).
- */
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null && !Array.isArray(value);
+}
 
-async function request<T>(path: string, init?: RequestInit): Promise<T> {
+function isSessionUser(value: unknown): value is SessionUser {
+  if (!isRecord(value)) return false;
+  return (
+    typeof value.id === "string" &&
+    typeof value.display_name === "string" &&
+    typeof value.email === "string" &&
+    (value.avatar_url === null || typeof value.avatar_url === "string") &&
+    (value.role === "learner" || value.role === "admin") &&
+    (value.org_id === null || typeof value.org_id === "string")
+  );
+}
+
+function isSessionState(value: unknown): value is SessionState {
+  if (!isRecord(value)) return false;
+  return (
+    (value.status === "anonymous" && value.user === null) ||
+    (value.status === "authenticated" && isSessionUser(value.user))
+  );
+}
+
+async function request<T>(
+  path: string,
+  validate: (value: unknown) => value is T,
+  init?: RequestInit,
+): Promise<T> {
   let res: Response;
   try {
-    res = await fetch(path, { cache: "no-store", ...init });
+    res = await fetch(path, {
+      cache: "no-store",
+      credentials: "same-origin",
+      ...init,
+    });
   } catch {
     throw new MockApiError(
       "network_error",
@@ -40,32 +53,37 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
     let code = "http_error";
     let message = "The auth service is unavailable. Please try again later.";
     try {
-      const body = (await res.json()) as { code?: string; message?: string };
-      if (body.code) code = body.code;
-      if (body.message) message = body.message;
+      const body: unknown = await res.json();
+      if (isRecord(body)) {
+        if (typeof body.code === "string" && body.code) code = body.code;
+        if (typeof body.message === "string" && body.message) {
+          message = body.message;
+        }
+      }
     } catch {
-      // Non-JSON error body (e.g. a 500 HTML page) — keep the generic
-      // message; never surface the raw status or server internals.
+      // Keep a generic message for non-JSON responses.
     }
     throw new MockApiError(code, message, res.status);
   }
-  return (await res.json()) as T;
+  const body: unknown = await res.json();
+  if (!validate(body)) {
+    throw new MockApiError(
+      "invalid_response",
+      "The auth service returned an invalid response.",
+      502,
+    );
+  }
+  return body;
 }
 
-/**
- * Map an auth failure to a user-facing message. Internal details (status
- * codes, stack traces, server messages) never reach the UI.
- */
 export function authErrorMessage(
   err: unknown,
   fallback = "Please try again later.",
 ): string {
   if (err instanceof MockApiError) {
-    // Server is unreachable or crashed — never show the internal status.
     if (err.status >= 500) {
       return "Server unavailable. Please try again later.";
     }
-    // Server-provided 4xx messages are already user-facing and vetted.
     return err.message || fallback;
   }
   return fallback;
@@ -74,20 +92,17 @@ export function authErrorMessage(
 function post(body: Record<string, unknown>): RequestInit {
   return {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: {
+      Accept: "application/json",
+      "Content-Type": "application/json",
+    },
     body: JSON.stringify(body),
   };
 }
 
-/**
- * Resolve the current session from the HttpOnly cookie. Degrades to
- * anonymous on failure (server unreachable, etc.) so the shell stays usable
- * instead of spinning forever — a real deployment would surface a
- * connectivity banner at this point.
- */
 export async function getSession(): Promise<SessionState> {
   try {
-    return await request<SessionState>("/api/auth/session");
+    return await request("/api/auth/session", isSessionState);
   } catch (err) {
     if (err instanceof MockApiError) {
       console.warn(
@@ -100,34 +115,43 @@ export async function getSession(): Promise<SessionState> {
 }
 
 export async function login(input: LoginInput): Promise<SessionState> {
-  return request<SessionState>("/api/auth/session", post({
-    action: "login",
-    email: input.email,
-    password: input.password,
-  }));
+  return request(
+    "/api/auth/session",
+    isSessionState,
+    post({
+      action: "login",
+      email: input.email,
+      password: input.password,
+    }),
+  );
 }
 
 export async function register(input: RegisterInput): Promise<SessionState> {
-  return request<SessionState>("/api/auth/session", post({
-    action: "register",
-    display_name: input.display_name,
-    email: input.email,
-    password: input.password,
-  }));
+  return request(
+    "/api/auth/session",
+    isSessionState,
+    post({
+      action: "register",
+      display_name: input.display_name,
+      email: input.email,
+      password: input.password,
+    }),
+  );
 }
 
 export async function logout(): Promise<void> {
-  await request<SessionState>("/api/auth/session", post({ action: "logout" }));
+  await request(
+    "/api/auth/session",
+    isSessionState,
+    post({ action: "logout" }),
+  );
 }
 
-/**
- * One-click demo sign-in — the seeded demo account through the REAL
- * credential path (no special action, no bypass).
- */
+/** One-click development demo sign-in; no credential is sent to the client. */
 export async function loginDemo(): Promise<SessionState> {
-  return request<SessionState>("/api/auth/session", post({
-    action: "login",
-    email: DEMO_EMAIL,
-    password: DEMO_PASSWORD,
-  }));
+  return request(
+    "/api/auth/session",
+    isSessionState,
+    post({ action: "demo" }),
+  );
 }

@@ -13,11 +13,12 @@ import {
   submitCourseForReview,
   unpublishCourse,
   updateCourse,
-} from "./admin";
-import type { CourseDraftInput } from "./admin";
+} from "@/lib/server/domains/admin";
+import type { CourseDraftInput } from "@/lib/server/domains/admin";
 
 /**
- * Admin review-workflow tests (audit Track A2). Covers lib/api/admin.ts:
+ * Admin review-workflow tests (audit Track A2). Covers the server-side
+ * domain (lib/server/domains/admin.ts) behind the /api/admin routes:
  * draft → in_review → published transitions, the two-person rule, the
  * status guard on field edits, and audit logging.
  */

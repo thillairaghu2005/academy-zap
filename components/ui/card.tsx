@@ -41,9 +41,13 @@ function CardHeader({ className, ...props }: React.ComponentProps<"div">) {
   );
 }
 
-function CardTitle({ className, ...props }: React.ComponentProps<"div">) {
+type CardTitleProps = React.HTMLAttributes<HTMLHeadingElement> & {
+  as?: "h1" | "h2" | "h3" | "h4";
+};
+
+function CardTitle({ as: Heading = "h3", className, ...props }: CardTitleProps) {
   return (
-    <div
+    <Heading
       data-slot="card-title"
       className={cn("font-display text-h3", className)}
       {...props}

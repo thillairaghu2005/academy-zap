@@ -86,7 +86,17 @@ export const MOCK_PLANS: Plan[] = [
 export const mockCarts = new Map<string, Cart>();
 export const mockCheckoutSessions = new Map<string, CheckoutSession>();
 export const mockOrders = new Map<string, Order>();
-export const mockEntitlements = new Map<string, Entitlement>();
+/** Entitlements are isolated by user first, then product. */
+export const mockEntitlements = new Map<string, Map<string, Entitlement>>();
+
+function entitlementsForStoredUser(userId: string): Map<string, Entitlement> {
+  let entitlements = mockEntitlements.get(userId);
+  if (!entitlements) {
+    entitlements = new Map<string, Entitlement>();
+    mockEntitlements.set(userId, entitlements);
+  }
+  return entitlements;
+}
 
 /* ------------------------------------------------------------------ */
 /*  Cart persistence (Task 2)                                          */
@@ -286,8 +296,9 @@ export function seedDemoSession(
       idempotency_key: session.idempotency_key,
     };
     mockOrders.set(order.order_id, order);
+    const entitlements = entitlementsForStoredUser(MOCK_DEMO_USER_ID);
     for (const item of snapshot.items) {
-      mockEntitlements.set(item.product_id, {
+      entitlements.set(item.product_id, {
         product_id: item.product_id,
         kind: item.kind,
         order_id: order.order_id,
@@ -366,8 +377,9 @@ export function deliverWebhook(
   if (!isFailure) {
     // Fulfillment: grant entitlements exactly once, then clear the purchased
     // items from the user's cart (real checkout behavior).
+    const entitlements = entitlementsForStoredUser(session.cart.user_id);
     for (const item of session.cart.items) {
-      mockEntitlements.set(item.product_id, {
+      entitlements.set(item.product_id, {
         product_id: item.product_id,
         kind: item.kind,
         order_id: orderId,
@@ -397,8 +409,11 @@ export function entitlementsForUser(userId: string): EntitlementsSnapshot {
     { product_id: "c3d4e5f6-a7b8-4c9d-0e1f-2a3b4c5d6e7f", kind: "course", order_id: "ord-seed-1", granted_at: new Date(Date.now() - 12 * 86400_000).toISOString(), active: true },
     { product_id: "f6a7b8c9-d0e1-4f2a-3b4c-5d6e7f8a9b0c", kind: "course", order_id: "ord-seed-2", granted_at: new Date(Date.now() - 3 * 86400_000).toISOString(), active: true },
   ] as Entitlement[];
-  const fromOrders = [...mockEntitlements.values()];
-  const all = [...seeded, ...fromOrders];
+  const fromOrders = [
+    ...(mockEntitlements.get(userId)?.values() ?? []),
+  ];
+  const seededForDemo = userId === MOCK_DEMO_USER_ID ? seeded : [];
+  const all = [...seededForDemo, ...fromOrders];
   return {
     user_id: userId,
     entitlements: all,

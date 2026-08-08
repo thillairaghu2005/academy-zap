@@ -29,26 +29,51 @@ import { Logo } from "@/src/components/Logo/Logo";
 import { useSession } from "@/components/providers/session-provider";
 import { authErrorMessage } from "@/lib/api/auth";
 import { DEMO_MODE } from "@/lib/config";
-import {
-  DEMO_ADMIN_EMAIL,
-  DEMO_ADMIN_PASSWORD,
-  DEMO_EMAIL,
-  DEMO_PASSWORD,
-} from "@/lib/demo-credentials";
 
 const loginSchema = z.object({
-  email: z.email("Enter a valid email address."),
-  password: z.string().min(8, "Password must be at least 8 characters."),
+  email: z
+    .email("Enter a valid email address.")
+    .max(254, "Email address is too long."),
+  password: z
+    .string()
+    .min(8, "Password must be at least 8 characters.")
+    .max(128, "Password is too long."),
 });
 
 type LoginValues = z.infer<typeof loginSchema>;
 
 /**
- * Redirect target from middleware's ?next= — same-origin paths only, so a
- * crafted ?next cannot bounce users to an external URL.
+ * Accept only a normalized same-origin path. Reject URL parser edge cases
+ * such as protocol-relative, backslash, encoded-slash, and control values.
  */
-function safeNext(next: string | undefined): string {
-  return next && next.startsWith("/") && !next.startsWith("//") ? next : "/";
+export function safeNext(next: string | undefined): string {
+  if (
+    !next ||
+    next.length > 2048 ||
+    !next.startsWith("/") ||
+    next.startsWith("//") ||
+    next.includes("\\") ||
+    /[\u0000-\u001f\u007f]/.test(next)
+  ) {
+    return "/";
+  }
+
+  try {
+    const base = "https://zapsters.invalid";
+    const target = new URL(next, base);
+    const decodedPath = decodeURIComponent(target.pathname);
+    if (
+      target.origin !== base ||
+      decodedPath.startsWith("//") ||
+      decodedPath.includes("\\") ||
+      /[\u0000-\u001f\u007f]/.test(decodedPath)
+    ) {
+      return "/";
+    }
+    return `${target.pathname}${target.search}${target.hash}`;
+  } catch {
+    return "/";
+  }
 }
 
 export function LoginForm({ next }: { next?: string }) {
@@ -57,11 +82,9 @@ export function LoginForm({ next }: { next?: string }) {
   const [pending, setPending] = React.useState(false);
   const [showPassword, setShowPassword] = React.useState(false);
 
-  // The demo account is seeded server-side (lib/server/accounts.ts); prefill
-  // its credentials so a single click on "Sign in" authenticates.
   const form = useForm<LoginValues>({
     resolver: zodResolver(loginSchema),
-    defaultValues: { email: DEMO_EMAIL, password: DEMO_PASSWORD },
+    defaultValues: { email: "", password: "" },
   });
 
   // Already signed in? Straight back to where they were headed.
@@ -103,7 +126,7 @@ export function LoginForm({ next }: { next?: string }) {
     <Card className="w-full max-w-md border-border/80 bg-card/80 backdrop-blur-xl">
       <CardHeader className="items-center gap-2 pb-6 pt-8 text-center">
         <Logo size="lg" linkTo={null} />
-        <CardTitle className="mt-2 text-xl">Welcome back</CardTitle>
+         <CardTitle as="h1" className="mt-2 text-xl">Welcome back</CardTitle>
         <CardDescription>
           Sign in to continue climbing the ladder.
         </CardDescription>
@@ -166,16 +189,6 @@ export function LoginForm({ next }: { next?: string }) {
           </form>
         </Form>
 
-        <p className="mt-3 flex items-center gap-1.5 text-center text-xs text-muted-foreground">
-          <Sparkles className="size-3 shrink-0 text-warning-strong" />
-          <span>
-            Demo account —{" "}
-            <code className="rounded bg-secondary px-1 font-mono">{DEMO_EMAIL}</code>{" "}
-            / <code className="rounded bg-secondary px-1 font-mono">{DEMO_PASSWORD}</code>. Just
-            hit Sign in.
-          </span>
-        </p>
-
         <p className="mt-5 text-center text-xs text-muted-foreground">
           New here?{" "}
           <Link href="/register" className="font-medium text-primary hover:underline">
@@ -188,8 +201,8 @@ export function LoginForm({ next }: { next?: string }) {
             <p className="flex items-start gap-2 text-xs leading-relaxed text-muted-foreground">
               <Sparkles className="mt-0.5 size-3.5 shrink-0 text-warning-strong" />
               <span>
-                <span className="font-medium text-foreground">Demo account.</span>{" "}
-                Explore every surface as a sample learner — no signup needed.
+                <span className="font-medium text-foreground">Development demo.</span>{" "}
+                Explore every surface as a sample learner. No password is needed.
               </span>
             </p>
             <div className="mt-2.5 flex flex-wrap gap-2">
@@ -201,17 +214,6 @@ export function LoginForm({ next }: { next?: string }) {
                 disabled={pending}
               >
                 {pending ? "Signing in…" : "Continue as demo learner"}
-              </Button>
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                onClick={() => {
-                  form.setValue("email", DEMO_ADMIN_EMAIL);
-                  form.setValue("password", DEMO_ADMIN_PASSWORD);
-                }}
-              >
-                Admin demo
               </Button>
               <Button
                 type="button"

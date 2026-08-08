@@ -10,6 +10,8 @@ import { listInstructors } from "@/lib/api/instructors";
 export const metadata: Metadata = {
   title: "Mentors",
   description: "Find experienced practitioners who can help you keep climbing.",
+  alternates: { canonical: "/mentors" },
+  robots: { index: true, follow: true },
 };
 
 export default async function MentorsPage() {

@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
-import { getCourse } from "@/lib/api/content";
+import { getCourse } from "@/lib/server/domains/content";
 import { MockApiError } from "@/lib/api/errors";
 import { CourseDetailClient } from "@/components/courses/course-detail-client";
 import { buildMetadata } from "@/lib/seo";
@@ -13,11 +13,12 @@ interface CoursePageProps {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 }
 
-export async function generateMetadata({ params }: CoursePageProps): Promise<Metadata> {
+export async function generateMetadata({ params, searchParams }: CoursePageProps): Promise<Metadata> {
   const { id } = await params;
+  const previewMode = (await searchParams).preview === "1";
   try {
     const course = await getCourse(id);
-    return buildMetadata({ title: course.title, description: course.subtitle, path: `/courses/${id}`, keywords: [course.category, course.level, course.instructor.display_name] });
+    return buildMetadata({ title: course.title, description: course.subtitle, path: `/courses/${id}`, keywords: [course.category, course.level, course.instructor.display_name], index: course.status === "published" && !previewMode });
   } catch {
     return buildMetadata({ title: "Course", description: "Explore a practical Zapsters course.", path: `/courses/${id}` });
   }

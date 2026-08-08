@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
-import { getCourse } from "@/lib/api/content";
+import { getCourse } from "@/lib/server/domains/content";
 import { MockApiError } from "@/lib/api/errors";
 import { PlayerClient } from "@/components/courses/player-client";
 

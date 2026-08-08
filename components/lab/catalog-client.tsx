@@ -163,7 +163,7 @@ function LabCard({
   );
 }
 
-export function LabCatalogClient() {
+export function LabCatalogClient({ initialData }: { initialData?: Lab[] }) {
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -182,11 +182,11 @@ export function LabCatalogClient() {
   // Sync URL params (same discipline as the F1 catalog).
   React.useEffect(() => {
     const params = new URLSearchParams();
-    if (query) params.set("q", query);
+    if (debouncedQuery) params.set("q", debouncedQuery);
     if (difficulty !== "all") params.set("difficulty", difficulty);
     const str = params.toString();
     router.replace(`/labs${str ? `?${str}` : ""}`, { scroll: false });
-  }, [query, difficulty, router]);
+  }, [debouncedQuery, difficulty, router]);
 
   const applyQuery = (next: string) => setQuery(next);
   const applyDifficulty = (next: LabDifficulty | "all") =>
@@ -199,6 +199,7 @@ export function LabCatalogClient() {
   const { data, isLoading, isError, error, refetch } = useQuery({
     queryKey: ["labs", debouncedQuery, difficulty],
     queryFn: () => searchLabs(debouncedQuery),
+    initialData: difficulty === "all" && !debouncedQuery ? initialData : undefined,
   });
 
   const catalogQuery = useQuery({
@@ -241,10 +242,11 @@ export function LabCatalogClient() {
             className="pl-9 pr-9"
           />
           {query ? (
-            <button
-              onClick={() => applyQuery("")}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground transition-colors hover:text-foreground"
-              aria-label="Clear search"
+              <button
+                type="button"
+                onClick={() => applyQuery("")}
+                className="absolute right-3 top-1/2 -translate-y-1/2 rounded p-1 text-muted-foreground outline-none transition-colors hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring"
+                aria-label="Clear search"
             >
               <X className="size-4" />
             </button>

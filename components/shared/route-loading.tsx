@@ -3,9 +3,59 @@ import { PageContainer } from "@/components/shared/page-container";
 import {
   CodeEditorSkeleton,
   SkeletonGrid,
+  SkeletonCourseGrid,
+  SkeletonLabGrid,
+  SkeletonPageHeader,
   SkeletonLines,
   TerminalSkeleton,
 } from "@/components/shared/skeletons";
+
+export function AppRouteLoading() {
+  return (
+    <PageContainer role="status" aria-busy="true" aria-label="Loading page">
+      <SkeletonPageHeader />
+      <div className="mt-8">
+        <SkeletonGrid count={6} />
+      </div>
+    </PageContainer>
+  );
+}
+
+export function CourseCatalogLoading() {
+  return (
+    <PageContainer role="status" aria-busy="true" aria-label="Loading courses">
+      <SkeletonPageHeader />
+      <div className="mt-6">
+        <SkeletonCourseGrid count={6} />
+      </div>
+    </PageContainer>
+  );
+}
+
+export function LabCatalogLoading() {
+  return (
+    <PageContainer role="status" aria-busy="true" aria-label="Loading labs">
+      <SkeletonPageHeader />
+      <div className="mt-6">
+        <SkeletonLabGrid count={6} />
+      </div>
+    </PageContainer>
+  );
+}
+
+export function CourseDetailLoading() {
+  return (
+    <PageContainer role="status" aria-busy="true" aria-label="Loading course">
+      <SkeletonPageHeader />
+      <div className="mt-6 grid gap-6 lg:grid-cols-[1fr_380px]">
+        <SkeletonLines count={8} />
+        <Card className="h-80 p-5">
+          <SkeletonLines count={5} />
+        </Card>
+      </div>
+    </PageContainer>
+  );
+}
 
 export function JudgeListLoading() {
   return (

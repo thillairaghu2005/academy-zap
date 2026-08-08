@@ -5,6 +5,18 @@ import nextTs from "eslint-config-next/typescript";
 const eslintConfig = defineConfig([
   ...nextVitals,
   ...nextTs,
+  {
+    rules: {
+      // Official convention: underscore-prefixed names mark "omit this
+      // sensitive field" destructuring (e.g. publicAssessment strips
+      // _acceptedAnswers / _referenceSolution) and intentionally unused
+      // params. Warn-free by design.
+      "@typescript-eslint/no-unused-vars": [
+        "error",
+        { varsIgnorePattern: "^_", argsIgnorePattern: "^_" },
+      ],
+    },
+  },
   // Override default ignores of eslint-config-next.
   globalIgnores([
     // Default ignores of eslint-config-next:

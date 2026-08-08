@@ -3,6 +3,13 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { PageContainer } from "@/components/shared/page-container";
 
+export const metadata = {
+  title: "Offline",
+  description: "Read course material saved on this device.",
+  alternates: { canonical: "/offline" },
+  robots: { index: false, follow: false },
+};
+
 export default function OfflinePage() {
   return (
     <PageContainer className="flex min-h-[60dvh] flex-col items-center justify-center py-20 text-center">

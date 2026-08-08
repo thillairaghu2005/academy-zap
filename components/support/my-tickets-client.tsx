@@ -72,12 +72,35 @@ export function MyTicketsClient() {
       </div>
 
       {/* Status tabs */}
-      <div className="mt-6 flex flex-wrap gap-1.5">
+      <div className="mt-6 flex flex-wrap gap-1.5" role="tablist" aria-label="Filter tickets by status">
         {STATUS_TABS.map((status) => (
           <button
             key={status.value}
+            type="button"
             onClick={() => setTab(status.value)}
-            aria-pressed={tab === status.value}
+            id={`support-tab-${status.value}`}
+            role="tab"
+            aria-selected={tab === status.value}
+            aria-controls="support-ticket-panel"
+            tabIndex={tab === status.value ? 0 : -1}
+            onKeyDown={(event) => {
+              const currentIndex = STATUS_TABS.findIndex((item) => item.value === status.value);
+              const nextIndex = event.key === "ArrowRight"
+                ? (currentIndex + 1) % STATUS_TABS.length
+                : event.key === "ArrowLeft"
+                  ? (currentIndex - 1 + STATUS_TABS.length) % STATUS_TABS.length
+                  : event.key === "Home"
+                    ? 0
+                    : event.key === "End"
+                      ? STATUS_TABS.length - 1
+                      : -1;
+              if (nextIndex < 0) return;
+              event.preventDefault();
+              const next = STATUS_TABS[nextIndex];
+              if (!next) return;
+              setTab(next.value);
+              document.getElementById(`support-tab-${next.value}`)?.focus();
+            }}
             className={cn(
               "rounded-full border px-3 py-1.5 text-sm transition-colors outline-none focus-visible:ring-2 focus-visible:ring-ring",
               tab === status.value
@@ -90,7 +113,7 @@ export function MyTicketsClient() {
         ))}
       </div>
 
-      <div className="mt-5">
+      <div id="support-ticket-panel" role="tabpanel" aria-labelledby={`support-tab-${tab}`} tabIndex={0} className="mt-5 outline-none">
         {ticketsQuery.isLoading ? (
           <div className="grid gap-3">
             {Array.from({ length: 3 }).map((_, i) => (
@@ -114,9 +137,9 @@ export function MyTicketsClient() {
               <Link
                 key={ticket.id}
                 href={`/support/${ticket.id}`}
-                className="group block outline-none"
+                 className="group block rounded-[inherit] outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
               >
-                <Card className="transition-all group-hover:-translate-y-0.5 group-hover:border-primary/40 group-hover:shadow-lg group-hover:shadow-primary/5 focus-visible:ring-2 focus-visible:ring-ring">
+                <Card className="transition-all group-hover:-translate-y-0.5 group-hover:border-primary/40 group-hover:shadow-lg group-hover:shadow-primary/5">
                   <CardContent className="flex items-center gap-4 p-4">
                     <div className="grid size-10 shrink-0 place-items-center rounded-lg bg-primary/10 text-primary">
                       <MessageSquare className="size-4.5" />

@@ -79,7 +79,7 @@ export function RegisterForm() {
     <Card className="w-full max-w-md border-border/80 bg-card/80 backdrop-blur-xl">
       <CardHeader className="items-center gap-2 pb-6 pt-8 text-center">
         <Logo size="lg" linkTo={null} />
-        <CardTitle className="mt-2 text-xl">Join the climb</CardTitle>
+        <CardTitle as="h1" className="mt-2 text-xl">Join the climb</CardTitle>
         <CardDescription>
           One account across courses, judge, labs and ranks.
         </CardDescription>
