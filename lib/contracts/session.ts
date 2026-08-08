@@ -7,7 +7,7 @@
  * Platform Core contract during integration (build.md §4).
  */
 
-export type SessionRole = "student" | "learner" | "admin";
+export type SessionRole = "user" | "student" | "learner" | "admin";
 
 export interface SessionUser {
   /** UUID, server-assigned */

@@ -81,7 +81,8 @@ export function RegisterForm() {
         <Logo size="lg" linkTo={null} />
         <CardTitle as="h1" className="mt-2 text-xl">Join the climb</CardTitle>
         <CardDescription>
-          One account across courses, judge, labs and ranks.
+          Account creation is coming soon in this frontend demo. Use a demo
+          account on the sign-in page.
         </CardDescription>
       </CardHeader>
       <CardContent>

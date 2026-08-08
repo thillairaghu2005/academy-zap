@@ -6,10 +6,8 @@ import {
   ArrowRight,
   BookOpen,
   Check,
-  ChevronRight,
   CirclePlay,
   Code2,
-  Flame,
   LineChart,
   Sparkles,
 } from "lucide-react";
@@ -35,12 +33,12 @@ function WorkspacePreview() {
               <Sparkles className="size-4" />
             </span>
             <div>
-              <p className="text-xs font-semibold text-foreground">Today&apos;s workspace</p>
-              <p className="mt-0.5 text-[11px] text-muted-foreground">Tuesday, 14 May</p>
+              <p className="text-xs font-semibold text-foreground">Your learning workspace</p>
+              <p className="mt-0.5 text-[11px] text-muted-foreground">Sign in to track your progress</p>
             </div>
           </div>
-          <span className="inline-flex items-center gap-1.5 rounded-full border border-success/20 bg-success/10 px-2.5 py-1 text-[11px] font-medium text-success-strong">
-            <span className="size-1.5 rounded-full bg-success" /> On track
+          <span className="inline-flex items-center gap-1.5 rounded-full border border-primary/15 bg-primary/5 px-2.5 py-1 text-[11px] font-medium text-primary">
+            <span className="size-1.5 rounded-full bg-primary" /> Preview
           </span>
         </div>
 
@@ -49,67 +47,66 @@ function WorkspacePreview() {
             <div className="flex items-center justify-between gap-3">
               <span className="inline-flex items-center gap-2 text-xs font-medium text-foreground">
                 <BookOpen className="size-4 text-primary" />
-                Your next lesson
+                Example lesson
               </span>
-              <span className="font-mono text-[10px] text-muted-foreground">12 min</span>
+              <span className="font-mono text-[10px] text-muted-foreground">12 min preview</span>
             </div>
             <h2 className="mt-5 max-w-[15rem] font-display text-xl font-semibold leading-tight tracking-[-0.03em]">
               Threat modeling for real products
             </h2>
             <p className="mt-2 text-xs leading-relaxed text-muted-foreground">
-              Turn a vague risk into a useful engineering decision.
+              A glimpse of the focused lessons waiting inside Zapsters.
             </p>
-            <div className="mt-6 flex items-center gap-3">
-              <div className="relative size-12 shrink-0">
-                <svg className="size-12 -rotate-90" viewBox="0 0 44 44" aria-hidden="true">
-                  <circle cx="22" cy="22" r="18" fill="none" stroke="var(--color-border)" strokeWidth="3" />
-                  <circle cx="22" cy="22" r="18" fill="none" stroke="var(--color-primary)" strokeDasharray="113" strokeDashoffset="25" strokeLinecap="round" strokeWidth="3" />
-                </svg>
-                <span className="absolute inset-0 grid place-items-center text-[11px] font-semibold text-primary">78%</span>
-              </div>
+            <div className="mt-6 flex items-center gap-3 rounded-xl border border-primary/10 bg-primary/5 p-3">
+              <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-primary/10 text-primary">
+                <CirclePlay className="size-4" />
+              </span>
               <div>
-                <p className="text-xs font-semibold text-foreground">Security foundations</p>
-                <p className="mt-1 text-[11px] text-muted-foreground">8 of 10 lessons complete</p>
+                <p className="text-xs font-semibold text-foreground">Start your learning journey</p>
+                <p className="mt-1 text-[11px] text-muted-foreground">Build practical skills with focused lessons.</p>
               </div>
             </div>
-            <Button size="sm" className="mt-6 w-full" asChild>
-              <Link href="/courses">Continue learning <ArrowRight /></Link>
-            </Button>
+            <div className="mt-6 flex flex-col gap-2 sm:flex-row">
+              <Button size="sm" className="flex-1" asChild>
+                <Link href="/login">Sign in to start <ArrowRight /></Link>
+              </Button>
+              <Button size="sm" variant="outline" className="flex-1" asChild>
+                <Link href="/courses">Explore courses</Link>
+              </Button>
+            </div>
           </div>
 
           <div className="flex flex-col gap-3">
             <div className="rounded-2xl border border-border bg-card p-4">
               <div className="flex items-center justify-between">
                 <span className="inline-flex items-center gap-2 text-xs font-medium">
-                  <LineChart className="size-4 text-primary" /> Weekly rhythm
+                  <LineChart className="size-4 text-primary" /> Example rhythm
                 </span>
-                <span className="text-[11px] font-medium text-success-strong">+24%</span>
+                <span className="text-[11px] font-medium text-muted-foreground">Preview</span>
               </div>
-              <div className="mt-5 flex h-16 items-end gap-1.5" aria-label="Learning activity across the week">
+              <div className="mt-5 flex h-16 items-end gap-1.5" aria-label="Example learning activity preview">
                 {[34, 48, 42, 68, 55, 84, 62, 92, 74, 100, 82, 91].map((height, index) => (
                   <span key={index} className="min-w-0 flex-1 rounded-t-md bg-primary/15" style={{ height: `${height}%` }}>
                     <span className="block h-full rounded-t-md bg-primary" style={{ opacity: index > 7 ? 0.9 : 0.34 }} />
                   </span>
                 ))}
               </div>
-              <div className="mt-3 flex justify-between text-[10px] text-muted-foreground"><span>Mon</span><span>Today</span><span>Sun</span></div>
+              <div className="mt-3 flex justify-between text-[10px] text-muted-foreground"><span>Example</span><span>Activity</span><span>Preview</span></div>
             </div>
 
             <div className="rounded-2xl border border-border bg-card p-4">
               <div className="flex items-center justify-between gap-3">
-                <span className="text-xs font-medium">Recent milestones</span>
-                <span className="text-[11px] text-muted-foreground">This week</span>
+                <span className="text-xs font-medium">Example milestones</span>
+                <span className="text-[11px] text-muted-foreground">Your path</span>
               </div>
               <div className="mt-4 space-y-3">
                 <div className="flex items-center gap-2.5 text-xs">
-                  <span className="grid size-6 place-items-center rounded-full bg-success/10 text-success-strong"><Check className="size-3.5" /></span>
-                  <span className="min-w-0 flex-1 truncate">Completed access control lab</span>
-                  <span className="font-mono text-[10px] text-muted-foreground">+120 XP</span>
+                  <span className="grid size-6 place-items-center rounded-full bg-primary/10 text-primary"><Check className="size-3.5" /></span>
+                  <span className="min-w-0 flex-1 truncate">Complete a focused lesson</span>
                 </div>
                 <div className="flex items-center gap-2.5 text-xs">
                   <span className="grid size-6 place-items-center rounded-full bg-primary/10 text-primary"><CirclePlay className="size-3.5" /></span>
-                  <span className="min-w-0 flex-1 truncate">Started API security track</span>
-                  <span className="font-mono text-[10px] text-muted-foreground">2h ago</span>
+                  <span className="min-w-0 flex-1 truncate">Practice in the Judge</span>
                 </div>
               </div>
             </div>
@@ -117,9 +114,8 @@ function WorkspacePreview() {
         </div>
 
         <div className="flex items-center gap-2 border-t border-border px-4 py-3 text-[11px] text-muted-foreground sm:px-5">
-          <Flame className="size-3.5 text-primary" />
-          <span>4 day learning streak</span>
-          <ChevronRight className="ml-auto size-3.5" />
+          <Sparkles className="size-3.5 text-primary" />
+          <span>Your activity will appear here after sign in.</span>
         </div>
       </div>
     </Spotlight>

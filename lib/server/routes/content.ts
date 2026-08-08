@@ -80,7 +80,12 @@ export async function handleContent(
       return Response.json(await searchCatalog(query));
     }
 
-    if (request.method === "GET" && path[0] === "courses" && path.length === 2) {
+    if (
+      request.method === "GET" &&
+      path[0] === "courses" &&
+      path.length === 2 &&
+      path[1] !== "learning"
+    ) {
       const id = courseId(path);
       const actor = await getAuthenticatedUser(request);
       const course = actor?.role === "admin"

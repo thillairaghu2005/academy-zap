@@ -55,7 +55,7 @@ export function safeNext(next: string | undefined): string {
     next.includes("\\") ||
     /[\u0000-\u001f\u007f]/.test(next)
   ) {
-    return "/";
+    return "/dashboard";
   }
 
   try {
@@ -68,11 +68,11 @@ export function safeNext(next: string | undefined): string {
       decodedPath.includes("\\") ||
       /[\u0000-\u001f\u007f]/.test(decodedPath)
     ) {
-      return "/";
+      return "/dashboard";
     }
     return `${target.pathname}${target.search}${target.hash}`;
   } catch {
-    return "/";
+    return "/dashboard";
   }
 }
 
@@ -147,6 +147,10 @@ export function LoginForm({ next }: { next?: string }) {
                       autoComplete="email"
                       className="h-10"
                       {...field}
+                      onChange={(event) => {
+                        field.onChange(event);
+                        form.clearErrors();
+                      }}
                     />
                   </FormControl>
                   <FormMessage />
@@ -167,6 +171,10 @@ export function LoginForm({ next }: { next?: string }) {
                         autoComplete="current-password"
                         className="h-10 pr-10"
                         {...field}
+                        onChange={(event) => {
+                          field.onChange(event);
+                          form.clearErrors();
+                        }}
                       />
                       <button
                         type="button"
