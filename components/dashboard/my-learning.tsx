@@ -17,7 +17,7 @@ import {
   Trophy,
 } from "lucide-react";
 
-import { listMyLearning, type MyLearningItem } from "@/lib/api/content";
+import { listMyLearning, type MyLearningItem } from "@/lib/data/demo/content";
 import { useSession } from "@/components/providers/session-provider";
 import { hueForId } from "@/lib/visual";
 import { Badge } from "@/components/ui/badge";
@@ -426,7 +426,7 @@ export function MyLearning() {
             message={
               error instanceof Error
                 ? error.message
-                : "The enrollments backend is not responding."
+                 : "Your learning demo data is unavailable."
             }
             code="ENROLLMENTS_ERR"
             onRetry={() => refetch()}

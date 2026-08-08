@@ -20,7 +20,7 @@ import {
   listSupportAgents,
   replyToTicket,
   updateTicketStatus,
-} from "@/lib/api/support";
+} from "@/lib/data/demo/support";
 import { useSession } from "@/components/providers/session-provider";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -194,7 +194,7 @@ export function AdminSupportTicketDetail({ ticketId }: { ticketId: string }) {
           message={
             ticketQuery.error instanceof Error
               ? ticketQuery.error.message
-              : "The support backend is not responding."
+              : "The support demo data is unavailable."
           }
           code="SUPPORT_ERR"
           onRetry={() => ticketQuery.refetch()}

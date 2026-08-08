@@ -53,7 +53,7 @@ export function SurfaceStub({ surface }: { surface: SurfaceMeta }) {
         <EmptyState
           icon={Construction}
           title="Shell is live — the surface isn't built yet"
-          description={`${surface.description} The mock API module for this subsystem ships together with its F-section, contract types first.`}
+          description={`${surface.description} The local demo data module for this subsystem ships with its contract types.`}
           action={
             <Badge variant="info" className="px-3 py-1">
               Build order: {surface.stage} comes after everything before it

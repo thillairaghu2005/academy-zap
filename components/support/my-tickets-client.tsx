@@ -12,7 +12,7 @@ import {
 } from "lucide-react";
 
 import type { TicketStatus } from "@/lib/contracts/support";
-import { listMyTickets } from "@/lib/api/support";
+import { listMyTickets } from "@/lib/data/demo/support";
 import { useSession } from "@/components/providers/session-provider";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -126,7 +126,7 @@ export function MyTicketsClient() {
             message={
               ticketsQuery.error instanceof Error
                 ? ticketsQuery.error.message
-                : "The support backend is not responding."
+                : "The support demo data is unavailable."
             }
             code="SUPPORT_ERR"
             onRetry={() => ticketsQuery.refetch()}

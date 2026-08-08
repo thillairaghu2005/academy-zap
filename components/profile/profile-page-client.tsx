@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useQuery } from "@tanstack/react-query";
 import { BookOpen, Award, Bookmark, FlaskConical, UserRound } from "lucide-react";
 
-import { getProfile } from "@/lib/api/profile";
+import { getProfile } from "@/lib/data/demo/profile";
 import { useSession } from "@/components/providers/session-provider";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";

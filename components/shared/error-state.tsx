@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 interface ErrorStateProps {
   title?: string;
   message?: string;
-  /** Error code shown as a mono chip (e.g. MockApiError.code) */
+  /** Error code shown as a mono chip (e.g. MockDataError.code) */
   code?: string;
   onRetry?: () => void;
   className?: string;
@@ -17,7 +17,7 @@ interface ErrorStateProps {
 
 /**
  * Global error-state primitive (build.md F0). Mirrors the error envelope of
- * the real backend (FastAPI HTTPException shape); every surface renders its
+ * local demo data service; every surface renders its
  * error state through this.
  */
 export function ErrorState({

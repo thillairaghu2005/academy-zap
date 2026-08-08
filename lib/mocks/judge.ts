@@ -18,7 +18,7 @@ import type { JudgeResult, Problem, SubmissionAccepted, Verdict } from "@/lib/co
  *      source contains  "wrong_answer"  → wrong_answer
  *      otherwise                         → accepted
  *  - Source containing "queue_hang" is not a verdict marker — it makes the
- *    mock worker grade after ~25s (see submit() in lib/api/judge.ts), which
+ *    mock worker grade after ~25s (see the demo judge service), which
  *    trips the client's 15s queue timeout, demoing the hang card + recovery.
  *
  * Deterministic demo hooks (same spirit as the content mocks):

@@ -34,9 +34,9 @@ import {
   getCourseProgress,
   getLessonPreview,
   type CourseProgress,
-} from "@/lib/api/content";
-import { getCourseReviews } from "@/lib/api/reviews";
-import { hasEntitlement } from "@/lib/api/commerce";
+} from "@/lib/data/demo/content";
+import { getCourseReviews } from "@/lib/data/demo/reviews";
+import { hasEntitlement } from "@/lib/data/demo/commerce";
 import { AddToCartButton } from "@/components/commerce/add-to-cart-button";
 import { BuyNowButton } from "@/components/commerce/buy-now-button";
 import { hueForId } from "@/lib/visual";

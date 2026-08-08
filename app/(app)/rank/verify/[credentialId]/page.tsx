@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
 import { VerifyClient } from "@/components/gamification/verify-client";
-import { verifyBadge } from "@/lib/server/domains/gamification";
+import { verifyBadge } from "@/lib/data/demo/gamification";
 import { buildMetadata } from "@/lib/seo";
 import { JsonLd } from "@/components/seo/json-ld";
 

@@ -7,10 +7,8 @@ import { MOCK_ADMIN, MOCK_LEARNER, MOCK_REVIEWERS } from "@/lib/mocks/users";
 /**
  * Support ticket fixtures + mutation helpers.
  *
- * The status workflow rules live in lib/api/support.ts (the mock server
- * layer); this module owns the store and the message/status/assignee
- * writes that keep it consistent — the same split as courses (fixtures in
- * mocks, workflow in api/admin).
+ * This module owns both the store and the message/status/assignee writes that
+ * keep the local demo state consistent.
  *
  * Seeded to exercise every ticket state for both viewer roles:
  *  - open / pending / resolved / closed for the demo learner
@@ -91,7 +89,7 @@ export const mockTickets = new Map<string, SupportTicket>([
       MOCK_ADMIN.display_name,
       [
         m(MOCK_LEARNER.id, MOCK_LEARNER.display_name, "learner", "I was charged twice for Cloud Security Essentials — two Razorpay receipts, one course access. Can you refund one?", false, 2, 1),
-        m(MOCK_ADMIN.id, MOCK_ADMIN.display_name, "agent", "Hi Aarav — I can see both charges on the order history. We'll refund the duplicate within 24h; access stays on your account meanwhile.", false, 1, 2),
+        m(MOCK_ADMIN.id, MOCK_ADMIN.display_name, "agent", "Hi Raghunandhan — I can see both charges on the order history. We'll refund the duplicate within 24h; access stays on your account meanwhile.", false, 1, 2),
       ],
       2,
       1,

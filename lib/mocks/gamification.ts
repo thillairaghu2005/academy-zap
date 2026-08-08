@@ -1,7 +1,7 @@
 /**
  * Mock Gamification Engine — ledger → ProgressContext resolution.
  *
- * Implements the §5.4 resolution workflow server-side (in mock form):
+ * Implements the §5.4 resolution workflow in the local demo service:
  *   1. Ledger read (append-only, nothing mutated).
  *   2. XP aggregation per track (completion / mastery summed independently).
  *   3. Rank resolution — weighted function of (completion_xp, mastery_xp).
@@ -105,8 +105,8 @@ export async function verifyLedgerChain(entries: LedgerEntry[]): Promise<{
 /*  Fixture ledger — the demo learner's event history                  */
 /* ------------------------------------------------------------------ */
 
-export const MOCK_DEMO_USER_ID = "4c1e0a9f-8c6e-4b2d-9f3a-2b8d1e5c7a91";
-export const MOCK_DEMO_USER_NAME = "Aarav Mehta";
+export const MOCK_DEMO_USER_ID = "demo-user-001";
+export const MOCK_DEMO_USER_NAME = "Raghunandhan";
 
 const DAY = 24 * 60 * 60 * 1000;
 const now = Date.now();
@@ -655,7 +655,7 @@ export function buildMyStanding(
 /* ------------------------------------------------------------------ */
 
 const GUILD_MEMBER_NAMES = [
-  "Aarav Mehta", "Zara Khan", "Kenji Tanaka", "Sofia Rossi", "Omar Haddad",
+  "Raghunandhan", "Zara Khan", "Kenji Tanaka", "Sofia Rossi", "Omar Haddad",
   "Grace Lim", "Noah Berg", "Lena Fischer",
 ];
 

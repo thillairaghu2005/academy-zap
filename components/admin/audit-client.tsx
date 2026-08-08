@@ -5,7 +5,7 @@ import { useQuery } from "@tanstack/react-query";
 import { CalendarRange, FilterX, Link2 } from "lucide-react";
 
 import type { AuditEntry } from "@/lib/mocks/admin";
-import { listAuditEntries } from "@/lib/api/admin";
+import { listAuditEntries } from "@/lib/data/demo/admin";
 import { useSession } from "@/components/providers/session-provider";
 import { PageContainer } from "@/components/shared/page-container";
 import { DataTable, type DataTableColumn } from "@/components/admin/data-table";

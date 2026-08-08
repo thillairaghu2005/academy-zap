@@ -5,14 +5,14 @@ import { useQuery } from "@tanstack/react-query";
 import { motion } from "framer-motion";
 import { Flame, TrendingUp } from "lucide-react";
 
-import { getComboCurve } from "@/lib/api/assessment";
+import { getComboCurve } from "@/lib/data/demo/assessment";
 import { SkeletonLines } from "@/components/shared/skeletons";
 import { cn } from "@/lib/utils";
 
 /* ------------------------------------------------------------------ */
 /*  Combo curve teaser — the ×1.0 → ×3.0 multiplier curve.             */
 /*                                                                     */
-/*  The curve is server-derived (getComboCurve), so what the detail    */
+/*  The curve comes from the demo service (getComboCurve), so what the detail */
 /*  page advertises is exactly the formula the grader applies.         */
 /* ------------------------------------------------------------------ */
 

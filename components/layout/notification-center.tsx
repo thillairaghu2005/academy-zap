@@ -23,7 +23,7 @@ import {
 } from "lucide-react";
 
 import type { NotificationCategory, NotificationEvent, NotificationType } from "@/lib/contracts/notification";
-import { getNotifications, markAllNotificationsRead, markNotificationRead } from "@/lib/api/notifications";
+import { getNotifications, markAllNotificationsRead, markNotificationRead } from "@/lib/data/demo/notifications";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { EmptyState } from "@/components/shared/empty-state";

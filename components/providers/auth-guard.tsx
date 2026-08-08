@@ -7,17 +7,7 @@ import { AppRouteLoading } from "@/components/shared/route-loading";
 import { useSession } from "@/components/providers/session-provider";
 
 function isPublicRoute(pathname: string): boolean {
-  if (pathname === "/" || pathname === "/courses" || pathname === "/offline") {
-    return true;
-  }
-  if (pathname === "/judge" || pathname === "/labs" || pathname === "/mentors") {
-    return true;
-  }
-  if (/^\/judge\/[^/]+$/.test(pathname)) return true;
-  if (/^\/labs\/[^/]+$/.test(pathname)) return true;
-  if (/^\/mentors\/[^/]+$/.test(pathname)) return true;
-  if (/^\/rank\/verify\/[^/]+$/.test(pathname)) return true;
-  return /^\/courses\/[^/]+$/.test(pathname);
+  return pathname === "/" || pathname === "/offline";
 }
 
 export function AuthGuard({ children }: { children: React.ReactNode }) {

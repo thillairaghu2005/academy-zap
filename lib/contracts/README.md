@@ -21,4 +21,4 @@ Rules:
 2. Enums/literals (`verdict`, `integrity_status`, `league_tier`, credential
    `status`) are transcribed verbatim and used verbatim in the UI.
 3. When the real backend lands, diff these files against the Pydantic models
-   (build.md §4) before wiring `lib/api` to real endpoints.
+   (build.md §4) before wiring a future production data service.

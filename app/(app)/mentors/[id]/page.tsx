@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
-import { getInstructor } from "@/lib/api/instructors";
+import { getInstructor } from "@/lib/data/demo/instructors";
 import { InstructorCard } from "@/components/courses/instructor-card";
 import { PageContainer } from "@/components/shared/page-container";
 import { buildMetadata } from "@/lib/seo";

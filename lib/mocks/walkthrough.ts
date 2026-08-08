@@ -3,7 +3,7 @@
  *
  * Persisted per user in localStorage. There is no real auth or user_prefs
  * table yet (build.md §3), so this is the mock stand-in for what the real
- * Platform Core would store server-side — flagged provisional in the
+ * A future account service could store this — flagged provisional in the
  * assumption register. Purely a UI flag; never gates anything.
  */
 

@@ -24,8 +24,8 @@ import {
   createCheckout,
   getCart,
   removeFromCart,
-} from "@/lib/api/commerce";
-import { MockApiError } from "@/lib/api/errors";
+} from "@/lib/data/demo/commerce";
+import { MockDataError } from "@/lib/data/demo/errors";
 import { formatMoney } from "@/lib/format";
 import { DEMO_MODE } from "@/lib/config";
 import { CheckoutOutage } from "@/components/commerce/checkout-outage";
@@ -129,7 +129,6 @@ export function CartClient() {
               ? cartQuery.error.message
               : "The cart service is not responding."
           }
-          code="CART_ERR"
           onRetry={() => cartQuery.refetch()}
         />
       </PageContainer>
@@ -309,7 +308,7 @@ export function CartClient() {
               </Button>
 
               {checkoutMutation.isError ?
-                checkoutMutation.error instanceof MockApiError &&
+                checkoutMutation.error instanceof MockDataError &&
                 checkoutMutation.error.code === "checkout_down" ? (
                   /* Simulated outage (Task 4) — dedicated maintenance state */
                   <div className="flex flex-col gap-2">

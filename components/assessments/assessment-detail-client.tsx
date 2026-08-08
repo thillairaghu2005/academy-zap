@@ -23,7 +23,7 @@ import {
 } from "lucide-react";
 
 import type { Assessment, QuestionType } from "@/lib/contracts/assessment";
-import { getAssessment, startAttempt } from "@/lib/api/assessment";
+import { getAssessment, startAttempt } from "@/lib/data/demo/assessment";
 import { useSession } from "@/components/providers/session-provider";
 import { ComboCurveTeaser } from "@/components/assessments/combo-curve-teaser";
 import { AttemptsTracker } from "@/components/assessments/attempts-tracker";
@@ -109,9 +109,8 @@ export function AssessmentDetailClient({
             message={
               err instanceof Error
                 ? err.message
-                : "The assessment backend is not responding."
+                : "The assessment demo data is unavailable."
             }
-            code="ASSESS_ERR"
             onRetry={() => assessmentQuery.refetch()}
           />
         )}

@@ -7,11 +7,9 @@ import {
 import { MOCK_LEARNER } from "@/lib/mocks/users";
 
 /**
- * In-memory mutable store for the mock backend — the stand-in for the
- * Content Engine's Postgres tables. State lives per page-load (browser
- * module instance) and resets on refresh, exactly like any mock backend
- * that isn't persisted. The real swap replaces these reads/writes with
- * fetch calls; nothing in the component layer changes.
+ * In-memory mutable store for the frontend demo. State lives per page-load
+ * (browser module instance) and resets on refresh unless a feature persists
+ * it explicitly.
  */
 
 /** Keyed `${userId}:${courseId}` so one learner can never read another's row. */
@@ -23,7 +21,7 @@ export const mockCompletedLessons = new Map<string, Set<string>>();
 // The demo learner's dashboard shows a spread of enrollment states: one in
 // progress (resume position), one completed, and one fresh (0%). Progress is
 // always derived from the completed-lesson sets below — the `progress_pct`
-// fields in these snapshots are just the last server-side writes.
+// fields in these snapshots are just the last demo-state writes.
 
 mockEnrollments.set(`${MOCK_LEARNER.id}:${MOCK_ENROLLED_COURSE_ID}`, {
   course_id: MOCK_ENROLLED_COURSE_ID,

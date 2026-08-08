@@ -3,7 +3,7 @@
 import { useQuery } from "@tanstack/react-query";
 
 import type { Problem } from "@/lib/contracts/judge";
-import { listProblems } from "@/lib/api/judge";
+import { listProblems } from "@/lib/data/demo/judge";
 import { useSession } from "@/components/providers/session-provider";
 import { PageContainer } from "@/components/shared/page-container";
 import { DataTable, type DataTableColumn } from "@/components/admin/data-table";

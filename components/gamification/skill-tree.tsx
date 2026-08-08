@@ -5,7 +5,7 @@ import { useQuery } from "@tanstack/react-query";
 import * as d3 from "d3";
 import { GitFork } from "lucide-react";
 
-import { getSkillTree } from "@/lib/api/gamification";
+import { getSkillTree } from "@/lib/data/demo/gamification";
 import { useSession } from "@/components/providers/session-provider";
 import { EmptyState } from "@/components/shared/empty-state";
 import { ErrorState } from "@/components/shared/error-state";
@@ -13,7 +13,7 @@ import { SkeletonLines } from "@/components/shared/skeletons";
 
 /* ------------------------------------------------------------------ */
 /*  Skill tree — d3 tree layout over the category-XP projection (§6).  */
-/*  Pure read-projection: only category-level XP feeds it, server-side. */
+/*  Pure read-projection: only category-level XP feeds it. */
 /* ------------------------------------------------------------------ */
 
 interface TreeNodeDatum {

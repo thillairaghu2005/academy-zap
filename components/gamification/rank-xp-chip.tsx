@@ -4,7 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
 import { Trophy } from "lucide-react";
 
-import { getProgressContext } from "@/lib/api/gamification";
+import { getProgressContext } from "@/lib/data/demo/gamification";
 import { useSession } from "@/components/providers/session-provider";
 import { Progress } from "@/components/ui/progress";
 import { Skeleton } from "@/components/ui/skeleton";

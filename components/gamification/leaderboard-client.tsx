@@ -13,7 +13,7 @@ import {
   Trophy,
 } from "lucide-react";
 
-import { getLeaderboard, getMyStanding } from "@/lib/api/gamification";
+import { getLeaderboard, getMyStanding } from "@/lib/data/demo/gamification";
 import type { LeaderboardScope } from "@/lib/contracts/gamification";
 import { useSession } from "@/components/providers/session-provider";
 import { Badge } from "@/components/ui/badge";
@@ -68,7 +68,7 @@ export function LeaderboardClient() {
         </h1>
         <p className="mt-1.5 max-w-xl text-sm leading-relaxed text-muted-foreground">
           Redis sorted-set reads (ZRANGE-shaped). Ranks are derived from the
-          append-only ledger server-side — this page only renders the score
+          append-only demo ledger — this page only renders the score
           you were given.
         </p>
         <div className="mt-4 inline-flex overflow-hidden rounded-lg border border-border">

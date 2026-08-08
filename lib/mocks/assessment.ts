@@ -11,13 +11,13 @@ import { gradeSubmission } from "@/lib/mocks/judge";
 /**
  * Assessment Engine fixtures + in-memory attempt store.
  *
- * Grading is DETERMINISTIC and server-side only (§2.6 — never AI):
+ * Grading is DETERMINISTIC in the demo service (§2.6 — never AI):
  *  - MCQ           → exact match against the stored correct option.
  *  - short_answer  → fuzzy match (normalized) against accepted patterns.
  *  - code          → DELEGATES to the Judge Engine mock (gradeSubmission) —
  *                    the "same engine, one grading truth" law.
  *
- * The combo meter is derived server-side per correct answer and only
+ * The combo meter is derived by the demo service per correct answer and only
  * PREVIEWED by the client (§7.6 of the gamification doc — the client can
  * never turn its own meter into XP).
  *
@@ -219,7 +219,7 @@ export const MOCK_BOOM_ASSESSMENT_ID = "boom";
 /** In-memory attempt store — the mock's `assessment_submissions` table. */
 export const mockAttempts = new Map<string, AssessmentAttempt>();
 
-/** Question answer keys — server-side only (grading reference). */
+/** Question answer keys used by the local grading reference. */
 const ANSWER_KEYS: Record<string, { option?: number; accepted?: string[] }> = {
   "q-mcq-ping": { option: 2 }, // ICMP
   "q-mcq-symmetric": { option: 1 },

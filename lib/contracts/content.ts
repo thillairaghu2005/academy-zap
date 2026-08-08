@@ -139,7 +139,7 @@ export interface CourseSummary {
 
 /**
  * SignedManifest — signed, short-TTL HLS URL (platform §2.3/§4.1).
- * In mock mode `signature` is a deterministic stand-in; the real backend
+ * In mock mode `signature` is a deterministic stand-in; a future integration
  * signs with a server-held key and enforces expiry (a fetch after
  * `expires_at` must 403).
  */

@@ -7,7 +7,7 @@ import { useRouter } from "next/navigation";
 import { History, MessageCircle, ShieldQuestion, WandSparkles } from "lucide-react";
 
 import type { Problem, Verdict } from "@/lib/contracts/judge";
-import { getProblem, getResult, listSubmissions, submit } from "@/lib/api/judge";
+import { getProblem, getResult, listSubmissions, submit } from "@/lib/data/demo/judge";
 import { DEMO_MODE } from "@/lib/config";
 import { useSession } from "@/components/providers/session-provider";
 import { IDE, type IDEExecution } from "@/components/ide/IDE";
@@ -149,7 +149,7 @@ export function ProblemDetailClient({
   if (problemQuery.isError || !problemQuery.data) {
     const error = problemQuery.error;
     const is404 = error instanceof Error && "status" in error && (error as { status: number }).status === 404;
-    return <PageContainer>{is404 ? <EmptyState icon={ShieldQuestion} title="Problem not found" description={`No problem exists with the id "${problemId}". It may have been removed or the URL is wrong.`} /> : <ErrorState title="Problem unavailable" message={error instanceof Error ? error.message : "The judge backend is not responding."} code="JUDGE_ERR" onRetry={() => problemQuery.refetch()} />}</PageContainer>;
+    return <PageContainer>{is404 ? <EmptyState icon={ShieldQuestion} title="Problem not found" description={`No problem exists with the id "${problemId}". It may have been removed or the URL is wrong.`} /> : <ErrorState title="Problem unavailable" message={error instanceof Error ? error.message : "The judge demo data is unavailable."} code="JUDGE_ERR" onRetry={() => problemQuery.refetch()} />}</PageContainer>;
   }
 
   const problem = problemQuery.data;

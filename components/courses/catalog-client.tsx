@@ -30,8 +30,8 @@ import type {
   MeilisearchCatalogResponse,
 } from "@/lib/contracts/content";
 import type { CatalogProduct } from "@/lib/contracts/commerce";
-import { searchCatalog } from "@/lib/api/content";
-import { listCatalogProducts } from "@/lib/api/commerce";
+import { searchCatalog } from "@/lib/data/demo/content";
+import { listCatalogProducts } from "@/lib/data/demo/commerce";
 import { DEMO_MODE } from "@/lib/config";
 import { AddToCartButton } from "@/components/commerce/add-to-cart-button";
 import { BuyNowButton } from "@/components/commerce/buy-now-button";
@@ -717,7 +717,7 @@ export function CatalogClient({
           ) : isError ? (
             <ErrorState
               title="Search unavailable"
-              message={error instanceof Error ? error.message : "The catalog search backend is not responding."}
+               message={error instanceof Error ? error.message : "The catalog demo data is unavailable."}
               code="SEARCH_ERR"
               onRetry={() => refetch()}
             />

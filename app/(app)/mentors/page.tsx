@@ -5,7 +5,7 @@ import { InstructorCard } from "@/components/courses/instructor-card";
 import { EmptyState } from "@/components/shared/empty-state";
 import { PageContainer } from "@/components/shared/page-container";
 import { Breadcrumbs } from "@/components/seo/breadcrumbs";
-import { listInstructors } from "@/lib/api/instructors";
+import { listInstructors } from "@/lib/data/demo/instructors";
 
 export const metadata: Metadata = {
   title: "Mentors",

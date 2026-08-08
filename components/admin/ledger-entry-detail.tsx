@@ -9,7 +9,7 @@ import {
 } from "lucide-react";
 
 import type { IntegrityStatus } from "@/lib/contracts/gamification";
-import { getLedgerEntryDetail } from "@/lib/api/gamification";
+import { getLedgerEntryDetail } from "@/lib/data/demo/gamification";
 import { SkeletonLines } from "@/components/shared/skeletons";
 import { ErrorState } from "@/components/shared/error-state";
 import { cn } from "@/lib/utils";
@@ -22,7 +22,7 @@ const INTEGRITY_STYLES: Record<IntegrityStatus, string> = {
 
 /**
  * The expandable row of the audit log (Task 3): the ledger entry linked to
- * an XP-affecting audit event — amount, server-derived balance before/after,
+ * an XP-affecting audit event — amount, demo-service balance before/after,
  * reason code, integrity. Fetched via getLedgerEntryDetail; the balance is
  * NEVER recomputed client-side (build.md §3).
  */

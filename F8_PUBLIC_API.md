@@ -26,8 +26,9 @@ The B9 service must add:
 - Event replay without duplicate side effects.
 - No browser-side webhook secrets or direct provider callbacks.
 
-The frontend will consume the documented read API through `lib/api/*` after the
-Platform Core gateway and event bus are available.
+The current frontend uses `lib/data/demo/` and local mock data. A future
+backend integration can add a production data service behind those module
+boundaries without changing the UI contracts.
 
 ## Offline Scope
 

@@ -9,11 +9,11 @@ import type { SessionUser } from "@/lib/contracts/session";
  */
 
 export const MOCK_LEARNER: SessionUser = {
-  id: "4c1e0a9f-8c6e-4b2d-9f3a-2b8d1e5c7a91",
-  display_name: "Aarav Mehta",
-  email: "aarav@zapsters.dev",
+  id: "demo-user-001",
+  display_name: "Raghunandhan",
+  email: "demo@zapsters.dev",
   avatar_url: null,
-  role: "learner",
+  role: "student",
   org_id: null,
 };
 
@@ -30,7 +30,7 @@ export const MOCK_ADMIN: SessionUser = {
  * Mock reviewer identities for the F7 two-person review flow. With no real
  * auth yet, the "different reviewer" rule needs a picker of fake admins —
  * this is that pool (build.md F7: mirror the rule even before it's
- * enforced server-side). The submitted_by of seeded in-review courses
+ * enforced by the demo service). The submitted_by of seeded in-review courses
  * points at one of these so the rule is actually exercisable.
  */
 export const MOCK_REVIEWERS: SessionUser[] = [

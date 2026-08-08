@@ -15,7 +15,7 @@ import {
 } from "lucide-react";
 
 import type { UnifiedSearchHit } from "@/lib/contracts/search";
-import { searchAll } from "@/lib/api/search";
+import { searchAll } from "@/lib/data/demo/search";
 import { useDebouncedValue } from "@/lib/hooks/use-debounced-value";
 import { Button } from "@/components/ui/button";
 import {

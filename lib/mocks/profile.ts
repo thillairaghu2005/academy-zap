@@ -3,8 +3,8 @@ import { MOCK_DEMO_USER_ID } from "@/lib/mocks/gamification";
 
 export const MOCK_PROFILE: Profile = {
   user_id: MOCK_DEMO_USER_ID,
-  display_name: "Aarav Mehta",
-  email: "aarav@zapsters.dev",
+  display_name: "Raghunandhan",
+  email: "demo@zapsters.dev",
   avatar_url: null,
   bio: "Detection engineer building practical security automation and reliable data layers.",
   skill_tags: ["Python", "Threat detection", "Linux", "TypeScript"],

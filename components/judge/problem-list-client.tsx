@@ -31,8 +31,8 @@ import {
 import type { LucideIcon } from "lucide-react";
 
 import type { Problem, ProblemDifficulty } from "@/lib/contracts/judge";
-import { listProblems, listSolvedProblemIds } from "@/lib/api/judge";
-import { getProgressContext } from "@/lib/api/gamification";
+import { listProblems, listSolvedProblemIds } from "@/lib/data/demo/judge";
+import { getProgressContext } from "@/lib/data/demo/gamification";
 import { DEMO_MODE } from "@/lib/config";
 import { useSession } from "@/components/providers/session-provider";
 import { Button } from "@/components/ui/button";
@@ -494,7 +494,7 @@ export function ProblemListClient() {
         {problemsLoading ? (
           <div className="md:col-span-2"><SkeletonProblemRows count={6} /></div>
         ) : isError ? (
-          <div className="md:col-span-2"><ErrorState title="Judge unavailable" message={error instanceof Error ? error.message : "The judge backend is not responding."} code="JUDGE_ERR" onRetry={() => refetch()} /></div>
+          <div className="md:col-span-2"><ErrorState title="Judge unavailable" message={error instanceof Error ? error.message : "The judge demo data is unavailable."} code="JUDGE_ERR" onRetry={() => refetch()} /></div>
         ) : filtered.length === 0 ? (
           <div className="md:col-span-2">
             <EmptyState icon={CheckCircle2} title={status === "solved" ? "No solved Judge problems" : "No problems match these filters"} description={status === "solved" ? "Solve your first challenge and your accepted submissions will collect here." : "Try widening your search or resetting the filters."} primaryAction={<Button variant="gradient" size="sm" onClick={resetFilters}>Browse all problems</Button>} secondaryAction={<Button variant="outline" size="sm" asChild><Link href="/courses">Learn the fundamentals</Link></Button>} />

@@ -14,7 +14,7 @@ import {
  * Guacamole GUI viewer stub (build.md F3, platform §2.5).
  *
  * The real Lab Engine serves desktop sessions through Apache Guacamole
- * (RDP/VNC over WebSocket). The backend doesn't exist yet, so this renders
+ * (RDP/VNC over WebSocket). The frontend demo renders
  * the viewer chrome — connection bar, stream surface, status states — with a
  * scripted mock desktop behind it. Swapping in the real Guacamole client is
  * a component-body change; the chrome stays.
@@ -106,7 +106,7 @@ export function GuacamoleStub({ sessionId }: { sessionId: string }) {
                 ))}
               </div>
               <p className="text-center text-caption text-muted-foreground/50">
-                GUI stream is a mock — real RDP/VNC lands with the backend.
+                GUI stream is a mock; no remote desktop is provisioned.
               </p>
             </div>
           </div>

@@ -15,7 +15,7 @@ import {
 } from "lucide-react";
 
 import type { LedgerAuditView } from "@/lib/contracts/gamification";
-import { getLedgerAudit } from "@/lib/api/gamification";
+import { getLedgerAudit } from "@/lib/data/demo/gamification";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,

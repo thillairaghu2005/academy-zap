@@ -1,6 +1,6 @@
 /**
  * Display-only date formatting for the admin surfaces (F7). Presentation
- * only — timestamps always come from the mock API.
+ * only — timestamps always come from the local demo data.
  */
 
 export function formatDate(iso: string): string {

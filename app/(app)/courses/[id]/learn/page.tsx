@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
-import { getCourse } from "@/lib/server/domains/content";
-import { MockApiError } from "@/lib/api/errors";
+import { getCourse } from "@/lib/data/demo/content";
+import { MockDataError } from "@/lib/data/demo/errors";
 import { PlayerClient } from "@/components/courses/player-client";
 
 interface LearnPageProps {
@@ -21,7 +21,7 @@ export default async function LearnPage({ params }: LearnPageProps) {
   try {
     course = await getCourse(id);
   } catch (err) {
-    if (err instanceof MockApiError && err.status === 404) notFound();
+    if (err instanceof MockDataError && err.status === 404) notFound();
     throw err;
   }
 

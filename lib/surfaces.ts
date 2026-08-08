@@ -61,7 +61,7 @@ export const surfaces: SurfaceMeta[] = [
       "Per-lesson progress feeding mock enrollments state",
     ],
     notBuiltYet: [
-      "Real video streaming / signed-URL serving (Content backend deferred)",
+      "Real video streaming and signed-URL serving are outside the frontend demo",
       "Full catalog search indexing",
     ],
   },
@@ -79,13 +79,13 @@ export const surfaces: SurfaceMeta[] = [
       "Solve problems in the Monaco editor, submit, and get deterministic verdicts from the mock judge API.",
     planned: [
       "Problem list + detail (statement, constraints, starter code)",
-      "Monaco editor pane — Python only, per the backend Phase-1 slice",
+      "Monaco editor pane with a frontend-only Python simulation",
       "Submit flow: 202 + submission_id → poll → JudgeResult",
       "All five verdict states styled distinctly, literals verbatim",
       "Per-problem submission history (mock table read)",
     ],
     notBuiltYet: [
-      "Real gVisor sandbox execution (Judge backend deferred)",
+      "Real sandbox execution is outside the frontend demo",
       "Multi-language picker ahead of the real language slice",
       "Leaderboard impact of verdicts — arrives with F5 events",
     ],
@@ -101,7 +101,7 @@ export const surfaces: SurfaceMeta[] = [
     accent: "from-emerald-400 to-teal-500",
     tagline: "TryHackMe-shaped virtual labs",
     description:
-      "Provision an isolated sandbox, drive a real xterm.js terminal over the mock WebSocket bridge, and verify objectives server-side.",
+      "Drive a simulated xterm.js terminal and verify objectives with local demo state.",
     planned: [
       "Lab catalog + detail (objectives, difficulty, estimated time)",
       "Start-Lab provisioning flow with loading states",
@@ -110,7 +110,7 @@ export const surfaces: SurfaceMeta[] = [
       "Guacamole GUI viewer stub for GUI-required labs",
     ],
     notBuiltYet: [
-      "Real Firecracker microVMs / ttyd bridge (Lab backend deferred)",
+      "Real Firecracker microVMs and ttyd are outside the frontend demo",
       "Guacamole GUI stream (container UI stubbed only)",
     ],
   },
@@ -125,7 +125,7 @@ export const surfaces: SurfaceMeta[] = [
     accent: "from-amber-400 to-orange-500",
     tagline: "MCQ, short-answer & code questions",
     description:
-      "Timed MCQ / short-answer / code flow with server-side grading, a live combo meter, and anti-cheat telemetry capture.",
+      "Timed MCQ, short-answer, and code flow with deterministic demo grading, a live combo meter, and telemetry capture.",
     planned: [
       "MCQ / short-answer / code-question flow (code reuses the F2 Monaco pane)",
       "Timer, attempt tracking, submit confirmation",
@@ -133,7 +133,7 @@ export const surfaces: SurfaceMeta[] = [
       "Anti-cheat telemetry hooks (tab-visibility, paste) logging to console",
     ],
     notBuiltYet: [
-      "Real grading (Assessment backend deferred)",
+      "Real grading is outside the frontend demo",
       "LLM-graded anything — scoring stays deterministic by design",
     ],
   },
@@ -158,7 +158,7 @@ export const surfaces: SurfaceMeta[] = [
     ],
     notBuiltYet: [
       "Any client-side XP/rank math — every number comes from the mock gamification API",
-      "Real ledger hash-chain verification (Gamification backend deferred)",
+      "Ledger hash-chain verification is simulated locally",
     ],
   },
   {
@@ -179,7 +179,7 @@ export const surfaces: SurfaceMeta[] = [
       "Season/league standing: tier badge (bronze → obsidian), promotion/relegation zones (on /rank)",
     ],
     notBuiltYet: [
-      "Live SSE ticks (leaderboard backend deferred)",
+      "Live leaderboard ticks are outside the frontend demo",
       "Real Redis sorted-set reads",
     ],
   },
@@ -201,7 +201,7 @@ export const surfaces: SurfaceMeta[] = [
       "Skill tree visualization (d3 tree) over category XP",
     ],
     notBuiltYet: [
-      "Guild CRUD / invites (Gamification backend deferred)",
+      "Guild CRUD and invites are outside the frontend demo",
     ],
   },
   {
@@ -225,7 +225,7 @@ export const surfaces: SurfaceMeta[] = [
     ],
     notBuiltYet: [
       "Custom card-number input of any kind — PCI scope stays with the providers",
-      "Real payment capture / provider webhooks (Commerce backend deferred)",
+      "Real payment capture and provider webhooks are outside the frontend demo",
       "Seat provisioning, invites, reassignment (docs leave open)",
     ],
   },
@@ -274,7 +274,7 @@ export const surfaces: SurfaceMeta[] = [
       "Ticket threads: reply, reopen-on-reply, closed disabled state, not-found isolation",
       "Admin queue (shared DataTable) with status / priority / category filters",
       "Agent detail: assignee picker, workflow transition buttons, internal notes + replies",
-      "Status machine enforced server-side (409 invalid_transition) + audit-logged admin actions",
+      "Status machine enforced by local demo data + audit-logged admin actions",
     ],
     notBuiltYet: [
       "Real support platform integration — this surface is beyond build.md's F0–F7 plan (see register)",

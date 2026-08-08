@@ -62,7 +62,7 @@ export interface JudgeResult {
   /** Compiler diagnostics for compile_error verdicts. */
   compile_output: string | null;
   /**
-   * Per-case evidence when the judge backend exposes it. Production rollout
+   * Per-case evidence exposed by the demo judge service. Production rollout
    * still needs the grader/API to populate this optional field.
    */
   cases?: Array<{

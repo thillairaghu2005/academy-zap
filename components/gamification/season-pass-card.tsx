@@ -5,7 +5,7 @@ import { useQuery } from "@tanstack/react-query";
 import { motion } from "framer-motion";
 import { Crown, Gem, Gift, Lock, Ticket } from "lucide-react";
 
-import { getSeasonPass } from "@/lib/api/gamification";
+import { getSeasonPass } from "@/lib/data/demo/gamification";
 import { useSession } from "@/components/providers/session-provider";
 import { Badge } from "@/components/ui/badge";
 import { SkeletonLines } from "@/components/shared/skeletons";

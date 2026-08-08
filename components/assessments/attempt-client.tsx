@@ -40,7 +40,7 @@ import {
   reportTelemetry,
   submitAnswer,
   submitAssessment,
-} from "@/lib/api/assessment";
+} from "@/lib/data/demo/assessment";
 import { useSession } from "@/components/providers/session-provider";
 import { EditorShell } from "@/components/judge/editor-shell";
 import { ComboMeter } from "@/components/assessments/combo-meter";
@@ -62,7 +62,7 @@ import { cn } from "@/lib/utils";
 /*                                                                     */
 /*  Anti-cheat: tab-visibility + paste events captured on mount and    */
 /*  pushed to reportTelemetry() (console-logged in mock; Integrity     */
-/*  Gate later). Timer expiry is enforced server-side in getAttempt.   */
+/*  Gate later). Timer expiry is enforced in the demo service.          */
 /* ------------------------------------------------------------------ */
 
 const COMBO_POLL_MS = 2000;
@@ -206,7 +206,7 @@ export function AssessmentAttemptClient({
 
   // Timer tick — Date.now() must not run during render (purity rule). The
   // tick also refreshes the attempt when the countdown crosses zero so the
-  // server-side expiry transition surfaces as the "Time's up" state.
+      // The demo-service expiry transition surfaces as the "Time's up" state.
   const [nowMs, setNowMs] = React.useState(() => Date.now());
   React.useEffect(() => {
     const timer = window.setInterval(() => setNowMs(Date.now()), 1000);
@@ -306,7 +306,7 @@ export function AssessmentAttemptClient({
       setLastResult(result);
       setCombo(result.combo);
       setDraft(null);
-      // CRITICAL: re-read the attempt server-side so answers/score/counter
+      // CRITICAL: re-read the attempt from the demo service so answers/score/counter
       // refresh — otherwise the answered counter stays stale and the final
       // submit gate never opens.
       refreshAttempt();
@@ -364,7 +364,6 @@ export function AssessmentAttemptClient({
         <ErrorState
           title="Assessment unavailable"
           message="The assessment definition could not be loaded."
-          code="ASSESS_ERR"
           onRetry={() => assessmentQuery.refetch()}
         />
       </PageContainer>
@@ -706,7 +705,7 @@ export function AssessmentAttemptClient({
                   className="mt-4 flex items-center justify-between"
                 >
                   <p className="text-caption text-muted-foreground">
-                    {lastResult ? "" : "Your answer is graded deterministically, server-side."}
+                    {lastResult ? "" : "Your answer is graded deterministically by the demo service."}
                   </p>
                   <Button
                     onClick={handleSubmitAnswer}

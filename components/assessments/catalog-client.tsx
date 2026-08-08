@@ -15,7 +15,7 @@ import {
 } from "lucide-react";
 
 import type { Assessment, QuestionType } from "@/lib/contracts/assessment";
-import { listAssessments } from "@/lib/api/assessment";
+import { listAssessments } from "@/lib/data/demo/assessment";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { PageContainer } from "@/components/shared/page-container";
@@ -139,9 +139,8 @@ export function AssessmentCatalogClient() {
             message={
               error instanceof Error
                 ? error.message
-                : "The assessment backend is not responding."
+                : "The assessment demo data is unavailable."
             }
-            code="ASSESS_ERR"
             onRetry={() => refetch()}
           />
         ) : data && data.length === 0 ? (

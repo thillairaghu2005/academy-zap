@@ -30,7 +30,7 @@ import {
   getSession,
   requestHint,
   terminateSession,
-} from "@/lib/api/lab";
+} from "@/lib/data/demo/lab";
 import { useSession } from "@/components/providers/session-provider";
 import { LabTerminalShell } from "@/components/lab/terminal-shell";
 import { GuacamoleStub } from "@/components/lab/guacamole-stub";
@@ -48,7 +48,7 @@ import { cn } from "@/lib/utils";
 /*                                                                     */
 /*  Session lifecycle mirrors §6: provision → run → hard timeout (or    */
 /*  terminate / complete). The CLIENT never decides status transitions — */
-/*  getSession() enforces the hard timeout server-side (mock store)     */
+/*  getSession() enforces the hard timeout in the local mock store       */
 /*  and the view renders what the API returns.                          */
 /* ------------------------------------------------------------------ */
 
@@ -168,7 +168,7 @@ function ObjectivesPanel({
 
       <p className="text-caption leading-relaxed text-muted-foreground/80">
         Terminal objectives verify automatically when the flag is found
-        (server-side). GUI objectives use the Check button.
+        (demo-service). GUI objectives use the Check button.
       </p>
     </Card>
   );
@@ -229,7 +229,7 @@ function SessionEnded({
           {isCompleted
             ? "All objectives verified against the live session. The sandbox is being destroyed."
             : kind === "timed_out"
-              ? "The session hit its hard timeout and was force-terminated. Any progress not verified server-side is gone — that's by design."
+              ? "The session hit its hard timeout and was force-terminated. Any progress not verified by the demo service is gone — that's by design."
               : "The session was ended early. The sandbox and its state have been torn down."}
         </p>
       </div>
@@ -287,7 +287,7 @@ export function LabSessionClient({
   const sessionQuery = useQuery({
     queryKey: ["lab-session", sessionId],
     queryFn: () => getSession(sessionId),
-    // Keep polling while the session is live so server-side transitions
+    // Keep polling while the session is live so demo-service transitions
     // (running → completed / timed_out) surface in the UI.
     refetchInterval: (query) => {
       const s = query.state.data;
@@ -364,7 +364,7 @@ export function LabSessionClient({
   });
 
   // Refresh the session when the terminal reports a command (flag found → the
-  // server store updated → re-read it server-side).
+  // demo store updated, so re-read it from the demo service.
   const handleTerminalCommand = React.useCallback(() => {
     void queryClient.invalidateQueries({
       queryKey: ["lab-session", sessionId],
@@ -596,7 +596,7 @@ export function LabSessionClient({
                   <code className="rounded bg-muted px-1">help</code>,{" "}
                   <code className="rounded bg-muted px-1">ls /root</code>,{" "}
                   <code className="rounded bg-muted px-1">cat /root/flag.txt</code>{" "}
-                  to capture flags — objective state is derived server-side.
+                   to capture flags — objective state is derived by the demo service.
                 </p>
                 <Button
                   variant="outline"
@@ -628,7 +628,7 @@ export function LabSessionClient({
               />
             ) : null}
 
-            {/* Latest server-side check feedback */}
+            {/* Latest demo-service check feedback */}
             {Object.keys(checkResults).length > 0 ? (
               <div className="flex flex-col gap-2">
                 {Object.values(checkResults).map((result) => (

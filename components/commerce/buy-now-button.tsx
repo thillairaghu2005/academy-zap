@@ -7,8 +7,8 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { LoaderCircle, Zap } from "lucide-react";
 
-import { buyNow, getCatalogProduct } from "@/lib/api/commerce";
-import { MockApiError } from "@/lib/api/errors";
+import { buyNow, getCatalogProduct } from "@/lib/data/demo/commerce";
+import { MockDataError } from "@/lib/data/demo/errors";
 import { useSession } from "@/components/providers/session-provider";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -62,7 +62,7 @@ export function BuyNowButton({
       router.push(`/checkout/${session.checkout_id}`);
     },
     onError: (error: Error) => {
-      if (error instanceof MockApiError && error.code === "checkout_down") {
+      if (error instanceof MockDataError && error.code === "checkout_down") {
         setOutage(true);
         return;
       }

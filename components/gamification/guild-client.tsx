@@ -7,7 +7,7 @@ import Link from "next/link";
 import { ArrowUpRight, Crown, Shield, Swords, Trophy, Users } from "lucide-react";
 
 import type { GuildVsGuild } from "@/lib/contracts/gamification";
-import { getGuildBoard, getGuildVsGuild } from "@/lib/api/gamification";
+import { getGuildBoard, getGuildVsGuild } from "@/lib/data/demo/gamification";
 import { useSession } from "@/components/providers/session-provider";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";

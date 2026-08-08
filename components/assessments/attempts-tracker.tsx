@@ -11,7 +11,7 @@ import {
   TimerReset,
 } from "lucide-react";
 
-import { listAttemptsForAssessment } from "@/lib/api/assessment";
+import { listAttemptsForAssessment } from "@/lib/data/demo/assessment";
 import { useSession } from "@/components/providers/session-provider";
 import { Badge } from "@/components/ui/badge";
 import { SkeletonLines } from "@/components/shared/skeletons";
@@ -19,7 +19,7 @@ import { cn } from "@/lib/utils";
 
 /* ------------------------------------------------------------------ */
 /*  Attempts tracker — reads the mock attempt store per assessment +   */
-/*  user (server-side table read) and shows used/remaining + results.  */
+/*  user and shows used/remaining + results.                            */
 /* ------------------------------------------------------------------ */
 
 const STATUS_LABEL: Record<string, string> = {
@@ -143,7 +143,7 @@ export function AttemptsTracker({
             {exhausted ? (
               <p className="flex items-center gap-1.5 font-medium text-rose-700">
                 <AlertTriangle className="size-3.5" />
-                Attempts used up — further attempts are blocked server-side.
+                Attempts used up — further attempts are blocked by the demo service.
               </p>
             ) : lastPassed ? (
               <p className="flex items-center gap-1.5 font-medium text-emerald-700">

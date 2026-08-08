@@ -9,7 +9,7 @@ import {
   TriangleAlert,
 } from "lucide-react";
 
-import { reconcileLedgerBalance } from "@/lib/api/gamification";
+import { reconcileLedgerBalance } from "@/lib/data/demo/gamification";
 import { MOCK_ADMIN_USERS } from "@/lib/mocks/admin";
 import { useSession } from "@/components/providers/session-provider";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -63,7 +63,7 @@ export function ReconciliationPanel() {
         <p className="text-sm text-muted-foreground">
           Sums a user&apos;s ledger entries and flags a mismatch against the
           cached balance in their ProgressContext. The verdict is computed
-          server-side — this view never re-derives a balance.
+          in the demo service — this view never re-derives a balance.
         </p>
 
         <div className="flex flex-col gap-1.5 sm:max-w-xs">

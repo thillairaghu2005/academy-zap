@@ -5,7 +5,7 @@
  *  - LabEngine Protocol (§4.1): provision_session(lab_id, user_id) ->
  *    LabSession; terminate_session(session_id); check_objective(session_id,
  *    objective_id) -> ObjectiveResult. Objective verification is ALWAYS
- *    server-side — a scoped read against the session's real state, never a
+ *    by the demo service — a scoped read against the session's state, never a
  *    value the browser claims (§6 "why objective-checking never trusts
  *    client input").
  *  - LabSessionCompletedEvent (§4.3): lab_id, session_id,
@@ -37,7 +37,7 @@ export type LabSessionStatus =
 
 /**
  * One objective from the lab manifest (e.g. "find flag in /root/flag.txt").
- * Completion is derived server-side — see LabEngine.check_objective.
+ * Completion is derived by the demo service — see checkObjective.
  */
 export interface LabObjective {
   id: string;
@@ -67,7 +67,7 @@ export interface Lab {
   objectives: LabObjective[];
 }
 
-/** Result of a server-side objective check (never derived client-side). */
+/** Result of a demo-service objective check (never derived client-side). */
 export interface ObjectiveResult {
   objective_id: string;
   completed: boolean;
@@ -89,7 +89,7 @@ export interface LabSession {
   /** Objective check history, newest first. */
   checks: ObjectiveResult[];
   hints_used: number;
-  /** Informational — the real ttyd WS endpoint lands with the backend. */
+/** Informational — the terminal URL is a frontend simulation value. */
   terminal_url: string;
   /** Set when the session ends (completion / timeout / terminate). */
   ended_at: string | null;
@@ -105,7 +105,7 @@ export interface LabPreviewSession {
   read_only: true;
 }
 
-/** Mirrors LabSessionCompletedEvent (§4.3) — emitted via the mock API. */
+/** Mirrors LabSessionCompletedEvent (§4.3) — emitted by the demo service. */
 export interface LabSessionCompletedEvent {
   event_type: "lab.session_completed";
   lab_id: string;

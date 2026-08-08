@@ -26,7 +26,7 @@ import {
   getProgressContext,
   getRankLadder,
   getStreak,
-} from "@/lib/api/gamification";
+} from "@/lib/data/demo/gamification";
 import { DEMO_MODE } from "@/lib/config";
 import { useSession } from "@/components/providers/session-provider";
 import { Badge } from "@/components/ui/badge";
@@ -41,12 +41,12 @@ import { cn } from "@/lib/utils";
 
 /* ------------------------------------------------------------------ */
 /*  Rank hub — the ProgressContext surface. Every number is derived    */
-/*  server-side (lib/api/gamification → mock ledger); the client only  */
+/*  derived by the local demo data service; the client only renders it.     */
 /*  renders what the context exposes (§5.1 "one frozen object").       */
 /* ------------------------------------------------------------------ */
 
 const DEMO_USERS = [
-  { id: "4c1e0a9f-8c6e-4b2d-9f3a-2b8d1e5c7a91", label: "Live" },
+  { id: "demo-user-001", label: "Live" },
   { id: "frozen-demo", label: "Frozen" },
   { id: "boom", label: "Error" },
   { id: "missing-user", label: "Empty" },
@@ -63,7 +63,7 @@ const LEAGUE_TIER_STYLE: Record<string, string> = {
 export function RankHubClient() {
   const { user } = useSession();
   const router = useRouter();
-  const [demoUser, setDemoUser] = React.useState<string>(user?.id ?? "4c1e0a9f-8c6e-4b2d-9f3a-2b8d1e5c7a91");
+  const [demoUser, setDemoUser] = React.useState<string>(user?.id ?? "demo-user-001");
   const [shareOpen, setShareOpen] = React.useState(false);
   const [ledgerOpen, setLedgerOpen] = React.useState(false);
 
@@ -305,12 +305,12 @@ export function RankHubClient() {
       <ShareCardModal
         open={shareOpen}
         onOpenChange={setShareOpen}
-        userId={demoUser === "boom" || demoUser === "missing-user" ? "4c1e0a9f-8c6e-4b2d-9f3a-2b8d1e5c7a91" : demoUser}
+        userId={demoUser === "boom" || demoUser === "missing-user" ? "demo-user-001" : demoUser}
       />
       <LedgerViewer
         open={ledgerOpen}
         onOpenChange={setLedgerOpen}
-        userId={demoUser === "boom" || demoUser === "missing-user" ? "4c1e0a9f-8c6e-4b2d-9f3a-2b8d1e5c7a91" : demoUser}
+        userId={demoUser === "boom" || demoUser === "missing-user" ? "demo-user-001" : demoUser}
       />
     </PageContainer>
   );
@@ -327,7 +327,7 @@ function DualXpTracks({
   completion: number;
   mastery: number;
 }) {
-  // Bars are visual only — the weighted rank was derived server-side.
+  // Bars are visual only; the weighted rank comes from the demo service.
   const total = completion + mastery || 1;
   const cPct = (completion / total) * 100;
   const mPct = (mastery / total) * 100;

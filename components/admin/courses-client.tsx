@@ -18,7 +18,7 @@ import {
   deleteCourse,
   listCoursesAdmin,
   submitCourseForReview,
-} from "@/lib/api/admin";
+} from "@/lib/data/demo/admin";
 import { useSession } from "@/components/providers/session-provider";
 import { Button } from "@/components/ui/button";
 import { PageContainer } from "@/components/shared/page-container";

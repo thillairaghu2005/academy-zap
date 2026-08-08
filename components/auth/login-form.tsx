@@ -27,8 +27,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Logo } from "@/src/components/Logo/Logo";
 import { useSession } from "@/components/providers/session-provider";
-import { authErrorMessage } from "@/lib/api/auth";
-import { DEMO_MODE } from "@/lib/config";
+import { authErrorMessage, DEMO_CREDENTIALS } from "@/src/lib/demoAuth";
 
 const loginSchema = z.object({
   email: z
@@ -78,13 +77,16 @@ export function safeNext(next: string | undefined): string {
 
 export function LoginForm({ next }: { next?: string }) {
   const router = useRouter();
-  const { login, loginDemo, session, isLoading } = useSession();
+  const { login, session, isLoading } = useSession();
   const [pending, setPending] = React.useState(false);
   const [showPassword, setShowPassword] = React.useState(false);
 
   const form = useForm<LoginValues>({
     resolver: zodResolver(loginSchema),
-    defaultValues: { email: "", password: "" },
+    defaultValues: {
+      email: DEMO_CREDENTIALS.email,
+      password: DEMO_CREDENTIALS.password,
+    },
   });
 
   // Already signed in? Straight back to where they were headed.
@@ -108,18 +110,10 @@ export function LoginForm({ next }: { next?: string }) {
     }
   };
 
-  const onDemo = async () => {
-    setPending(true);
-    try {
-      await loginDemo();
-      router.replace(safeNext(next));
-    } catch (err) {
-      form.setError("password", {
-        message: authErrorMessage(err, "Sign in failed. Please try again later."),
-      });
-    } finally {
-      setPending(false);
-    }
+  const useDemoAccount = () => {
+    form.setValue("email", DEMO_CREDENTIALS.email, { shouldValidate: true });
+    form.setValue("password", DEMO_CREDENTIALS.password, { shouldValidate: true });
+    form.clearErrors();
   };
 
   return (
@@ -190,6 +184,28 @@ export function LoginForm({ next }: { next?: string }) {
                 </FormItem>
               )}
             />
+            <div className="rounded-lg border border-border bg-secondary/50 p-3.5">
+              <p className="flex items-start gap-2 text-xs leading-relaxed text-muted-foreground">
+                <Sparkles className="mt-0.5 size-3.5 shrink-0 text-warning-strong" />
+                <span>
+                  <span className="font-medium text-foreground">Demo account</span>
+                  <br />
+                  {DEMO_CREDENTIALS.email}
+                  <br />
+                  {DEMO_CREDENTIALS.password}
+                </span>
+              </p>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                className="mt-3"
+                onClick={useDemoAccount}
+                disabled={pending}
+              >
+                Use Demo Account
+              </Button>
+            </div>
             <Button type="submit" variant="gradient" className="mt-1 h-10 w-full" disabled={pending}>
               {pending && <LoaderCircle className="animate-spin" />}
               {pending ? "Signing in…" : "Sign in"}
@@ -204,36 +220,6 @@ export function LoginForm({ next }: { next?: string }) {
           </Link>
         </p>
 
-        {DEMO_MODE && (
-          <div className="mt-6 rounded-lg border border-border bg-secondary/50 p-3.5">
-            <p className="flex items-start gap-2 text-xs leading-relaxed text-muted-foreground">
-              <Sparkles className="mt-0.5 size-3.5 shrink-0 text-warning-strong" />
-              <span>
-                <span className="font-medium text-foreground">Development demo.</span>{" "}
-                Explore every surface as a sample learner. No password is needed.
-              </span>
-            </p>
-            <div className="mt-2.5 flex flex-wrap gap-2">
-              <Button
-                type="button"
-                variant="gradient"
-                size="sm"
-                onClick={onDemo}
-                disabled={pending}
-              >
-                {pending ? "Signing in…" : "Continue as demo learner"}
-              </Button>
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                onClick={() => form.setValue("email", "error@zapsters.dev")}
-              >
-                Error demo
-              </Button>
-            </div>
-          </div>
-        )}
       </CardContent>
     </Card>
   );

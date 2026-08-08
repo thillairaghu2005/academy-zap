@@ -11,13 +11,12 @@ import type {
   SessionUser,
 } from "@/lib/contracts/session";
 import {
-  getSession,
-  login as apiLogin,
-  loginDemo as apiLoginDemo,
-  logout as apiLogout,
-  register as apiRegister,
-} from "@/lib/api/auth";
-import { MOCK_SESSION_STORAGE_KEY } from "@/lib/auth";
+  authenticateDemoUser,
+  clearDemoSession,
+  DEMO_SESSION_STORAGE_KEY,
+  getDemoSession,
+  registerDemo,
+} from "@/src/lib/demoAuth";
 
 const SESSION_KEY = ["session"] as const;
 
@@ -28,12 +27,10 @@ interface SessionContextValue {
   user: SessionUser | null;
   /**
    * Role-derived demo check. This is frontend-only and is not a security
-   * boundary; real authorization requires server-side authentication.
+    * boundary; it only controls the demo UI.
    */
   isAdmin: boolean;
   login: (input: LoginInput) => Promise<void>;
-  /** One-click sign-in using the primary public demo account. */
-  loginDemo: () => Promise<void>;
   register: (input: RegisterInput) => Promise<void>;
   logout: () => Promise<void>;
 }
@@ -41,19 +38,14 @@ interface SessionContextValue {
 const SessionContext = React.createContext<SessionContextValue | null>(null);
 
 /**
- * Session provider (build.md F0). Backed by the auth client through
- * TanStack Query so the swap to real Platform Core auth (build.md §4) is a
- * queryFn replacement, not a component rewrite.
- *
- * The session is a client-only demo record in localStorage. The provider
- * keeps the same component-facing API so a real auth adapter can replace it
- * later without changing the application shell.
+ * The session is a client-only demo record in localStorage. This provider is
+ * the single source of truth for the current user and auth state.
  */
 export function SessionProvider({ children }: { children: React.ReactNode }) {
   const queryClient = useQueryClient();
   const { data: session, isLoading } = useQuery({
     queryKey: SESSION_KEY,
-    queryFn: getSession,
+    queryFn: getDemoSession,
     // The session is owned by localStorage + mutations below; no
     // need to refetch more often than the session freshness window.
     staleTime: 60_000,
@@ -64,8 +56,8 @@ export function SessionProvider({ children }: { children: React.ReactNode }) {
 
   React.useEffect(() => {
     const handleStorage = (event: StorageEvent) => {
-      if (event.key !== MOCK_SESSION_STORAGE_KEY) return;
-      void getSession().then((next) => queryClient.setQueryData(SESSION_KEY, next));
+      if (event.key !== DEMO_SESSION_STORAGE_KEY) return;
+      queryClient.setQueryData(SESSION_KEY, getDemoSession());
     };
 
     window.addEventListener("storage", handleStorage);
@@ -81,7 +73,7 @@ export function SessionProvider({ children }: { children: React.ReactNode }) {
 
   const login = React.useCallback(
     async (input: LoginInput) => {
-      const next = await apiLogin(input);
+      const next = authenticateDemoUser(input);
       applySession(next);
       toast.success(
         `Welcome back, ${next.user?.display_name ?? "Zapster"} ⚡`,
@@ -92,23 +84,15 @@ export function SessionProvider({ children }: { children: React.ReactNode }) {
 
   const register = React.useCallback(
     async (input: RegisterInput) => {
-      const next = await apiRegister(input);
+      const next = registerDemo(input);
       applySession(next);
       toast.success("Account created — welcome to Zapsters ⚡");
     },
     [applySession],
   );
 
-  const loginDemo = React.useCallback(async () => {
-    const next = await apiLoginDemo();
-    applySession(next);
-    toast.success(
-      `Welcome back, ${next.user?.display_name ?? "Zapster"} ⚡`,
-    );
-  }, [applySession]);
-
   const logout = React.useCallback(async () => {
-    await apiLogout();
+    clearDemoSession();
     applySession({ status: "anonymous", user: null });
     toast.info("Signed out.");
   }, [applySession]);
@@ -120,11 +104,10 @@ export function SessionProvider({ children }: { children: React.ReactNode }) {
       user: session?.user ?? null,
       isAdmin: session?.user?.role === "admin",
       login,
-      loginDemo,
       register,
       logout,
     }),
-    [session, isLoading, login, loginDemo, register, logout],
+    [session, isLoading, login, register, logout],
   );
 
   return (

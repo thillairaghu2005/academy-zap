@@ -19,10 +19,8 @@ import {
 /**
  * F7 admin gate + shell.
  *
- * ROLE CHECK IS FRONTEND-ONLY: the real authorization lives in the backend
- * (role-gated admin APIs, build.md §4.2 — "tightest RBAC"). This client gate
- * mirrors that UX so the route is demoable, and is deliberately NOT
- * presented as security.
+ * ROLE CHECK IS FRONTEND-ONLY: it controls the demo UI and is not a security
+ * boundary.
  */
 export function AdminLayout({ children }: { children: React.ReactNode }) {
   const { user, isLoading, isAdmin } = useSession();
@@ -58,7 +56,7 @@ export function AdminLayout({ children }: { children: React.ReactNode }) {
         <EmptyState
           icon={ShieldX}
           title="Admins only"
-          description="This area is restricted to admin accounts. Sign in with an account that has admin permissions. Note: this is a frontend-only role check — real authorization lives in the backend."
+           description="This area is restricted to admin accounts in the frontend demo."
           action={
             <Button variant="gradient" asChild>
               <Link href={`/login?next=/admin`}>Sign in as admin</Link>

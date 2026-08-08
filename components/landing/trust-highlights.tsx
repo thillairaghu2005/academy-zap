@@ -2,7 +2,7 @@
 
 import { useQuery } from "@tanstack/react-query";
 
-import { getCourseTrust } from "@/lib/api/trust";
+import { getCourseTrust } from "@/lib/data/demo/trust";
 import { TrustBadge } from "@/components/shared/trust-badge";
 import { Card } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";

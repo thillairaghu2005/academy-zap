@@ -98,14 +98,14 @@ export class MockLabSocket {
     return [
       `\x1b[1;32mZapsters Virtual Lab\x1b[0m — ${labTitle}`,
       `Session \x1b[2m${this.session.session_id}\x1b[0m · isolated network · egress denied`,
-      `Type \x1b[1mhelp\x1b[0m for available commands. Objectives are checked server-side.`,
+      `Type \x1b[1mhelp\x1b[0m for available commands. Objectives are checked by the demo service.`,
       ``,
     ];
   }
 
   /**
    * Interprets one command against the mock sandbox. When a command reads a
-   * flag, it marks the objective discovered in the SESSION STORE (server-side
+   * flag, it marks the objective discovered in the local session store
    * derivation) — never reports completion to the browser directly.
    */
   private interpret(line: string): string {
@@ -254,7 +254,7 @@ export class MockLabSocket {
         this.discover("web-sqli");
         return [
           `HTTP/1.1 200 OK`,
-          `Set-Cookie: session=flag-admin-${this.session.session_id.slice(0, 8)}; HttpOnly`,
+          `Demo marker: flag-admin-${this.session.session_id.slice(0, 8)} (local simulation)`,
           ``,
           `<h1>Welcome back, admin!</h1>`,
           `<p>Session escalated. Objective complete.</p>`,
@@ -276,7 +276,7 @@ export class MockLabSocket {
   }
 
   private nextHint(): string {
-    // Shared server-side derivation — the objectives panel's "Request hint"
+    // Shared derivation — the objectives panel's "Request hint"
     // button calls the same store function, so hints_used stays consistent.
     const hint = nextHintServerSide(this.session);
     return `\x1b[1;33mHint\x1b[0m: ${hint}\r\n`;

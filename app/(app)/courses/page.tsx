@@ -3,7 +3,7 @@ import { Suspense } from "react";
 
 import { CatalogClient } from "@/components/courses/catalog-client";
 import { CourseCatalogLoading } from "@/components/shared/route-loading";
-import { searchCatalog } from "@/lib/server/domains/content";
+import { searchCatalog } from "@/lib/data/demo/content";
 import type { MeilisearchCatalogResponse } from "@/lib/contracts/content";
 
 export const metadata: Metadata = {

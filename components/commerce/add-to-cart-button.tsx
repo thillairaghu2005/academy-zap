@@ -6,7 +6,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { LoaderCircle, ShoppingCart } from "lucide-react";
 
-import { addToCart } from "@/lib/api/commerce";
+import { addToCart } from "@/lib/data/demo/commerce";
 import { useSession } from "@/components/providers/session-provider";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";

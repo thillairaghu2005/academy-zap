@@ -27,8 +27,8 @@ import {
   submitCourseForReview,
   unpublishCourse,
   updateCourse,
-} from "@/lib/api/admin";
-import { getCourse } from "@/lib/api/content";
+} from "@/lib/data/demo/admin";
+import { getCourse } from "@/lib/data/demo/content";
 import { MOCK_REVIEWERS } from "@/lib/mocks/users";
 import { useSession } from "@/components/providers/session-provider";
 import { Badge } from "@/components/ui/badge";

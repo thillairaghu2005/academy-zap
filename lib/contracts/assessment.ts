@@ -48,7 +48,7 @@ export interface AssessmentQuestion {
   prompt: string;
   /** MCQ options (mcq only). */
   options?: string[];
-  /** Short-answer accepted patterns, fuzzy-matched server-side. */
+  /** Short-answer accepted patterns, fuzzy-matched by the demo service. */
   accepted_answers?: string[];
   /** Code-question starter code (code only — rendered in Monaco). */
   starter_code?: string;
@@ -126,7 +126,7 @@ export interface AssessmentAttempt {
   started_at: string;
   expires_at: string;
   answers: AttemptAnswer[];
-  /** Total points accumulated so far (server-derived). */
+  /** Total points accumulated so far (demo-service-derived). */
   score: number;
   /** Anti-cheat flags captured this attempt (tab-switch, paste). */
   integrity_flags: string[];
@@ -139,11 +139,11 @@ export interface AssessmentAttemptSummary {
   attempt_number: number;
   status: AttemptStatus;
   score: number;
-  /** Pass/fail is derived server-side against the assessment's threshold. */
+  /** Pass/fail is derived by the demo service against the threshold. */
   passed: boolean;
   correct_count: number;
   question_count: number;
-  /** Best combo run achieved (server-derived via the attempt's answers). */
+  /** Best combo run achieved by the demo service via the attempt's answers. */
   max_combo: number;
   submitted_at: string | null;
 }

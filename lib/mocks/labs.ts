@@ -189,7 +189,7 @@ export const MOCK_LABS_BY_ID = new Map(MOCK_LABS.map((lab) => [lab.id, lab]));
 export const MOCK_MISSING_LAB_ID = "missing-lab";
 export const MOCK_BOOM_LAB_ID = "boom";
 
-/** Internal session row — the public view plus the server-side flag store. */
+/** Internal session row — the public view plus the simulation flag store. */
 export interface StoredLabSession extends LabSession {
   /** Objective ids whose flags have been "found" inside the mock sandbox. */
   discovered: Set<string>;
@@ -224,7 +224,7 @@ export function checkObjectiveServerSide(
     detail: found
       ? objectiveDef?.requires_terminal
         ? `Flag verified against the session filesystem.`
-        : `Session state verified server-side (GUI objective).`
+        : `Session state verified by the demo (GUI objective).`
       : objectiveDef
         ? `Objective not yet met — the expected artifact was not found in the session.`
         : `Unknown objective ${objectiveId}.`,

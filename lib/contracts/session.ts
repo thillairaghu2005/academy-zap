@@ -1,21 +1,20 @@
 /**
  * Session / auth contract — PROVISIONAL (see assumption register in index.ts).
  *
- * The source docs do not define a User schema; Platform Core (backend,
- * later) owns auth. This is the minimal shape the shell needs today:
- * identity + role for nav gating. It will be reconciled with the real
- * Platform Core contract during integration (build.md §4).
+ * The source docs do not define a User schema. This is the minimal shape the
+ * frontend demo shell needs today: identity and role for navigation.
  */
 
 export type SessionRole = "user" | "student" | "learner" | "admin";
 
 export interface SessionUser {
-  /** UUID, server-assigned */
+  /** Stable identity used by the current frontend demo session. */
   id: string;
   display_name: string;
   email: string;
   avatar_url: string | null;
   role: SessionRole;
+  isDemo?: boolean;
   /** B2B org scoping (null for consumer accounts) */
   org_id: string | null;
 }

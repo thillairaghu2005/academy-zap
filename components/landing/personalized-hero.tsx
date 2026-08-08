@@ -4,8 +4,8 @@ import Link from "next/link";
 import { useQuery } from "@tanstack/react-query";
 import { ArrowRight, BookOpen, Flame, LoaderCircle, ShieldCheck, Trophy } from "lucide-react";
 
-import { getCourse, listMyLearning } from "@/lib/api/content";
-import { getProgressContext } from "@/lib/api/gamification";
+import { getCourse, listMyLearning } from "@/lib/data/demo/content";
+import { getProgressContext } from "@/lib/data/demo/gamification";
 import { useSession } from "@/components/providers/session-provider";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";

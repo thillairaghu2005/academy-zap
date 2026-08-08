@@ -6,7 +6,7 @@ import { toPng } from "html-to-image";
 import { motion } from "framer-motion";
 import { Check, Download, Loader2, Share2, ShieldCheck, X } from "lucide-react";
 
-import { getShareCard } from "@/lib/api/gamification";
+import { getShareCard } from "@/lib/data/demo/gamification";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,

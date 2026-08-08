@@ -40,11 +40,11 @@ Concretely:
 `AssessmentSubmission`, `GradeResult`, `Cart`, `CheckoutSession`, `ProgressContext`,
 `RankState`, `StreakState`, `LeagueStanding`, `GuildRollup`, `LedgerEntry`) as TypeScript
 types/zod schemas, field-for-field matching the docs.
-- [ ] Create `lib/api/` — one module per subsystem (`content.ts`, `judge.ts`, `labs.ts`,
+- [x] Create `lib/data/demo/` — one frontend demo service per subsystem (`content.ts`, `judge.ts`, `lab.ts`,
 `assessments.ts`, `payments.ts`, `gamification.ts`), each exporting functions with the **same
 signatures** as the backend `Protocol` classes (`getCourse`, `submit`, `getResult`,
 `provisionSession`, `checkObjective`, `createCheckout`, etc.)
-- [ ] Every function in `lib/api/` is a thin wrapper: right now it returns fixture data (from
+- [x] Every function in `lib/data/demo/` reads fixture data (from
 `lib/mocks/`) with an artificial delay; later it becomes a real `fetch`/TanStack Query call.
 **The component layer never knows the difference.**
 - [ ] Fixtures live in `lib/mocks/*.json` or `.ts`, one file per contract, realistic enough to
@@ -83,7 +83,7 @@ component layer should ever have needed to know which of the two it was talking 
 
 ## 2. Build order — UI surfaces, prioritized
 
-Each surface below: build the page/component tree, wire it to `lib/api/`, mock every state
+Each surface below: build the page/component tree, wire it to `lib/data/demo/`, mock every state
 (loading/empty/error/success), and don't move on until it's visually and interactively complete
 against the mock — that's what makes it a drop-in once real data exists.
 
@@ -113,7 +113,7 @@ captions toggle, playback speed
 - [x] Progress indicator per lesson/course (feeds mock `enrollments` state)
 - [x] Mock the `draft` vs `published` distinction in the authoring preview flow (F7) even before
 a CMS exists
-- [ ] Discussion/Q&A threads per lesson: mock `lib/api/discussions.ts` (thread list, reply,
+- [ ] Discussion/Q&A threads per lesson: add `lib/data/demo/discussions.ts` (thread list, reply,
 upvote), rendered in a collapsible panel alongside the lesson — this is the biggest retention
 gap in the current surface
 - [ ] Course reviews/ratings: turn the existing reviews placeholder on the course detail page
@@ -142,7 +142,7 @@ schema, use them verbatim so nothing needs remapping later
 build a multi-language picker UI now, but track it explicitly here so it isn't silently
 forgotten once Phase-1 Python ships and backend adds more judges
 - [ ] Editorial/solution reveal: unlock after a passing submission or after N failed attempts
-(mock the unlock-condition check in `lib/api/judge.ts`, not client-side)
+(mock the unlock-condition check in `lib/data/demo/judge.ts`, not in components)
 - [ ] Peer solution browsing: sanitized top-solutions list sortable by runtime/memory, mock
 fixture data with multiple submitters per problem
 - [ ] Contest/timed-challenge mode: reuses the Judge submit/poll flow plus the F4 combo-meter
@@ -160,7 +160,7 @@ chrome now, real RDP/VNC stream comes with the backend)
 - [x] Session-end / timeout UI states
 - [ ] Lab hints system: per-objective hint reveal with an XP cost, tracked as its own line item —
 never blended into Completion or Mastery XP, matching the gamification doc's "never one
-blended number" rule (mock `lib/api/gamification.ts` for the deduction, not client math)
+blended number" rule (mock `lib/data/demo/gamification.ts` for the deduction, not client math)
 - [ ] Team/collaborative lab sessions: shared terminal view for a session with >1 participant —
 scope as backend-phase-only; for now just stub the UI shell (participant list, shared cursor
 indicator) behind a feature flag, don't build real multi-user WebSocket fanout yet
@@ -225,7 +225,7 @@ aggregate reporting surface
 ### F8 — Platform-level features (cross-cutting, not owned by a single surface)
 
 - [x] Search-as-you-type across courses + problems + labs: promote the F1 catalog's mock
-Meilisearch shape into a shared `lib/api/search.ts` consumed by the F0 command-palette shell
+Meilisearch shape into a shared `lib/data/demo/search.ts` consumed by the F0 command-palette shell
 - [ ] Accessibility pass across interactive surfaces: keyboard nav for the Monaco (F2) and
 xterm.js (F3) panes specifically, since these are the two components least likely to get
 keyboard support "for free" from shadcn/ui primitives; captions already covered in F1
@@ -258,7 +258,7 @@ above
 - No real payment capture — hosted checkout sandbox only, never a custom card field regardless
 of mock/real status (this rule applies even in mock form, per the do-not-use list)
 - No client-side XP/rank calculation logic — even in mock form, compute rank purely by calling
-the mock `lib/api/gamification.ts`, never re-derive it in a component. This is the one habit
+the mock `lib/data/demo/gamification.ts`, never re-derive it in a component. This is the one habit
 most worth enforcing early, since "the client previews, the server always wins" is a hard rule
 in the real system — building the frontend as if the client is authoritative now creates real
 rework later. This now explicitly includes hint-cost deductions and mentorship/referral XP —
@@ -276,7 +276,7 @@ log entry until Platform Core has a real event bus to publish onto
 Written while the frontend was mock-only so it would be designed for, not discovered. Per-module
 cutover detail is in §10; this is the invariant list that must be true when the swap is finished:
 
-- [ ] Swap each `lib/api/*.ts` function body from "return mock fixture" to "call the real
+- [ ] Add production data-service implementations alongside `lib/data/demo/*.ts` when the future
 endpoint" — signatures shouldn't need to change if the contracts were transcribed correctly
 in step 0
 - [ ] Replace mock WebSocket/SSE sources with real ones (judge polling, lab terminal, combo
@@ -675,7 +675,7 @@ double-fulfillment; a real sandbox purchase → entitlement → content access l
 ### B9 — Supporting subsystems
 
 - [ ] **Search:** Meilisearch indexing pipeline consuming Content/Judge/Lab publish events; unified
-query API behind the shape `lib/api/search.ts` already mocks. Freshness SLA under a minute,
+query API behind the shape `lib/data/demo/search.ts` already mocks. Freshness SLA under a minute,
 sub-50ms p95 query.
 - [ ] **Notifications:** email (Postal/SES) for receipts, credential issuance, streak digests; Web
 Push via VAPID; in-app notification feed backing the F0 notification-center shell, with event
@@ -694,16 +694,16 @@ This is what makes chapter-level/partner-community completion data verifiable ex
 | Method | Route | Contract | Frontend consumer |
 | --- | --- | --- | --- |
 | POST | `/auth/register`, `/auth/login`, `/auth/refresh` | — | mock session provider (F0) |
-| GET | `/courses`, `/courses/{id}` | `Course` | `lib/api/content.ts` |
+| GET | `/courses`, `/courses/{id}` | `Course` | `lib/data/demo/content.ts` |
 | GET | `/lessons/{id}/manifest` | `SignedManifest` | course player (F1) |
 | POST | `/courses/{id}/enroll`, `/lessons/{id}/progress` | — | F1 |
-| POST | `/judge/submit` → 202 | `SubmissionAccepted` | `lib/api/judge.ts` |
+| POST | `/judge/submit` → 202 | `SubmissionAccepted` | `lib/data/demo/judge.ts` |
 | GET | `/judge/submissions/{id}` · SSE `/judge/submissions/{id}/stream` | `JudgeResult` | F2 |
-| POST | `/labs/{id}/sessions` · DELETE `/labs/sessions/{id}` | `LabSession` | `lib/api/labs.ts` |
+| POST | `/labs/{id}/sessions` · DELETE `/labs/sessions/{id}` | `LabSession` | `lib/data/demo/lab.ts` |
 | POST | `/labs/sessions/{id}/objectives/{objective_id}/check` | `ObjectiveResult` | F3 |
 | WS | `/labs/sessions/{id}/terminal` | ttyd bridge | xterm.js (F3) |
-| POST | `/assessments/{id}/attempts`, `/attempts/{id}/submit` | `GradeResult` | `lib/api/assessments.ts` |
-| GET | `/me/progress` | `ProgressContext` | `lib/api/gamification.ts` |
+| POST | `/assessments/{id}/attempts`, `/attempts/{id}/submit` | `GradeResult` | `lib/data/demo/assessment.ts` |
+| GET | `/me/progress` | `ProgressContext` | `lib/data/demo/gamification.ts` |
 | GET | `/leaderboards/{scope}` · SSE `/leaderboards/{scope}/stream` | `LeagueStanding[]` | F5 |
 | GET | `/verify/{credential_id}` (public, unauthenticated) | credential status | F5 verify page |
 | POST | `/cart`, `/checkout` · POST `/webhooks/{provider}` | `Cart`, `CheckoutSession` | F6 |
@@ -719,13 +719,13 @@ behind a per-module env flag so mock and real can coexist during cutover:
 
 | Frontend module | Becomes | Notes |
 | --- | --- | --- |
-| `lib/api/content.ts` | B2 endpoints | Signed manifest URLs are now short-TTL — the player needs refresh-on-expiry, which the mock never exercised |
-| `lib/api/judge.ts` | B5 endpoints | Mock interval polling → real SSE |
-| `lib/api/labs.ts` | B6 endpoints | Scripted terminal transcript → real authenticated WebSocket |
-| `lib/api/assessments.ts` | B7 endpoints | Anti-cheat hooks stop logging to console and start POSTing |
-| `lib/api/gamification.ts` | B4 endpoints | Combo meter SSE becomes real; server value wins on conflict |
-| `lib/api/payments.ts` | B8 endpoints | Sandbox hosted checkout is already real — the swap is order/entitlement state |
-| `lib/api/search.ts` | B9 Meilisearch | Fixture results → real index |
+| `lib/data/demo/content.ts` | Future B2 endpoints | Signed manifest URLs are future integration behavior |
+| `lib/data/demo/judge.ts` | Future B5 endpoints | Mock interval polling → real SSE |
+| `lib/data/demo/lab.ts` | Future B6 endpoints | Scripted terminal transcript → real authenticated WebSocket |
+| `lib/data/demo/assessment.ts` | Future B7 endpoints | Anti-cheat hooks can later connect to a service |
+| `lib/data/demo/gamification.ts` | Future B4 endpoints | Combo meter can later become a live stream |
+| `lib/data/demo/commerce.ts` | Future B8 endpoints | The current hosted checkout is a local demo |
+| `lib/data/demo/search.ts` | Future B9 Meilisearch | Fixture results → real index |
 | mock session provider | B0 auth | Real JWT, refresh rotation, `jti` denylist |
 | `html-to-image` share card | B4 canonical render | Client preview stays; the shared artifact becomes server-rendered |
 

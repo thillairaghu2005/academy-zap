@@ -13,7 +13,7 @@ import {
 } from "lucide-react";
 
 import type { Plan, SeatStatus } from "@/lib/contracts/commerce";
-import { getSubscription, listPlans } from "@/lib/api/commerce";
+import { getSubscription, listPlans } from "@/lib/data/demo/commerce";
 import { formatMoney } from "@/lib/format";
 import { cn } from "@/lib/utils";
 import { useSession } from "@/components/providers/session-provider";
@@ -28,7 +28,7 @@ import { SkeletonCard, SkeletonLines } from "@/components/shared/skeletons";
 /* ------------------------------------------------------------------ */
 /*  B2B subscription + seat management (build.md F6).                  */
 /*                                                                    */
-/*  Mock-only until the Commerce backend exists. Seat actions          */
+/*  Mock-only frontend read model. Seat actions remain illustrative.    */
 /*  (invite / suspend / reassign) are deliberately placeholder — the   */
 /*  docs defer them; this surface renders the read model only.         */
 /* ------------------------------------------------------------------ */
@@ -112,7 +112,7 @@ export function BillingClient() {
           <EmptyState
             icon={Building2}
             title="No org subscription"
-            description="This account isn't on a B2B plan. Team and Organization plans appear here once the Commerce backend provisions them."
+             description="This account isn't on a B2B plan. Team and Organization plans are shown here as frontend demo data."
             action={
               <Button variant="gradient" asChild>
                 <a href="#plans">View plans</a>
@@ -132,7 +132,6 @@ export function BillingClient() {
               ? err.message
               : "The subscription service is not responding."
           }
-          code="SUBSCRIPTION_ERR"
           onRetry={() => subscriptionQuery.refetch()}
         />
       </PageContainer>
@@ -186,7 +185,7 @@ export function BillingClient() {
               {subscription.plan.name} plan
             </p>
           </div>
-          <Button variant="outline" size="sm" disabled title="Pending Commerce backend">
+          <Button variant="outline" size="sm" disabled title="Frontend demo only">
             <Users className="size-3.5" />
             Invite seat
           </Button>
@@ -279,7 +278,7 @@ export function BillingClient() {
 
         <p className="mt-4 flex items-start gap-1.5 text-caption leading-relaxed text-muted-foreground">
           <CheckCircle2 className="mt-0.5 size-3 shrink-0" />
-          Mock-only read model until the Commerce backend lands. Seat
+          Mock-only read model. Seat
           provisioning, invites and reassignment are deferred — the docs leave
           them open.
         </p>

@@ -3,7 +3,7 @@
  *
  * These mirror the versioned event rules in the platform and gamification
  * architecture documents. Delivery, signing, retries, and dead-letter
- * handling belong to backend B1/B9; the frontend only needs the stable shape.
+ * handling belong to a future integration; the frontend only needs the stable shape.
  */
 
 export interface BaseEvent {

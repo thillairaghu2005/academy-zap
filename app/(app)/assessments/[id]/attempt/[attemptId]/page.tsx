@@ -9,7 +9,7 @@ interface AssessmentAttemptPageProps {
 export const metadata: Metadata = {
   title: "Assessment Attempt",
   description:
-    "Live timed assessment — question flow, combo meter, and server-side grading.",
+    "Live timed assessment — question flow, combo meter, and deterministic demo grading.",
 };
 
 export default async function AssessmentAttemptPage({

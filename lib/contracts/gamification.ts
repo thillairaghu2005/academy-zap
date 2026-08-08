@@ -17,7 +17,7 @@
  *  - freeze_status literals: live | frozen_pending_review.
  *  - streak status literals: active | grace_period | broken | frozen.
  *  - The one architectural law: Rank/XP/leaderboard position are DERIVED
- *    server-side from an append-only ledger; the client only previews.
+ *    by the demo service from an append-only ledger; the client only previews.
  *
  * NOT locked by the docs (reasonable decisions, logged in index.ts):
  *  - Projection shapes below §5.3: LeaderboardEntry (ZRANGE-shaped),
@@ -169,7 +169,7 @@ export interface LeaderboardEntry {
   user_id: string;
   display_name: string;
   avatar_url: string | null;
-  /** ZRANGE score — completion + mastery, weighted server-side. */
+  /** Leaderboard score — completion + mastery, weighted by the demo service. */
   score: number;
   level: number;
   rank_name: string;
@@ -235,7 +235,7 @@ export interface Badge {
   badge_id: string;
   name: string;
   description: string;
-  /** Open Badges v3-shaped claim, signed server-side. */
+  /** Open Badges v3-shaped demo claim. */
   credential_id: string;
   /** Public, permanent verify URL (zapsters.com/verify/{credential_id}). */
   verify_url: string;
@@ -253,7 +253,7 @@ export interface BadgeVerifyResult {
   issuer: string; // "Zapsters"
   subject: { user_id: string; display_name: string };
   claim: { category: string; earned_at: string; level: number; rank_name: string };
-  /** Ed25519 signature hex (mock — real signing is server-side only). */
+  /** Ed25519 signature hex (mock value). */
   signature: string;
   /** Re-verification outcome. */
   status: BadgeStatus;
@@ -270,7 +270,7 @@ export interface SkillTreeNode {
   /** Category-level Completion XP (the projection's only input). */
   completion_xp: number;
   mastery_xp: number;
-  /** 0..1 server-derived completion ratio per category. */
+  /** 0..1 demo-service-derived completion ratio per category. */
   progress: number;
   /** Nested sub-skills (two levels deep in mock). */
   children: { name: string; progress: number; completion_xp: number }[];
@@ -362,7 +362,7 @@ export interface LedgerAuditView {
 }
 
 /**
- * LedgerEntry plus a server-derived running balance. The §5.3 schema has no
+ * LedgerEntry plus a demo-service running balance. The §5.3 schema has no
  * balance fields (the chain's prev_hash/entry_hash is the integrity anchor),
  * so balance_before/balance_after are a read projection the engine would
  * serve — never recomputed client-side (build.md §3).

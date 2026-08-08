@@ -13,7 +13,7 @@ import {
   TICKET_CATEGORIES,
   TICKET_PRIORITIES,
 } from "@/lib/contracts/support";
-import { createTicket } from "@/lib/api/support";
+import { createTicket } from "@/lib/data/demo/support";
 import { DEMO_MODE } from "@/lib/config";
 import { useSession } from "@/components/providers/session-provider";
 import { Button } from "@/components/ui/button";

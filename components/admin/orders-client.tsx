@@ -3,7 +3,7 @@
 import { useQuery } from "@tanstack/react-query";
 
 import type { Order } from "@/lib/contracts/commerce";
-import { listAdminOrders } from "@/lib/api/admin";
+import { listAdminOrders } from "@/lib/data/demo/admin";
 import { useSession } from "@/components/providers/session-provider";
 import { PageContainer } from "@/components/shared/page-container";
 import { DataTable, type DataTableColumn } from "@/components/admin/data-table";

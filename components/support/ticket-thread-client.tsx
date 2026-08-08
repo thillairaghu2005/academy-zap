@@ -13,7 +13,7 @@ import {
 } from "lucide-react";
 
 import type { SupportTicket, TicketMessage } from "@/lib/contracts/support";
-import { getTicket, replyToTicket } from "@/lib/api/support";
+import { getTicket, replyToTicket } from "@/lib/data/demo/support";
 import { useSession } from "@/components/providers/session-provider";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -146,7 +146,7 @@ export function TicketThreadClient({ ticketId }: { ticketId: string }) {
         ) : (
           <ErrorState
             title="Couldn't load this ticket"
-            message={err instanceof Error ? err.message : "The support backend is not responding."}
+            message={err instanceof Error ? err.message : "The support demo data is unavailable."}
             code="SUPPORT_ERR"
             onRetry={() => ticketQuery.refetch()}
           />

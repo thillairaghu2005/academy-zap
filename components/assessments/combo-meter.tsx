@@ -10,7 +10,7 @@ import { cn } from "@/lib/utils";
 /* ------------------------------------------------------------------ */
 /*  Combo meter — "the dopamine layer" (build.md F4).                  */
 /*                                                                     */
-/*  In prod this is SSE-driven; the mock polls the server-derived      */
+/*  The demo polls the service-derived                                  */
 /*  combo state (getComboState) on an interval. The client PREVIEWS    */
 /*  the meter — the server is the only thing that can turn it into XP  */
 /*  (gamification §7.6 — the "client trusted itself" gap is closed).   */

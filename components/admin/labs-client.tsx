@@ -4,7 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Monitor } from "lucide-react";
 
 import type { Lab } from "@/lib/contracts/lab";
-import { listLabs } from "@/lib/api/lab";
+import { listLabs } from "@/lib/data/demo/lab";
 import { useSession } from "@/components/providers/session-provider";
 import { Badge } from "@/components/ui/badge";
 import { PageContainer } from "@/components/shared/page-container";

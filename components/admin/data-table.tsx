@@ -29,7 +29,7 @@ import { ErrorState } from "@/components/shared/error-state";
 /*  Generic admin DataTable (F7) — search, column filters, sortable    */
 /*  headers, pagination, and the loading / empty / error states.       */
 /*  All processing is client-side over the mock read; the real CMS      */
-/*  would push these params server-side, and the props stay the same.   */
+/*  would push these params into another data source, and the props stay the same. */
 /* ------------------------------------------------------------------ */
 
 export interface DataTableColumn<T> {
@@ -235,7 +235,7 @@ export function DataTable<T>({
       {error ? (
         <ErrorState
           title="Couldn't load this list"
-          message={errorMessage ?? "The admin backend is not responding."}
+          message={errorMessage ?? "The admin demo data is unavailable."}
           code="ADMIN_ERR"
           onRetry={onRetry}
         />

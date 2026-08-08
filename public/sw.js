@@ -54,7 +54,6 @@ self.addEventListener("fetch", (event) => {
   }
 
   if (
-    url.pathname.startsWith("/api/") ||
     url.pathname.startsWith("/checkout") ||
     url.pathname.startsWith("/labs") ||
     url.pathname.startsWith("/judge") ||

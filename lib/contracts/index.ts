@@ -9,24 +9,17 @@
  * mirror of those Pydantic models, transcribed field-for-field.
  *
  * A mock is just an object satisfying these contracts with fixture data.
- * When the real backend lands, the swap is a `lib/api/*` body replacement —
- * component code never changes.
+ * A future integration can replace the implementation behind `lib/data/`
+ * without changing component contracts.
  *
  * /!\ ASSUMPTION REGISTER (provisional decisions, per working style):
  *   - session.ts : the docs do not lock a User/Profile schema (Platform Core
  *     owns auth). This minimal shell contract is provisional and will be
  *     reconciled with the real Platform Core schema during integration.
- *     Product-audit Fix 4 moved the mock auth rules server-side: a signed
- *     HttpOnly session cookie (HMAC-SHA256, 7-day expiry, SameSite=Lax)
- *     issued by app/api/auth/session and verified by proxy.ts, which
- *     redirects anonymous visitors to /login?next=<path>. The client auth
- *     module (lib/api/auth.ts) is a thin fetch wrapper with unchanged
- *     signatures. This is the boundary SHAPE, not real security: SESSION_SECRET
- *     falls back to a mock constant when unset (a real deployment MUST set
- *     it) and the user directory is fixture data. DEMO_MODE
- *     (NEXT_PUBLIC_DEMO_MODE) disables the middleware gate and auto-issues
- *     the demo learner session; the signed-out marker cookie makes logout
- *     stick even in demo mode.
+  *     The current implementation is intentionally frontend-only: the
+  *     SessionProvider reads a minimal demo session from localStorage and
+  *     redirects anonymous visitors client-side. This is a UI/demo boundary,
+  *     not a security boundary; it is intentionally local demo state.
  *   - content.ts : the docs lock the ContentProvider Protocol method shapes
  *     (get_course, get_playback_manifest) but not full Course/SignedManifest/
  *     Enrollment field lists (those come from the `courses`/`lessons`/
@@ -80,7 +73,7 @@
  *     snake_case per the codebase convention, where the task brief named them
  *     `reviewedBy?`. The review workflow APIs (saveDraft / submitForReview /
  *     publishCourse / unpublishCourse / getCourseReviewDiff) live in
- *     lib/api/admin.ts, NOT lib/api/content.ts: content.ts is the public
+  *     lib/data/demo/admin.ts, NOT lib/data/demo/content.ts: content.ts is the public
  *     read surface (get_course / manifest / catalog), and F7 established
  *     admin.ts as the authoring surface — splitting authoring writes across
  *     the two would break that separation. Draft autosave (saveDraft) is
@@ -89,7 +82,7 @@
  *   - admin (F7 Task 2/3 follow-up) : the published-version snapshot map in
  *     lib/mocks/courses.ts stands in for the CMS's versioned `courses`
  *     rows, so the review diff has a "last published version" to compare
- *     against. The diff is computed server-side (mock); the client renders
+  *     against. The diff is computed by the local demo service; the client renders
  *     it. Audit rows that changed XP/economy state carry an optional
  *     `ledger_entry_id` (resolved at read time against the real chained
  *     demo ledger — ids are random per mock build, so fixture links point
@@ -103,11 +96,11 @@
  *   - admin (F7) : build.md F7 scopes the admin surface to COURSE authoring
  *     + the two-person review flow + audit. Orders / Users / Labs / Problems
  *     are manage-style read lists here, not authoring CRUD. The role gate is
- *     FRONTEND-ONLY (real RBAC lives in the backend); admin ops mutate the
+  *     FRONTEND-ONLY and not a security boundary; admin ops mutate the
  *     fixture stores (upsert/deleteCourse) and write an append-only audit
  *     log. CatalogProduct.stock is mock inventory for Buy Now validation.
- *     The demo user's cart persists to localStorage (mock stand-in for the
- *     Commerce backend's cart persistence). CHECKOUT_DEMO_503 (lib/config.ts)
+  *     The demo user's cart persists to localStorage. CHECKOUT_DEMO_503
+  *     (lib/config.ts)
  *     is a demo flag that short-circuits checkout with a simulated 503.
  *     Guest checkout does NOT exist: Buy Now / Add to Cart require sign-in.
  *   - gamification.ts : the §5.3 Pydantic schemas (LedgerEntry, StreakState,
@@ -120,7 +113,7 @@
  *     GuildStanding, Badge, SkillTreeNode, SeasonPassState, ShareCardData)
  *     are named in §5.5/§6 but not schematized — reasonable decisions. The
  *     mock ledger's hash chain is REAL (SHA-256 per §7.2) so rank/XP always
- *     derive from a verifiable append-only source, mirroring the backend law.
+  *     derive from a verifiable append-only source for the demo.
  *   - support.ts : ADD-ON surface beyond build.md's F0–F7 plan. The source
  *     docs never lock a support schema (only prose: "a rank... must survive
  *     a support ticket"), so the Zendesk-shaped ticket/message shapes and
@@ -128,7 +121,7 @@
  *     reopen) are reasonable decisions to reconcile with the real support
  *     platform during integration (build.md §4). Learner isolation (404 for
  *     someone else's ticket) and internal-note stripping are enforced in
- *     the mock API, mirroring the server-owned-data rule.
+  *     the local demo data service.
  */
 
 export * from "./session";

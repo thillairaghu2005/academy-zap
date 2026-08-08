@@ -15,7 +15,7 @@ import {
   Users,
 } from "lucide-react";
 
-import { getAdminDashboard } from "@/lib/api/admin";
+import { getAdminDashboard } from "@/lib/data/demo/admin";
 import { DEMO_MODE } from "@/lib/config";
 import { useSession } from "@/components/providers/session-provider";
 import { Badge } from "@/components/ui/badge";
@@ -69,7 +69,7 @@ export function AdminDashboardClient() {
             message={
               dashboardQuery.error instanceof Error
                 ? dashboardQuery.error.message
-                : "The admin backend is not responding."
+                : "The admin demo data is unavailable."
             }
             code="ADMIN_ERR"
             onRetry={() => dashboardQuery.refetch()}

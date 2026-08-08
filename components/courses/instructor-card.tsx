@@ -5,7 +5,7 @@ import Link from "next/link";
 import { Clock3, ExternalLink, Languages, MessageCircle, ShieldCheck, Star, Users } from "lucide-react";
 
 import type { InstructorProfile } from "@/lib/contracts/instructor";
-import { getInstructor } from "@/lib/api/instructors";
+import { getInstructor } from "@/lib/data/demo/instructors";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";

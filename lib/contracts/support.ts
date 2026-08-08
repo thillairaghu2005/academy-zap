@@ -53,8 +53,7 @@ export interface TicketMessage {
   author_role: TicketAuthorRole;
   body: string;
   /**
-   * Visible to agents only. Stripped from learner reads server-side (the
-   * mock API never leaks an internal note to its author's counterpart).
+   * Visible to agents only. Stripped from learner reads by the demo service.
    */
   internal_note: boolean;
   created_at: string;
@@ -86,7 +85,7 @@ export interface CreateTicketInput {
 }
 
 /**
- * The status workflow the mock enforces server-side (mirrors the real
+ * The status workflow the demo service enforces (mirrors the future
  * support platform's state machine):
  *
  *   open ──(agent replies)──▶ pending ──(learner replies)──▶ open

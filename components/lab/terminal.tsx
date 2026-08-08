@@ -21,7 +21,7 @@ import "@xterm/xterm/css/xterm.css";
  * client-side line editor — printable chars buffer, Backspace, Ctrl+C,
  * Ctrl+L clear, Up/Down history, Enter submits the line. This is keystroke
  * echoing/editing (genuinely client-side), NOT objective derivation — that
- * still happens server-side in the mock store.
+ * still happens in the local mock store.
  *
  * Only loaded client-side via next/dynamic (see terminal-shell.tsx) — xterm
  * manipulates the DOM and must never be evaluated on the server.
@@ -29,7 +29,7 @@ import "@xterm/xterm/css/xterm.css";
 
 export interface LabTerminalProps {
   sessionId: string;
-  /** Called once the socket closes (session ended server-side). */
+  /** Called once the simulation closes (session ended). */
   onSessionClosed?: () => void;
   /** Emitted when a full command line is submitted (used to refresh objective checks). */
   onCommand?: () => void;

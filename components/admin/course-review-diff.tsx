@@ -4,7 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { FileDiff, Info } from "lucide-react";
 
 import type { CoursePublishedSnapshot } from "@/lib/mocks/courses";
-import { getCourseReviewDiff } from "@/lib/api/admin";
+import { getCourseReviewDiff } from "@/lib/data/demo/admin";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { SkeletonLines } from "@/components/shared/skeletons";
@@ -47,7 +47,7 @@ export function CourseReviewDiffCard({ courseId }: { courseId: string }) {
             message={
               diffQuery.error instanceof Error
                 ? diffQuery.error.message
-                : "The diff backend is not responding."
+                : "The demo diff data is unavailable."
             }
             onRetry={() => diffQuery.refetch()}
           />

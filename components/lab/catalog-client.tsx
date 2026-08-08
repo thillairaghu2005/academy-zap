@@ -17,8 +17,8 @@ import {
 
 import type { Lab, LabDifficulty } from "@/lib/contracts/lab";
 import type { CatalogProduct } from "@/lib/contracts/commerce";
-import { searchLabs } from "@/lib/api/lab";
-import { listCatalogProducts } from "@/lib/api/commerce";
+import { searchLabs } from "@/lib/data/demo/lab";
+import { listCatalogProducts } from "@/lib/data/demo/commerce";
 import { DEMO_MODE } from "@/lib/config";
 import { AddToCartButton } from "@/components/commerce/add-to-cart-button";
 import { BuyNowButton } from "@/components/commerce/buy-now-button";
@@ -222,7 +222,7 @@ export function LabCatalogClient({ initialData }: { initialData?: Lab[] }) {
         </h1>
         <p className="text-sm text-muted-foreground">
           Hands-on, time-boxed sandboxes. Drive a real terminal, capture flags,
-          and prove the work — objectives are verified server-side.
+          and prove the work — objectives are verified by the demo service.
         </p>
       </div>
 
@@ -285,7 +285,7 @@ export function LabCatalogClient({ initialData }: { initialData?: Lab[] }) {
             message={
               error instanceof Error
                 ? error.message
-                : "The lab catalog backend is not responding."
+                : "The lab catalog demo data is unavailable."
             }
             code="LABS_ERR"
             onRetry={() => refetch()}

@@ -15,7 +15,7 @@ import {
   Trophy,
 } from "lucide-react";
 
-import { verifyBadge } from "@/lib/api/gamification";
+import { verifyBadge } from "@/lib/data/demo/gamification";
 import { Logo } from "@/components/layout/logo";
 import { Button } from "@/components/ui/button";
 import { ErrorState } from "@/components/shared/error-state";

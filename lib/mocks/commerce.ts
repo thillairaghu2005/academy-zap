@@ -30,7 +30,7 @@ import type {
   Subscription,
 } from "@/lib/contracts/commerce";
 
-export const MOCK_DEMO_USER_ID = "4c1e0a9f-8c6e-4b2d-9f3a-2b8d1e5c7a91";
+export const MOCK_DEMO_USER_ID = "demo-user-001";
 
 /* ------------------------------------------------------------------ */
 /*  Catalog — courses/labs/plans that can be purchased                 */
@@ -104,7 +104,7 @@ function entitlementsForStoredUser(userId: string): Map<string, Entitlement> {
 /*  The mock cart store is in-memory, but the demo user's cart is      */
 /*  hydrated from / written to localStorage so the nav badge and the   */
 /*  cart survive a full page refresh — mirroring the real Commerce     */
-/*  backend's cart persistence. Guarded for SSR and node (tests).      */
+/*  browser persistence. Guarded for SSR and node (tests).             */
 /* ------------------------------------------------------------------ */
 
 const CART_STORAGE_KEY = "zapsters.mock.cart";
@@ -399,7 +399,7 @@ export function deliverWebhook(
 }
 
 /* ------------------------------------------------------------------ */
-/*  Entitlement reads (server-derived — the client never guesses)      */
+/*  Entitlement reads (demo-service-derived — the client never guesses)  */
 /* ------------------------------------------------------------------ */
 
 export function entitlementsForUser(userId: string): EntitlementsSnapshot {
@@ -466,7 +466,7 @@ export function seedDemoOrders(): void {
 }
 
 /* ------------------------------------------------------------------ */
-/*  B2B subscription + seats (mock-only until Commerce backend)        */
+/*  B2B subscription + seats (frontend demo read model)                */
 /* ------------------------------------------------------------------ */
 
 export const MOCK_SUBSCRIPTION: Subscription = {
@@ -474,7 +474,7 @@ export const MOCK_SUBSCRIPTION: Subscription = {
   org_name: "Acme Security Co.",
   plan: MOCK_PLANS[0]!,
   seats: [
-    { seat_id: "seat-1", email: "aarav@acme.dev", display_name: "Aarav Mehta", status: "active", assigned_course_id: "c3d4e5f6-a7b8-4c9d-0e1f-2a3b4c5d6e7f" },
+    { seat_id: "seat-1", email: "demo@zapsters.dev", display_name: "Raghunandhan", status: "active", assigned_course_id: "c3d4e5f6-a7b8-4c9d-0e1f-2a3b4c5d6e7f" },
     { seat_id: "seat-2", email: "zara@acme.dev", display_name: "Zara Khan", status: "active", assigned_course_id: "f6a7b8c9-d0e1-4f2a-3b4c-5d6e7f8a9b0c" },
     { seat_id: "seat-3", email: "kenji@acme.dev", display_name: "Kenji Tanaka", status: "invited", assigned_course_id: null },
     { seat_id: "seat-4", email: "sofia@acme.dev", display_name: "Sofia Rossi", status: "suspended", assigned_course_id: null },

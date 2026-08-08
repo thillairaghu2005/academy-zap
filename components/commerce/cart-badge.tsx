@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useQuery } from "@tanstack/react-query";
 import { ShoppingCart } from "lucide-react";
 
-import { getCart } from "@/lib/api/commerce";
+import { getCart } from "@/lib/data/demo/commerce";
 import { useSession } from "@/components/providers/session-provider";
 import { Button } from "@/components/ui/button";
 

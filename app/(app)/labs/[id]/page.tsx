@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
 import { LabDetailClient } from "@/components/lab/lab-detail-client";
-import { getLab } from "@/lib/server/domains/lab";
-import { MockApiError } from "@/lib/api/errors";
+import { getLab } from "@/lib/data/demo/lab";
+import { MockDataError } from "@/lib/data/demo/errors";
 import { buildMetadata } from "@/lib/seo";
 import { Breadcrumbs } from "@/components/seo/breadcrumbs";
 import { JsonLd } from "@/components/seo/json-ld";
@@ -25,7 +25,7 @@ export async function generateMetadata({ params }: LabDetailPageProps): Promise<
 export default async function LabDetailPage({ params }: LabDetailPageProps) {
   const { id } = await params;
   const lab = await getLab(id).catch((error: unknown) => {
-    if (error instanceof MockApiError && error.status === 404) notFound();
+    if (error instanceof MockDataError && error.status === 404) notFound();
     throw error;
   });
 

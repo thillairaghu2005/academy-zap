@@ -121,11 +121,11 @@ export interface Entitlement {
 export interface EntitlementsSnapshot {
   user_id: string;
   entitlements: Entitlement[];
-  /** Convenience derived server-side (the client never computes this). */
+  /** Convenience value derived by the demo service (the client never computes this). */
   product_ids: string[];
 }
 
-/** B2B subscription + seat management (mock-only until Commerce backend). */
+/** B2B subscription + seat management (frontend demo read model). */
 export type SeatStatus = "invited" | "active" | "suspended";
 
 export interface Plan {

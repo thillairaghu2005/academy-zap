@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 
 import { LandingPage } from "@/components/landing/landing-page";
-import { searchCatalog } from "@/lib/server/domains/content";
+import { searchCatalog } from "@/lib/data/demo/content";
 
 export const metadata: Metadata = {
   title: "Learn. Build. Climb.",

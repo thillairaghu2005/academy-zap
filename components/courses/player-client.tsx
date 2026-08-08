@@ -25,8 +25,8 @@ import {
   getCourseProgress,
   getPlaybackManifest,
   recordProgress,
-} from "@/lib/api/content";
-import { MockApiError } from "@/lib/api/errors";
+} from "@/lib/data/demo/content";
+import { MockDataError } from "@/lib/data/demo/errors";
 import { useSession } from "@/components/providers/session-provider";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
@@ -66,7 +66,7 @@ function PlayerSkeleton() {
   );
 }
 
-/** Mock article body — real article content ships with the Content backend. */
+/** Mock article body for the frontend demo. */
 function ArticleBody({ lesson }: { lesson: CourseLesson }) {
   return (
     <div className="rounded-3xl border border-border bg-card p-6 shadow-[0_10px_30px_rgb(17_24_39_/_5%)] sm:p-10">
@@ -93,7 +93,7 @@ function ArticleBody({ lesson }: { lesson: CourseLesson }) {
         <code className="rounded bg-secondary px-1 py-0.5 font-mono text-[11px]">
           recordProgress
         </code>{" "}
-        mock API the player uses.
+         local demo data service the player uses.
       </p>
     </div>
   );
@@ -174,7 +174,7 @@ export function PlayerClient({ course }: { course: Course }) {
 
   const manifest = manifestQuery.data;
   const manifestExpired =
-    manifestQuery.error instanceof MockApiError &&
+    manifestQuery.error instanceof MockDataError &&
     manifestQuery.error.code === "manifest_expired";
 
   const progressMutation = useMutation({
@@ -192,8 +192,8 @@ export function PlayerClient({ course }: { course: Course }) {
       }),
     onSuccess: (enrollment, input) => {
       // Refetch the progress snapshot so completed_lesson_ids (which drives
-      // the sidebar checkmarks/counters) reflects the write. The mock API
-      // derives progress server-side; components never compute it.
+      // the sidebar checkmarks/counters) reflects the write. The demo service
+      // derives progress; components never compute it.
       queryClient.invalidateQueries({
         queryKey: ["course-progress", course.id, userId],
       });

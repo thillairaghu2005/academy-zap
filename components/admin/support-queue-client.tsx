@@ -6,7 +6,7 @@ import { ExternalLink } from "lucide-react";
 
 import type { SupportTicket, TicketCategory } from "@/lib/contracts/support";
 import { TICKET_CATEGORIES, TICKET_PRIORITIES } from "@/lib/contracts/support";
-import { listAdminTickets } from "@/lib/api/support";
+import { listAdminTickets } from "@/lib/data/demo/support";
 import { useSession } from "@/components/providers/session-provider";
 import { PageContainer } from "@/components/shared/page-container";
 import { Button } from "@/components/ui/button";

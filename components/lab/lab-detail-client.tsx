@@ -22,9 +22,9 @@ import {
 } from "lucide-react";
 
 import type { Lab } from "@/lib/contracts/lab";
-import { getLab, provisionPreviewSession, provisionSession } from "@/lib/api/lab";
+import { getLab, provisionPreviewSession, provisionSession } from "@/lib/data/demo/lab";
 import { DEMO_MODE } from "@/lib/config";
-import { getCatalogProduct, hasEntitlement } from "@/lib/api/commerce";
+import { getCatalogProduct, hasEntitlement } from "@/lib/data/demo/commerce";
 import { AddToCartButton } from "@/components/commerce/add-to-cart-button";
 import { BuyNowButton } from "@/components/commerce/buy-now-button";
 import { useSession } from "@/components/providers/session-provider";
@@ -155,7 +155,7 @@ export function LabDetailClient({
             message={
               err instanceof Error
                 ? err.message
-                : "The lab catalog backend is not responding."
+                : "The lab catalog demo data is unavailable."
             }
             code="LAB_ERR"
             onRetry={() => labQuery.refetch()}
@@ -308,7 +308,7 @@ export function LabDetailClient({
               </li>
               <li className="flex items-center gap-1.5">
                 <CheckCircle2 className="size-3.5 text-emerald-700" />
-                Objectives verified server-side
+                Objectives verified by the demo service
               </li>
               <li className="flex items-center gap-1.5">
                 <CheckCircle2 className="size-3.5 text-emerald-700" />

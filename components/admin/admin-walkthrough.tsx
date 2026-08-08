@@ -66,7 +66,7 @@ export const ADMIN_WALKTHROUGH_STEPS: WalkthroughStep[] = [
   {
     title: "Users",
     element: "Left sidebar → Users",
-    copy: "The platform's mock identities with role toggles (learner ⇄ admin). Frontend-only mock — real RBAC lives in the backend.",
+    copy: "The platform's mock identities with role toggles (learner ⇄ admin). This is a frontend-only demo role check.",
     href: "/admin/users",
   },
   {

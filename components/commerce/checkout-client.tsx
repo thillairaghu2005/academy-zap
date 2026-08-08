@@ -33,7 +33,7 @@ import {
   getOrderForCheckout,
   replayWebhook,
   simulatePaymentCompletion,
-} from "@/lib/api/commerce";
+} from "@/lib/data/demo/commerce";
 import { formatMoney } from "@/lib/format";
 import { DEMO_MODE } from "@/lib/config";
 import { useSession } from "@/components/providers/session-provider";

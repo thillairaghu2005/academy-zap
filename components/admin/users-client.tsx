@@ -6,7 +6,7 @@ import { toast } from "sonner";
 import { ShieldCheck, ShieldOff } from "lucide-react";
 
 import type { SessionUser } from "@/lib/contracts/session";
-import { listAdminUsers, setUserRole } from "@/lib/api/admin";
+import { listAdminUsers, setUserRole } from "@/lib/data/demo/admin";
 import { useSession } from "@/components/providers/session-provider";
 import { Button } from "@/components/ui/button";
 import { PageContainer } from "@/components/shared/page-container";

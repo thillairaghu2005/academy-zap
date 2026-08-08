@@ -12,7 +12,7 @@ import {
   ShieldQuestion,
 } from "lucide-react";
 
-import { getBadges } from "@/lib/api/gamification";
+import { getBadges } from "@/lib/data/demo/gamification";
 import { useSession } from "@/components/providers/session-provider";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -62,7 +62,7 @@ export function BadgeWall() {
         </h1>
         <p className="mt-1.5 max-w-xl text-sm leading-relaxed text-muted-foreground">
           Every badge is a W3C-Verifiable-Credential-shaped claim, signed
-          server-side and re-verifiable at its public URL — a stale or edited
+           by the demo service and re-verifiable at its public URL — a stale or edited
           screenshot cannot keep working.
         </p>
       </div>

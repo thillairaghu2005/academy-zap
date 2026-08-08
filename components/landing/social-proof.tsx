@@ -15,7 +15,7 @@ import {
   getPublicGuildBoard,
   getPublicLeaderboardPreview,
   getRankLadder,
-} from "@/lib/api/gamification";
+} from "@/lib/data/demo/gamification";
 import { Card } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 
@@ -88,7 +88,7 @@ export function SocialProof() {
                    <Trophy className="size-5 text-primary" /> Global climb
                 </p>
                 <p className="mt-1 text-xs text-muted-foreground">
-                  The top of this week&apos;s server-derived board.
+                  The top of this week&apos;s demo leaderboard.
                 </p>
               </div>
               <Link
