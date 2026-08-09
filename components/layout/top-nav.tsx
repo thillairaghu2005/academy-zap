@@ -17,6 +17,7 @@ import {
 import { useSession } from "@/components/providers/session-provider";
 import { GlobalSearch } from "@/components/layout/global-search";
 import { NotificationCenter } from "@/components/layout/notification-center";
+import { OfflineIndicator } from "@/components/layout/offline-indicator";
 import { RankXpChip } from "@/components/gamification/rank-xp-chip";
 import { Logo } from "@/components/layout/logo";
 
@@ -104,6 +105,9 @@ export function TopNav() {
         </div>
 
         <div className="ml-auto flex items-center gap-1.5">
+
+          {/* Offline status — visible only while disconnected */}
+          <OfflineIndicator />
 
           {/* Cart — live item count badge (Task 2) */}
           <Tooltip>

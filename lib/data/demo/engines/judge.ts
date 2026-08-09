@@ -14,6 +14,8 @@ import {
 } from "@/lib/mocks/judge";
 import { MockDataError } from "@/lib/data/demo/errors";
 import { delay, jitter } from "@/lib/data/demo/helpers";
+import { recordDemoActivity } from "@/lib/demo/activity";
+import { trackDemoEvent } from "@/lib/demo/analytics";
 
 /**
  * Local demo judge service.
@@ -136,6 +138,14 @@ export async function submit(
     stored.compile_output = graded.compile_output;
     stored.cases = graded.cases;
     stored.graded_at = new Date().toISOString();
+    recordDemoActivity("judge_submitted", `${graded.verdict} on a judge problem`, {
+      problem_id: stored.problem_id,
+      verdict: graded.verdict ?? "",
+    });
+    trackDemoEvent("judge_submitted", {
+      problem_id: stored.problem_id,
+      verdict: graded.verdict ?? "",
+    });
   }, readyAt - Date.now());
 
   return {

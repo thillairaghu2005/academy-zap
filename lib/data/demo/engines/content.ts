@@ -13,7 +13,11 @@ import {
   MOCK_COURSES,
   MOCK_EXPIRED_MANIFEST_LESSON_ID,
 } from "@/lib/mocks/courses";
-import { mockCompletedLessons, mockEnrollments } from "@/lib/mocks/store";
+import {
+  mockCompletedLessons,
+  mockEnrollments,
+  persistProgressStore,
+} from "@/lib/mocks/store";
 import { MockDataError } from "@/lib/data/demo/errors";
 import { delay, jitter } from "@/lib/data/demo/helpers";
 import { entitlementsForUser } from "@/lib/mocks/commerce";
@@ -299,6 +303,7 @@ export async function enroll(courseId: string, userId: string): Promise<Enrollme
   };
   mockEnrollments.set(enrollmentKey(userId, courseId), enrollment);
   mockCompletedLessons.set(`${userId}:${courseId}`, new Set());
+  persistProgressStore();
   return enrollment;
 }
 
@@ -393,6 +398,7 @@ export async function recordProgress(
     updated_at: new Date().toISOString(),
   };
   mockEnrollments.set(enrollmentKey(input.userId, input.courseId), enrollment);
+  persistProgressStore();
 
   return withDerivedProgress(enrollment, input.userId);
 }

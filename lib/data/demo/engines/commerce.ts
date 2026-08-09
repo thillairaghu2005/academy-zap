@@ -32,24 +32,30 @@ import type {
 } from "@/lib/contracts/commerce";
 import { CHECKOUT_DEMO_503 } from "@/lib/config";
 import {
+  applyDemoCoupon,
   cartForUser,
+  clearDemoCoupon,
   createCheckoutSession,
   deliverWebhook,
+  DEMO_COUPONS,
   entitlementsForUser,
   getCatalogProduct as mockGetCatalogProduct,
   getCheckoutSession,
   getOrderByCheckoutId,
+  listOrdersForUser,
   MOCK_CATALOG,
   MOCK_DEMO_USER_ID,
   MOCK_PLANS,
   MOCK_SUBSCRIPTION,
   persistCart,
-  recomputeTotal,
+  recomputeTotalCents,
+  refreshCouponDiscount,
   seedDemoCart,
   seedDemoSession,
 } from "@/lib/mocks/commerce";
 import { MockDataError } from "@/lib/data/demo/errors";
 import { delay, jitter } from "@/lib/data/demo/helpers";
+import { recordDemoActivity } from "@/lib/demo/activity";
 
 /* ------------------------------------------------------------------ */
 /*  Cart                                                               */
@@ -86,7 +92,8 @@ export async function addToCart(
       unit_price_cents: product.price_cents,
       quantity,
     } satisfies CartItem);
-  cart.total_cents = recomputeTotal(cart.items);
+  refreshCouponDiscount(cart);
+  cart.total_cents = recomputeTotalCents(cart);
   cart.updated_at = new Date().toISOString();
   persistCart(cart);
   return cart;
@@ -99,10 +106,64 @@ export async function removeFromCart(
   await delay(jitter(140));
   const cart = cartForUser(userId);
   cart.items = cart.items.filter((i) => i.product_id !== productId);
-  cart.total_cents = recomputeTotal(cart.items);
+  refreshCouponDiscount(cart);
+  cart.total_cents = recomputeTotalCents(cart);
   cart.updated_at = new Date().toISOString();
   persistCart(cart);
   return cart;
+}
+
+/* ------------------------------------------------------------------ */
+/*  Coupons (Task 4 — demo promo simulation)                           */
+/* ------------------------------------------------------------------ */
+
+/** Apply a promo code to the cart (e.g. ZAP10 → 10% off). */
+export async function applyCoupon(
+  userId: string,
+  code: string,
+): Promise<{
+  applied: boolean;
+  code: string | null;
+  discount_cents: number;
+  label?: string;
+  cart: Cart;
+}> {
+  await delay(jitter(140));
+  if (userId === MOCK_DEMO_USER_ID) seedDemoCart();
+  const cart = cartForUser(userId);
+  const result = applyDemoCoupon(cart, code);
+  persistCart(cart);
+  return { ...result, cart };
+}
+
+/** Remove the applied coupon and restore the subtotal total. */
+export async function removeCoupon(userId: string): Promise<Cart> {
+  await delay(jitter(120));
+  const cart = cartForUser(userId);
+  clearDemoCoupon(cart);
+  persistCart(cart);
+  return cart;
+}
+
+/** Read-only list of demo promo codes the cart page can advertise. */
+export async function listDemoCoupons(): Promise<
+  Record<string, { percent: number; label: string }>
+> {
+  await delay(jitter(60));
+  return DEMO_COUPONS;
+}
+
+/* ------------------------------------------------------------------ */
+/*  Order history (Task 4 — learner-facing receipts list)              */
+/* ------------------------------------------------------------------ */
+
+/** The learner's paid orders, newest first. */
+export async function getOrderHistory(userId: string): Promise<Order[]> {
+  await delay(jitter(180));
+  if (userId === "boom") {
+    throw new MockDataError("orders_down", "Order history unavailable (simulated).", 503);
+  }
+  return listOrdersForUser(userId);
 }
 
 /* ------------------------------------------------------------------ */
@@ -187,7 +248,14 @@ export async function simulatePaymentCompletion(
       410,
     );
   }
-  return deliverWebhook(checkoutId, "succeeded");
+  const result = deliverWebhook(checkoutId, "succeeded");
+  if (result.order && result.order.status === "paid" && !result.duplicated) {
+    recordDemoActivity("order_paid", "Purchase completed", {
+      order_id: result.order.order_id,
+      amount_cents: result.order.amount_cents,
+    });
+  }
+  return result;
 }
 
 /**

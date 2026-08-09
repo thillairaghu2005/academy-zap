@@ -29,8 +29,27 @@ import type {
   Seat,
   Subscription,
 } from "@/lib/contracts/commerce";
+import {
+  DEMO_STORAGE_KEYS,
+  readDemoStorage,
+  writeDemoStorage,
+} from "@/lib/demo/storage";
 
 export const MOCK_DEMO_USER_ID = "demo-user-001";
+
+/* ------------------------------------------------------------------ */
+/*  Demo coupons (Task 4 — local commerce simulation)                  */
+/*                                                                    */
+/*  Deterministic codes a visitor can type at checkout. Discounts are  */
+/*  stored on the persisted cart and flow through to the checkout      */
+/*  session amount like a real promo line.                            */
+/* ------------------------------------------------------------------ */
+
+export const DEMO_COUPONS: Record<string, { percent: number; label: string }> = {
+  ZAP10: { percent: 10, label: "Zapster 10% off" },
+  ZAP25: { percent: 25, label: "Zapster 25% off" },
+  HUNT: { percent: 15, label: "Launch-week 15% off" },
+};
 
 /* ------------------------------------------------------------------ */
 /*  Catalog — courses/labs/plans that can be purchased                 */
@@ -89,6 +108,43 @@ export const mockOrders = new Map<string, Order>();
 /** Entitlements are isolated by user first, then product. */
 export const mockEntitlements = new Map<string, Map<string, Entitlement>>();
 
+/* ------------------------------------------------------------------ */
+/*  Order history persistence (Task 4)                                 */
+/*                                                                    */
+/*  mockOrders is the `orders` table stand-in. The demo persists paid   */
+/*  orders so the purchase history survives page loads; seed rows are   */
+/*  hydrated first and user-created orders merge on top.               */
+/* ------------------------------------------------------------------ */
+
+function hydrateOrders(): void {
+  if (typeof window === "undefined") return;
+  const persisted = readDemoStorage<Order[] | null>(
+    DEMO_STORAGE_KEYS.commerce,
+    null,
+  );
+  if (!Array.isArray(persisted)) return;
+  for (const order of persisted) {
+    if (order && typeof order === "object" && order.order_id) {
+      mockOrders.set(order.order_id, order);
+    }
+  }
+}
+
+/** Persist every order (called after any order write). */
+export function persistOrders(): void {
+  if (typeof window === "undefined") return;
+  writeDemoStorage(DEMO_STORAGE_KEYS.commerce, [...mockOrders.values()]);
+}
+
+hydrateOrders();
+
+/** The demo user's orders, newest first (the learner-facing order history). */
+export function listOrdersForUser(userId: string): Order[] {
+  return [...mockOrders.values()]
+    .filter((order) => order.user_id === userId && order.status === "paid")
+    .sort((a, b) => b.created_at.localeCompare(a.created_at));
+}
+
 function entitlementsForStoredUser(userId: string): Map<string, Entitlement> {
   let entitlements = mockEntitlements.get(userId);
   if (!entitlements) {
@@ -109,6 +165,12 @@ function entitlementsForStoredUser(userId: string): Map<string, Entitlement> {
 
 const CART_STORAGE_KEY = "zapsters.mock.cart";
 
+/** DemoCart extends Cart with the local promo fields (never in the contract). */
+export interface DemoCart extends Cart {
+  coupon_code?: string | null;
+  discount_cents?: number;
+}
+
 function loadPersistedCart(): void {
   if (typeof window === "undefined") return;
   try {
@@ -117,11 +179,15 @@ function loadPersistedCart(): void {
     const parsed = JSON.parse(raw) as {
       user_id: string;
       items: CartItem[];
+      coupon_code?: string | null;
+      discount_cents?: number;
     };
     if (!parsed || !Array.isArray(parsed.items)) return;
-    const cart = cartForUser(parsed.user_id || MOCK_DEMO_USER_ID);
+    const cart = cartForUser(parsed.user_id || MOCK_DEMO_USER_ID) as DemoCart;
     cart.items = parsed.items;
-    cart.total_cents = recomputeTotal(cart.items);
+    if (typeof parsed.coupon_code === "string") cart.coupon_code = parsed.coupon_code;
+    if (typeof parsed.discount_cents === "number") cart.discount_cents = parsed.discount_cents;
+    cart.total_cents = recomputeTotalCents(cart);
     cart.updated_at = new Date().toISOString();
   } catch {
     // Corrupt storage is ignored — the in-memory store stands in.
@@ -131,13 +197,80 @@ function loadPersistedCart(): void {
 export function persistCart(cart: Cart): void {
   if (typeof window === "undefined") return;
   try {
+    const demo = cart as DemoCart;
     window.localStorage.setItem(
       CART_STORAGE_KEY,
-      JSON.stringify({ user_id: cart.user_id, items: cart.items }),
+      JSON.stringify({
+        user_id: cart.user_id,
+        items: cart.items,
+        coupon_code: demo.coupon_code ?? null,
+        discount_cents: demo.discount_cents ?? 0,
+      }),
     );
   } catch {
     // Storage may be unavailable (private mode) — mock keeps working.
   }
+}
+
+/** Subtotal minus the applied coupon discount. */
+export function recomputeTotalCents(cart: Cart): number {
+  const subtotal = recomputeTotal(cart.items);
+  const discount = (cart as DemoCart).discount_cents ?? 0;
+  return Math.max(0, subtotal - discount);
+}
+
+/** Apply a demo coupon to the cart (unknown code → null, no-op). */
+export function applyDemoCoupon(cart: Cart, code: string): {
+  applied: boolean;
+  code: string | null;
+  discount_cents: number;
+  label?: string;
+} {
+  const demo = cart as DemoCart;
+  const normalized = code.trim().toUpperCase();
+  const coupon = DEMO_COUPONS[normalized];
+  if (!coupon) {
+    demo.coupon_code = null;
+    demo.discount_cents = 0;
+    demo.total_cents = recomputeTotalCents(demo);
+    return { applied: false, code: null, discount_cents: 0 };
+  }
+  const subtotal = recomputeTotal(cart.items);
+  demo.coupon_code = normalized;
+  demo.discount_cents = Math.round((subtotal * coupon.percent) / 100);
+  demo.total_cents = recomputeTotalCents(demo);
+  return {
+    applied: true,
+    code: normalized,
+    discount_cents: demo.discount_cents,
+    label: coupon.label,
+  };
+}
+
+/** Remove any applied coupon from the cart. */
+export function clearDemoCoupon(cart: Cart): void {
+  const demo = cart as DemoCart;
+  demo.coupon_code = null;
+  demo.discount_cents = 0;
+  demo.total_cents = recomputeTotalCents(demo);
+}
+
+/**
+ * Re-derive the discount from the stored coupon code. Called after ANY cart
+ * mutation (add/remove/quantity) so the promo stays at the correct percent
+ * of the CURRENT subtotal — a stale discount would silently over/under-apply.
+ */
+export function refreshCouponDiscount(cart: Cart): void {
+  const demo = cart as DemoCart;
+  if (!demo.coupon_code) return;
+  const coupon = DEMO_COUPONS[demo.coupon_code];
+  if (!coupon) {
+    clearDemoCoupon(cart);
+    return;
+  }
+  const subtotal = recomputeTotal(cart.items);
+  demo.discount_cents = Math.round((subtotal * coupon.percent) / 100);
+  demo.total_cents = recomputeTotalCents(demo);
 }
 
 loadPersistedCart();
@@ -184,7 +317,8 @@ export function seedDemoCart(): Cart {
       unit_price_cents: cloud.price_cents,
       quantity: 1,
     });
-    cart.total_cents = recomputeTotal(cart.items);
+    refreshCouponDiscount(cart);
+    cart.total_cents = recomputeTotalCents(cart);
     cart.updated_at = new Date().toISOString();
     persistCart(cart);
   }
@@ -362,6 +496,7 @@ export function deliverWebhook(
     idempotency_key: session.idempotency_key,
   };
   mockOrders.set(orderId, order);
+  persistOrders();
 
   const event: PaymentEvent = {
     event_type: isFailure ? "payment.failed" : "payment.succeeded",
@@ -390,8 +525,10 @@ export function deliverWebhook(
     const cart = cartForUser(session.cart.user_id);
     const purchased = new Set(session.cart.items.map((i) => i.product_id));
     cart.items = cart.items.filter((i) => !purchased.has(i.product_id));
-    cart.total_cents = recomputeTotal(cart.items);
+    clearDemoCoupon(cart); // a completed order consumes the promo line
+    cart.total_cents = recomputeTotalCents(cart);
     cart.updated_at = now;
+    persistCart(cart);
   }
 
   session.status = isFailure ? "failed" : "paid";
@@ -456,13 +593,30 @@ function seedOrder(
   });
 }
 
+const DEMO_ORDER_FIXTURE_IDS = [
+  "ord-demo-1",
+  "ord-demo-2",
+  "ord-demo-3",
+  "ord-demo-4",
+  "ord-demo-5",
+] as const;
+
+/**
+ * Seed the admin order fixtures exactly once per browser session. Guarded by
+ * fixture ids (not total size) so persisted user purchases from hydrateOrders
+ * never suppress — or mix with — the demo rows.
+ */
 export function seedDemoOrders(): void {
-  if (mockOrders.size >= 5) return;
+  const alreadySeeded = DEMO_ORDER_FIXTURE_IDS.every((id) =>
+    mockOrders.has(id),
+  );
+  if (alreadySeeded) return;
   seedOrder("ord-demo-1", MOCK_DEMO_USER_ID, 129900, "paid", "Cloud Security Essentials", 3);
   seedOrder("ord-demo-2", MOCK_DEMO_USER_ID, 99900, "paid", "React & TypeScript Deep Dive", 12);
   seedOrder("ord-demo-3", "7f3b2c4d-1a9e-4f6b-8c0d-5e2a9f3b7c81", 89900, "refunded", "Data Structures & Algorithms in Go", 20);
   seedOrder("ord-demo-4", "0a2f9e3b-5c6d-4a7b-9e0f-1b3c5d7e9f01", 149900, "failed", "Offensive Web App Testing", 1);
   seedOrder("ord-demo-5", "5f1a9e3b-2c4d-4f6b-8c0d-7e2a9f3b1c81", 1200, "paid", "Race the Clock (lab pass)", 0, "stripe");
+  persistOrders();
 }
 
 /* ------------------------------------------------------------------ */

@@ -6,6 +6,9 @@ import { SessionProvider } from "@/components/providers/session-provider";
 import { ServiceWorkerProvider } from "@/components/providers/service-worker-provider";
 import { ThemeProvider } from "@/components/providers/theme-provider";
 import { MotionProvider } from "@/components/providers/motion-provider";
+import { LiveRegionProvider } from "@/components/providers/live-region-provider";
+import { DemoAnalyticsProvider } from "@/components/providers/demo-analytics-provider";
+import { DemoPreferencesProvider } from "@/components/providers/demo-preferences-provider";
 import { Toaster } from "@/components/ui/sonner";
 
 export const metadata: Metadata = {
@@ -86,14 +89,20 @@ export default function RootLayout({
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />
       </head>
       <body className="min-h-full">
-        <MotionProvider>
-          <ThemeProvider>
-            <QueryProvider>
-              <SessionProvider>{children}</SessionProvider>
-            </QueryProvider>
-            <Toaster />
-          </ThemeProvider>
-        </MotionProvider>
+        <LiveRegionProvider>
+          <MotionProvider>
+            <ThemeProvider>
+              <QueryProvider>
+                <DemoPreferencesProvider>
+                  <DemoAnalyticsProvider>
+                    <SessionProvider>{children}</SessionProvider>
+                  </DemoAnalyticsProvider>
+                </DemoPreferencesProvider>
+              </QueryProvider>
+              <Toaster />
+            </ThemeProvider>
+          </MotionProvider>
+        </LiveRegionProvider>
         <ServiceWorkerProvider />
       </body>
     </html>

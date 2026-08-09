@@ -1,5 +1,6 @@
 "use client";
 
+import * as React from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
@@ -25,12 +26,14 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { DemoSettings } from "@/components/demo/demo-settings";
 import { useSession } from "@/components/providers/session-provider";
 import { getInitials } from "@/lib/utils";
 
 export function UserMenu() {
   const { user, logout } = useSession();
   const router = useRouter();
+  const [menuOpen, setMenuOpen] = React.useState(false);
 
   if (!user) return null;
 
@@ -40,7 +43,7 @@ export function UserMenu() {
   };
 
   return (
-    <DropdownMenu>
+    <DropdownMenu open={menuOpen} onOpenChange={setMenuOpen}>
       <DropdownMenuTrigger asChild>
         <button
           className="flex items-center gap-2 rounded-full border border-border bg-card py-1 pl-1 pr-2.5 outline-none transition-colors hover:bg-accent focus-visible:ring-2 focus-visible:ring-ring"
@@ -96,6 +99,12 @@ export function UserMenu() {
             Support
           </Link>
         </DropdownMenuItem>
+        <DropdownMenuSeparator />
+        {/* Close the menu before opening the settings dialog so the two
+            portals never stack (demo settings is a full Dialog). */}
+        <div onClick={() => setMenuOpen(false)}>
+          <DemoSettings />
+        </div>
         {user.role === "admin" && (
           <>
             <DropdownMenuSeparator />

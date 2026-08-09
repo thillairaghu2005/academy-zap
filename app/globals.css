@@ -200,6 +200,51 @@
     }
   }
 
+  /* ------------------------------------------------------------ */
+  /* Demo display preferences (persisted, see DemoPreferences)    */
+  /*                                                              */
+  /* `data-density="compact"` tightens the spacing/radius rhythm  */
+  /* used by the spacing utilities, giving the whole app a denser */
+  /* layout without touching component classes.                   */
+  /* `data-reduce-data="true"` turns off decorative background    */
+  /* layers and expensive effects for low-power / data-conscious  */
+  /* viewing — the app stays fully functional, just lighter.      */
+  /* ------------------------------------------------------------ */
+
+  html[data-density="compact"] {
+    --spacing: 0.2rem;
+    --radius-sm: 0.3125rem;
+    --radius-md: 0.625rem;
+    --radius-lg: 0.8125rem;
+    --radius-xl: 1rem;
+    --radius-2xl: 1.125rem;
+  }
+
+  html[data-density="compact"] .font-display {
+    letter-spacing: -0.045em;
+  }
+
+  html[data-reduce-data="true"] body {
+    background-image: none;
+  }
+
+  html[data-reduce-data="true"] .bg-grid,
+  html[data-reduce-data="true"] .bg-grid-dark,
+  html[data-reduce-data="true"] .bg-noise,
+  html[data-reduce-data="true"] .aurora,
+  html[data-reduce-data="true"] [class*="blur-3xl"],
+  html[data-reduce-data="true"] [class*="blur-2xl"],
+  html[data-reduce-data="true"] [class*="blur-xl"] {
+    background-image: none !important;
+    display: none !important;
+  }
+
+  html[data-reduce-data="true"] *, html[data-reduce-data="true"] *::before,
+  html[data-reduce-data="true"] *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+  }
+
   ::selection {
     background: rgb(37 99 235 / 12%);
     color: var(--color-primary-deep);

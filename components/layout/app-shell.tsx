@@ -5,6 +5,7 @@ import * as React from "react";
 import { TopNav } from "@/components/layout/top-nav";
 import { SideNav } from "@/components/layout/side-nav";
 import { BottomNavigation } from "@/components/layout/bottom-navigation";
+import { NavigationTour } from "@/components/demo/navigation-tour";
 import { AuthGuard } from "@/components/providers/auth-guard";
 
 /**
@@ -29,6 +30,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           </main>
         </div>
         <BottomNavigation />
+        <NavigationTour />
       </div>
     </AuthGuard>
   );

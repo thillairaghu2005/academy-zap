@@ -13,10 +13,13 @@ import {
   MOCK_LABS_BY_ID,
   mockLabSessions,
   nextHintServerSide,
+  persistLabSessions,
   type StoredLabSession,
 } from "@/lib/mocks/labs";
 import { MockDataError } from "@/lib/data/demo/errors";
 import { delay, jitter } from "@/lib/data/demo/helpers";
+import { recordDemoActivity } from "@/lib/demo/activity";
+import { trackDemoEvent } from "@/lib/demo/analytics";
 
 /**
  * Local demo lab service.
@@ -124,6 +127,11 @@ export async function provisionSession(
     ...session,
     discovered: new Set(),
   });
+  persistLabSessions();
+  recordDemoActivity("lab_started", `${lab.title} started`, {
+    lab_id: lab.id,
+  });
+  trackDemoEvent("lab_started", { lab_id: lab.id });
 
   // Simulated provision → running transition (microVM boot).
   const readyAt = Date.now() + 1200 + Math.floor(Math.random() * 900);
@@ -189,6 +197,7 @@ export async function terminateSession(
   assertSessionOwner(session, userId);
   session.status = "terminated";
   session.ended_at = new Date().toISOString();
+  persistLabSessions();
 }
 
 /** Server-side objective check (the "scoped read against session state"). */
@@ -261,6 +270,11 @@ export async function completeSession(
   }
   session.status = "completed";
   session.ended_at = new Date().toISOString();
+  persistLabSessions();
+  recordDemoActivity("lab_completed", `${lab?.title ?? "Lab"} completed`, {
+    lab_id: session.lab_id,
+    objectives: session.objectives_completed.length,
+  });
   return {
     event_type: "lab.session_completed",
     lab_id: session.lab_id,

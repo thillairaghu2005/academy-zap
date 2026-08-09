@@ -6,6 +6,11 @@ import type {
   ComboState,
   GradeResult,
 } from "@/lib/contracts/assessment";
+import {
+  DEMO_STORAGE_KEYS,
+  readDemoStorage,
+  writeDemoStorage,
+} from "@/lib/demo/storage";
 import { gradeSubmission } from "@/lib/mocks/judge";
 
 /**
@@ -219,6 +224,36 @@ export const MOCK_BOOM_ASSESSMENT_ID = "boom";
 /** In-memory attempt store — the mock's `assessment_submissions` table. */
 export const mockAttempts = new Map<string, AssessmentAttempt>();
 
+/* ------------------------------------------------------------------ */
+/*  Attempt persistence (demo state)                                   */
+/*                                                                    */
+/*  Attempts are the assessment_submissions table stand-in; persisting  */
+/*  them lets the attempt history and "attempts used" counter survive  */
+/*  page loads. Hydration runs on the client only.                     */
+/* ------------------------------------------------------------------ */
+
+function hydrateAttempts(): void {
+  if (typeof window === "undefined") return;
+  const persisted = readDemoStorage<Record<string, AssessmentAttempt> | null>(
+    DEMO_STORAGE_KEYS.attempts,
+    null,
+  );
+  if (!persisted || typeof persisted !== "object") return;
+  for (const [id, attempt] of Object.entries(persisted)) {
+    if (attempt && typeof attempt === "object") mockAttempts.set(id, attempt);
+  }
+}
+
+/** Persist the attempt store (called after every attempt write). */
+export function persistAttempts(): void {
+  if (typeof window === "undefined") return;
+  const snapshot: Record<string, AssessmentAttempt> = {};
+  for (const [id, attempt] of mockAttempts) snapshot[id] = attempt;
+  writeDemoStorage(DEMO_STORAGE_KEYS.attempts, snapshot);
+}
+
+hydrateAttempts();
+
 /** Question answer keys used by the local grading reference. */
 const ANSWER_KEYS: Record<string, { option?: number; accepted?: string[] }> = {
   "q-mcq-ping": { option: 2 }, // ICMP
@@ -257,6 +292,7 @@ export function gradeAnswerServerSide(
       submitted_at: new Date().toISOString(),
     });
     result.combo = comboFor(attempt); // after increment
+    persistAttempts();
   } else if (attempt && !result.correct) {
     attempt.answers.push({
       question_id: submission.question_id,
@@ -265,6 +301,7 @@ export function gradeAnswerServerSide(
       submitted_at: new Date().toISOString(),
     });
     result.combo = { count: 0, multiplier: 1, best: attempt ? bestCombo(attempt) : 0 };
+    persistAttempts();
   }
   return result;
 }
@@ -385,5 +422,6 @@ export function enforceAttemptTimeout(attempt: AssessmentAttempt): void {
     Date.now() > new Date(attempt.expires_at).getTime()
   ) {
     attempt.status = "expired";
+    persistAttempts();
   }
 }

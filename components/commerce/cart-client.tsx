@@ -15,14 +15,19 @@ import {
   Plus,
   ShieldCheck,
   ShoppingCart,
+  TicketPercent,
   TriangleAlert,
   Trash2,
+  X,
 } from "lucide-react";
 
 import {
   addToCart,
+  applyCoupon,
   createCheckout,
   getCart,
+  listDemoCoupons,
+  removeCoupon,
   removeFromCart,
 } from "@/lib/data/demo/commerce";
 import { MockDataError } from "@/lib/data/demo/errors";
@@ -71,6 +76,30 @@ export function CartClient() {
 
   const removeMutation = useMutation({
     mutationFn: (productId: string) => removeFromCart(userId, productId),
+    onSuccess: invalidate,
+    onError: (error: Error) => toast.error(error.message),
+  });
+
+  const [couponInput, setCouponInput] = React.useState("");
+  const couponQuery = useQuery({
+    queryKey: ["demo-coupons"],
+    queryFn: listDemoCoupons,
+  });
+  const applyCouponMutation = useMutation({
+    mutationFn: (code: string) => applyCoupon(userId, code),
+    onSuccess: (result) => {
+      setCouponInput("");
+      invalidate();
+      if (result.applied && result.label) {
+        toast.success(`${result.label} applied — ${formatMoney(result.discount_cents)} off.`);
+      } else {
+        toast.error("That promo code isn't valid in the demo.");
+      }
+    },
+    onError: (error: Error) => toast.error(error.message),
+  });
+  const removeCouponMutation = useMutation({
+    mutationFn: () => removeCoupon(userId),
     onSuccess: invalidate,
     onError: (error: Error) => toast.error(error.message),
   });
@@ -278,9 +307,31 @@ export function CartClient() {
               <div className="flex items-center justify-between text-sm text-muted-foreground">
                 <span>Subtotal</span>
                 <span className="font-medium text-foreground">
-                  {formatMoney(cart.total_cents)}
+                  {formatMoney(
+                    cart.items.reduce(
+                      (sum, item) => sum + item.unit_price_cents * item.quantity,
+                      0,
+                    ),
+                  )}
                 </span>
               </div>
+
+              {/* Demo coupon — promo code simulation (Task 4) */}
+              <CouponField
+                appliedCode={
+                  (cart as { coupon_code?: string | null }).coupon_code ?? null
+                }
+                discountCents={
+                  (cart as { discount_cents?: number }).discount_cents ?? 0
+                }
+                input={couponInput}
+                onInputChange={setCouponInput}
+                onApply={() => applyCouponMutation.mutate(couponInput)}
+                onRemove={() => removeCouponMutation.mutate()}
+                pending={applyCouponMutation.isPending || removeCouponMutation.isPending}
+                suggestions={Object.keys(couponQuery.data ?? {})}
+              />
+
               <div className="flex items-center justify-between border-t border-border pt-3 text-sm">
                 <span className="font-medium">Total</span>
                 <span className="font-display text-h3">
@@ -394,5 +445,96 @@ export function CartClient() {
         </div>
       </div>
     </PageContainer>
+  );
+}
+
+function CouponField({
+  appliedCode,
+  discountCents,
+  input,
+  onInputChange,
+  onApply,
+  onRemove,
+  pending,
+  suggestions,
+}: {
+  appliedCode: string | null;
+  discountCents: number;
+  input: string;
+  onInputChange: (value: string) => void;
+  onApply: () => void;
+  onRemove: () => void;
+  pending: boolean;
+  suggestions: string[];
+}) {
+  if (appliedCode) {
+    return (
+      <div className="flex items-center justify-between gap-2 rounded-lg border border-success/25 bg-success/5 px-3 py-2 text-xs">
+        <span className="flex min-w-0 items-center gap-1.5 font-medium text-success-strong">
+          <TicketPercent className="size-3.5 shrink-0" />
+          <span className="truncate">{appliedCode}</span>
+          <span className="text-muted-foreground">· −{formatMoney(discountCents)}</span>
+        </span>
+        <button
+          type="button"
+          onClick={onRemove}
+          disabled={pending}
+          aria-label={`Remove coupon ${appliedCode}`}
+          className="shrink-0 rounded p-0.5 text-muted-foreground outline-none transition-colors hover:text-destructive focus-visible:ring-2 focus-visible:ring-ring"
+        >
+          <X className="size-3.5" />
+        </button>
+      </div>
+    );
+  }
+
+  return (
+    <div className="flex flex-col gap-1.5">
+      <label htmlFor="coupon-code" className="flex items-center gap-1.5 text-caption font-medium text-muted-foreground">
+        <TicketPercent className="size-3.5" />
+        Promo code
+      </label>
+      <div className="flex gap-2">
+        <input
+          id="coupon-code"
+          value={input}
+          onChange={(event) => onInputChange(event.target.value)}
+          onKeyDown={(event) => {
+            if (event.key === "Enter") {
+              event.preventDefault();
+              onApply();
+            }
+          }}
+          placeholder="Try ZAP10 or HUNT"
+          className="h-9 min-w-0 flex-1 rounded-md border border-input bg-background px-3 text-sm outline-none transition-colors placeholder:text-muted-foreground/60 focus-visible:ring-2 focus-visible:ring-ring"
+        />
+        <Button
+          variant="secondary"
+          size="sm"
+          className="shrink-0"
+          disabled={pending || !input.trim()}
+          onClick={onApply}
+        >
+          {pending ? <LoaderCircle className="size-3.5 animate-spin" /> : "Apply"}
+        </Button>
+      </div>
+      {suggestions.length > 0 ? (
+        <p className="text-caption text-muted-foreground">
+          Try{" "}
+          {suggestions.map((code, index) => (
+            <React.Fragment key={code}>
+              {index > 0 ? " · " : ""}
+              <button
+                type="button"
+                onClick={() => onInputChange(code)}
+                className="rounded font-mono text-xs font-medium text-primary underline-offset-2 outline-none hover:underline focus-visible:ring-2 focus-visible:ring-ring"
+              >
+                {code}
+              </button>
+            </React.Fragment>
+          ))}
+        </p>
+      ) : null}
+    </div>
   );
 }

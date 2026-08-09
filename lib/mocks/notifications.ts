@@ -1,4 +1,9 @@
 import type { NotificationEvent } from "@/lib/contracts/notification";
+import {
+  DEMO_STORAGE_KEYS,
+  readDemoStorage,
+  writeDemoStorage,
+} from "@/lib/demo/storage";
 
 export const MOCK_NOTIFICATIONS: NotificationEvent[] = [
   { id: "notification-course", type: "course_available", category: "learning", title: "New course in your path", body: "Cloud Security Essentials is ready when you are.", created_at: "2026-08-06T08:42:00Z", href: "/courses", read: false },
@@ -19,14 +24,30 @@ const readNotificationIds = new Set(
   MOCK_NOTIFICATIONS.filter((notification) => notification.read).map((notification) => notification.id),
 );
 
+/** Persist the read set so the badge stays accurate across page loads. */
+function persistReadIds(): void {
+  writeDemoStorage(DEMO_STORAGE_KEYS.notificationReads, [...readNotificationIds]);
+}
+
+/** Hydrate the read set from the browser (the demo's notifications table). */
+function hydrateReadIds(): void {
+  const persisted = readDemoStorage<string[]>(DEMO_STORAGE_KEYS.notificationReads, []);
+  if (!Array.isArray(persisted)) return;
+  for (const id of persisted) readNotificationIds.add(id);
+}
+
+hydrateReadIds();
+
 export function isNotificationRead(id: string): boolean {
   return readNotificationIds.has(id);
 }
 
 export function markNotificationReadInMock(id: string): void {
   readNotificationIds.add(id);
+  persistReadIds();
 }
 
 export function markAllNotificationsReadInMock(): void {
   MOCK_NOTIFICATIONS.forEach((notification) => readNotificationIds.add(notification.id));
+  persistReadIds();
 }

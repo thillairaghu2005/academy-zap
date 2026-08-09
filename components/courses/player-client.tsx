@@ -7,6 +7,8 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import {
   ArrowLeft,
+  Award,
+  Bookmark,
   Captions,
   CaptionsOff,
   Check,
@@ -18,6 +20,8 @@ import {
   Gauge,
   LoaderCircle,
   PlayCircle,
+  Search,
+  StickyNote,
 } from "lucide-react";
 
 import type { Course, CourseLesson } from "@/lib/contracts/content";
@@ -28,6 +32,7 @@ import {
 } from "@/lib/data/demo/content";
 import { MockDataError } from "@/lib/data/demo/errors";
 import { useSession } from "@/components/providers/session-provider";
+import { useAnnounce } from "@/components/providers/live-region-provider";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import {
@@ -43,6 +48,14 @@ import {
   cacheCourseForOffline,
   isCourseCached,
 } from "@/lib/offline/course-cache";
+import {
+  getLessonNote,
+  isCourseBookmarked,
+  saveLessonNote,
+  toggleCourseBookmark,
+} from "@/lib/demo/course-notes";
+import { CertificateDialog } from "@/components/courses/certificate-dialog";
+import { trackDemoEvent } from "@/lib/demo/analytics";
 
 // video.js is not SSR-safe — load the wrapper only on the client.
 const VideoPlayer = dynamic(
@@ -102,6 +115,7 @@ function ArticleBody({ lesson }: { lesson: CourseLesson }) {
 export function PlayerClient({ course }: { course: Course }) {
   const { user } = useSession();
   const queryClient = useQueryClient();
+  const announce = useAnnounce();
   const userId = user?.id ?? "";
 
   const allLessons = course.syllabus.flatMap((section) => section.lessons);
@@ -113,6 +127,11 @@ export function PlayerClient({ course }: { course: Course }) {
   const [collapsedSections, setCollapsedSections] = React.useState<
     Record<string, boolean>
   >({});
+  const [bookmarked, setBookmarked] = React.useState(() =>
+    isCourseBookmarked(course.id),
+  );
+  const [lessonSearch, setLessonSearch] = React.useState("");
+  const [certificateOpen, setCertificateOpen] = React.useState(false);
 
   React.useEffect(() => {
     let cancelled = false;
@@ -129,6 +148,7 @@ export function PlayerClient({ course }: { course: Course }) {
     try {
       await cacheCourseForOffline(course);
       setOfflineSaved(true);
+      announce("Course saved for offline reading");
       toast.success("Course lessons saved for offline reading.");
     } catch (error) {
       toast.error(
@@ -140,6 +160,26 @@ export function PlayerClient({ course }: { course: Course }) {
       setOfflineSaving(false);
     }
   };
+
+  const handleToggleBookmark = () => {
+    const nowBookmarked = toggleCourseBookmark(course.id);
+    setBookmarked(nowBookmarked);
+    announce(nowBookmarked ? "Course bookmarked" : "Bookmark removed");
+    toast(nowBookmarked ? "Course bookmarked ⭐" : "Bookmark removed");
+  };
+
+  const filteredLessons = React.useMemo(() => {
+    const query = lessonSearch.trim().toLowerCase();
+    if (!query) return null;
+    const matches = new Set(
+      allLessons
+        .filter((lesson) => lesson.title.toLowerCase().includes(query))
+        .map((lesson) => lesson.id),
+    );
+    return matches.size > 0 ? matches : new Set<string>();
+  }, [lessonSearch, allLessons]);
+  const hasSearch = filteredLessons !== null;
+  const noSearchResults = hasSearch && filteredLessons!.size === 0;
 
   const {
     data: progress,
@@ -198,6 +238,7 @@ export function PlayerClient({ course }: { course: Course }) {
         queryKey: ["course-progress", course.id, userId],
       });
       if (input.completed) {
+        trackDemoEvent("lesson_completed", { course_id: course.id });
         toast.success("Lesson marked complete ⚡", { position: "top-center" });
       }
     },
@@ -224,6 +265,8 @@ export function PlayerClient({ course }: { course: Course }) {
   };
 
   const isActiveCompleted = activeLesson ? completedSet.has(activeLesson.id) : false;
+  const isCourseComplete = enrollment?.status === "completed" ||
+    (allLessons.length > 0 && completedSet.size >= allLessons.length);
 
   // Speed control via the player instance.
   const [speed, setSpeed] = React.useState(1);
@@ -297,6 +340,30 @@ export function PlayerClient({ course }: { course: Course }) {
             Open offline
           </Link>
         ) : null}
+        <Button
+          variant={bookmarked ? "secondary" : "outline"}
+          size="sm"
+          onClick={handleToggleBookmark}
+          aria-pressed={bookmarked}
+          aria-label={
+            bookmarked
+              ? "Remove course bookmark"
+              : "Bookmark this course"
+          }
+        >
+          <Bookmark className={cn("size-4", bookmarked && "fill-current")} />
+          {bookmarked ? "Bookmarked" : "Bookmark"}
+        </Button>
+        {isCourseComplete ? (
+          <Button
+            variant="gradient"
+            size="sm"
+            onClick={() => setCertificateOpen(true)}
+          >
+            <Award className="size-4" />
+            Certificate
+          </Button>
+        ) : null}
         <div className="min-w-0 flex-1">
           <p className="truncate text-sm font-medium">{course.title}</p>
           <p className="truncate text-xs text-muted-foreground">
@@ -319,6 +386,12 @@ export function PlayerClient({ course }: { course: Course }) {
       <div className="flex flex-1 flex-col lg:flex-row">
         {/* Player / article main column */}
         <div className="flex-1 p-4 sm:p-8 lg:p-10">
+          <CertificateDialog
+            open={certificateOpen}
+            onOpenChange={setCertificateOpen}
+            course={course}
+            learnerName={user?.display_name ?? "Zapster"}
+          />
           {progressLoading ? (
             <PlayerSkeleton />
           ) : progressError ? (
@@ -340,6 +413,12 @@ export function PlayerClient({ course }: { course: Course }) {
                       completed: !isActiveCompleted,
                     })
                   }
+                />
+                <LessonNotes
+                  key={activeLesson.id}
+                  courseId={course.id}
+                  lessonId={activeLesson.id}
+                  lessonTitle={activeLesson.title}
                 />
               </div>
             ) : null
@@ -430,6 +509,15 @@ export function PlayerClient({ course }: { course: Course }) {
                   />
                 </div>
               </div>
+
+              {activeLesson ? (
+                <LessonNotes
+                  key={activeLesson.id}
+                  courseId={course.id}
+                  lessonId={activeLesson.id}
+                  lessonTitle={activeLesson.title}
+                />
+              ) : null}
             </div>
           ) : null}
         </div>
@@ -442,8 +530,67 @@ export function PlayerClient({ course }: { course: Course }) {
               {completedSet.size}/{allLessons.length} done
             </span>
           </div>
+
+          {/* Lesson search (Task 4 — richer course UX) */}
+          <div className="border-b border-border px-3 py-2.5">
+            <label htmlFor="lesson-search" className="sr-only">
+              Search lessons
+            </label>
+            <div className="relative">
+              <Search className="pointer-events-none absolute left-2.5 top-1/2 size-3.5 -translate-y-1/2 text-muted-foreground" />
+              <input
+                id="lesson-search"
+                value={lessonSearch}
+                onChange={(event) => setLessonSearch(event.target.value)}
+                placeholder="Search lessons…"
+                className="h-9 w-full rounded-md border border-input bg-surface-1 pl-8 pr-3 text-xs outline-none transition-colors placeholder:text-muted-foreground/60 focus-visible:ring-2 focus-visible:ring-ring"
+              />
+            </div>
+          </div>
+
           <div className="max-h-[60vh] overflow-y-auto px-3 pb-5 lg:max-h-[calc(100vh-6rem)]">
+            {noSearchResults ? (
+              <p className="px-2 py-8 text-center text-xs text-muted-foreground">
+                No lessons match “{lessonSearch.trim()}”.
+              </p>
+            ) : null}
             {course.syllabus.map((section) => {
+              if (hasSearch) {
+                const visible = section.lessons.filter((lesson) =>
+                  filteredLessons!.has(lesson.id),
+                );
+                if (visible.length === 0) return null;
+                return (
+                  <div key={section.id} className="mb-3">
+                    <p className="px-2 pb-1 pt-1 text-caption font-semibold uppercase tracking-wide text-muted-foreground">
+                      {section.title}
+                    </p>
+                    <div className="flex flex-col gap-0.5">
+                      {visible.map((lesson) => (
+                        <button
+                          key={lesson.id}
+                          type="button"
+                          onClick={() => {
+                            setPickedLessonId(lesson.id);
+                            setSpeed(1);
+                          }}
+                          className={cn(
+                            "flex w-full items-center gap-2.5 rounded-md px-2.5 py-2 text-left text-xs transition-colors",
+                            lesson.id === activeLesson?.id
+                              ? "bg-primary/10 text-primary"
+                              : "text-muted-foreground hover:bg-accent/60 hover:text-foreground",
+                          )}
+                        >
+                          <PlayCircle className="size-4 shrink-0" />
+                          <span className="min-w-0 flex-1 truncate">
+                            {lesson.title}
+                          </span>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                );
+              }
               const sectionDone = section.lessons.filter((l) =>
                 completedSet.has(l.id),
               ).length;
@@ -568,5 +715,69 @@ function MarkCompleteButton({
       )}
       {completed ? "Completed" : "Mark complete"}
     </Button>
+  );
+}
+
+/** Per-lesson notes panel — persisted per course/lesson in the browser. */
+function LessonNotes({
+  courseId,
+  lessonId,
+  lessonTitle,
+}: {
+  courseId: string;
+  lessonId: string;
+  lessonTitle: string;
+}) {
+  const [note, setNote] = React.useState(() => getLessonNote(courseId, lessonId));
+  const announce = useAnnounce();
+  const savedRef = React.useRef(false);
+
+  // Debounced autosave — writing a note is a local demo write, no server hop.
+  React.useEffect(() => {
+    if (!savedRef.current) {
+      savedRef.current = true;
+      return;
+    }
+    const timer = window.setTimeout(() => {
+      saveLessonNote(courseId, lessonId, note);
+    }, 500);
+    return () => window.clearTimeout(timer);
+  }, [note, courseId, lessonId]);
+
+  const handleSave = () => {
+    saveLessonNote(courseId, lessonId, note);
+    announce("Note saved");
+  };
+
+  return (
+    <div className="rounded-2xl border border-border bg-card p-4">
+      <div className="flex items-center justify-between gap-2">
+        <label
+          htmlFor={`note-${lessonId}`}
+          className="flex items-center gap-2 text-xs font-semibold text-muted-foreground"
+        >
+          <StickyNote className="size-4 text-primary" />
+          My notes
+        </label>
+        <span className="text-caption text-muted-foreground">
+          {lessonTitle}
+        </span>
+      </div>
+      <textarea
+        id={`note-${lessonId}`}
+        value={note}
+        onChange={(event) => setNote(event.target.value)}
+        onBlur={handleSave}
+        placeholder="Jot down what you want to remember from this lesson…"
+        rows={4}
+        className="mt-3 w-full resize-y rounded-lg border border-input bg-surface-1 p-3 text-sm leading-relaxed outline-none transition-colors placeholder:text-muted-foreground/50 focus-visible:ring-2 focus-visible:ring-ring"
+      />
+      <p className="mt-2 flex items-center justify-between text-caption text-muted-foreground">
+        <span>Saved automatically in your browser.</span>
+        <span className={cn(note.trim() && "text-success-strong")}>
+          {note.trim() ? `${note.trim().split(/\s+/).length} words` : "Empty"}
+        </span>
+      </p>
+    </div>
   );
 }

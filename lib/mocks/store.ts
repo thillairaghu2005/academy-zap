@@ -1,5 +1,10 @@
 import type { Enrollment } from "@/lib/contracts/content";
 import {
+  DEMO_STORAGE_KEYS,
+  readDemoStorage,
+  writeDemoStorage,
+} from "@/lib/demo/storage";
+import {
   MOCK_COMPLETED_COURSE_ID,
   MOCK_ENROLLED_COURSE_ID,
   MOCK_FRESH_COURSE_ID,
@@ -74,3 +79,59 @@ mockCompletedLessons.set(`${MOCK_LEARNER.id}:${MOCK_COMPLETED_COURSE_ID}`, new S
 ]));
 
 mockCompletedLessons.set(`${MOCK_LEARNER.id}:${MOCK_FRESH_COURSE_ID}`, new Set());
+
+/* ------------------------------------------------------------------ */
+/*  Progress persistence (demo state)                                  */
+/*                                                                    */
+/*  mockEnrollments / mockCompletedLessons are the in-memory "rows";   */
+/*  the persisted snapshot in localStorage lets progress survive page  */
+/*  loads. Hydration runs on the client only (SSR has no storage),     */
+/*  merges over the seeded fixtures, and every write path in the       */
+/*  content engine calls persistProgressStore().                       */
+/* ------------------------------------------------------------------ */
+
+interface ProgressSnapshot {
+  enrollments: Record<string, Enrollment>;
+  completedLessons: Record<string, string[]>;
+}
+
+function hydrateProgressStore(): void {
+  if (typeof window === "undefined") return;
+  const snapshot = readDemoStorage<ProgressSnapshot | null>(
+    DEMO_STORAGE_KEYS.progress,
+    null,
+  );
+  if (!snapshot || typeof snapshot !== "object") return;
+
+  if (snapshot.enrollments && typeof snapshot.enrollments === "object") {
+    for (const [key, enrollment] of Object.entries(snapshot.enrollments)) {
+      if (enrollment && typeof enrollment === "object") {
+        mockEnrollments.set(key, enrollment as Enrollment);
+      }
+    }
+  }
+  if (snapshot.completedLessons && typeof snapshot.completedLessons === "object") {
+    for (const [key, ids] of Object.entries(snapshot.completedLessons)) {
+      if (Array.isArray(ids)) mockCompletedLessons.set(key, new Set(ids));
+    }
+  }
+}
+
+/** Persist the mutable progress stores (called after every write). */
+export function persistProgressStore(): void {
+  if (typeof window === "undefined") return;
+  const enrollments: Record<string, Enrollment> = {};
+  for (const [key, enrollment] of mockEnrollments) {
+    enrollments[key] = enrollment;
+  }
+  const completedLessons: Record<string, string[]> = {};
+  for (const [key, ids] of mockCompletedLessons) {
+    completedLessons[key] = [...ids];
+  }
+  writeDemoStorage<ProgressSnapshot>(DEMO_STORAGE_KEYS.progress, {
+    enrollments,
+    completedLessons,
+  });
+}
+
+hydrateProgressStore();

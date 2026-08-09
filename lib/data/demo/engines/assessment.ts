@@ -17,10 +17,13 @@ import {
   MOCK_ASSESSMENTS_BY_ID,
   MOCK_BOOM_ASSESSMENT_ID,
   mockAttempts,
+  persistAttempts,
   pointsFor,
 } from "@/lib/mocks/assessment";
 import { MockDataError } from "@/lib/data/demo/errors";
 import { delay, jitter } from "@/lib/data/demo/helpers";
+import { recordDemoActivity } from "@/lib/demo/activity";
+import { trackDemoEvent } from "@/lib/demo/analytics";
 
 /**
  * Local demo assessment service.
@@ -108,6 +111,7 @@ export async function startAttempt(
     submitted_at: null,
   };
   mockAttempts.set(attemptId, attempt);
+  persistAttempts();
   return attempt;
 }
 
@@ -277,6 +281,15 @@ export async function submitAssessment(
   const now = new Date();
   attempt.status = "submitted";
   attempt.submitted_at = now.toISOString();
+  persistAttempts();
+  recordDemoActivity("assessment_submitted", `${assessment.title} submitted`, {
+    assessment_id: attempt.assessment_id,
+    score: attempt.score,
+  });
+  trackDemoEvent("assessment_submitted", {
+    assessment_id: attempt.assessment_id,
+    score: attempt.score,
+  });
   return {
     event_type: "assessment.submitted",
     assessment_id: attempt.assessment_id,
@@ -315,6 +328,7 @@ export async function reportTelemetry(
     const flag = `${event.type}@${event.occurred_at}`;
     if (!attempt.integrity_flags.includes(flag)) {
       attempt.integrity_flags.push(flag);
+      persistAttempts();
     }
   }
   console.info("[integrity-telemetry]", event);

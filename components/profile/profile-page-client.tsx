@@ -15,6 +15,7 @@ import { ErrorState } from "@/components/shared/error-state";
 import { PageContainer } from "@/components/shared/page-container";
 import { SkeletonLines } from "@/components/shared/skeletons";
 import { ProfileCompletion } from "@/components/profile/profile-completion";
+import { OrderHistory } from "@/components/commerce/order-history";
 import { getInitials } from "@/lib/utils";
 
 export function ProfilePageClient() {
@@ -91,6 +92,7 @@ export function ProfilePageClient() {
               <div><p className="text-xs font-medium text-muted-foreground">Goals</p><div className="mt-2 flex flex-wrap gap-2">{profile.learning_goals.map((goal) => <Badge key={goal} variant="outline">{goal}</Badge>)}</div></div>
             </CardContent>
           </Card>
+          <OrderHistory />
           <ProfileEmptyItems profile={profile} />
         </div>
       </div>

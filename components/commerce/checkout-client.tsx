@@ -12,6 +12,7 @@ import {
   CheckCircle2,
   Clock,
   CreditCard,
+  Download,
   FlaskConical,
   Hourglass,
   LoaderCircle,
@@ -34,6 +35,7 @@ import {
   replayWebhook,
   simulatePaymentCompletion,
 } from "@/lib/data/demo/commerce";
+import { downloadReceipt } from "@/lib/demo/receipts";
 import { formatMoney } from "@/lib/format";
 import { DEMO_MODE } from "@/lib/config";
 import { useSession } from "@/components/providers/session-provider";
@@ -292,6 +294,15 @@ function PaidPanel({
       ) : null}
 
       <div className="mt-5 flex flex-wrap items-center justify-center gap-2">
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => order && downloadReceipt(order)}
+          disabled={!order}
+        >
+          <Download className="size-3.5" />
+          Download receipt
+        </Button>
         <Button
           variant="outline"
           size="sm"

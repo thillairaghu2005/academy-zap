@@ -4,6 +4,11 @@ import type {
   LabSession,
   ObjectiveResult,
 } from "@/lib/contracts/lab";
+import {
+  DEMO_STORAGE_KEYS,
+  readDemoStorage,
+  writeDemoStorage,
+} from "@/lib/demo/storage";
 
 /**
  * Lab Engine fixtures + in-memory session store.
@@ -197,6 +202,51 @@ export interface StoredLabSession extends LabSession {
 
 export const mockLabSessions = new Map<string, StoredLabSession>();
 
+/* ------------------------------------------------------------------ */
+/*  Lab session persistence (demo state)                               */
+/*                                                                    */
+/*  Sessions are serialized with their discovered flags (Set → array)  */
+/*  so objective progress survives page loads. Stale provisioning      */
+/*  sessions are dropped on hydrate — only runnable/finished states    */
+/*  carry over, and enforceHardTimeout still applies on read.          */
+/* ------------------------------------------------------------------ */
+
+type SerializedLabSession = Omit<StoredLabSession, "discovered"> & {
+  discovered: string[];
+};
+
+function hydrateLabSessions(): void {
+  if (typeof window === "undefined") return;
+  const persisted = readDemoStorage<Record<string, SerializedLabSession> | null>(
+    DEMO_STORAGE_KEYS.labSessions,
+    null,
+  );
+  if (!persisted || typeof persisted !== "object") return;
+  for (const [id, raw] of Object.entries(persisted)) {
+    if (!raw || typeof raw !== "object") continue;
+    if (raw.status === "provisioning") continue; // stale boot — drop
+    const session: StoredLabSession = {
+      ...raw,
+      discovered: new Set(Array.isArray(raw.discovered) ? raw.discovered : []),
+    };
+    enforceHardTimeout(session);
+    mockLabSessions.set(id, session);
+  }
+}
+
+/** Persist the session store (called after every session write). */
+export function persistLabSessions(): void {
+  if (typeof window === "undefined") return;
+  const snapshot: Record<string, SerializedLabSession> = {};
+  for (const [id, session] of mockLabSessions) {
+    const { discovered, ...rest } = session;
+    snapshot[id] = { ...rest, discovered: [...discovered] };
+  }
+  writeDemoStorage(DEMO_STORAGE_KEYS.labSessions, snapshot);
+}
+
+hydrateLabSessions();
+
 /** Server-side objective check (the "scoped read against session state"). */
 export function checkObjectiveServerSide(
   session: StoredLabSession,
@@ -231,6 +281,7 @@ export function checkObjectiveServerSide(
   };
   // Record the check, newest first.
   session.checks = [result, ...session.checks.filter((c) => c.objective_id !== objectiveId)];
+  persistLabSessions();
   return result;
 }
 
@@ -246,6 +297,7 @@ export function nextHintServerSide(session: StoredLabSession): string {
   if (!next) return "All objectives complete — no hints needed. Nice.";
   session.hints_used += 1;
   const idx = Math.min(session.hints_used - 1, next.hints.length - 1);
+  persistLabSessions();
   return `${next.title}: ${next.hints[Math.max(0, idx)]}`;
 }
 
@@ -262,5 +314,6 @@ export function enforceHardTimeout(session: StoredLabSession): void {
   ) {
     session.status = "timed_out";
     session.ended_at = new Date().toISOString();
+    persistLabSessions();
   }
 }
