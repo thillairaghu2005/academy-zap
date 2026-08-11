@@ -2,7 +2,6 @@
 
 import * as React from "react";
 import { useQuery } from "@tanstack/react-query";
-import { toPng } from "html-to-image";
 import { motion } from "framer-motion";
 import { Check, Download, Loader2, Share2, ShieldCheck, X } from "lucide-react";
 
@@ -48,6 +47,7 @@ export function ShareCardModal({
     if (!cardRef.current || !data) return;
     setDownloading(true);
     try {
+      const { toPng } = await import("html-to-image");
       const png = await toPng(cardRef.current, {
         pixelRatio: 2,
         backgroundColor: "#120b0b",

@@ -45,7 +45,7 @@ function DailyGoal({ xp }: { xp: number }) {
 }
 
 export function ProgressPulse({ userId }: { userId: string }) {
-  const query = useQuery({ queryKey: ["dashboard-progress-pulse", userId], queryFn: () => getProgressContext(userId), enabled: Boolean(userId) });
+  const query = useQuery({ queryKey: ["progress-context", userId], queryFn: () => getProgressContext(userId), enabled: Boolean(userId) });
   if (query.isLoading) return <div className="mt-7 grid gap-4 lg:grid-cols-[1.2fr_0.8fr]"><Card className="h-56 animate-pulse bg-surface-1" /><Card className="h-56 animate-pulse bg-surface-1" /></div>;
   if (query.isError || !query.data) return <Card className="mt-7 border-danger/20 bg-danger/5 p-5 text-sm text-danger-strong" role="alert">Your progress snapshot is temporarily unavailable. Continue learning and refresh to try again.</Card>;
 

@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import dynamic from "next/dynamic";
 import { useQuery } from "@tanstack/react-query";
 import { motion } from "framer-motion";
 import Link from "next/link";
@@ -15,8 +16,15 @@ import { ErrorState } from "@/components/shared/error-state";
 import { EmptyState } from "@/components/shared/empty-state";
 import { PageContainer } from "@/components/shared/page-container";
 import { SkeletonLines } from "@/components/shared/skeletons";
-import { SkillTree } from "@/components/gamification/skill-tree";
 import { cn } from "@/lib/utils";
+
+const SkillTree = dynamic(
+  () => import("@/components/gamification/skill-tree").then((module) => module.SkillTree),
+  {
+    ssr: false,
+    loading: () => <div className="h-[460px] animate-pulse rounded-xl border border-border bg-surface-1" aria-label="Loading skill tree" />,
+  },
+);
 
 /* ------------------------------------------------------------------ */
 /*  Guild board — member rollup + guild-vs-guild (§5.3 GuildRollup).   */
