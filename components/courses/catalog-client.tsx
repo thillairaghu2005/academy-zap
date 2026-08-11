@@ -32,6 +32,11 @@ import type {
 import type { CatalogProduct } from "@/lib/contracts/commerce";
 import { searchCatalog } from "@/lib/data/demo/content";
 import { listCatalogProducts } from "@/lib/data/demo/commerce";
+import {
+  isCourseBookmarked,
+  toggleCourseBookmark,
+} from "@/lib/demo/course-notes";
+import { subscribeDemoStorage } from "@/lib/demo/storage";
 import { DEMO_MODE } from "@/lib/config";
 import { AddToCartButton } from "@/components/commerce/add-to-cart-button";
 import { BuyNowButton } from "@/components/commerce/buy-now-button";
@@ -51,6 +56,7 @@ import { PageContainer } from "@/components/shared/page-container";
 import { EmptyState } from "@/components/shared/empty-state";
 import { ErrorState } from "@/components/shared/error-state";
 import { SkeletonCourseGrid } from "@/components/shared/skeletons";
+import { useDemoPreferences } from "@/components/providers/demo-preferences-provider";
 
 /*
  * Catalog UX spec, distilled from the supplied reference:
@@ -402,7 +408,13 @@ function CourseCard({
   view?: "grid" | "list";
 }) {
   const difficulty = course.level.charAt(0).toUpperCase() + course.level.slice(1);
-  const [saved, setSaved] = React.useState(false);
+  const [saved, setSaved] = React.useState(() => isCourseBookmarked(course.id));
+
+  React.useEffect(() => {
+    const syncBookmark = () => setSaved(isCourseBookmarked(course.id));
+    syncBookmark();
+    return subscribeDemoStorage(syncBookmark);
+  }, [course.id]);
 
   return (
     <Card
@@ -437,7 +449,7 @@ function CourseCard({
           type="button"
           aria-label={saved ? `Remove ${course.title} from saved courses` : `Save ${course.title}`}
           aria-pressed={saved}
-          onClick={() => setSaved((current) => !current)}
+           onClick={() => setSaved(toggleCourseBookmark(course.id))}
           className="absolute right-5 top-5 z-10 grid size-9 place-items-center rounded-full border border-white/80 bg-white/75 text-muted-foreground shadow-sm backdrop-blur-sm transition-colors hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
         >
           {saved ? <BookmarkCheck className="size-4 text-primary" /> : <Bookmark className="size-4" />}
@@ -567,7 +579,7 @@ export function CatalogClient({
   const [certificateIncluded, setCertificateIncluded] = React.useState(searchParams.get("certificate") === "1");
   const [minRating, setMinRating] = React.useState(Number.isFinite(initialMinRating) ? initialMinRating : 0);
   const [sort, setSort] = React.useState<CourseSort>(SORT_OPTIONS.some((option) => option.value === initialSort) ? initialSort : "popular");
-  const [view, setView] = React.useState<"grid" | "list">("grid");
+  const { catalogView: view, setCatalogView: setView } = useDemoPreferences();
   const [page, setPage] = React.useState(1);
 
   const debouncedQuery = useDebouncedValue(query, 300);

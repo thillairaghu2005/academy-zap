@@ -1,5 +1,14 @@
 export type ExperienceLevel = "beginner" | "intermediate" | "advanced";
 
+export interface ProfileEditorValues {
+  display_name: string;
+  bio: string;
+  skill_tags: string[];
+  learning_goals: string[];
+  experience_level: ExperienceLevel;
+  weekly_goal_hours: number;
+}
+
 export type ProfileChecklistKey =
   | "avatar"
   | "bio"

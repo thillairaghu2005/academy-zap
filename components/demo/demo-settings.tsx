@@ -8,6 +8,7 @@ import {
   Activity,
   BarChart3,
   Database,
+  Download,
   ExternalLink,
   FlaskConical,
   Gauge,
@@ -17,6 +18,7 @@ import {
   Sparkles,
   Trophy,
   WifiOff,
+  Upload,
 } from "lucide-react";
 
 import {
@@ -25,6 +27,7 @@ import {
   trackDemoEvent,
 } from "@/lib/demo/analytics";
 import { getDemoActivity } from "@/lib/demo/activity";
+import { downloadDemoBackup, importDemoBackup } from "@/lib/demo/backup";
 import {
   resetDemoStorage,
   subscribeDemoStorage,
@@ -145,6 +148,7 @@ export function DemoSettings() {
   const [activity, setActivity] = React.useState(() =>
     getDemoActivity().slice(-8).reverse(),
   );
+  const backupInputRef = React.useRef<HTMLInputElement>(null);
 
   // Keep the analytics + activity readouts live when other tabs mutate the
   // demo stores (or this dialog stays open across events).
@@ -310,6 +314,44 @@ export function DemoSettings() {
                 ))}
               </ul>
             )}
+          </div>
+
+          <div className="flex flex-col gap-2">
+            <p className="flex items-center gap-1.5 text-caption font-semibold uppercase tracking-widest text-muted-foreground/60">
+              <Database className="size-3.5" />
+              Local backup
+            </p>
+            <p className="text-xs leading-relaxed text-muted-foreground">
+              Move your progress, notes, bookmarks, preferences, and demo activity between browsers. No data leaves this device.
+            </p>
+            <div className="flex flex-wrap gap-2">
+              <Button variant="outline" size="sm" onClick={() => { downloadDemoBackup(); toast.success("Demo backup downloaded."); }}>
+                <Download className="size-3.5" /> Export data
+              </Button>
+              <Button variant="outline" size="sm" onClick={() => backupInputRef.current?.click()}>
+                <Upload className="size-3.5" /> Import data
+              </Button>
+              <input
+                ref={backupInputRef}
+                type="file"
+                accept="application/json,.json"
+                className="hidden"
+                onChange={async (event) => {
+                  const file = event.target.files?.[0];
+                  event.target.value = "";
+                  if (!file) return;
+                  try {
+                    importDemoBackup(await file.text());
+                    queryClient.clear();
+                    announce("Demo backup imported");
+                    toast.success("Demo backup imported — reloading.");
+                    window.setTimeout(() => window.location.reload(), 400);
+                  } catch (error) {
+                    toast.error(error instanceof Error ? error.message : "Could not import that backup.");
+                  }
+                }}
+              />
+            </div>
           </div>
 
           {/* Demo-state quick links */}

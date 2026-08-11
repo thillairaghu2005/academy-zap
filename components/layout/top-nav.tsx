@@ -20,6 +20,7 @@ import { NotificationCenter } from "@/components/layout/notification-center";
 import { OfflineIndicator } from "@/components/layout/offline-indicator";
 import { RankXpChip } from "@/components/gamification/rank-xp-chip";
 import { Logo } from "@/components/layout/logo";
+import { KeyboardShortcuts } from "@/components/layout/keyboard-shortcuts";
 
 const BREADCRUMB_LABELS: Record<string, string> = {
   dashboard: "Dashboard",
@@ -119,6 +120,8 @@ export function TopNav() {
 
           {/* Notification center — mock event feed until push/SSE lands */}
           <NotificationCenter />
+
+          <KeyboardShortcuts />
 
           <Tooltip>
             <TooltipTrigger asChild>

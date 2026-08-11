@@ -73,6 +73,7 @@ export function GlobalSearch({ className }: { className?: string }) {
   const debouncedQuery = useDebouncedValue(query, 220);
 
   React.useEffect(() => {
+    const openSearch = () => setOpen(true);
     const onKeyDown = (event: KeyboardEvent) => {
       if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "k") {
         event.preventDefault();
@@ -80,7 +81,11 @@ export function GlobalSearch({ className }: { className?: string }) {
       }
     };
     window.addEventListener("keydown", onKeyDown);
-    return () => window.removeEventListener("keydown", onKeyDown);
+    window.addEventListener("zapsters:open-search", openSearch);
+    return () => {
+      window.removeEventListener("keydown", onKeyDown);
+      window.removeEventListener("zapsters:open-search", openSearch);
+    };
   }, []);
 
   const search = useQuery({
@@ -105,13 +110,13 @@ export function GlobalSearch({ className }: { className?: string }) {
       <Button
         variant="ghost"
         size="sm"
-        className={cn("hidden text-muted-foreground md:inline-flex", className)}
+        className={cn("text-muted-foreground", className)}
         onClick={() => setOpen(true)}
         aria-label="Search courses, problems, labs, assessments, and mentors"
       >
         <Search />
-        <span>Search</span>
-        <kbd className="ml-1 rounded border border-border bg-secondary px-1.5 py-0.5 font-mono text-[10px] text-muted-foreground">
+        <span className="hidden sm:inline">Search</span>
+        <kbd className="ml-1 hidden rounded border border-border bg-secondary px-1.5 py-0.5 font-mono text-[10px] text-muted-foreground sm:inline">
           ⌘K / Ctrl K
         </kbd>
       </Button>

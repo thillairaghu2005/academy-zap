@@ -5,8 +5,12 @@ import dynamic from "next/dynamic";
 import Link from "next/link";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
+import rehypeSanitize from "rehype-sanitize";
 import {
   ArrowLeft,
+  ArrowRight,
   Award,
   Bookmark,
   Captions,
@@ -81,33 +85,41 @@ function PlayerSkeleton() {
 
 /** Mock article body for the frontend demo. */
 function ArticleBody({ lesson }: { lesson: CourseLesson }) {
+  const body = lesson.preview_body?.trim() || `## ${lesson.title}
+
+This lesson turns the idea into a practical skill. Read the notes below, try the example in your own environment, and finish by marking the lesson complete.
+
+### What to remember
+
+- Start with the smallest useful experiment.
+- Observe the result before changing more variables.
+- Capture the pattern in your notes so it is easy to reuse.
+
+
+\`\`\`python
+def practice_step(value: str) -> str:
+    return f"observed: {value.strip()}"
+\`\`\`
+
+The next lesson builds on this foundation with a more realistic scenario.`;
   return (
     <div className="rounded-3xl border border-border bg-card p-6 shadow-[0_10px_30px_rgb(17_24_39_/_5%)] sm:p-10">
       <div className="flex items-center gap-2 text-xs text-muted-foreground">
         <FileText className="size-4" />
-        Article lesson · ~{lesson.duration_seconds} words · 5 min read
+        Article lesson · {lesson.duration_seconds ? `${Math.max(1, Math.round(lesson.duration_seconds / 60))} min read` : "self-paced"}
       </div>
       <h2 className="mt-3 font-display text-h2">
         {lesson.title}
       </h2>
-      <p className="mt-4 text-sm leading-relaxed text-muted-foreground">
-        This is a placeholder article body rendered for the lesson type. In
-        the real Content Engine this text ships as authored markdown with the
-        course payload — the same contract, no client-side mockery.
-      </p>
-      <div className="mt-4 rounded-2xl border border-border bg-surface-1 p-4 font-mono text-xs leading-relaxed text-muted-foreground">
-        $ python3 -c &quot;print(&apos;mock content payload&apos;)&quot;
-        <br />
-        mock content payload
+      <div className="prose prose-slate mt-6 max-w-none text-sm leading-7 text-muted-foreground [&_code]:rounded-md [&_code]:bg-secondary [&_code]:px-1.5 [&_code]:py-0.5 [&_code]:font-mono [&_code]:text-xs [&_h3]:mt-7 [&_h3]:font-display [&_h3]:text-lg [&_h3]:font-semibold [&_h3]:text-foreground [&_li]:my-1 [&_pre]:my-5 [&_pre]:overflow-x-auto [&_pre]:rounded-2xl [&_pre]:border [&_pre]:border-border [&_pre]:bg-surface-1 [&_pre]:p-4 [&_pre]:font-mono [&_pre]:text-xs [&_pre]:leading-6 [&_pre_code]:bg-transparent [&_pre_code]:p-0 [&_strong]:text-foreground">
+        <ReactMarkdown remarkPlugins={[remarkGfm]} rehypePlugins={[rehypeSanitize]}>
+          {body}
+        </ReactMarkdown>
       </div>
-      <p className="mt-4 text-sm leading-relaxed text-muted-foreground">
-        Reading an article counts toward course progress the same way a video
-        does — completing it is recorded through the same{" "}
-        <code className="rounded bg-secondary px-1 py-0.5 font-mono text-[11px]">
-          recordProgress
-        </code>{" "}
-         local demo data service the player uses.
-      </p>
+      <div className="mt-7 rounded-2xl border border-primary/15 bg-primary/5 p-4 text-sm text-muted-foreground">
+        <p className="font-semibold text-foreground">Make it stick</p>
+        <p className="mt-1 leading-relaxed">Write one observation in your notes, then apply the idea in the next lesson or a Judge challenge.</p>
+      </div>
     </div>
   );
 }
@@ -200,6 +212,9 @@ export function PlayerClient({ course }: { course: Course }) {
     allLessons.find((l) => l.id === enrollment?.last_lesson_id) ??
     allLessons[0];
   const activeLessonId = activeLesson?.id ?? null;
+  const activeLessonIndex = activeLesson ? allLessons.findIndex((lesson) => lesson.id === activeLesson.id) : -1;
+  const previousLesson = activeLessonIndex > 0 ? allLessons[activeLessonIndex - 1] ?? null : null;
+  const nextLesson = activeLessonIndex >= 0 && activeLessonIndex < allLessons.length - 1 ? allLessons[activeLessonIndex + 1] ?? null : null;
 
   const isVideo = activeLesson?.kind === "video";
 
@@ -420,6 +435,7 @@ export function PlayerClient({ course }: { course: Course }) {
                   lessonId={activeLesson.id}
                   lessonTitle={activeLesson.title}
                 />
+                <LessonNavigation previous={previousLesson} next={nextLesson} onSelect={setPickedLessonId} />
               </div>
             ) : null
           ) : manifestQuery.isLoading ? (
@@ -511,15 +527,19 @@ export function PlayerClient({ course }: { course: Course }) {
               </div>
 
               {activeLesson ? (
-                <LessonNotes
-                  key={activeLesson.id}
-                  courseId={course.id}
-                  lessonId={activeLesson.id}
-                  lessonTitle={activeLesson.title}
-                />
+                <>
+                  <LessonNotes
+                    key={activeLesson.id}
+                    courseId={course.id}
+                    lessonId={activeLesson.id}
+                    lessonTitle={activeLesson.title}
+                  />
+                  <LessonNavigation previous={previousLesson} next={nextLesson} onSelect={setPickedLessonId} />
+                </>
               ) : null}
             </div>
           ) : null}
+          {isCourseComplete ? <CourseCompletionSummary course={course} lessonCount={allLessons.length} /> : null}
         </div>
 
         {/* Lesson sidebar */}
@@ -685,6 +705,42 @@ export function PlayerClient({ course }: { course: Course }) {
             })}
           </div>
         </aside>
+      </div>
+    </div>
+  );
+}
+
+function LessonNavigation({
+  previous,
+  next,
+  onSelect,
+}: {
+  previous: CourseLesson | null;
+  next: CourseLesson | null;
+  onSelect: (lessonId: string) => void;
+}) {
+  return (
+    <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-border bg-card p-3">
+      {previous ? <Button variant="outline" size="sm" onClick={() => onSelect(previous.id)}><ArrowLeft className="size-4" /> Previous</Button> : <span />}
+      {next ? <Button size="sm" onClick={() => onSelect(next.id)}>Next lesson <ArrowRight className="size-4" /></Button> : <span className="text-xs font-medium text-success-strong">Course content complete</span>}
+    </div>
+  );
+}
+
+function CourseCompletionSummary({ course, lessonCount }: { course: Course; lessonCount: number }) {
+  return (
+    <div className="mt-5 rounded-3xl border border-success/20 bg-success/5 p-5 sm:p-6">
+      <div className="flex flex-wrap items-start justify-between gap-4">
+        <div>
+          <p className="text-xs font-semibold uppercase tracking-[0.14em] text-success-strong">Milestone unlocked</p>
+          <h2 className="mt-2 font-display text-xl font-semibold">You completed {course.title}</h2>
+          <p className="mt-1 text-sm text-muted-foreground">{lessonCount} lessons completed. Your certificate is ready from the top bar.</p>
+        </div>
+        <CheckCircle2 className="size-7 text-success-strong" />
+      </div>
+      <div className="mt-5 flex flex-wrap gap-2">
+        <Button variant="outline" size="sm" asChild><Link href="/rank"><Award className="size-4" /> View progress</Link></Button>
+        <Button variant="outline" size="sm" asChild><Link href="/courses">Find your next course <ArrowRight className="size-4" /></Link></Button>
       </div>
     </div>
   );

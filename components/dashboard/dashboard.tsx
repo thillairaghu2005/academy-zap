@@ -17,6 +17,7 @@ import {
 import { PageContainer } from "@/components/shared/page-container";
 import { MyLearning } from "@/components/dashboard/my-learning";
 import { useSession } from "@/components/providers/session-provider";
+import { OnboardingDialog } from "@/components/dashboard/onboarding-dialog";
 
 function SurfaceCard({ surface }: { surface: SurfaceMeta }) {
   const Icon = surface.icon;
@@ -76,6 +77,7 @@ export function Dashboard() {
 
   return (
     <PageContainer className="pt-8 sm:pt-10">
+      <OnboardingDialog />
       {/* Hero */}
       <motion.section
         initial={reducedMotion ? false : { opacity: 0, y: 16 }}

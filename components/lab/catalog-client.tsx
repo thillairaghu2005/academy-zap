@@ -7,6 +7,8 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { motion, useReducedMotion } from "framer-motion";
 import {
   FlaskConical,
+  Bookmark,
+  BookmarkCheck,
   Hourglass,
   LoaderCircle,
   Monitor,
@@ -39,6 +41,8 @@ import { EmptyState } from "@/components/shared/empty-state";
 import { ErrorState } from "@/components/shared/error-state";
 import { SkeletonLabGrid } from "@/components/shared/skeletons";
 import { cn } from "@/lib/utils";
+import { isLabBookmarked, toggleLabBookmark } from "@/lib/demo/lab-bookmarks";
+import { subscribeDemoStorage } from "@/lib/demo/storage";
 
 /* ------------------------------------------------------------------ */
 /*  Lab catalog — the F3 landing surface.                              */
@@ -83,14 +87,19 @@ function LabCard({
   product?: CatalogProduct;
 }) {
   const reducedMotion = useReducedMotion() ?? false;
+  const [bookmarked, setBookmarked] = React.useState(() => isLabBookmarked(lab.id));
   const diff = DIFFICULTY_STYLES[lab.difficulty];
+  React.useEffect(() => {
+    const sync = () => setBookmarked(isLabBookmarked(lab.id));
+    return subscribeDemoStorage(sync);
+  }, [lab.id]);
   return (
     <motion.div
       initial={reducedMotion ? false : { opacity: 0, y: 12 }}
       animate={reducedMotion ? undefined : { opacity: 1, y: 0 }}
       transition={reducedMotion ? undefined : { delay: 0.04 * index, duration: 0.35, ease: "easeOut" }}
     >
-      <Card className="group flex h-full flex-col overflow-hidden transition-all duration-200 group-hover:-translate-y-0.5 group-hover:border-primary/30 group-hover:shadow-[0_18px_40px_rgb(37_99_235_/_10%)]">
+      <Card className="group relative flex h-full flex-col overflow-hidden transition-all duration-200 group-hover:-translate-y-0.5 group-hover:border-primary/30 group-hover:shadow-[0_18px_40px_rgb(37_99_235_/_10%)]">
         <Link
           href={`/labs/${lab.id}`}
           className="flex-1 outline-none focus-visible:ring-2 focus-visible:ring-ring"
@@ -150,6 +159,10 @@ function LabCard({
             </div>
           </CardContent>
         </Link>
+
+        <button type="button" onClick={() => setBookmarked(toggleLabBookmark(lab.id))} className="absolute left-3 top-3 z-10 grid size-8 place-items-center rounded-full border border-white/80 bg-white/80 text-muted-foreground shadow-sm backdrop-blur-sm hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring" aria-label={bookmarked ? `Remove ${lab.title} from bookmarks` : `Bookmark ${lab.title}`} aria-pressed={bookmarked}>
+          {bookmarked ? <BookmarkCheck className="size-3.5 text-primary" /> : <Bookmark className="size-3.5" />}
+        </button>
 
         {/* Purchasable lab pass → Buy now + Add to cart (Task 3) */}
         {product ? (

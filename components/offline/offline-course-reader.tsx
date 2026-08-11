@@ -2,6 +2,9 @@
 
 import * as React from "react";
 import Link from "next/link";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
+import rehypeSanitize from "rehype-sanitize";
 import {
   BookOpen,
   Check,
@@ -207,6 +210,15 @@ export function OfflineCourseReader({ courseId }: { courseId: string }) {
 }
 
 function ArticleCard({ lesson, course }: { lesson: CourseLesson; course: Course }) {
+  const body = lesson.preview_body?.trim() || `## ${lesson.title}
+
+This lesson is available offline as part of your saved course. Review the idea, write down one practical takeaway, and return online when you are ready to continue with video content.
+
+### Offline study checklist
+
+- Read the lesson summary.
+- Capture one useful example in your notes.
+- Mark the next online session you want to complete.`;
   return (
     <article className="rounded-3xl border border-border bg-card p-6 sm:p-10">
       <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
@@ -216,15 +228,8 @@ function ArticleCard({ lesson, course }: { lesson: CourseLesson; course: Course 
         <span>{lesson.title}</span>
       </div>
       <h2 className="mt-4 font-display text-h2">{lesson.title}</h2>
-      <p className="mt-4 text-sm leading-relaxed text-muted-foreground">
-        This lesson was saved on this device for offline reading. Videos are
-        not streamed while offline — article lessons and the syllabus remain
-        fully readable.
-      </p>
-      <div className="mt-4 rounded-2xl border border-border bg-surface-1 p-4 font-mono text-xs leading-relaxed text-muted-foreground">
-        $ echo &quot;offline course material — saved on this device&quot;
-        <br />
-        offline course material — saved on this device
+      <div className="prose prose-slate mt-5 max-w-none text-sm leading-7 text-muted-foreground [&_h3]:mt-6 [&_h3]:font-display [&_h3]:text-lg [&_h3]:font-semibold [&_h3]:text-foreground [&_li]:my-1 [&_strong]:text-foreground">
+        <ReactMarkdown remarkPlugins={[remarkGfm]} rehypePlugins={[rehypeSanitize]}>{body}</ReactMarkdown>
       </div>
       <div className="mt-6 flex items-center gap-2 rounded-xl border border-success/20 bg-success/5 px-4 py-3 text-xs text-success-strong">
         <Check className="size-4" />

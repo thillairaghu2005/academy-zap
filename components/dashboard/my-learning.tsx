@@ -27,6 +27,7 @@ import { Progress } from "@/components/ui/progress";
 import { EmptyState } from "@/components/shared/empty-state";
 import { ErrorState } from "@/components/shared/error-state";
 import { cn } from "@/lib/utils";
+import { LearningInsights } from "@/components/dashboard/learning-insights";
 
 function coverGradient(hue: number): string {
   void hue;
@@ -503,6 +504,7 @@ export function MyLearning() {
                     </div>
                    ) : null}
                    <LearningJourney items={data} />
+                   <LearningInsights items={data} />
                  </div>
                );
             })()}

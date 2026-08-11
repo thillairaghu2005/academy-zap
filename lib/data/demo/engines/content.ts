@@ -21,6 +21,7 @@ import {
 import { MockDataError } from "@/lib/data/demo/errors";
 import { delay, jitter } from "@/lib/data/demo/helpers";
 import { entitlementsForUser } from "@/lib/mocks/commerce";
+import { recordDemoActivity } from "@/lib/demo/activity";
 
 export interface CourseProgress {
   enrollment: Enrollment | null;
@@ -399,6 +400,13 @@ export async function recordProgress(
   };
   mockEnrollments.set(enrollmentKey(input.userId, input.courseId), enrollment);
   persistProgressStore();
+
+  if (input.completed) {
+    recordDemoActivity("lesson_completed", `${course.title} lesson completed`, {
+      course_id: course.id,
+      minutes: Math.max(1, Math.round((lesson.duration_seconds || 300) / 60)),
+    });
+  }
 
   return withDerivedProgress(enrollment, input.userId);
 }

@@ -482,6 +482,38 @@ export function ProblemListClient() {
         </div>
       </section>
 
+      {data && data.length > 0 ? (
+        <section className="mt-8 grid gap-4 lg:grid-cols-[1.2fr_0.8fr]" aria-label="Practice queue">
+          {(() => {
+            const next = data.find((problem) => !solvedIds.includes(problem.id)) ?? data[0];
+            if (!next) return null;
+            const topic = next?.topics[0];
+            return (
+              <Card className="relative overflow-hidden border-primary/15 bg-primary/[0.035] p-5 sm:p-6">
+                <div className="absolute -right-12 -top-16 size-48 rounded-full bg-primary/10 blur-3xl" aria-hidden="true" />
+                <div className="relative flex flex-wrap items-start justify-between gap-4">
+                  <div>
+                    <p className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-[0.14em] text-primary"><Sparkles className="size-3.5" /> Practice queue</p>
+                    <h2 className="mt-2 font-display text-xl font-semibold">One focused challenge next</h2>
+                    <p className="mt-1 max-w-xl text-sm leading-relaxed text-muted-foreground">Keep the session small. Start with an unsolved problem, then follow the topic into a short focused set.</p>
+                  </div>
+                  <Button size="sm" asChild><Link href={`/judge/${next.id}`}>Start challenge <ArrowUpRight /></Link></Button>
+                </div>
+                <div className="relative mt-5 flex flex-wrap items-center gap-2 text-xs text-muted-foreground"><span className="rounded-full border border-primary/15 bg-primary/10 px-2.5 py-1 font-medium text-primary">{next.title}</span><span>{next.difficulty}</span>{topic ? <span>· {topic}</span> : null}</div>
+              </Card>
+            );
+          })()}
+          <Card className="p-5 sm:p-6">
+            <p className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-[0.14em] text-primary"><Flame className="size-3.5" /> Weak-topic practice</p>
+            <h2 className="mt-2 font-display text-xl font-semibold">Turn gaps into reps</h2>
+            <p className="mt-1 text-sm leading-relaxed text-muted-foreground">Choose a topic to filter the queue and build confidence one pattern at a time.</p>
+            <div className="mt-4 flex flex-wrap gap-2">
+              {[...new Set(data.flatMap((problem) => problem.topics))].slice(0, 4).map((item) => <Button key={item} variant="outline" size="sm" onClick={() => setTag(item)}>{item}</Button>)}
+            </div>
+          </Card>
+        </section>
+      ) : null}
+
       <div className="mt-8 flex items-center justify-between gap-3">
         <div>
           <p className="font-display text-lg font-semibold tracking-tight text-foreground">Explore challenges</p>

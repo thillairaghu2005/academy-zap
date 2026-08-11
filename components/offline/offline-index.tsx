@@ -2,9 +2,9 @@
 
 import * as React from "react";
 import Link from "next/link";
-import { BookOpen, Download, LoaderCircle, WifiOff } from "lucide-react";
+import { BookOpen, Download, HardDrive, LoaderCircle, Trash2, WifiOff } from "lucide-react";
 
-import { listCachedCoursesOffline, removeCachedCourseOffline } from "@/lib/offline/course-cache";
+import { getCachedCourseOffline, listCachedCoursesOffline, removeCachedCourseOffline } from "@/lib/offline/course-cache";
 import { useAnnounce } from "@/components/providers/live-region-provider";
 import { useOnlineStatus } from "@/hooks/use-online-status";
 import { Button } from "@/components/ui/button";
@@ -19,11 +19,28 @@ export function OfflineIndex() {
   const announce = useAnnounce();
   const online = useOnlineStatus();
   const [courses, setCourses] = React.useState<
-    { course_id: string; cached_at: string }[] | null
+    { course_id: string; cached_at: string; title: string; lessons: number }[] | null
   >(null);
+  const [storage, setStorage] = React.useState<{ usage?: number; quota?: number }>({});
 
   const refresh = React.useCallback(() => {
-    void listCachedCoursesOffline().then(setCourses);
+    void Promise.all([
+      listCachedCoursesOffline().then(async (items) => Promise.all(items.map(async (item) => {
+        const cached = await getCachedCourseOffline(item.course_id);
+        return {
+          ...item,
+          title: cached?.course.title ?? item.course_id,
+          lessons: cached?.course.syllabus.flatMap((section) => section.lessons).length ?? 0,
+        };
+      }))),
+      typeof navigator !== "undefined" && navigator.storage?.estimate ? navigator.storage.estimate() : Promise.resolve({}),
+    ]).then(([items, estimate]) => {
+      setCourses(items);
+      setStorage({
+        usage: "usage" in estimate && typeof estimate.usage === "number" ? estimate.usage : undefined,
+        quota: "quota" in estimate && typeof estimate.quota === "number" ? estimate.quota : undefined,
+      });
+    });
   }, []);
 
   React.useEffect(refresh, [refresh]);
@@ -78,7 +95,12 @@ export function OfflineIndex() {
             }
           />
         ) : (
-          <ul className="flex flex-col gap-2 text-left">
+          <>
+            <div className="mb-4 grid grid-cols-2 gap-3 text-left">
+              <div className="rounded-2xl border border-border bg-card p-4"><p className="text-xs text-muted-foreground">Saved courses</p><p className="mt-1 font-display text-2xl font-semibold">{courses.length}</p></div>
+              <div className="rounded-2xl border border-border bg-card p-4"><p className="flex items-center gap-1 text-xs text-muted-foreground"><HardDrive className="size-3" /> Storage used</p><p className="mt-1 font-display text-2xl font-semibold">{storage.usage ? `${(storage.usage / 1024 / 1024).toFixed(1)} MB` : "Local"}</p>{storage.quota ? <p className="mt-1 text-[10px] text-muted-foreground">of {(storage.quota / 1024 / 1024).toFixed(0)} MB available</p> : null}</div>
+            </div>
+            <ul className="flex flex-col gap-2 text-left">
             {courses.map((course) => (
               <li
                 key={course.course_id}
@@ -87,30 +109,32 @@ export function OfflineIndex() {
                 <span className="grid size-9 shrink-0 place-items-center rounded-lg bg-primary/10 text-primary">
                   <Download className="size-4" />
                 </span>
-                <span className="min-w-0 flex-1">
-                  <span className="block truncate text-sm font-medium">
-                    {course.course_id}
-                  </span>
-                  <span className="block text-caption text-muted-foreground">
-                    Saved {new Date(course.cached_at).toLocaleString()}
-                  </span>
+                  <span className="min-w-0 flex-1">
+                   <span className="block truncate text-sm font-medium">
+                     {course.title}
+                   </span>
+                   <span className="block text-caption text-muted-foreground">
+                     {course.lessons} lessons · Saved {new Date(course.cached_at).toLocaleString()}
+                   </span>
                 </span>
                 <Button variant="outline" size="sm" asChild>
                   <Link href={`/offline/course/${encodeURIComponent(course.course_id)}`}>
                     Read offline
                   </Link>
                 </Button>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => remove(course.course_id)}
-                  aria-label={`Remove offline copy of ${course.course_id}`}
-                >
-                  Remove
-                </Button>
+                   <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => remove(course.course_id)}
+                    aria-label={`Remove offline copy of ${course.course_id}`}
+                  >
+                   <Trash2 className="size-3.5" />
+                   <span className="sr-only">Remove</span>
+                  </Button>
               </li>
             ))}
-          </ul>
+            </ul>
+          </>
         )}
       </div>
 

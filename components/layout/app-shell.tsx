@@ -7,6 +7,7 @@ import { SideNav } from "@/components/layout/side-nav";
 import { BottomNavigation } from "@/components/layout/bottom-navigation";
 import { NavigationTour } from "@/components/demo/navigation-tour";
 import { AuthGuard } from "@/components/providers/auth-guard";
+import { DemoModeBadge } from "@/components/layout/demo-mode-badge";
 
 /**
  * Global app shell (build.md F0). Every authenticated surface renders inside
@@ -23,6 +24,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           Skip to content
         </a>
         <TopNav />
+        <DemoModeBadge />
         <div className="flex min-h-0 flex-1">
           <SideNav />
           <main id="main-content" tabIndex={-1} className="min-w-0 flex-1 pb-20 outline-none lg:pb-0">
