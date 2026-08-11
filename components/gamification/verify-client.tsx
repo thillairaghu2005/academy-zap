@@ -31,7 +31,7 @@ const STATUS_META = {
     text: "text-emerald-700",
     ink: "text-emerald-300",
     ring: "border-emerald-500/40 bg-emerald-500/10",
-    art: "from-red-300 via-rose-400 to-red-600",
+    art: "bg-primary",
     description: "This credential is valid and backed by an intact Zapsters ledger.",
   },
   flagged: {
@@ -40,16 +40,16 @@ const STATUS_META = {
     text: "text-amber-700",
     ink: "text-amber-300",
     ring: "border-amber-500/40 bg-amber-500/10",
-    art: "from-amber-200 via-orange-400 to-rose-500",
+    art: "bg-warning",
     description: "Public trust is paused while the underlying activity is reviewed.",
   },
   revoked: {
     label: "Credential revoked",
     icon: BadgeX,
-    text: "text-rose-700",
-    ink: "text-rose-300",
-    ring: "border-rose-500/40 bg-rose-500/10",
-    art: "from-rose-300 via-red-500 to-red-800",
+    text: "text-primary",
+    ink: "text-primary-light",
+    ring: "border-primary-border bg-primary-muted",
+    art: "bg-primary-deep",
     description: "This credential no longer certifies the underlying achievement.",
   },
 } as const;
@@ -86,11 +86,11 @@ function CredentialArt({
   const Icon = meta.icon;
   return (
     <div
-      className="relative aspect-square overflow-hidden rounded-[1.5rem] border border-white/15 bg-[#2b0b0b] p-5 shadow-2xl shadow-black/30"
+      className="relative aspect-square overflow-hidden rounded-[1.5rem] border border-white/15 bg-primary-deep p-5 shadow-2xl shadow-black/30"
       aria-label={`${badgeName} credential artwork`}
     >
-      <div className={cn("absolute -right-16 -top-16 size-64 rounded-full bg-gradient-to-br opacity-80 blur-2xl", meta.art)} />
-      <div className="absolute -bottom-24 -left-20 size-72 rounded-full bg-primary/40 blur-3xl" />
+      <div className={cn("absolute -right-16 -top-16 size-64 rounded-full opacity-60 blur-2xl", meta.art)} />
+      <div className="absolute -bottom-24 -left-20 size-72 rounded-full bg-primary/20 blur-3xl" />
       <div className="relative flex h-full flex-col justify-between text-white">
         <div className="flex items-start justify-between gap-3">
           <div className="flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.22em] text-white/60">
@@ -102,8 +102,8 @@ function CredentialArt({
           </span>
         </div>
 
-        <div className="mx-auto grid size-44 place-items-center rounded-full border border-white/20 bg-gradient-to-br from-white/20 to-white/5 shadow-[0_0_0_12px_rgba(255,255,255,0.04),0_0_60px_rgba(220,38,38,0.35)] sm:size-52">
-          <div className="grid size-32 place-items-center rounded-full border border-white/30 bg-[#2b0b0b]/70 sm:size-40">
+        <div className="mx-auto grid size-44 place-items-center rounded-full border border-white/20 bg-white/10 shadow-[0_0_0_12px_rgb(255_255_255_/_4%)] sm:size-52">
+          <div className="grid size-32 place-items-center rounded-full border border-white/30 bg-primary-deep/70 sm:size-40">
             <Icon className={cn("size-20", meta.ink)} strokeWidth={1.25} />
           </div>
         </div>

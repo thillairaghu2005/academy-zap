@@ -11,22 +11,25 @@ Components consume semantic tokens instead of page-level color literals.
 | `background` | `#ffffff` |
 | `surface-1` | `#fafafa` |
 | `surface-2` / `card` | `#ffffff` |
-| `surface-3` | `#f7f7f8` |
-| `foreground` | `#171717` |
-| `muted-foreground` | `#6b6b6b` |
-| `border` | `#e8e8ea` |
-| `border-strong` | `#dcdde1` |
-| `primary` | `#8e031a` |
-| `primary-hover` | `#720014` |
-| `secondary-accent` | `#a30a25` |
-| `primary-deep` | `#50000f` |
-| `primary-glow` | `#c11230` |
-| `primary-light` | `#f7e9eb` |
-| `ring` | `#8e031a` |
+| `surface-3` | `#f9fafb` |
+| `foreground` | `#18181b` |
+| `muted-foreground` | `#667085` |
+| `border` | `#e5e7eb` |
+| `border-strong` | `#d0d5dd` |
+| `primary` | `#b4233c` |
+| `primary-hover` | `#941b31` |
+| `secondary-accent` | `#9f1d35` |
+| `primary-deep` | `#6b1224` |
+| `primary-glow` | `#b4233c` |
+| `primary-light` | `#fdf0f2` |
+| `primary-muted` | `#fff5f6` |
+| `card-tint` | `#fff8f8` |
+| `primary-border` | `#f3c7ce` |
+| `ring` | `#b4233c` |
 
 The following values are spec-locked and appear verbatim in the theme definition: verdict
-colors, bronze/silver/gold/platinum/obsidian tier colors, `xp-completion` `#0284c7`,
-`xp-mastery` `#a30a25`, and verified/flagged/reversed/revoked status colors. Additional
+colors, bronze/silver/gold/platinum/obsidian tier colors, `xp-completion` `#b4233c`,
+`xp-mastery` `#941b31`, and verified/flagged/reversed/revoked status colors. Additional
 `*-on-dark` tokens exist for readable small status text without changing the source literals.
 
 ## Typography

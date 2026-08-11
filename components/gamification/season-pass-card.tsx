@@ -51,7 +51,7 @@ export function SeasonPassCard() {
       : 0;
 
   return (
-    <div className="overflow-hidden rounded-2xl border border-border bg-gradient-to-r from-primary/5 via-card to-card">
+    <div className="overflow-hidden rounded-2xl border border-border bg-card">
       <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border bg-card/60 px-5 py-3.5">
         <div className="flex items-center gap-2.5">
           <span className="grid size-8 place-items-center rounded-lg bg-xp-mastery/15 text-xp-mastery">
@@ -85,7 +85,7 @@ export function SeasonPassCard() {
             initial={{ width: 0 }}
             animate={{ width: `${overall * 100}%` }}
             transition={{ duration: 0.9, ease: "easeOut" }}
-            className="absolute left-4 top-3.5 h-0.5 rounded bg-gradient-to-r from-primary to-secondary-accent"
+            className="absolute left-4 top-3.5 h-0.5 rounded bg-primary"
           />
           {data.milestones.map((m) => {
             const reached = m.progress >= 1;
@@ -113,7 +113,7 @@ export function SeasonPassCard() {
                   className={cn(
                     "text-center text-caption font-medium leading-tight",
                     reached
-                      ? "text-red-700"
+                       ? "text-primary"
                       : "text-muted-foreground",
                   )}
                 >

@@ -17,5 +17,5 @@ export function XpFlyout() {
     return () => window.removeEventListener("zapsters:xp-earned", onXp);
   }, []);
 
-  return <div className="pointer-events-none fixed inset-x-0 top-20 z-[60] flex flex-col items-center gap-2" aria-live="polite">{events.map((event) => <div key={event.id} className="flex animate-fade-up items-center gap-2 rounded-full border border-primary/20 bg-card px-4 py-2 text-sm font-semibold text-primary shadow-[0_12px_30px_rgb(142_3_26_/_18%)]"><Sparkles className="size-4" />+{event.amount} XP</div>)}</div>;
+  return <div className="pointer-events-none fixed inset-x-0 top-20 z-[60] flex flex-col items-center gap-2" aria-live="polite">{events.map((event) => <div key={event.id} className="flex animate-fade-up items-center gap-2 rounded-full border border-primary/20 bg-card px-4 py-2 text-sm font-semibold text-primary shadow-[0_4px_12px_rgb(180_35_60_/_15%)]"><Sparkles className="size-4" />+{event.amount} XP</div>)}</div>;
 }

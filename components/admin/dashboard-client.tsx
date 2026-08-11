@@ -27,12 +27,12 @@ import { SkeletonCard } from "@/components/shared/skeletons";
 import { formatDate } from "@/lib/format-admin";
 
 const STATS = [
-  { key: "courses", label: "Courses", href: "/admin/courses", icon: BookOpen, accent: "from-primary to-primary-hover" },
-  { key: "labs", label: "Labs", href: "/admin/labs", icon: FlaskConical, accent: "from-primary to-secondary-accent" },
-  { key: "problems", label: "Problems", href: "/admin/problems", icon: CodeXml, accent: "from-primary to-primary-hover" },
-  { key: "orders", label: "Orders", href: "/admin/orders", icon: ShoppingCart, accent: "from-primary to-secondary-accent" },
-  { key: "users", label: "Users", href: "/admin/users", icon: Users, accent: "from-primary to-primary-hover" },
-  { key: "tickets", label: "Tickets", href: "/admin/support", icon: LifeBuoy, accent: "from-primary to-secondary-accent" },
+  { key: "courses", label: "Courses", href: "/admin/courses", icon: BookOpen, accent: "bg-primary/10 text-primary" },
+  { key: "labs", label: "Labs", href: "/admin/labs", icon: FlaskConical, accent: "bg-primary/10 text-primary" },
+  { key: "problems", label: "Problems", href: "/admin/problems", icon: CodeXml, accent: "bg-primary/10 text-primary" },
+  { key: "orders", label: "Orders", href: "/admin/orders", icon: ShoppingCart, accent: "bg-primary/10 text-primary" },
+  { key: "users", label: "Users", href: "/admin/users", icon: Users, accent: "bg-primary/10 text-primary" },
+  { key: "tickets", label: "Tickets", href: "/admin/support", icon: LifeBuoy, accent: "bg-primary/10 text-primary" },
 ] as const;
 
 export function AdminDashboardClient() {
@@ -88,7 +88,7 @@ export function AdminDashboardClient() {
                   <Card className="h-full transition-all group-hover:-translate-y-0.5 group-hover:border-primary/40 group-hover:shadow-lg group-hover:shadow-primary/5">
                     <CardContent className="flex flex-col gap-3 p-4">
                       <div
-                        className={`grid size-9 place-items-center rounded-lg bg-gradient-to-br ${stat.accent} text-white`}
+                        className={`grid size-9 place-items-center rounded-lg ${stat.accent}`}
                       >
                         <Icon className="size-4" />
                       </div>

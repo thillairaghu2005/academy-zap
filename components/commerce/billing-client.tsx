@@ -49,8 +49,8 @@ const SEAT_STATUS_STYLES: Record<
   },
   suspended: {
     label: "Suspended",
-    className: "border-rose-500/40 bg-rose-500/10 text-rose-700",
-    dot: "bg-rose-500",
+    className: "border-primary-border bg-primary-light text-primary",
+    dot: "bg-primary",
   },
 };
 
@@ -158,13 +158,13 @@ export function BillingClient() {
             "gap-1.5",
             subscription.active
               ? "border-emerald-500/40 bg-emerald-500/10 text-emerald-700"
-              : "border-rose-500/40 bg-rose-500/10 text-rose-700",
+               : "border-primary-border bg-primary-light text-primary",
           )}
         >
           <span
             className={cn(
               "size-1.5 rounded-full",
-              subscription.active ? "bg-emerald-500" : "bg-rose-500",
+               subscription.active ? "bg-emerald-500" : "bg-primary",
             )}
           />
           {subscription.active ? "Active" : "Suspended"}

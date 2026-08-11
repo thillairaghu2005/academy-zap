@@ -32,7 +32,7 @@ export function ErrorState({
       role="alert"
       aria-live="assertive"
       className={cn(
-        "flex animate-fade-up flex-col items-center justify-center rounded-xl border border-destructive/25 bg-[#fff7f7] px-6 py-14 text-center",
+        "flex animate-fade-up flex-col items-center justify-center rounded-xl border border-destructive/25 bg-primary-muted px-6 py-14 text-center",
         className,
       )}
     >

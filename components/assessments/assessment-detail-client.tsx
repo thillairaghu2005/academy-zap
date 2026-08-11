@@ -212,7 +212,7 @@ export function AssessmentDetailClient({
                             q.difficulty === "medium" &&
                               "border-amber-500/40 bg-amber-500/10 text-amber-700",
                             q.difficulty === "hard" &&
-                              "border-rose-500/40 bg-rose-500/10 text-rose-700",
+                              "border-primary-border bg-primary-light text-primary",
                           )}
                         >
                           {q.difficulty}

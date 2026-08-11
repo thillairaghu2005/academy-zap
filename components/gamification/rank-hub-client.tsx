@@ -56,8 +56,8 @@ const LEAGUE_TIER_STYLE: Record<string, string> = {
   bronze: "border-orange-700/40 bg-orange-700/10 text-orange-700",
   silver: "border-slate-400/40 bg-slate-400/10 text-slate-500",
   gold: "border-amber-500/40 bg-amber-500/10 text-amber-700",
-  platinum: "border-rose-500/40 bg-rose-500/10 text-rose-700",
-  obsidian: "border-red-700/40 bg-red-700/10 text-red-800",
+  platinum: "border-primary-border bg-primary-light text-primary",
+  obsidian: "border-primary-deep/40 bg-primary-deep/10 text-primary-deep",
 };
 
 export function RankHubClient() {
@@ -173,13 +173,13 @@ export function RankHubClient() {
             <motion.div
               initial={{ opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}
-              className="relative overflow-hidden rounded-2xl border border-border bg-gradient-to-br from-red-500/10 via-card to-card p-6 shadow-sm"
+              className="relative overflow-hidden rounded-2xl border border-primary-border bg-card-tint p-6 shadow-sm"
             >
-              <div className="absolute -right-16 -top-16 size-64 rounded-full bg-red-500/10 blur-3xl" />
+              <div className="absolute -right-16 -top-16 size-64 rounded-full bg-primary-muted blur-3xl" />
               <div className="relative flex flex-wrap items-start justify-between gap-4">
                 <div>
                   <div className="flex items-center gap-2">
-                    <Trophy className="size-5 text-red-700" />
+                    <Trophy className="size-5 text-primary" />
                     <span className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
                       Current rank
                     </span>
@@ -190,7 +190,7 @@ export function RankHubClient() {
                   <div className="mt-2 flex flex-wrap items-center gap-2">
                     <Badge variant="secondary">Level {ctx.rank.level}</Badge>
                     {ctx.rank.prestige_tier > 0 ? (
-                      <Badge className="border-red-500/40 bg-red-500/10 text-red-700">
+                      <Badge className="border-primary-border bg-primary-light text-primary">
                         <Sparkles className="size-3" /> Prestige{" "}
                         {ctx.rank.prestige_tier}
                       </Badge>
@@ -334,35 +334,35 @@ function DualXpTracks({
   return (
     <div className="relative mt-8 space-y-4">
       <div className="flex items-center justify-between text-xs">
-        <span className="flex items-center gap-1.5 font-medium text-red-700">
+        <span className="flex items-center gap-1.5 font-medium text-primary">
           <BookOpen className="size-3.5" /> Completion XP
         </span>
         <span className="font-mono text-muted-foreground">
           {completion.toLocaleString()} · {cPct.toFixed(0)}%
         </span>
       </div>
-      <div className="h-2 overflow-hidden rounded-full bg-red-500/10">
+      <div className="h-2 overflow-hidden rounded-full bg-primary-light">
         <motion.div
           initial={{ width: 0 }}
           animate={{ width: `${cPct}%` }}
           transition={{ duration: 0.8, ease: "easeOut" }}
-          className="h-full rounded-full bg-gradient-to-r from-red-600 to-red-400"
+          className="h-full rounded-full bg-primary"
         />
       </div>
       <div className="flex items-center justify-between text-xs">
-        <span className="flex items-center gap-1.5 font-medium text-rose-700">
+        <span className="flex items-center gap-1.5 font-medium text-secondary-accent">
           <Sparkles className="size-3.5" /> Mastery XP
         </span>
         <span className="font-mono text-muted-foreground">
           {mastery.toLocaleString()} · {mPct.toFixed(0)}%
         </span>
       </div>
-      <div className="h-2 overflow-hidden rounded-full bg-rose-500/10">
+      <div className="h-2 overflow-hidden rounded-full bg-primary-muted">
         <motion.div
           initial={{ width: 0 }}
           animate={{ width: `${mPct}%` }}
           transition={{ duration: 0.8, ease: "easeOut", delay: 0.1 }}
-          className="h-full rounded-full bg-gradient-to-r from-rose-600 to-red-400"
+          className="h-full rounded-full bg-secondary-accent"
         />
       </div>
       <p className="text-caption text-muted-foreground">
@@ -525,7 +525,7 @@ function LeagueWidget({
               </span>
             ) : null}
             {league.relegation_zone ? (
-              <span className="rounded-md bg-rose-500/10 px-2 py-1 font-medium text-rose-700">
+              <span className="rounded-md bg-primary-light px-2 py-1 font-medium text-primary">
                 Relegation zone
               </span>
             ) : null}
@@ -559,7 +559,7 @@ function GuildWidget({ guild }: { guild: { guild_id: string; member_count: numbe
             {guild.member_count} members ·{" "}
             {guild.combined_xp_this_week.toLocaleString()} XP this week
           </p>
-          <div className="mt-2 inline-flex items-center gap-1.5 rounded-md bg-red-500/10 px-2 py-1 text-caption font-medium text-red-700">
+          <div className="mt-2 inline-flex items-center gap-1.5 rounded-md bg-primary-light px-2 py-1 text-caption font-medium text-primary">
             <Trophy className="size-3" /> Global rank #{guild.guild_rank_global}
           </div>
         </>
@@ -611,7 +611,7 @@ function RankLadderSection({
                 className={cn(
                   "flex items-center gap-4 rounded-xl border px-4 py-3 transition-colors",
                   isCurrent
-                     ? "border-red-500/50 bg-red-500/10"
+                     ? "border-primary-border bg-primary-light"
                     : "border-border bg-card hover:bg-card/70",
                 )}
               >
@@ -619,7 +619,7 @@ function RankLadderSection({
                   className={cn(
                     "grid size-9 shrink-0 place-items-center rounded-lg font-mono text-sm font-bold",
                     isCurrent
-                       ? "bg-red-500 text-white"
+                        ? "bg-primary text-white"
                       : "bg-secondary text-muted-foreground",
                   )}
                 >
@@ -631,7 +631,7 @@ function RankLadderSection({
                       {r.rank_name}
                     </p>
                     {isCurrent ? (
-                      <Badge className="border-red-500/40 bg-red-500/15 text-caption text-red-700">
+                      <Badge className="border-primary-border bg-primary-muted text-caption text-primary">
                         <Medal className="size-3" /> You are here
                       </Badge>
                     ) : null}
@@ -655,11 +655,11 @@ function RankLadderSection({
             viewport={{ once: true }}
             transition={{ delay: 0.4 }}
             className={cn(
-              "mt-1 flex items-center gap-4 rounded-xl border border-dashed border-red-500/40 bg-gradient-to-r from-red-500/5 to-transparent px-4 py-3",
-              currentPrestige > 0 && "border-red-500/60 bg-red-500/10",
+              "mt-1 flex items-center gap-4 rounded-xl border border-dashed border-primary-border bg-primary-muted px-4 py-3",
+              currentPrestige > 0 && "border-primary bg-primary-light",
             )}
           >
-            <span className="grid size-9 shrink-0 place-items-center rounded-lg bg-red-500/20 font-mono text-sm font-bold text-red-700">
+            <span className="grid size-9 shrink-0 place-items-center rounded-lg bg-primary-light font-mono text-sm font-bold text-primary">
               ∞
             </span>
             <div className="min-w-0 flex-1">
@@ -672,7 +672,7 @@ function RankLadderSection({
               </p>
             </div>
             {currentPrestige > 0 ? (
-              <Badge className="border-red-500/40 bg-red-500/15 text-caption text-red-700">
+              <Badge className="border-primary-border bg-primary-muted text-caption text-primary">
                 <Sparkles className="size-3" /> Prestige {currentPrestige}
               </Badge>
             ) : (
@@ -705,9 +705,9 @@ function QuickLink({
   return (
     <button
       onClick={onClick}
-      className="group flex items-center gap-3 rounded-xl border border-border bg-card p-4 text-left transition-colors hover:border-red-500/40 hover:bg-card/70"
+      className="group flex items-center gap-3 rounded-xl border border-border bg-card p-4 text-left transition-colors hover:border-primary-border hover:bg-secondary"
     >
-      <span className="grid size-10 shrink-0 place-items-center rounded-lg bg-secondary text-muted-foreground transition-colors group-hover:bg-red-500/10 group-hover:text-red-700">
+      <span className="grid size-10 shrink-0 place-items-center rounded-lg bg-secondary text-muted-foreground transition-colors group-hover:bg-primary-light group-hover:text-primary">
         <Icon className="size-5" />
       </span>
       <span>

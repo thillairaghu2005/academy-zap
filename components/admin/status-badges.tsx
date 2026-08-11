@@ -34,7 +34,7 @@ export function CourseStatusBadge({ status }: { status: ContentStatus }) {
 export function OrderStatusBadge({ status }: { status: Order["status"] }) {
   const styles: Record<Order["status"], string> = {
     paid: "border-emerald-500/40 bg-emerald-500/10 text-emerald-700",
-    failed: "border-rose-500/40 bg-rose-500/10 text-rose-700",
+    failed: "border-primary-border bg-primary-light text-primary",
     refunded: "border-slate-400/40 bg-slate-500/10 text-slate-500",
   };
   return (
@@ -74,8 +74,8 @@ export function DifficultyBadge({
     beginner: "border-emerald-500/40 bg-emerald-500/10 text-emerald-700",
     medium: "border-amber-500/40 bg-amber-500/10 text-amber-700",
     intermediate: "border-amber-500/40 bg-amber-500/10 text-amber-700",
-    hard: "border-rose-500/40 bg-rose-500/10 text-rose-700",
-    advanced: "border-rose-500/40 bg-rose-500/10 text-rose-700",
+    hard: "border-primary-border bg-primary-light text-primary",
+    advanced: "border-primary-border bg-primary-light text-primary",
   };
   return (
     <span

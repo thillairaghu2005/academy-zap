@@ -534,7 +534,7 @@ export function AssessmentAttemptClient({
                   question.difficulty === "medium" &&
                     "border-amber-500/40 bg-amber-500/10 text-amber-700",
                   question.difficulty === "hard" &&
-                    "border-rose-500/40 bg-rose-500/10 text-rose-700",
+                     "border-primary-border bg-primary-light text-primary",
                 )}
               >
                 {question.difficulty}
@@ -659,13 +659,13 @@ export function AssessmentAttemptClient({
                     "mt-4 flex items-start gap-3 rounded-lg border p-4",
                     lastResult.correct
                       ? "border-emerald-500/30 bg-emerald-500/5"
-                      : "border-rose-500/30 bg-rose-500/5",
+                       : "border-primary-border bg-primary-muted",
                   )}
                 >
                   {lastResult.correct ? (
                     <CheckCircle2 className="mt-0.5 size-5 shrink-0 text-emerald-700" />
                   ) : (
-                    <XCircle className="mt-0.5 size-5 shrink-0 text-rose-700" />
+                    <XCircle className="mt-0.5 size-5 shrink-0 text-primary" />
                   )}
                   <div className="flex min-w-0 flex-1 flex-col gap-1">
                     <p
@@ -673,7 +673,7 @@ export function AssessmentAttemptClient({
                         "text-sm font-semibold",
                         lastResult.correct
                           ? "text-emerald-700"
-                          : "text-rose-700",
+                           : "text-primary",
                       )}
                     >
                       {lastResult.correct

@@ -554,8 +554,8 @@ export function LabSessionClient({
         <div className="mt-6 grid items-start gap-4 lg:grid-cols-[1fr_320px]">
           {/* Terminal / GUI area */}
           <div className="flex flex-col gap-3">
-            <div className="overflow-hidden rounded-xl border border-border bg-[#120b0b] shadow-sm">
-              <div className="flex items-center justify-between border-b border-white/5 bg-[#1b0d0d] px-3.5 py-2">
+            <div className="overflow-hidden rounded-xl border border-border bg-zinc-950 shadow-sm">
+              <div className="flex items-center justify-between border-b border-white/5 bg-zinc-900 px-3.5 py-2">
                 <span className="flex items-center gap-2 text-xs font-medium text-muted-foreground">
                   {lab?.requires_gui ? (
                     <Monitor className="size-3.5 text-emerald-700" />

@@ -40,8 +40,8 @@ function NavLink({
       className={cn(
         "relative flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm transition-[background-color,color,transform] outline-none focus-visible:ring-2 focus-visible:ring-ring",
            active
-          ? "bg-primary/10 font-semibold text-primary shadow-[inset_3px_0_0_var(--color-primary)]"
-          : "text-muted-foreground hover:bg-primary-light hover:text-primary",
+           ? "bg-primary-light font-semibold text-secondary-accent shadow-[inset_3px_0_0_var(--color-primary)]"
+           : "text-muted-foreground hover:bg-secondary hover:text-foreground",
       )}
       aria-current={active ? "page" : undefined}
     >

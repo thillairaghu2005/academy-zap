@@ -37,7 +37,7 @@ const STATUS_STYLE: Record<string, { badge: string; icon: React.ReactNode }> = {
     icon: <ShieldQuestion className="size-3.5" />,
   },
   revoked: {
-    badge: "border-rose-500/40 bg-rose-500/10 text-rose-700",
+    badge: "border-primary-border bg-primary-light text-primary",
     icon: <BadgeX className="size-3.5" />,
   },
 };
@@ -101,7 +101,7 @@ export function BadgeWall() {
                 className={cn(
                   "flex flex-col rounded-xl border bg-card p-5 transition-colors",
                   b.status === "revoked"
-                    ? "border-rose-500/25 opacity-75"
+                        ? "border-primary-border opacity-75"
                     : b.status === "flagged"
                       ? "border-amber-500/25"
                       : "border-border hover:border-emerald-500/30",
@@ -112,7 +112,7 @@ export function BadgeWall() {
                     className={cn(
                       "grid size-11 place-items-center rounded-xl",
                       b.status === "revoked"
-                        ? "bg-rose-500/10 text-rose-700"
+                        ? "bg-primary-light text-primary"
                         : b.status === "flagged"
                           ? "bg-amber-500/10 text-amber-700"
                           : "bg-emerald-500/10 text-emerald-700",

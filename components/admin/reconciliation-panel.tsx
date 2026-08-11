@@ -101,7 +101,7 @@ export function ReconciliationPanel() {
                 "flex items-center gap-2.5 rounded-lg border px-3.5 py-2.5 text-sm font-medium",
                 data.reconciled
                   ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-700"
-                  : "border-rose-500/30 bg-rose-500/10 text-rose-700",
+                  : "border-primary-border bg-primary-light text-primary",
               )}
               role="status"
             >
@@ -135,7 +135,7 @@ export function ReconciliationPanel() {
                 <dd
                   className={cn(
                     "font-display text-small font-bold",
-                    data.reconciled ? "text-emerald-700" : "text-rose-700",
+                    data.reconciled ? "text-emerald-700" : "text-primary",
                   )}
                 >
                   {data.delta_xp > 0 ? "+" : ""}

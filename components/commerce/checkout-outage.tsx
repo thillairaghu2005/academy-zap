@@ -21,9 +21,9 @@ export function CheckoutOutage({
   return (
     <div
       role="alert"
-      className="flex flex-col items-center gap-3 rounded-xl border border-rose-500/25 bg-rose-500/5 px-6 py-8 text-center"
+      className="flex flex-col items-center gap-3 rounded-xl border border-primary-border bg-primary-muted px-6 py-8 text-center"
     >
-      <div className="grid size-12 place-items-center rounded-full border border-rose-500/25 bg-rose-500/10 text-rose-700">
+      <div className="grid size-12 place-items-center rounded-full border border-primary-border bg-primary-light text-primary">
         <ServerCrash className="size-5" />
       </div>
       <div>

@@ -10,16 +10,16 @@ const buttonVariants = cva(
     variants: {
       variant: {
         default:
-          "bg-primary text-primary-foreground shadow-[0_4px_12px_rgb(80_0_15_/_14%)] hover:-translate-y-px hover:bg-primary-hover hover:shadow-[0_7px_16px_rgb(80_0_15_/_18%)] active:translate-y-0 active:bg-primary-deep",
+            "bg-primary text-primary-foreground shadow-[0_4px_12px_rgb(180_35_60_/_15%)] hover:bg-primary-hover hover:shadow-[0_4px_12px_rgb(180_35_60_/_18%)] active:bg-primary-active",
         gradient:
-          "bg-primary text-primary-foreground shadow-[0_4px_12px_rgb(80_0_15_/_14%)] hover:bg-primary-hover hover:shadow-[0_7px_16px_rgb(80_0_15_/_18%)] active:bg-primary-deep",
+           "bg-primary text-primary-foreground shadow-[0_4px_12px_rgb(180_35_60_/_15%)] hover:bg-primary-hover hover:shadow-[0_4px_12px_rgb(180_35_60_/_18%)] active:bg-primary-active",
         destructive:
           "bg-destructive text-destructive-foreground shadow-sm hover:bg-destructive/90 active:scale-[0.98]",
         outline:
-          "border border-primary bg-white text-primary hover:bg-primary-light active:bg-primary/15",
+           "border border-border-strong bg-white text-secondary-foreground hover:bg-secondary active:bg-border",
         secondary:
           "border border-border bg-secondary text-secondary-foreground hover:border-border-strong hover:bg-surface-3 active:bg-border",
-        ghost: "border border-transparent text-muted-foreground hover:bg-primary-light hover:text-primary",
+         ghost: "border border-transparent text-muted-foreground hover:bg-secondary hover:text-foreground",
         link: "text-primary underline-offset-4 hover:underline",
       },
       size: {
@@ -35,7 +35,7 @@ const buttonVariants = cva(
       },
       glow: {
         false: "",
-        true: "shadow-[0_0_26px_color-mix(in_oklab,var(--color-primary-glow)_26%,transparent)] hover:shadow-[0_0_38px_color-mix(in_oklab,var(--color-primary-glow)_38%,transparent)]",
+         true: "shadow-[0_4px_12px_rgb(180_35_60_/_15%)] hover:shadow-[0_4px_12px_rgb(180_35_60_/_20%)]",
       },
     },
     defaultVariants: {

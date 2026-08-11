@@ -58,24 +58,24 @@ export function LabTerminal({
       lineHeight: 1.25,
       fontFamily: "var(--font-body)",
       theme: {
-        background: "#120b0b",
+        background: "#18181B",
         foreground: "#d4dbe6",
-        cursor: "#ff5c57",
-        selectionBackground: "rgba(220, 38, 38, 0.28)",
-        black: "#120b0b",
+        cursor: "#B4233C",
+        selectionBackground: "rgba(180, 35, 60, 0.28)",
+        black: "#18181B",
         brightBlack: "#5b6a7d",
-        red: "#ff5c57",
-        brightRed: "#ff5c57",
+        red: "#B4233C",
+        brightRed: "#B4233C",
         green: "#3ddc97",
         brightGreen: "#3ddc97",
         yellow: "#e5c07b",
         brightYellow: "#e5c07b",
-        blue: "#ff6b6b",
-        brightBlue: "#ff6b6b",
-        magenta: "#fb7185",
-        brightMagenta: "#fb7185",
-        cyan: "#fda4af",
-        brightCyan: "#fda4af",
+        blue: "#B4233C",
+        brightBlue: "#B4233C",
+        magenta: "#F3C7CE",
+        brightMagenta: "#F3C7CE",
+        cyan: "#FDF0F2",
+        brightCyan: "#FDF0F2",
         white: "#d4dbe6",
         brightWhite: "#ffffff",
       },
@@ -211,7 +211,7 @@ export function LabTerminal({
       {!connected ? (
         <div
           role="status"
-          className="pointer-events-none absolute inset-0 z-10 flex items-center justify-center gap-2 bg-[#120b0b] text-sm text-muted-foreground"
+          className="pointer-events-none absolute inset-0 z-10 flex items-center justify-center gap-2 bg-zinc-950 text-sm text-muted-foreground"
         >
           <span className="size-2 animate-pulse rounded-full bg-emerald-400" />
           Establishing encrypted session…

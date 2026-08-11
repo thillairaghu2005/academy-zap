@@ -4,13 +4,13 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 
 const cardVariants = cva(
-  "rounded-xl border text-card-foreground transition-[border-color,background-color,box-shadow,transform] duration-200",
+       "rounded-xl border text-card-foreground transition-[border-color,background-color,box-shadow,transform] duration-200",
   {
     variants: {
       variant: {
-        default: "border-border bg-card shadow-[0_4px_14px_rgb(23_23_23_/_4%)]",
-        glass: "border-border bg-card shadow-[0_4px_14px_rgb(23_23_23_/_4%)]",
-        glow: "border-border bg-card shadow-[0_4px_14px_rgb(23_23_23_/_4%)] hover:-translate-y-0.5 hover:border-primary/30 hover:shadow-[0_10px_24px_rgb(142_3_26_/_10%)]",
+         default: "border-border bg-card shadow-[0_1px_3px_rgb(16_24_40_/_5%)]",
+         glass: "border-border bg-card shadow-[0_1px_3px_rgb(16_24_40_/_5%)]",
+         glow: "border-border bg-card shadow-[0_1px_3px_rgb(16_24_40_/_5%)] hover:-translate-y-0.5 hover:border-primary-border hover:shadow-[0_4px_12px_rgb(16_24_40_/_6%)]",
         bento: "border-border bg-surface-2 shadow-none",
         outline: "border-border bg-transparent shadow-none",
       },

@@ -66,7 +66,7 @@ export function AttemptsTracker({
             variant={exhausted ? "outline" : "secondary"}
             className={cn(
               "text-caption",
-              exhausted && "border-rose-500/40 bg-rose-500/10 text-rose-700",
+              exhausted && "border-primary-border bg-primary-light text-primary",
             )}
           >
             {used}/{attemptsAllowed} used
@@ -147,7 +147,7 @@ export function AttemptsTracker({
 
           <div className="mt-3 flex items-center gap-2 border-t border-border pt-2.5 text-xs">
             {exhausted ? (
-              <p className="flex items-center gap-1.5 font-medium text-rose-700">
+              <p className="flex items-center gap-1.5 font-medium text-primary">
                 <AlertTriangle className="size-3.5" />
                 Attempts used up — further attempts are blocked by the demo service.
               </p>

@@ -76,7 +76,7 @@ export function MarketingNav() {
                   key={link.href}
                   href={link.href}
                   onClick={() => setMenuOpen(false)}
-                  className="flex min-h-11 items-center rounded-lg px-3 text-base font-medium outline-none transition-colors hover:bg-primary-light hover:text-primary focus-visible:ring-2 focus-visible:ring-ring"
+                   className="flex min-h-11 items-center rounded-lg px-3 text-base font-medium outline-none transition-colors hover:bg-secondary hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring"
                 >
                   {link.label}
                 </Link>
@@ -117,7 +117,7 @@ export function MarketingNav() {
                href={link.href}
                aria-current={pathname === link.href || pathname.startsWith(`${link.href}/`) ? "page" : undefined}
                className={cn(
-                  "relative rounded-lg px-3 py-2 text-sm font-medium outline-none transition-colors hover:bg-primary-light hover:text-primary focus-visible:ring-2 focus-visible:ring-ring",
+                   "relative rounded-lg px-3 py-2 text-sm font-medium outline-none transition-colors hover:bg-secondary hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring",
                  pathname === link.href || pathname.startsWith(`${link.href}/`) ? "text-foreground after:absolute after:inset-x-3 after:-bottom-1 after:h-0.5 after:rounded-full after:bg-primary" : "text-muted-foreground",
                )}
              >

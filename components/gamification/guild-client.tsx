@@ -87,7 +87,7 @@ export function GuildClient() {
             <div className="flex flex-wrap items-center justify-between gap-3">
               <div>
                 <h2 className="flex items-center gap-2 font-display text-h2">
-                  <Shield className="size-5 text-red-700" /> {board.name}
+                  <Shield className="size-5 text-primary" /> {board.name}
                 </h2>
                 <p className="mt-0.5 text-xs text-muted-foreground">
                   {board.member_count} members ·{" "}
@@ -180,7 +180,7 @@ function GuildVsCard({
   return (
     <div className="rounded-xl border border-border bg-card p-4">
       <p className="flex items-center gap-2 font-display text-small font-semibold">
-        <Swords className="size-4 text-red-700" /> Guild vs guild
+        <Swords className="size-4 text-primary" /> Guild vs guild
       </p>
       <p className="mt-0.5 text-caption text-muted-foreground">
         This week, by combined XP.
@@ -224,7 +224,7 @@ function VsRow({
   return (
     <div>
       <div className="flex items-center justify-between text-xs">
-        <span className={cn("flex items-center gap-1.5 font-medium", ours && "text-red-700")}>
+          <span className={cn("flex items-center gap-1.5 font-medium", ours && "text-primary")}>
           {ours ? <Crown className="size-3" /> : null}
           {name}
         </span>
@@ -234,7 +234,7 @@ function VsRow({
             <span
               className={cn(
                 "flex items-center gap-0.5 text-caption",
-                delta >= 0 ? "text-rose-700" : "text-emerald-700",
+                delta >= 0 ? "text-primary" : "text-emerald-700",
               )}
             >
               <ArrowUpRight

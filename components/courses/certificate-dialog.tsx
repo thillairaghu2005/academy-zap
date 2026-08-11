@@ -88,7 +88,7 @@ export function CertificateDialog({
         <div
           ref={certificateRef}
           className={cn(
-            "relative overflow-hidden rounded-2xl border border-primary/25 bg-gradient-to-br from-primary/[0.06] via-card to-card p-6 text-center",
+            "relative overflow-hidden rounded-2xl border border-primary-border bg-primary-muted p-6 text-center",
           )}
         >
           <div className="pointer-events-none absolute -right-16 -top-16 size-48 rounded-full bg-primary/10 blur-2xl" />

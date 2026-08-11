@@ -17,7 +17,7 @@ import { cn } from "@/lib/utils";
 const INTEGRITY_STYLES: Record<IntegrityStatus, string> = {
   verified: "border-emerald-500/40 bg-emerald-500/10 text-emerald-700",
   flagged: "border-amber-500/40 bg-amber-500/10 text-amber-700",
-  reversed: "border-rose-500/40 bg-rose-500/10 text-rose-700",
+  reversed: "border-primary-border bg-primary-light text-primary",
 };
 
 /**
@@ -60,12 +60,12 @@ export function LedgerEntryDetail({ ledgerEntryId }: { ledgerEntryId: string }) 
           {positive ? (
             <ArrowUpRight className="size-4 text-emerald-700" />
           ) : (
-            <ArrowDownRight className="size-4 text-rose-700" />
+            <ArrowDownRight className="size-4 text-primary" />
           )}
           <span
             className={cn(
               "font-display text-h3",
-              positive ? "text-emerald-700" : "text-rose-700",
+              positive ? "text-emerald-700" : "text-primary",
             )}
           >
             {positive ? "+" : ""}

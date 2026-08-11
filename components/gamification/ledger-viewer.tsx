@@ -80,13 +80,13 @@ export function LedgerViewer({
                 "flex items-start gap-3 rounded-xl border p-4",
                 data.chain.valid
                   ? "border-emerald-500/30 bg-emerald-500/5"
-                  : "border-rose-500/40 bg-rose-500/10",
+                  : "border-primary-border bg-primary-light",
               )}
             >
               {data.chain.valid ? (
                 <CheckCircle2 className="mt-0.5 size-5 shrink-0 text-emerald-700" />
               ) : (
-                <TriangleAlert className="mt-0.5 size-5 shrink-0 text-rose-700" />
+                <TriangleAlert className="mt-0.5 size-5 shrink-0 text-primary" />
               )}
               <div>
                 <p
@@ -94,7 +94,7 @@ export function LedgerViewer({
                     "font-display text-small font-semibold",
                     data.chain.valid
                       ? "text-emerald-700"
-                      : "text-rose-700",
+                      : "text-primary",
                   )}
                 >
                   {data.chain.valid
@@ -164,16 +164,16 @@ export function LedgerViewer({
 /* ------------------------------------------------------------------ */
 
 const XP_TYPE_STYLE: Record<string, string> = {
-  completion: "border-red-500/40 bg-red-500/10 text-red-700",
-  mastery: "border-rose-500/40 bg-rose-500/10 text-rose-700",
+  completion: "border-primary-border bg-primary-light text-primary",
+  mastery: "border-primary-border bg-primary-muted text-primary",
   bonus: "border-emerald-500/40 bg-emerald-500/10 text-emerald-700",
-  adjustment: "border-rose-500/40 bg-rose-500/10 text-rose-700",
+  adjustment: "border-primary-border bg-primary-light text-primary",
 };
 
 const INTEGRITY_STYLE: Record<string, string> = {
   verified: "text-emerald-700",
   flagged: "text-amber-700",
-  reversed: "text-rose-700",
+  reversed: "text-primary",
 };
 
 function LedgerEntriesTable({ entries }: { entries: LedgerAuditView["entries"] }) {
@@ -197,7 +197,7 @@ function LedgerEntriesTable({ entries }: { entries: LedgerAuditView["entries"] }
             transition={{ delay: Math.min(i * 0.02, 0.4) }}
             className={cn(
               "align-top",
-              e.integrity_status === "reversed" && "bg-rose-500/5",
+                e.integrity_status === "reversed" && "bg-primary-muted",
               e.integrity_status === "flagged" && "bg-amber-500/5",
             )}
           >
@@ -220,7 +220,7 @@ function LedgerEntriesTable({ entries }: { entries: LedgerAuditView["entries"] }
             <td
               className={cn(
                 "whitespace-nowrap px-3 py-2 font-mono font-semibold tabular-nums",
-                e.xp_delta < 0 ? "text-rose-700" : "text-emerald-700",
+                  e.xp_delta < 0 ? "text-primary" : "text-emerald-700",
               )}
             >
               {e.xp_delta > 0 ? "+" : ""}
@@ -280,17 +280,17 @@ function VersionsView({
               v{d.from_version} → v{d.to_version}
             </span>
             {d.rank_changed ? (
-              <Badge className="border-rose-500/40 bg-rose-500/10 text-caption text-rose-700">
+              <Badge className="border-primary-border bg-primary-light text-caption text-primary">
                 rank change: {d.from_rank} → {d.to_rank}
               </Badge>
             ) : null}
           </div>
           <div className="mt-1.5 flex flex-wrap gap-3 font-mono text-[11px]">
-            <span className="text-red-700">
+            <span className="text-primary">
               completion {d.completion_delta > 0 ? "+" : ""}
               {d.completion_delta.toLocaleString()}
             </span>
-            <span className="text-rose-700">
+            <span className="text-primary">
               mastery {d.mastery_delta > 0 ? "+" : ""}
               {d.mastery_delta.toLocaleString()}
             </span>

@@ -97,7 +97,7 @@ export function CourseReviewDiffCard({ courseId }: { courseId: string }) {
                   >
                     <td className="px-3 py-2.5 font-medium">{item.label}</td>
                     <td className="px-3 py-2.5">
-                      <span className="line-through decoration-rose-400/60">
+                      <span className="line-through decoration-primary-border">
                         {formatValue(item.field, item.before)}
                       </span>
                     </td>
