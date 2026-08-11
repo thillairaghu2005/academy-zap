@@ -1,11 +1,21 @@
 "use client";
 
 import Link from "next/link";
+import { useQuery } from "@tanstack/react-query";
 import { motion, useReducedMotion } from "framer-motion";
-import { ArrowRight, BadgeCheck, Gift, Layers } from "lucide-react";
+import {
+  ArrowRight,
+  BadgeCheck,
+  Flame,
+  Gift,
+  Layers,
+  LoaderCircle,
+  Trophy,
+} from "lucide-react";
 
 import type { SurfaceMeta } from "@/lib/surfaces";
 import { surfaces } from "@/lib/surfaces";
+import { getProgressContext } from "@/lib/data/demo/gamification";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import {
@@ -18,14 +28,17 @@ import { PageContainer } from "@/components/shared/page-container";
 import { MyLearning } from "@/components/dashboard/my-learning";
 import { useSession } from "@/components/providers/session-provider";
 import { OnboardingDialog } from "@/components/dashboard/onboarding-dialog";
+import { Progress } from "@/components/ui/progress";
 
 function SurfaceCard({ surface }: { surface: SurfaceMeta }) {
   const Icon = surface.icon;
+  const statusLabel = surface.status === "shipped" ? "Live now" : surface.status === "next" ? "Coming next" : "Preview";
 
   return (
     <Link href={surface.href} className="group block h-full rounded-[inherit] outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background">
-      <Card className="h-full transition-all duration-200 group-hover:-translate-y-0.5 group-hover:border-primary/40 group-hover:shadow-xl group-hover:shadow-primary/10">
-        <CardHeader className="flex-row items-center gap-3 space-y-0">
+      <Card className="relative h-full overflow-hidden transition-all duration-200 group-hover:-translate-y-0.5 group-hover:border-primary/40 group-hover:shadow-xl group-hover:shadow-primary/10">
+        <div className={cn("absolute inset-x-0 top-0 h-0.5", surface.status === "shipped" ? "bg-primary" : "bg-border-strong")} />
+        <CardHeader className="flex-row items-start gap-3 space-y-0">
           <div
             className={cn(
               "grid size-11 shrink-0 place-items-center rounded-2xl bg-primary/10 text-primary shadow-sm transition-transform duration-300 group-hover:scale-105",
@@ -33,22 +46,82 @@ function SurfaceCard({ surface }: { surface: SurfaceMeta }) {
           >
             <Icon className="size-5" />
           </div>
-          <div className="min-w-0">
-            <CardTitle className="text-base">{surface.title}</CardTitle>
-            <p className="text-xs text-muted-foreground">{surface.navLabel}</p>
+          <div className="min-w-0 flex-1">
+            <div className="flex items-start justify-between gap-2">
+              <div className="min-w-0">
+                <CardTitle className="text-base">{surface.title}</CardTitle>
+                <p className="text-xs text-muted-foreground">{surface.navLabel}</p>
+              </div>
+              <span className="shrink-0 rounded-full border border-border bg-surface-1 px-2 py-1 font-mono text-[10px] font-medium uppercase tracking-[0.08em] text-muted-foreground">
+                {surface.stage}
+              </span>
+            </div>
           </div>
         </CardHeader>
         <CardContent>
           <p className="text-sm leading-relaxed text-muted-foreground">
             {surface.tagline}
           </p>
-          <p className="mt-4 flex items-center gap-1.5 text-xs font-medium text-primary opacity-0 transition-opacity duration-200 group-hover:opacity-100">
-            Explore
+          <div className="mt-5 flex items-center justify-between gap-3 border-t border-border pt-4">
+            <span className={cn("text-[11px] font-semibold", surface.status === "shipped" ? "text-success-strong" : "text-muted-foreground")}>
+              {statusLabel}
+            </span>
+            <span className="flex items-center gap-1.5 text-xs font-medium text-primary sm:opacity-0 sm:transition-opacity sm:duration-200 sm:group-hover:opacity-100">
+              Open
             <ArrowRight className="size-3.5 transition-transform duration-200 group-hover:translate-x-0.5" />
-          </p>
+            </span>
+          </div>
         </CardContent>
       </Card>
     </Link>
+  );
+}
+
+function MomentumPanel({ userId }: { userId: string }) {
+  const { data, isLoading } = useQuery({
+    queryKey: ["progress-context", userId],
+    queryFn: () => getProgressContext(userId),
+    enabled: Boolean(userId),
+  });
+
+  return (
+    <div className="rounded-2xl border border-border bg-white/75 p-4 backdrop-blur-sm">
+      <div className="flex items-center justify-between gap-3">
+        <p className="text-xs font-semibold uppercase tracking-[0.12em] text-primary">Momentum</p>
+        <Trophy className="size-4 text-primary" />
+      </div>
+      {isLoading ? (
+        <LoaderCircle className="mt-5 size-5 animate-spin text-primary" aria-label="Loading momentum" />
+      ) : data ? (
+        <>
+          <div className="mt-4 grid grid-cols-2 gap-3">
+            <div>
+              <p className="font-display text-xl font-semibold tracking-[-0.03em]">{data.rank.rank_name}</p>
+              <p className="mt-1 text-[11px] text-muted-foreground">Level {data.rank.level} rank</p>
+            </div>
+            <div className="border-l border-border pl-3">
+              <div className="flex items-center gap-1.5">
+                <Flame className="size-3.5 text-warning-strong" />
+                <p className="font-display text-xl font-semibold tabular-nums">{data.streak.current_streak_days}</p>
+              </div>
+              <p className="mt-1 text-[11px] text-muted-foreground">Day streak</p>
+            </div>
+          </div>
+          <div className="mt-4">
+            <div className="mb-2 flex items-center justify-between text-[11px] text-muted-foreground">
+              <span>Next rank</span>
+              <span className="font-medium tabular-nums text-foreground">{data.rank.rank_progress_pct}%</span>
+            </div>
+            <Progress value={data.rank.rank_progress_pct} className="h-1.5 bg-primary/10" indicatorClassName="bg-primary" />
+          </div>
+          <Link href="/rank" className="mt-4 inline-flex items-center gap-1 text-xs font-semibold text-primary outline-none hover:text-primary-hover focus-visible:ring-2 focus-visible:ring-ring">
+            View rank details <ArrowRight className="size-3.5" />
+          </Link>
+        </>
+      ) : (
+        <p className="mt-4 text-sm leading-relaxed text-muted-foreground">Your rank appears after your first verified effort.</p>
+      )}
+    </div>
   );
 }
 
@@ -114,11 +187,7 @@ export function Dashboard() {
               <p className="mt-3 font-display text-xl font-semibold tracking-[-0.03em]">One lesson at a time</p>
               <p className="mt-1 text-xs leading-relaxed text-muted-foreground">Short sessions beat perfect plans.</p>
             </div>
-            <div className="rounded-2xl border border-primary/15 bg-primary/5 p-4">
-              <p className="text-xs font-medium text-primary">Platform rhythm</p>
-              <p className="mt-2 font-display text-2xl font-semibold tracking-[-0.04em]">Learn → apply</p>
-              <p className="mt-1 text-xs leading-relaxed text-muted-foreground">Every surface connects to the next.</p>
-            </div>
+            <MomentumPanel userId={user?.id ?? ""} />
           </div>
         </div>
       </motion.section>
