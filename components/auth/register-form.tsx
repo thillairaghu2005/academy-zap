@@ -3,10 +3,10 @@
 import * as React from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useForm } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Eye, EyeOff, LoaderCircle } from "lucide-react";
+import { Check, Eye, EyeOff, GitBranch, Globe2, LoaderCircle } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -48,6 +48,7 @@ export function RegisterForm() {
   const { register, session, isLoading } = useSession();
   const [pending, setPending] = React.useState(false);
   const [showPassword, setShowPassword] = React.useState(false);
+  const [ssoPending, setSsoPending] = React.useState<"Google" | "GitHub" | null>(null);
 
   const form = useForm<RegisterValues>({
     resolver: zodResolver(registerSchema),
@@ -56,7 +57,7 @@ export function RegisterForm() {
 
   React.useEffect(() => {
     if (!isLoading && session.status === "authenticated") {
-      router.replace("/");
+      router.replace("/dashboard");
     }
   }, [isLoading, session.status, router]);
 
@@ -64,7 +65,7 @@ export function RegisterForm() {
     setPending(true);
     try {
       await register(values);
-      router.push("/");
+      router.push("/dashboard");
     } catch (err) {
       form.setError("email", {
         message: authErrorMessage(err, "Sign up failed. Please try again later."),
@@ -74,19 +75,46 @@ export function RegisterForm() {
     }
   };
 
+  const password = useWatch({ control: form.control, name: "password", defaultValue: "" });
+  const checks = [
+    { label: "8+ characters", valid: password.length >= 8 },
+    { label: "Uppercase letter", valid: /[A-Z]/.test(password) },
+    { label: "Number", valid: /\d/.test(password) },
+    { label: "Special character", valid: /[^A-Za-z0-9]/.test(password) },
+  ];
+  const strength = checks.filter((check) => check.valid).length;
+  const strengthLabel = strength <= 1 ? "Weak" : strength === 2 ? "Fair" : strength === 3 ? "Good" : "Strong";
+
+  const signInWithSso = async (provider: "Google" | "GitHub") => {
+    setSsoPending(provider);
+    await new Promise((resolve) => window.setTimeout(resolve, 700));
+    try {
+      await register({ display_name: `${provider} learner`, email: `${provider.toLowerCase()}-learner@zapsters.dev`, password: "Zapsters!2026" });
+      router.push("/dashboard");
+    } catch {
+      setSsoPending(null);
+    }
+  };
+
   return (
-    <Card className="w-full max-w-md border-border/80 bg-card/80 backdrop-blur-xl">
+    <Card className="w-full max-w-md border-border bg-card shadow-[0_12px_36px_rgb(23_23_23_/_8%)]">
       <CardHeader className="items-center gap-2 pb-6 pt-8 text-center">
         <Logo size="lg" linkTo={null} />
         <CardTitle as="h1" className="mt-2 text-xl">Join the climb</CardTitle>
-        <CardDescription>
-          Account creation is coming soon in this frontend demo. Use a demo
-          account on the sign-in page.
-        </CardDescription>
+          <CardDescription>Start with a guided path, then make your progress visible through practice.</CardDescription>
       </CardHeader>
       <CardContent>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col gap-4">
+            <div className="grid gap-2 sm:grid-cols-2">
+              <Button type="button" variant="outline" disabled={pending || Boolean(ssoPending)} onClick={() => void signInWithSso("Google")}>
+                {ssoPending === "Google" ? <LoaderCircle className="animate-spin" /> : <Globe2 />} {ssoPending === "Google" ? "Connecting..." : "Continue with Google"}
+              </Button>
+              <Button type="button" variant="outline" disabled={pending || Boolean(ssoPending)} onClick={() => void signInWithSso("GitHub")}>
+                {ssoPending === "GitHub" ? <LoaderCircle className="animate-spin" /> : <GitBranch />} {ssoPending === "GitHub" ? "Connecting..." : "Continue with GitHub"}
+              </Button>
+            </div>
+            <div className="relative py-1 text-center text-[11px] text-muted-foreground before:absolute before:left-0 before:right-0 before:top-1/2 before:border-t before:border-border"><span className="relative bg-card px-3">or use your email</span></div>
             <FormField
               control={form.control}
               name="display_name"
@@ -120,7 +148,7 @@ export function RegisterForm() {
                       {...field}
                     />
                   </FormControl>
-                  <FormMessage />
+                   <FormMessage />
                 </FormItem>
               )}
             />
@@ -150,6 +178,7 @@ export function RegisterForm() {
                     </div>
                   </FormControl>
                   <FormMessage />
+                  {field.value ? <div className="mt-3" aria-live="polite"><div className="flex items-center justify-between text-[11px]"><span className="text-muted-foreground">Password strength</span><span className={strength >= 3 ? "font-semibold text-success-strong" : "font-semibold text-warning-strong"}>{strengthLabel}</span></div><div className="mt-1.5 grid grid-cols-4 gap-1" aria-hidden="true">{checks.map((check) => <span key={check.label} className={`h-1 rounded-full ${check.valid ? strength === 4 ? "bg-success" : "bg-warning" : "bg-border"}`} />)}</div><div className="mt-2 flex flex-wrap gap-1.5">{checks.map((check) => <span key={check.label} className={`inline-flex items-center gap-1 rounded-full border px-2 py-1 text-[10px] ${check.valid ? "border-success/20 bg-success/5 text-success-strong" : "border-border text-muted-foreground"}`}><Check className="size-3" />{check.label}</span>)}</div></div> : null}
                 </FormItem>
               )}
             />

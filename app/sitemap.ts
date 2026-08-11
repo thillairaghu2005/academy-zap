@@ -14,6 +14,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${SITE_URL}/judge`, lastModified, changeFrequency: "daily", priority: 0.7 },
     { url: `${SITE_URL}/labs`, lastModified, changeFrequency: "daily", priority: 0.7 },
     { url: `${SITE_URL}/mentors`, lastModified, changeFrequency: "weekly", priority: 0.6 },
+    { url: `${SITE_URL}/pricing`, lastModified, changeFrequency: "monthly", priority: 0.7 },
   ];
 
   const courseRoutes = MOCK_COURSES.filter((course) => course.status === "published").map(

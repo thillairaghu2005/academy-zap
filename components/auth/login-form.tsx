@@ -117,7 +117,7 @@ export function LoginForm({ next }: { next?: string }) {
   };
 
   return (
-    <Card className="w-full max-w-md border-border/80 bg-card/80 backdrop-blur-xl">
+    <Card className="w-full max-w-md border-border bg-card shadow-[0_12px_36px_rgb(23_23_23_/_8%)]">
       <CardHeader className="items-center gap-2 pb-6 pt-8 text-center">
         <Logo size="lg" linkTo={null} />
          <CardTitle as="h1" className="mt-2 text-xl">Welcome back</CardTitle>
@@ -184,7 +184,7 @@ export function LoginForm({ next }: { next?: string }) {
                 </FormItem>
               )}
             />
-            <div className="rounded-lg border border-border bg-secondary/50 p-3.5">
+            <div className="rounded-lg border border-border bg-surface-2 p-3.5">
               <p className="flex items-start gap-2 text-xs leading-relaxed text-muted-foreground">
                 <Sparkles className="mt-0.5 size-3.5 shrink-0 text-warning-strong" />
                 <span>

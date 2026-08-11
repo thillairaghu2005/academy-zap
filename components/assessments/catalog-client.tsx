@@ -52,7 +52,7 @@ function AssessmentCard({ assessment, index }: { assessment: Assessment; index: 
       transition={reducedMotion ? undefined : { delay: 0.04 * index, duration: 0.35, ease: "easeOut" }}
     >
       <Link href={`/assessments/${assessment.id}`} className="group block h-full rounded-[inherit] outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background">
-          <Card className="h-full overflow-hidden transition-all duration-200 group-hover:-translate-y-0.5 group-hover:border-primary/30 group-hover:shadow-[0_18px_40px_rgb(37_99_235_/_10%)]">
+          <Card className="h-full overflow-hidden transition-all duration-200 group-hover:-translate-y-0.5 group-hover:border-primary/30 group-hover:shadow-[0_18px_40px_rgb(220_38_38_/_10%)]">
           <div className="relative h-28 w-full overflow-hidden bg-surface-1">
             <div className="absolute inset-0 aurora opacity-70" aria-hidden="true" />
             <div className="absolute inset-0 bg-grid opacity-60" aria-hidden="true" />

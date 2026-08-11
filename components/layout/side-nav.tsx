@@ -39,15 +39,12 @@ function NavLink({
       onClick={onNavigate}
       className={cn(
         "relative flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm transition-[background-color,color,transform] outline-none focus-visible:ring-2 focus-visible:ring-ring",
-        active
-          ? "bg-primary/10 font-medium text-primary shadow-[inset_0_0_0_1px_rgb(37_99_235_/_8%)]"
-          : "text-muted-foreground hover:-translate-y-px hover:bg-surface-3 hover:text-foreground",
+           active
+          ? "bg-primary/10 font-semibold text-primary shadow-[inset_3px_0_0_var(--color-primary)]"
+          : "text-muted-foreground hover:bg-primary-light hover:text-primary",
       )}
       aria-current={active ? "page" : undefined}
     >
-      {active && (
-        <span className="absolute left-0 top-1/2 h-5 w-0.5 -translate-y-1/2 rounded-full bg-primary" />
-      )}
       <Icon className="size-4 shrink-0" />
       {label}
     </Link>
@@ -89,8 +86,8 @@ export function NavLinks({ onNavigate }: { onNavigate?: () => void }) {
 /** Desktop side rail — hidden below lg, replaced by the mobile sheet */
 export function SideNav() {
   return (
-    <aside className="sticky top-0 hidden h-[calc(100dvh-1rem)] w-60 shrink-0 flex-col overflow-y-auto border-r border-border/70 px-3 py-5 lg:flex">
-      <div className="mb-2 rounded-xl bg-surface-1 px-3 py-2.5 text-xs text-muted-foreground">
+    <aside className="sticky top-16 hidden h-[calc(100dvh-4rem)] w-60 shrink-0 flex-col overflow-y-auto border-r border-border bg-white px-3 py-5 lg:flex">
+      <div className="mb-2 rounded-lg border border-border bg-surface-2 px-3 py-2.5 text-xs text-muted-foreground">
         <span className="font-medium text-foreground">Your workspace</span>
         <span className="mt-0.5 block">Learn, practice, and track progress.</span>
       </div>

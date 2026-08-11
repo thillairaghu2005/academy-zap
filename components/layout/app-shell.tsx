@@ -8,6 +8,8 @@ import { BottomNavigation } from "@/components/layout/bottom-navigation";
 import { NavigationTour } from "@/components/demo/navigation-tour";
 import { AuthGuard } from "@/components/providers/auth-guard";
 import { DemoModeBadge } from "@/components/layout/demo-mode-badge";
+import { AiTutor } from "@/components/ai/tutor";
+import { XpFlyout } from "@/components/gamification/xp-flyout";
 
 /**
  * Global app shell (build.md F0). Every authenticated surface renders inside
@@ -16,7 +18,7 @@ import { DemoModeBadge } from "@/components/layout/demo-mode-badge";
 export function AppShell({ children }: { children: React.ReactNode }) {
   return (
     <AuthGuard>
-      <div className="relative flex min-h-dvh flex-col overflow-x-clip bg-background bg-[radial-gradient(circle_at_70%_-10%,rgba(96,165,250,.07),transparent_32rem)]">
+      <div className="relative flex min-h-dvh flex-col overflow-x-clip bg-background">
         <a
           href="#main-content"
           className="sr-only z-50 rounded-md bg-primary px-4 py-2 text-primary-foreground focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
@@ -33,6 +35,8 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         </div>
         <BottomNavigation />
         <NavigationTour />
+        <AiTutor />
+        <XpFlyout />
       </div>
     </AuthGuard>
   );

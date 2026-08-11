@@ -8,6 +8,7 @@ export const DEMO_STORAGE_KEYS = {
   labBookmarks: "zapsters.demo.lab-bookmarks.v1",
   profile: "zapsters.demo.profile.v1",
   onboarding: "zapsters.demo.onboarding.v1",
+  onboardingDraft: "zapsters.demo.onboarding-draft.v1",
   progress: "zapsters.demo.progress.v1",
   attempts: "zapsters.demo.attempts.v1",
   labSessions: "zapsters.demo.lab-sessions.v1",

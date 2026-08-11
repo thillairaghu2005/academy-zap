@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
   BookOpen,
+  BarChart3,
   CodeXml,
   Compass,
   FlaskConical,
@@ -23,6 +24,7 @@ const ADMIN_NAV = [
   { href: "/admin/problems", label: "Problems", icon: CodeXml },
   { href: "/admin/orders", label: "Orders", icon: ShoppingCart },
   { href: "/admin/users", label: "Users", icon: Users },
+  { href: "/admin/analytics", label: "Analytics", icon: BarChart3 },
   { href: "/admin/audit", label: "Audit log", icon: ScrollText },
   { href: "/admin/support", label: "Support", icon: LifeBuoy },
 ] as const;
@@ -44,8 +46,8 @@ function AdminNavLink({
       className={cn(
         "flex shrink-0 items-center gap-2 rounded-lg px-3 py-2 text-sm transition-colors outline-none focus-visible:ring-2 focus-visible:ring-ring",
         active
-          ? "bg-primary/10 font-medium text-primary"
-          : "text-muted-foreground hover:bg-accent hover:text-foreground",
+          ? "bg-primary/10 font-semibold text-primary shadow-[inset_3px_0_0_var(--color-primary)]"
+          : "text-muted-foreground hover:bg-primary-light hover:text-primary",
       )}
       aria-current={active ? "page" : undefined}
     >
@@ -65,7 +67,7 @@ export function AdminSidebar({ onReplay }: { onReplay?: () => void }) {
   return (
     <nav
       aria-label="Admin sections"
-      className="flex gap-1 overflow-x-auto border-b border-border bg-card/40 px-4 py-2 lg:sticky lg:top-16 lg:h-[calc(100dvh-4rem)] lg:w-52 lg:flex-col lg:overflow-y-auto lg:border-b-0 lg:border-r lg:px-3 lg:py-5"
+      className="flex gap-1 overflow-x-auto border-b border-border bg-white px-4 py-2 lg:sticky lg:top-16 lg:h-[calc(100dvh-4rem)] lg:w-52 lg:flex-col lg:overflow-y-auto lg:border-b-0 lg:border-r lg:px-3 lg:py-5"
     >
       <p className="hidden px-3 pb-1.5 pt-1 text-caption font-semibold uppercase tracking-widest text-muted-foreground/60 lg:block">
         Admin / CMS

@@ -31,13 +31,13 @@ export function EmptyState({
   return (
     <div
       className={cn(
-        "flex animate-fade-up flex-col items-center justify-center rounded-xl border border-dashed border-border bg-card/40 px-6 py-14 text-center",
+        "flex animate-fade-up flex-col items-center justify-center rounded-xl border border-dashed border-border bg-surface-2 px-6 py-14 text-center",
         className,
       )}
     >
       {Icon ? (
         <div className="mb-4 grid size-12 place-items-center rounded-full border border-border bg-secondary text-muted-foreground">
-          <Icon className="size-5" />
+          <Icon className="size-5 text-primary" />
         </div>
       ) : null}
       <h3 className="font-display text-h3">

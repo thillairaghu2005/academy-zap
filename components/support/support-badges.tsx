@@ -9,7 +9,7 @@ import type {
 /** Shared support badges — used by both the learner and admin surfaces. */
 
 const STATUS_STYLES: Record<TicketStatus, string> = {
-  open: "border-blue-500/40 bg-blue-500/10 text-blue-600",
+  open: "border-red-500/40 bg-red-500/10 text-red-700",
   pending: "border-amber-500/40 bg-amber-500/10 text-amber-700",
   resolved: "border-emerald-500/40 bg-emerald-500/10 text-emerald-700",
   closed: "border-slate-400/40 bg-slate-500/10 text-slate-500",
@@ -17,7 +17,7 @@ const STATUS_STYLES: Record<TicketStatus, string> = {
 
 const PRIORITY_STYLES: Record<TicketPriority, string> = {
   low: "border-border bg-secondary text-muted-foreground",
-  medium: "border-sky-500/40 bg-sky-500/10 text-sky-700",
+  medium: "border-rose-500/40 bg-rose-500/10 text-rose-700",
   high: "border-amber-500/40 bg-amber-500/10 text-amber-700",
   urgent: "border-rose-500/40 bg-rose-500/10 text-rose-700",
 };

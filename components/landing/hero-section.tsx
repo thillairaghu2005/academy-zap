@@ -25,8 +25,8 @@ const glyphs = [
 
 function WorkspacePreview() {
   return (
-    <Spotlight className="rounded-[28px]">
-      <div className="relative overflow-hidden rounded-[28px] border border-border/80 bg-white shadow-[0_30px_80px_rgb(17_24_39_/_12%)]">
+    <Spotlight className="rounded-2xl">
+      <div className="relative overflow-hidden rounded-2xl border border-border bg-white shadow-[0_16px_40px_rgb(23_23_23_/_9%)]">
         <div className="flex items-center justify-between border-b border-border px-4 py-3.5 sm:px-5">
           <div className="flex items-center gap-2.5">
             <span className="grid size-8 place-items-center rounded-[10px] bg-primary/10 text-primary">
@@ -128,8 +128,8 @@ export function HeroSection() {
 
   return (
     <section className="relative isolate overflow-hidden border-b border-border bg-background text-foreground">
-      <div className="pointer-events-none absolute inset-0 bg-grid opacity-40 [mask-image:linear-gradient(to_bottom,black,transparent_82%)]" aria-hidden="true" />
-      <div className="pointer-events-none absolute left-1/2 top-[-18rem] size-[38rem] -translate-x-1/2 rounded-full bg-primary/10 blur-3xl" aria-hidden="true" />
+      <div className="pointer-events-none absolute inset-0 bg-grid opacity-20 [mask-image:linear-gradient(to_bottom,black,transparent_82%)]" aria-hidden="true" />
+      <div className="pointer-events-none absolute left-1/2 top-[-18rem] size-[38rem] -translate-x-1/2 rounded-full bg-primary/5 blur-3xl" aria-hidden="true" />
       {glyphs.map((glyph, index) => (
         <span
           key={glyph.value}
@@ -182,7 +182,7 @@ export function HeroSection() {
           transition={{ delay: reducedMotion ? 0 : 0.12, duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
           className="relative z-10 lg:pt-6"
         >
-          <div className="absolute -inset-6 rounded-[40px] bg-primary/5 blur-2xl" aria-hidden="true" />
+           <div className="absolute -inset-6 rounded-[40px] bg-primary/4 blur-2xl" aria-hidden="true" />
           <WorkspacePreview />
           <div className="absolute -bottom-5 -left-5 hidden items-center gap-3 rounded-2xl border border-border bg-white px-3.5 py-3 shadow-[0_16px_35px_rgb(17_24_39_/_10%)] sm:flex">
             <span className="grid size-8 place-items-center rounded-xl bg-primary text-primary-foreground"><Code2 className="size-4" /></span>

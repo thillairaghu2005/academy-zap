@@ -236,7 +236,7 @@ export function LabDetailClient({
                 </div>
                 <Badge variant="info" className="shrink-0">Read-only preview</Badge>
               </div>
-              <Card className="h-[320px] overflow-hidden border-foreground/20 bg-[#0b0f14] p-0">
+              <Card className="h-[320px] overflow-hidden border-foreground/20 bg-[#120b0b] p-0">
                 {previewSessionQuery.isLoading ? (
                   <SkeletonLines count={3} className="p-5" />
                 ) : previewSessionQuery.data ? (

@@ -31,7 +31,7 @@ const STATUS_META = {
     text: "text-emerald-700",
     ink: "text-emerald-300",
     ring: "border-emerald-500/40 bg-emerald-500/10",
-    art: "from-emerald-300 via-teal-400 to-cyan-500",
+    art: "from-red-300 via-rose-400 to-red-600",
     description: "This credential is valid and backed by an intact Zapsters ledger.",
   },
   flagged: {
@@ -49,7 +49,7 @@ const STATUS_META = {
     text: "text-rose-700",
     ink: "text-rose-300",
     ring: "border-rose-500/40 bg-rose-500/10",
-    art: "from-rose-300 via-fuchsia-500 to-purple-700",
+    art: "from-rose-300 via-red-500 to-red-800",
     description: "This credential no longer certifies the underlying achievement.",
   },
 } as const;
@@ -86,7 +86,7 @@ function CredentialArt({
   const Icon = meta.icon;
   return (
     <div
-      className="relative aspect-square overflow-hidden rounded-[1.5rem] border border-white/15 bg-[#111827] p-5 shadow-2xl shadow-black/30"
+      className="relative aspect-square overflow-hidden rounded-[1.5rem] border border-white/15 bg-[#2b0b0b] p-5 shadow-2xl shadow-black/30"
       aria-label={`${badgeName} credential artwork`}
     >
       <div className={cn("absolute -right-16 -top-16 size-64 rounded-full bg-gradient-to-br opacity-80 blur-2xl", meta.art)} />
@@ -102,8 +102,8 @@ function CredentialArt({
           </span>
         </div>
 
-        <div className="mx-auto grid size-44 place-items-center rounded-full border border-white/20 bg-gradient-to-br from-white/20 to-white/5 shadow-[0_0_0_12px_rgba(255,255,255,0.04),0_0_60px_rgba(79,140,255,0.35)] sm:size-52">
-          <div className="grid size-32 place-items-center rounded-full border border-white/30 bg-[#111827]/70 sm:size-40">
+        <div className="mx-auto grid size-44 place-items-center rounded-full border border-white/20 bg-gradient-to-br from-white/20 to-white/5 shadow-[0_0_0_12px_rgba(255,255,255,0.04),0_0_60px_rgba(220,38,38,0.35)] sm:size-52">
+          <div className="grid size-32 place-items-center rounded-full border border-white/30 bg-[#2b0b0b]/70 sm:size-40">
             <Icon className={cn("size-20", meta.ink)} strokeWidth={1.25} />
           </div>
         </div>

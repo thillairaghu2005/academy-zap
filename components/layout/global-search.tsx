@@ -8,9 +8,13 @@ import {
   BookOpen,
   ClipboardList,
   CodeXml,
+  CheckCircle2,
+  LayoutDashboard,
   FlaskConical,
   LoaderCircle,
+  MessageCircle,
   Search,
+  Settings,
   UserRound,
 } from "lucide-react";
 
@@ -26,6 +30,7 @@ import {
   CommandItem,
   CommandList,
   CommandSeparator,
+  CommandShortcut,
 } from "@/components/ui/command";
 import { cn } from "@/lib/utils";
 
@@ -105,6 +110,12 @@ export function GlobalSearch({ className }: { className?: string }) {
     router.push(href);
   };
 
+  const runAction = (action: "tutor" | "complete") => {
+    close();
+    if (action === "tutor") window.dispatchEvent(new CustomEvent("zapsters:open-tutor"));
+    if (action === "complete") window.dispatchEvent(new CustomEvent("zapsters:mark-lesson-complete"));
+  };
+
   return (
     <>
       <Button
@@ -129,7 +140,14 @@ export function GlobalSearch({ className }: { className?: string }) {
           placeholder="Search courses, coding problems, labs, assessments, and mentors..."
         />
         <CommandList>
-          {search.isLoading ? (
+          {!query.trim() && !search.isLoading ? (
+            <CommandGroup heading="Quick actions">
+              <CommandItem value="Dashboard" onSelect={() => selectResult("/dashboard")}><LayoutDashboard className="size-4 text-primary" /> Dashboard <CommandShortcut>Open</CommandShortcut></CommandItem>
+              <CommandItem value="Settings profile" onSelect={() => selectResult("/profile")}><Settings className="size-4 text-primary" /> Profile & settings <CommandShortcut>Open</CommandShortcut></CommandItem>
+              <CommandItem value="AI Tutor" onSelect={() => runAction("tutor")}><MessageCircle className="size-4 text-primary" /> Ask AI Tutor <CommandShortcut>Open</CommandShortcut></CommandItem>
+              <CommandItem value="Mark lesson complete" onSelect={() => runAction("complete")}><CheckCircle2 className="size-4 text-primary" /> Mark current lesson complete <CommandShortcut>Action</CommandShortcut></CommandItem>
+            </CommandGroup>
+          ) : search.isLoading ? (
             <div className="flex items-center justify-center gap-2 px-3 py-12 text-sm text-muted-foreground">
               <LoaderCircle className="size-4 animate-spin" /> Searching...
             </div>

@@ -7,6 +7,7 @@ import {
   CreditCard,
   FlaskConical,
   LayoutDashboard,
+  Bookmark,
   ShoppingCart,
   Trophy,
   UserRound,
@@ -31,6 +32,7 @@ export const sideNavGroups: NavGroup[] = [
     items: [
       { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
       { href: "/courses", label: "Courses", icon: BookOpen },
+      { href: "/saved", label: "Saved", icon: Bookmark },
     ],
   },
   {

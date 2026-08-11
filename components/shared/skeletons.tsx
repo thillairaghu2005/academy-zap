@@ -192,7 +192,7 @@ export function TerminalSkeleton({ className }: { className?: string }) {
       role="status"
       aria-label="Loading lab terminal"
       className={cn(
-        "flex h-full min-h-64 flex-col justify-between bg-[#0b0f14] p-5",
+        "flex h-full min-h-64 flex-col justify-between bg-[#120b0b] p-5",
         className,
       )}
     >

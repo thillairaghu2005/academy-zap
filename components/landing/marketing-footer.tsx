@@ -10,6 +10,7 @@ const columns = [
       ["Course catalog", "/courses"],
       ["Python Judge", "/judge"],
       ["Virtual lab sessions", "/labs"],
+      ["Pricing", "/pricing"],
     ],
   },
   {
@@ -33,7 +34,7 @@ const columns = [
 /** Marketing footer intentionally uses only routes and support surfaces present in the app. */
 export function MarketingFooter() {
   return (
-    <footer className="border-t border-border bg-muted/50">
+    <footer className="border-t border-border bg-surface-2">
       <div className="mx-auto grid max-w-7xl gap-10 px-4 py-12 sm:px-6 lg:grid-cols-[1.3fr_2fr] lg:px-8 lg:py-16">
         <div>
           <Logo size="sm" />
@@ -51,7 +52,7 @@ export function MarketingFooter() {
                   <li key={href}>
                     <Link
                       href={href}
-                      className="text-sm text-muted-foreground outline-none transition-colors hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring"
+                       className="text-sm text-muted-foreground outline-none transition-colors hover:text-primary focus-visible:ring-2 focus-visible:ring-ring"
                     >
                       {label}
                     </Link>

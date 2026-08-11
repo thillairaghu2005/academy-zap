@@ -164,8 +164,8 @@ export function LedgerViewer({
 /* ------------------------------------------------------------------ */
 
 const XP_TYPE_STYLE: Record<string, string> = {
-  completion: "border-sky-500/40 bg-sky-500/10 text-sky-700",
-  mastery: "border-fuchsia-500/40 bg-fuchsia-500/10 text-fuchsia-600",
+  completion: "border-red-500/40 bg-red-500/10 text-red-700",
+  mastery: "border-rose-500/40 bg-rose-500/10 text-rose-700",
   bonus: "border-emerald-500/40 bg-emerald-500/10 text-emerald-700",
   adjustment: "border-rose-500/40 bg-rose-500/10 text-rose-700",
 };
@@ -280,17 +280,17 @@ function VersionsView({
               v{d.from_version} → v{d.to_version}
             </span>
             {d.rank_changed ? (
-              <Badge className="border-fuchsia-500/40 bg-fuchsia-500/10 text-caption text-fuchsia-600">
+              <Badge className="border-rose-500/40 bg-rose-500/10 text-caption text-rose-700">
                 rank change: {d.from_rank} → {d.to_rank}
               </Badge>
             ) : null}
           </div>
           <div className="mt-1.5 flex flex-wrap gap-3 font-mono text-[11px]">
-            <span className="text-sky-700">
+            <span className="text-red-700">
               completion {d.completion_delta > 0 ? "+" : ""}
               {d.completion_delta.toLocaleString()}
             </span>
-            <span className="text-fuchsia-600">
+            <span className="text-rose-700">
               mastery {d.mastery_delta > 0 ? "+" : ""}
               {d.mastery_delta.toLocaleString()}
             </span>

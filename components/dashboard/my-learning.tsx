@@ -139,7 +139,7 @@ function ContinueLearning({ item }: { item: MyLearningItem }) {
   const ctaLabel = progress > 0 ? "Resume course" : "Start course";
 
   return (
-    <Card variant="glow" className="group relative overflow-hidden rounded-3xl border-primary/15 bg-gradient-to-br from-primary/[0.07] via-card to-card shadow-[0_16px_45px_-24px_rgb(37_99_235_/_18%)] transition-all duration-300 hover:-translate-y-0.5 hover:border-primary/30 hover:shadow-[0_22px_55px_-25px_rgb(37_99_235_/_24%)]">
+    <Card variant="glow" className="group relative overflow-hidden rounded-3xl border-primary/15 bg-gradient-to-br from-primary/[0.07] via-card to-card shadow-[0_16px_45px_-24px_rgb(220_38_38_/_18%)] transition-all duration-300 hover:-translate-y-0.5 hover:border-primary/30 hover:shadow-[0_22px_55px_-25px_rgb(220_38_38_/_24%)]">
       <div className="pointer-events-none absolute -right-24 -top-28 size-72 rounded-full bg-primary/10 blur-3xl transition-opacity duration-300 group-hover:opacity-80" />
       <div className="pointer-events-none absolute inset-y-0 right-0 hidden w-1/3 bg-gradient-to-l from-primary/[0.045] to-transparent lg:block" />
 
@@ -183,7 +183,7 @@ function ContinueLearning({ item }: { item: MyLearningItem }) {
             <Progress
               value={progress}
               className="h-2 rounded-full bg-primary/10"
-               indicatorClassName="bg-primary shadow-[0_0_14px_rgb(37_99_235_/_30%)]"
+               indicatorClassName="bg-primary shadow-[0_0_14px_rgb(220_38_38_/_30%)]"
             />
           </div>
 
@@ -337,7 +337,7 @@ function LearningJourney({ items }: { items: MyLearningItem[] }) {
           const Icon = milestone.icon;
           return (
             <div key={milestone.label} className="relative flex items-start gap-3 sm:block sm:text-center">
-              <span className={cn("relative z-10 grid size-10 shrink-0 place-items-center rounded-full border-4 border-card text-sm transition-colors", milestone.complete ? "bg-primary text-primary-foreground shadow-[0_0_0_4px_rgb(37_99_235_/_10%)]" : "bg-surface-1 text-muted-foreground")}>
+              <span className={cn("relative z-10 grid size-10 shrink-0 place-items-center rounded-full border-4 border-card text-sm transition-colors", milestone.complete ? "bg-primary text-primary-foreground shadow-[0_0_0_4px_rgb(220_38_38_/_10%)]" : "bg-surface-1 text-muted-foreground")}>
                 {milestone.complete ? <Check className="size-4" /> : <Icon className="size-4" />}
               </span>
               <div className="min-w-0 sm:mt-3 sm:px-2">

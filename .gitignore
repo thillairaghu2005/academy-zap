@@ -47,4 +47,5 @@ next-env.d.ts
 # docs
 audit.md
 session.md
+UI.md
 /design-ref/

@@ -30,9 +30,9 @@ export function GuacamoleStub({ sessionId }: { sessionId: string }) {
   }, []);
 
   return (
-    <div className="relative h-full w-full bg-[#0b0f14]">
+    <div className="relative h-full w-full bg-[#120b0b]">
       {/* Connection bar */}
-      <div className="flex items-center justify-between border-b border-white/5 bg-[#0d131b] px-3 py-1.5 text-caption text-muted-foreground">
+      <div className="flex items-center justify-between border-b border-white/5 bg-[#1b0d0d] px-3 py-1.5 text-caption text-muted-foreground">
         <span className="flex items-center gap-1.5">
           <Signal className="size-3 text-emerald-700" />
           guacamole · rdp-over-ws
@@ -62,9 +62,9 @@ export function GuacamoleStub({ sessionId }: { sessionId: string }) {
       ) : (
         <div className="flex h-[calc(100%-29px)] flex-col p-3">
           {/* Mock desktop */}
-          <div className="flex h-full flex-col overflow-hidden rounded-md border border-white/10 bg-[#10151d]">
+          <div className="flex h-full flex-col overflow-hidden rounded-md border border-white/10 bg-[#1d1010]">
             {/* Taskbar */}
-            <div className="flex items-center gap-2 border-b border-white/5 bg-[#0d131b] px-3 py-1.5">
+            <div className="flex items-center gap-2 border-b border-white/5 bg-[#1b0d0d] px-3 py-1.5">
               <span className="flex items-center gap-1.5 text-caption text-foreground/80">
                 <Cpu className="size-3.5 text-emerald-700" />
                 Blue Team Console
@@ -77,7 +77,7 @@ export function GuacamoleStub({ sessionId }: { sessionId: string }) {
 
             {/* Mock console surface */}
             <div className="flex flex-1 flex-col gap-2.5 p-3">
-              <div className="flex items-center justify-between rounded-lg border border-white/5 bg-[#131a24] px-3 py-2">
+              <div className="flex items-center justify-between rounded-lg border border-white/5 bg-[#241313] px-3 py-2">
                 <span className="text-xs text-foreground/80">
                   SIEM · alert queue
                 </span>
@@ -94,7 +94,7 @@ export function GuacamoleStub({ sessionId }: { sessionId: string }) {
                 ].map((s) => (
                   <div
                     key={s.label}
-                    className="flex flex-col justify-center gap-1 rounded-lg border border-white/5 bg-[#131a24] px-3 py-2"
+                    className="flex flex-col justify-center gap-1 rounded-lg border border-white/5 bg-[#241313] px-3 py-2"
                   >
                     <span className="text-caption text-muted-foreground">
                       {s.label}

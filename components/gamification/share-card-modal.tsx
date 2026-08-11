@@ -50,7 +50,7 @@ export function ShareCardModal({
     try {
       const png = await toPng(cardRef.current, {
         pixelRatio: 2,
-        backgroundColor: "#0b0b12",
+        backgroundColor: "#120b0b",
       });
       const link = document.createElement("a");
       link.download = `zapsters-rank-${data.rank_name.toLowerCase()}.png`;
@@ -93,10 +93,10 @@ export function ShareCardModal({
               ref={cardRef}
               initial={{ opacity: 0, scale: 0.96 }}
               animate={{ opacity: 1, scale: 1 }}
-              className="relative overflow-hidden rounded-2xl border border-fuchsia-500/30 bg-gradient-to-br from-[#1a0b2e] via-[#0b0b12] to-[#0b0b12] p-6"
+              className="relative overflow-hidden rounded-2xl border border-red-500/30 bg-gradient-to-br from-[#2b0b0b] via-[#120b0b] to-[#120b0b] p-6"
             >
-              <div className="absolute -right-14 -top-14 size-44 rounded-full bg-fuchsia-500/20 blur-3xl" />
-              <div className="absolute -bottom-16 -left-10 size-40 rounded-full bg-cyan-500/10 blur-3xl" />
+              <div className="absolute -right-14 -top-14 size-44 rounded-full bg-red-500/20 blur-3xl" />
+              <div className="absolute -bottom-16 -left-10 size-40 rounded-full bg-rose-500/10 blur-3xl" />
               <div className="relative">
                 <div className="flex items-center justify-between">
                   <p className="font-display text-small font-bold text-white">

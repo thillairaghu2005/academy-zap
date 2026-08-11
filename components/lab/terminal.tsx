@@ -56,14 +56,13 @@ export function LabTerminal({
       cursorBlink: true,
       fontSize: 13,
       lineHeight: 1.25,
-      fontFamily:
-        "ui-monospace, SFMono-Regular, Menlo, Consolas, 'Liberation Mono', monospace",
+      fontFamily: "var(--font-body)",
       theme: {
-        background: "#0b0f14",
+        background: "#120b0b",
         foreground: "#d4dbe6",
-        cursor: "#4f8cff",
-        selectionBackground: "rgba(79, 140, 255, 0.28)",
-        black: "#0b0f14",
+        cursor: "#ff5c57",
+        selectionBackground: "rgba(220, 38, 38, 0.28)",
+        black: "#120b0b",
         brightBlack: "#5b6a7d",
         red: "#ff5c57",
         brightRed: "#ff5c57",
@@ -71,12 +70,12 @@ export function LabTerminal({
         brightGreen: "#3ddc97",
         yellow: "#e5c07b",
         brightYellow: "#e5c07b",
-        blue: "#4f8cff",
-        brightBlue: "#4f8cff",
-        magenta: "#c678dd",
-        brightMagenta: "#c678dd",
-        cyan: "#56b6c2",
-        brightCyan: "#56b6c2",
+        blue: "#ff6b6b",
+        brightBlue: "#ff6b6b",
+        magenta: "#fb7185",
+        brightMagenta: "#fb7185",
+        cyan: "#fda4af",
+        brightCyan: "#fda4af",
         white: "#d4dbe6",
         brightWhite: "#ffffff",
       },
@@ -212,7 +211,7 @@ export function LabTerminal({
       {!connected ? (
         <div
           role="status"
-          className="pointer-events-none absolute inset-0 z-10 flex items-center justify-center gap-2 bg-[#0b0f14] text-sm text-muted-foreground"
+          className="pointer-events-none absolute inset-0 z-10 flex items-center justify-center gap-2 bg-[#120b0b] text-sm text-muted-foreground"
         >
           <span className="size-2 animate-pulse rounded-full bg-emerald-400" />
           Establishing encrypted session…

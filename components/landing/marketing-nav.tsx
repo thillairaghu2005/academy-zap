@@ -27,6 +27,7 @@ const links = [
   { href: "/judge", label: "Judge" },
   { href: "/labs", label: "Labs" },
   { href: "/rank", label: "Rank" },
+  { href: "/pricing", label: "Pricing" },
 ] as const;
 
 /** Public navigation keeps the landing page distinct from the learner shell. */
@@ -46,11 +47,11 @@ export function MarketingNav() {
   return (
     <header
       className={cn(
-        "sticky top-0 z-40 border-b border-transparent px-3 py-3 transition-all duration-300 motion-reduce:transition-none sm:px-5",
-        scrolled && "border-border/70 bg-background/85 backdrop-blur-xl",
+        "sticky top-0 z-40 border-b border-border bg-white px-3 py-3 transition-all duration-200 motion-reduce:transition-none sm:px-5",
+        scrolled && "shadow-[0_4px_16px_rgb(23_23_23_/_5%)]",
       )}
     >
-      <div className={cn("mx-auto flex h-14 max-w-7xl items-center gap-3 rounded-2xl border border-transparent px-2 sm:px-3 lg:h-16", scrolled && "border-border/80 bg-white/85 shadow-[0_8px_30px_rgb(17_24_39_/_6%)]") }>
+      <div className="mx-auto flex h-14 max-w-7xl items-center gap-3 px-0 sm:px-1 lg:h-16">
         <Sheet open={menuOpen} onOpenChange={setMenuOpen}>
           <SheetTrigger asChild>
             <Button
@@ -75,7 +76,7 @@ export function MarketingNav() {
                   key={link.href}
                   href={link.href}
                   onClick={() => setMenuOpen(false)}
-                  className="flex min-h-11 items-center rounded-lg px-3 text-base font-medium outline-none transition-colors hover:bg-accent focus-visible:ring-2 focus-visible:ring-ring"
+                  className="flex min-h-11 items-center rounded-lg px-3 text-base font-medium outline-none transition-colors hover:bg-primary-light hover:text-primary focus-visible:ring-2 focus-visible:ring-ring"
                 >
                   {link.label}
                 </Link>
@@ -116,7 +117,7 @@ export function MarketingNav() {
                href={link.href}
                aria-current={pathname === link.href || pathname.startsWith(`${link.href}/`) ? "page" : undefined}
                className={cn(
-                 "relative rounded-xl px-3 py-2 text-sm font-medium outline-none transition-colors hover:bg-accent hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring",
+                  "relative rounded-lg px-3 py-2 text-sm font-medium outline-none transition-colors hover:bg-primary-light hover:text-primary focus-visible:ring-2 focus-visible:ring-ring",
                  pathname === link.href || pathname.startsWith(`${link.href}/`) ? "text-foreground after:absolute after:inset-x-3 after:-bottom-1 after:h-0.5 after:rounded-full after:bg-primary" : "text-muted-foreground",
                )}
              >
@@ -140,7 +141,7 @@ export function MarketingNav() {
               >
                 Sign in
               </Link>
-               <Button variant="default" size="sm" sheen glow asChild>
+                 <Button variant="default" size="sm" asChild>
                 <Link href="/register">Join Zapsters</Link>
               </Button>
             </>

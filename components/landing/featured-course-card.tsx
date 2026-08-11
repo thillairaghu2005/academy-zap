@@ -8,6 +8,8 @@ import type { CourseSummary } from "@/lib/contracts/content";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { isCourseBookmarked, toggleCourseBookmark } from "@/lib/demo/course-notes";
+import { toast } from "sonner";
 
 export interface FeaturedCourseCardProps {
   course: CourseSummary;
@@ -16,7 +18,7 @@ export interface FeaturedCourseCardProps {
 }
 
 export function FeaturedCourseCard({ course, visualClass, index }: FeaturedCourseCardProps) {
-  const [saved, setSaved] = React.useState(false);
+  const [saved, setSaved] = React.useState(() => isCourseBookmarked(course.id));
   const price = course.price_cents === 0 ? "Free" : `$${(course.price_cents / 100).toFixed(0)}`;
 
   return (
@@ -46,7 +48,7 @@ export function FeaturedCourseCard({ course, visualClass, index }: FeaturedCours
             <Link href={`/courses/${course.id}`}>View course <ArrowUpRight /></Link>
           </Button>
           <span className="ml-auto font-display text-h3 font-semibold">{price}</span>
-          <Button type="button" variant="ghost" size="icon-sm" aria-label={saved ? `Remove ${course.title} from saved courses` : `Save ${course.title}`} aria-pressed={saved} onClick={() => setSaved((current) => !current)} className={cn(saved && "text-primary")}>
+            <Button type="button" variant="ghost" size="icon-sm" aria-label={saved ? `Remove ${course.title} from saved courses` : `Save ${course.title}`} aria-pressed={saved} onClick={() => { const next = toggleCourseBookmark(course.id); setSaved(next); toast(next ? "Course saved for later" : "Course removed from saved"); }} className={cn(saved && "text-primary")}>
             {saved ? <BookmarkCheck className="fill-primary/10" /> : <Bookmark />}
           </Button>
         </div>

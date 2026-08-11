@@ -113,7 +113,7 @@ export function SeasonPassCard() {
                   className={cn(
                     "text-center text-caption font-medium leading-tight",
                     reached
-                      ? "text-violet-600"
+                      ? "text-red-700"
                       : "text-muted-foreground",
                   )}
                 >

@@ -22,6 +22,7 @@ import {
   Download,
   FileText,
   Gauge,
+  Lightbulb,
   LoaderCircle,
   PlayCircle,
   Search,
@@ -60,6 +61,7 @@ import {
 } from "@/lib/demo/course-notes";
 import { CertificateDialog } from "@/components/courses/certificate-dialog";
 import { trackDemoEvent } from "@/lib/demo/analytics";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
 // video.js is not SSR-safe — load the wrapper only on the client.
 const VideoPlayer = dynamic(
@@ -144,6 +146,7 @@ export function PlayerClient({ course }: { course: Course }) {
   );
   const [lessonSearch, setLessonSearch] = React.useState("");
   const [certificateOpen, setCertificateOpen] = React.useState(false);
+  const [explainOpen, setExplainOpen] = React.useState(false);
 
   React.useEffect(() => {
     let cancelled = false;
@@ -254,6 +257,7 @@ export function PlayerClient({ course }: { course: Course }) {
       });
       if (input.completed) {
         trackDemoEvent("lesson_completed", { course_id: course.id });
+        window.dispatchEvent(new CustomEvent("zapsters:xp-earned", { detail: { amount: 50 } }));
         toast.success("Lesson marked complete ⚡", { position: "top-center" });
       }
     },
@@ -347,6 +351,7 @@ export function PlayerClient({ course }: { course: Course }) {
               ? "Saved offline"
               : "Save offline"}
         </Button>
+        {activeLesson ? <Button variant="ghost" size="sm" onClick={() => setExplainOpen(true)}><Lightbulb /> Explain this</Button> : null}
         {offlineSaved ? (
           <Link
             href={`/offline/course/${encodeURIComponent(course.id)}`}
@@ -407,6 +412,12 @@ export function PlayerClient({ course }: { course: Course }) {
             course={course}
             learnerName={user?.display_name ?? "Zapster"}
           />
+          <Dialog open={explainOpen} onOpenChange={setExplainOpen}>
+            <DialogContent>
+              <DialogHeader><DialogTitle>Explain: {activeLesson?.title}</DialogTitle><DialogDescription>A plain-English bridge from the lesson to practical work.</DialogDescription></DialogHeader>
+              <div className="grid gap-4 text-sm leading-6"><div className="rounded-xl border border-primary/15 bg-primary/5 p-4"><p className="font-semibold text-foreground">In plain English</p><p className="mt-1 text-muted-foreground">This lesson gives you a repeatable way to turn a large problem into one observable step, one small experiment, and one verified result.</p></div><div><p className="font-semibold">A useful analogy</p><p className="mt-1 text-muted-foreground">Treat the concept like a checklist for a flight: it does not fly the plane for you, but it makes the risky steps visible before you take off.</p></div><div><p className="font-semibold">Try it now</p><p className="mt-1 text-muted-foreground">Write down the input, the expected signal, and one edge case. Then test that edge case in the next lesson or Judge problem.</p></div></div>
+            </DialogContent>
+          </Dialog>
           {progressLoading ? (
             <PlayerSkeleton />
           ) : progressError ? (

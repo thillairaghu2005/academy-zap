@@ -29,6 +29,15 @@ import { SocialProof } from "@/components/landing/social-proof";
 import { SkillCard } from "@/components/landing/skill-card";
 import { VerifiedProgression } from "@/components/landing/verified-progression";
 import { TrustHighlights } from "@/components/landing/trust-highlights";
+import {
+  FaqSection,
+  FinalCta,
+  LiveLearningTicker,
+  MarketingProofBar,
+  PricingSection,
+  TestimonialWall,
+  TrustedByStrip,
+} from "@/components/landing/premium-sections";
 
 export interface LandingPageProps {
   courses: CourseSummary[];
@@ -170,10 +179,17 @@ export function LandingPage({ courses }: LandingPageProps) {
         Skip to content
       </a>
       <MarketingNav />
+      <LiveLearningTicker />
       <main id="main-content">
         <HomeHero />
+        <TrustedByStrip />
         <LearningLoop />
         <LandingSections courses={courses} />
+        <PricingSection />
+        <TestimonialWall />
+        <FaqSection />
+        <section className="bg-background px-5 py-10 sm:px-8"><MarketingProofBar /></section>
+        <FinalCta />
       </main>
       <MarketingFooter />
     </div>

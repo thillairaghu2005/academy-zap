@@ -88,8 +88,8 @@ export function TopNav() {
     : "Dashboard";
 
   return (
-    <header className="sticky top-0 z-40 px-3 py-3 sm:px-5 lg:px-6">
-      <div className="mx-auto flex h-14 max-w-[1440px] items-center gap-2 rounded-2xl border border-border/80 bg-white/82 px-2 shadow-[0_8px_30px_rgb(17_24_39_/_6%)] backdrop-blur-xl sm:px-3">
+    <header className="sticky top-0 z-40 border-b border-border bg-white/95 px-3 py-2 backdrop-blur sm:px-5 lg:px-6">
+      <div className="mx-auto flex h-14 max-w-[1440px] items-center gap-2 px-0 sm:px-1">
         <MobileNav />
 
         <Logo size="sm" className="hidden lg:flex lg:mr-2" />
@@ -136,7 +136,7 @@ export function TopNav() {
             ) : user ? (
               <UserMenu />
             ) : (
-                <Button variant="default" size="sm" sheen glow asChild>
+              <Button variant="default" size="sm" asChild>
                 <Link href="/login">Sign in</Link>
               </Button>
             )}

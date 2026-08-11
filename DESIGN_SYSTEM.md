@@ -1,6 +1,6 @@
 # Zapsters Design System
 
-The interface uses a soft light canvas with blue as the accent. Light is the only product theme
+The interface uses a soft white canvas with Zapsters deep crimson as the accent. Light is the default product theme
 in this pass; dark presentation is reserved for code syntax themes inside the IDE only.
 Components consume semantic tokens instead of page-level color literals.
 
@@ -9,24 +9,24 @@ Components consume semantic tokens instead of page-level color literals.
 | Token | Value |
 | --- | --- |
 | `background` | `#ffffff` |
-| `surface-1` | `#fafbfc` |
+| `surface-1` | `#fafafa` |
 | `surface-2` / `card` | `#ffffff` |
-| `surface-3` | `#f5f7fa` |
-| `foreground` | `#111827` |
-| `muted-foreground` | `#6b7280` |
-| `border` | `#e5e7eb` |
-| `border-strong` | `#cbd5e1` |
-| `primary` | `#2563eb` |
-| `primary-hover` | `#3b82f6` |
-| `secondary-accent` | `#60a5fa` |
-| `primary-deep` | `#1d4ed8` |
-| `primary-glow` | `#60a5fa` |
-| `primary-light` | `#eff6ff` |
-| `ring` | `#2563eb` |
+| `surface-3` | `#f7f7f8` |
+| `foreground` | `#171717` |
+| `muted-foreground` | `#6b6b6b` |
+| `border` | `#e8e8ea` |
+| `border-strong` | `#dcdde1` |
+| `primary` | `#8e031a` |
+| `primary-hover` | `#720014` |
+| `secondary-accent` | `#a30a25` |
+| `primary-deep` | `#50000f` |
+| `primary-glow` | `#c11230` |
+| `primary-light` | `#f7e9eb` |
+| `ring` | `#8e031a` |
 
-The following values are spec-locked and appear verbatim in both theme definitions: verdict
+The following values are spec-locked and appear verbatim in the theme definition: verdict
 colors, bronze/silver/gold/platinum/obsidian tier colors, `xp-completion` `#0284c7`,
-`xp-mastery` `#7c3aed`, and verified/flagged/reversed/revoked status colors. Additional
+`xp-mastery` `#a30a25`, and verified/flagged/reversed/revoked status colors. Additional
 `*-on-dark` tokens exist for readable small status text without changing the source literals.
 
 ## Typography
@@ -62,12 +62,12 @@ disabled. Global CSS also disables loops and transitions under `prefers-reduced-
 ## Primitives
 
 - `Card`: `default`, `glass`, `glow`, `bento`, and `outline` variants. Glass uses a layered fill, a hairline, a top highlight, and limited backdrop blur.
-- `Button`: all existing variants and sizes remain; `sheen` adds a travelling highlight and `glow` adds a blue halo. `ghost` is tuned for dark surfaces.
+- `Button`: all existing variants and sizes remain; `sheen` adds a travelling highlight and `glow` adds a restrained crimson halo. `ghost` is tuned for dark surfaces.
 - `GradientBorder`: one-pixel gradient border wrapper.
 - `GlowOrb` and `AuroraBackdrop`: pointer-inert ambient light layers.
 - `NoiseOverlay`: reusable `bg-noise` layer.
 - `SectionShell`: shared max-width section rhythm with optional eyebrow, title, subtitle, and ambient light.
-- `Eyebrow` and `Chip`: compact labels with low-contrast hairlines and optional blue emphasis.
+- `Eyebrow` and `Chip`: compact labels with low-contrast hairlines and optional crimson emphasis.
 - `components/motion/`: `Reveal`, `StaggerGroup`, `Parallax`, `CountUp`, `Marquee`, `TiltCard`, `Magnetic`, `Spotlight`, and `TextReveal`.
 
 ## Utilities
@@ -78,7 +78,7 @@ pointer-inert, and in their own stacking context. Animate only transform and opa
 
 ## Do / Don't
 
-- Do use semantic tokens and blue ambient light.
+- Do use semantic tokens and restrained crimson accents.
 - Do keep body text at accessible contrast and preserve visible focus rings.
 - Do reserve cinematic motion for marketing composition; keep app surfaces calm.
 - Don't add raw hexadecimal colors to components.

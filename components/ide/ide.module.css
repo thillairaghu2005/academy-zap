@@ -1,29 +1,29 @@
 :global(.ide-workspace).workspace {
-  --ide-void: #FAFBFC;
+  --ide-void: #FFF7F7;
   --ide-canvas: #FFFFFF;
-  --ide-panel: #F5F7FA;
+  --ide-panel: #FFF1F2;
   --ide-chrome: #FFFFFF;
-  --ide-raised: #F5F7FA;
-  --ide-line: #E5E7EB;
-  --ide-line-strong: #CBD5E1;
-  --ide-text: #111827;
-  --ide-muted: #6B7280;
-  --ide-faint: #9CA3AF;
-  --ide-accent: #2563EB;
-  --ide-accent-strong: #1D4ED8;
-  --ide-accent-soft: rgb(37 99 235 / 9%);
-  --ide-selection: rgb(37 99 235 / 12%);
+  --ide-raised: #FFF1F2;
+  --ide-line: #F2D6D6;
+  --ide-line-strong: #E8B8B8;
+  --ide-text: #241313;
+  --ide-muted: #7F5B5B;
+  --ide-faint: #B58F8F;
+  --ide-accent: #DC2626;
+  --ide-accent-strong: #991B1B;
+  --ide-accent-soft: rgb(220 38 38 / 9%);
+  --ide-selection: rgb(220 38 38 / 12%);
   --ide-success: #15803D;
   --ide-warning: #B45309;
   --ide-danger: #B91C1C;
-  --ide-info: #0369A1;
-  --ide-xp-completion: #0284C7;
-  --ide-xp-mastery: #7C3AED;
+  --ide-info: #9F1239;
+  --ide-xp-completion: #DC2626;
+  --ide-xp-mastery: #BE123C;
   --ide-verdict-accepted: #15803D;
   --ide-verdict-wrong-answer: #B91C1C;
   --ide-verdict-time-limit-exceeded: #B45309;
   --ide-verdict-runtime-error: #C2410C;
-  --ide-verdict-compile-error: #6D28D9;
+  --ide-verdict-compile-error: #9F1239;
   --motion-fast: 150ms;
   --motion-base: 250ms;
   --motion-slow: 400ms;
@@ -83,7 +83,7 @@
 .settingsNarrowTheme { align-items: center; display: flex; }
 .toolbarProblem { flex: 1 1 auto; gap: 9px; min-width: 0; overflow: hidden; }
 .toolbarEyebrow { color: var(--ide-accent-strong); font-size: 10px; font-weight: 700; letter-spacing: .1em; }
-.toolbarTitle { color: var(--ide-text); font-family: var(--font-heading); font-size: 13px; font-weight: 600; max-width: min(30vw, 290px); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.toolbarTitle { color: var(--ide-text); font-family: var(--font-heading); font-size: 13px; font-weight: 300; max-width: min(30vw, 290px); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .difficultyPill { border: 1px solid; border-radius: var(--radius-lg); font-size: 10px; font-weight: 600; line-height: 20px; padding: 0 8px; text-transform: capitalize; }
 .difficultyEasy { background: color-mix(in srgb, var(--ide-success) 10%, transparent); border-color: color-mix(in srgb, var(--ide-success) 22%, transparent); color: var(--ide-success); }
 .difficultyMedium { background: color-mix(in srgb, var(--ide-warning) 10%, transparent); border-color: color-mix(in srgb, var(--ide-warning) 22%, transparent); color: var(--ide-warning); }
@@ -160,7 +160,7 @@
 .statementReadingColumn { margin: 0 auto; max-width: 72ch; padding: 26px 26px 36px; width: 100%; }
 .statementIntro { padding-bottom: 19px; }
 .statementEyebrow { color: var(--ide-accent-strong); font-size: 10px; font-weight: 700; letter-spacing: .1em; }
-.statementIntro h1 { color: var(--ide-text); font-family: var(--font-heading); font-size: 20px; font-weight: 600; letter-spacing: -.01em; line-height: 1.2; margin: 8px 0 17px; }
+.statementIntro h1 { color: var(--ide-text); font-family: var(--font-heading); font-size: 20px; font-weight: 300; letter-spacing: -.01em; line-height: 1.2; margin: 8px 0 17px; }
 .limitsStrip { align-items: center; border-bottom: 1px solid var(--ide-line); border-top: 1px solid var(--ide-line); color: var(--ide-muted); display: flex; flex-wrap: wrap; font-family: var(--font-mono); font-size: 11px; gap: 14px; padding: 10px 0; }
 .limitsStrip span { align-items: center; display: inline-flex; gap: 5px; white-space: nowrap; }
 .limitsStrip svg { color: var(--ide-accent-strong); }
@@ -176,12 +176,12 @@
 .statementSearchButton span { color: var(--ide-faint); font-family: var(--font-mono); font-size: 10px; }
 .statementSection { scroll-margin-top: 42px; }
 .statementSection + .statementSection { margin-top: 28px; }
-.statementSection h2 { color: var(--ide-text); font-family: var(--font-heading); font-size: 15px; font-weight: 600; line-height: 1.3; margin: 0 0 13px; }
+.statementSection h2 { color: var(--ide-text); font-family: var(--font-heading); font-size: 15px; font-weight: 300; line-height: 1.3; margin: 0 0 13px; }
 .markdown { color: var(--ide-muted); font-size: 14px; line-height: 1.7; max-width: 72ch; }
 .markdown p { margin: 0 0 .9em; }
 .markdown p:last-child { margin-bottom: 0; }
 .markdown h3,
-.markdown h4 { color: var(--ide-text); font-family: var(--font-heading); font-weight: 600; margin: 1.2em 0 .55em; }
+.markdown h4 { color: var(--ide-text); font-family: var(--font-heading); font-weight: 300; margin: 1.2em 0 .55em; }
 .markdown h3 { font-size: 15px; }
 .markdown h4 { font-size: 14px; }
 .markdown ul,

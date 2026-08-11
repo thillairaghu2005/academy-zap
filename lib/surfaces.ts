@@ -50,7 +50,7 @@ export const surfaces: SurfaceMeta[] = [
     stage: "F1",
     status: "shipped",
     icon: BookOpen,
-    accent: "from-violet-500 to-fuchsia-500",
+    accent: "from-rose-500 to-red-600",
     tagline: "Udemy-shaped course catalog & video player",
     description:
       "Browse the catalog, open a course, and play video lessons with captions, playback speed and resume position.",
@@ -73,7 +73,7 @@ export const surfaces: SurfaceMeta[] = [
     stage: "F2",
     status: "shipped",
     icon: CodeXml,
-    accent: "from-cyan-400 to-blue-500",
+    accent: "from-red-400 to-red-600",
     tagline: "HackerRank-shaped code judge",
     description:
       "Solve problems in the Monaco editor, submit, and get deterministic verdicts from the mock judge API.",
@@ -98,7 +98,7 @@ export const surfaces: SurfaceMeta[] = [
     stage: "F3",
     status: "shipped",
     icon: FlaskConical,
-    accent: "from-emerald-400 to-teal-500",
+    accent: "from-rose-400 to-red-600",
     tagline: "TryHackMe-shaped virtual labs",
     description:
       "Drive a simulated xterm.js terminal and verify objectives with local demo state.",
@@ -145,7 +145,7 @@ export const surfaces: SurfaceMeta[] = [
     stage: "F5",
     status: "shipped",
     icon: Trophy,
-    accent: "from-fuchsia-500 to-pink-500",
+    accent: "from-red-500 to-rose-600",
     tagline: "Initiate → Deus, with Prestige rebirth",
     description:
       "Your rank, dual XP tracks, daily streak, league standing and guild — one climb, fully visible, with a shareable rank card.",
@@ -169,7 +169,7 @@ export const surfaces: SurfaceMeta[] = [
     stage: "F5",
     status: "shipped",
     icon: ChartColumn,
-    accent: "from-sky-400 to-cyan-500",
+    accent: "from-red-400 to-rose-600",
     tagline: "Global & guild boards",
     description:
       "Global and guild leaderboards with your standing highlighted, top-3 medals, and promotion / relegation zones.",
@@ -191,7 +191,7 @@ export const surfaces: SurfaceMeta[] = [
     stage: "F5",
     status: "shipped",
     icon: Users,
-    accent: "from-purple-500 to-violet-500",
+    accent: "from-red-600 to-rose-700",
     tagline: "Cohorts with combined XP",
     description:
       "Guild boards with member rollups, combined XP, guild-vs-guild comparison, and a skill-tree visualization of your category XP.",
@@ -265,7 +265,7 @@ export const surfaces: SurfaceMeta[] = [
     stage: "Add-on",
     status: "shipped",
     icon: LifeBuoy,
-    accent: "from-rose-400 to-pink-500",
+    accent: "from-red-400 to-rose-600",
     tagline: "Learner tickets + admin queue",
     description:
       "Ticket threads with an enforced status workflow, learner isolation, agent-only internal notes, and an admin queue with assignment.",
