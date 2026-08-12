@@ -223,6 +223,10 @@ export function AssessmentAttemptClient({
   >(null);
   const [lastResult, setLastResult] = React.useState<GradeResult | null>(null);
   const [combo, setCombo] = React.useState({ count: 0, multiplier: 1, best: 0 });
+  const [flaggedQuestionIds, setFlaggedQuestionIds] = React.useState<Set<string>>(
+    () => new Set(),
+  );
+  const [confidence, setConfidence] = React.useState<Record<string, "low" | "medium" | "high">>({});
 
   const [summary, setSummary] = React.useState<{
     score: number;
@@ -450,6 +454,7 @@ export function AssessmentAttemptClient({
   const low = remainingMs < 5 * 60_000;
   const answeredCount = attempt.answers.length;
   const allAnswered = answeredCount >= assessment.questions.length;
+  const flaggedCount = flaggedQuestionIds.size;
   const canSubmitAnswer =
     !!draft &&
     !gradeMutation.isPending &&
@@ -524,8 +529,8 @@ export function AssessmentAttemptClient({
                 Question {index + 1} of {assessment.questions.length}
               </span>
             </div>
-            <div className="flex items-center gap-2">
-              <QuestionTypeBadge type={question.type} />
+             <div className="flex items-center gap-2">
+               <QuestionTypeBadge type={question.type} />
               <span
                 className={cn(
                   "rounded-full border px-2 py-0.5 font-mono text-[10px]",
@@ -537,20 +542,58 @@ export function AssessmentAttemptClient({
                      "border-primary-border bg-primary-light text-primary",
                 )}
               >
-                {question.difficulty}
-              </span>
-            </div>
-          </div>
+                 {question.difficulty}
+               </span>
+               <Button
+                 type="button"
+                 variant={flaggedQuestionIds.has(question.id) ? "secondary" : "ghost"}
+                 size="sm"
+                 className="h-7 gap-1.5 px-2 text-caption"
+                 aria-pressed={flaggedQuestionIds.has(question.id)}
+                 onClick={() =>
+                   setFlaggedQuestionIds((current) => {
+                     const next = new Set(current);
+                     if (next.has(question.id)) next.delete(question.id);
+                     else next.add(question.id);
+                     return next;
+                   })
+                 }
+               >
+                 <Flag className="size-3.5" />
+                 {flaggedQuestionIds.has(question.id) ? "Flagged" : "Flag"}
+               </Button>
+             </div>
+           </div>
 
           <div className="pt-4">
-            <p
+             <p
               id={`question-${question.id}-prompt`}
               className="whitespace-pre-wrap text-sm leading-relaxed"
             >
               {question.prompt}
-            </p>
+             </p>
 
-            {/* Question input by type */}
+             <div className="mt-4 flex flex-wrap items-center gap-2" aria-label="Confidence marker">
+               <span className="text-caption font-medium text-muted-foreground">Confidence</span>
+               {(["low", "medium", "high"] as const).map((level) => (
+                 <button
+                   key={level}
+                   type="button"
+                   aria-pressed={confidence[question.id] === level}
+                   onClick={() => setConfidence((current) => ({ ...current, [question.id]: level }))}
+                   className={cn(
+                     "rounded-full border px-2.5 py-1 text-caption capitalize outline-none transition-colors focus-visible:ring-2 focus-visible:ring-ring",
+                     confidence[question.id] === level
+                       ? "border-primary bg-primary/10 font-semibold text-primary"
+                       : "border-border text-muted-foreground hover:bg-muted/50",
+                   )}
+                 >
+                   {level}
+                 </button>
+               ))}
+             </div>
+
+             {/* Question input by type */}
             <div className="mt-5">
               {question.type === "mcq" && question.options ? (
                 <div
@@ -728,9 +771,12 @@ export function AssessmentAttemptClient({
         {/* Right rail */}
         <div className="flex flex-col gap-4">
           {/* Progress dots */}
-          <Card className="p-4">
-            <h3 className="font-display text-h3">Progress</h3>
-            <div className="mt-3 flex flex-wrap gap-1.5">
+           <Card className="p-4">
+             <h3 className="font-display text-h3">Progress</h3>
+             <p className="mt-1 text-xs text-muted-foreground">
+               {flaggedCount ? `${flaggedCount} flagged for review` : "Flag questions you want to revisit."}
+             </p>
+             <div className="mt-3 flex flex-wrap gap-1.5">
               {assessment.questions.map((q, i) => {
                 const isAnswered = attempt.answers.some((a) => a.question_id === q.id);
                 const isCurrent = i === index;
@@ -744,11 +790,12 @@ export function AssessmentAttemptClient({
                     aria-label={`Go to question ${i + 1}`}
                     className={cn(
                       "size-6 rounded-md border font-mono text-[10px] transition-colors",
-                      isAnswered
-                        ? "border-emerald-500/40 bg-emerald-500/10 text-emerald-700"
-                        : "border-border bg-card text-muted-foreground hover:border-primary/40",
-                      isCurrent && "ring-2 ring-primary/30",
-                    )}
+                       isAnswered
+                         ? "border-emerald-500/40 bg-emerald-500/10 text-emerald-700"
+                         : "border-border bg-card text-muted-foreground hover:border-primary/40",
+                       isCurrent && "ring-2 ring-primary/30",
+                       flaggedQuestionIds.has(q.id) && "border-primary/50 bg-primary/10 text-primary",
+                     )}
                   >
                     {i + 1}
                   </button>
@@ -758,16 +805,20 @@ export function AssessmentAttemptClient({
           </Card>
 
           {/* Final submit */}
-          <Card className="flex flex-col gap-3 p-4">
+           <Card className="flex flex-col gap-3 p-4">
             <h3 className="flex items-center gap-2 font-display text-h3">
               <Flag className="size-4 text-muted-foreground" />
               Finalize
             </h3>
             <p className="text-xs leading-relaxed text-muted-foreground">
-              {allAnswered
-                ? "Every question is answered. Submit to record your result."
-                : `Answer all ${assessment.questions.length} questions to submit (${answeredCount} done).`}
-            </p>
+               {allAnswered
+                 ? "Every question is answered. Submit to record your result."
+                 : `Answer all ${assessment.questions.length} questions to submit (${answeredCount} done).`}
+             </p>
+             <div className="grid grid-cols-2 gap-2 text-caption text-muted-foreground">
+               <span className="rounded-lg border border-border bg-surface-1 px-2.5 py-2">{answeredCount} answered</span>
+               <span className="rounded-lg border border-border bg-surface-1 px-2.5 py-2">{flaggedCount} flagged</span>
+             </div>
             <Button
               onClick={() => finalizeMutation.mutate()}
               disabled={!allAnswered || finalizeMutation.isPending}

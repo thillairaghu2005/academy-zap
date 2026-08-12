@@ -5,6 +5,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import {
   ArrowRight,
+  Bookmark,
   BookOpen,
   ClipboardList,
   CodeXml,
@@ -13,8 +14,10 @@ import {
   FlaskConical,
   LoaderCircle,
   MessageCircle,
+  PlayCircle,
   Search,
   Settings,
+  Trophy,
   UserRound,
 } from "lucide-react";
 
@@ -142,7 +145,11 @@ export function GlobalSearch({ className }: { className?: string }) {
         <CommandList>
           {!query.trim() && !search.isLoading ? (
             <CommandGroup heading="Quick actions">
-              <CommandItem value="Dashboard" onSelect={() => selectResult("/dashboard")}><LayoutDashboard className="size-4 text-primary" /> Dashboard <CommandShortcut>Open</CommandShortcut></CommandItem>
+               <CommandItem value="Continue learning resume course" onSelect={() => selectResult("/dashboard#next-move")}><PlayCircle className="size-4 text-primary" /> Resume course <CommandShortcut>Continue</CommandShortcut></CommandItem>
+               <CommandItem value="Start a lab" onSelect={() => selectResult("/labs")}><FlaskConical className="size-4 text-primary" /> Start a lab <CommandShortcut>Open</CommandShortcut></CommandItem>
+               <CommandItem value="Saved items" onSelect={() => selectResult("/saved")}><Bookmark className="size-4 text-primary" /> Open saved items <CommandShortcut>Open</CommandShortcut></CommandItem>
+               <CommandItem value="View rank" onSelect={() => selectResult("/rank")}><Trophy className="size-4 text-primary" /> View rank <CommandShortcut>Open</CommandShortcut></CommandItem>
+               <CommandItem value="Dashboard" onSelect={() => selectResult("/dashboard")}><LayoutDashboard className="size-4 text-primary" /> Dashboard <CommandShortcut>Open</CommandShortcut></CommandItem>
               <CommandItem value="Settings profile" onSelect={() => selectResult("/profile")}><Settings className="size-4 text-primary" /> Profile & settings <CommandShortcut>Open</CommandShortcut></CommandItem>
               <CommandItem value="AI Tutor" onSelect={() => runAction("tutor")}><MessageCircle className="size-4 text-primary" /> Ask AI Tutor <CommandShortcut>Open</CommandShortcut></CommandItem>
               <CommandItem value="Mark lesson complete" onSelect={() => runAction("complete")}><CheckCircle2 className="size-4 text-primary" /> Mark current lesson complete <CommandShortcut>Action</CommandShortcut></CommandItem>

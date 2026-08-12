@@ -16,6 +16,7 @@ import {
   CheckCircle2,
   Clock,
   FileText,
+  FlaskConical,
   Globe,
   GraduationCap,
   Hourglass,
@@ -375,15 +376,46 @@ export function CourseDetailClient({
           </div>
 
           {/* Description */}
-          <div className="mt-2">
-            <h2 className="font-display text-h2">
-              About this course
-            </h2>
-            <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-              {course.description}
-            </p>
-          </div>
-          <CourseTrustPanel courseId={course.id} />
+           <div className="mt-2">
+             <h2 className="font-display text-h2">
+               About this course
+             </h2>
+             <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+               {course.description}
+             </p>
+           </div>
+           <section
+             aria-labelledby="course-outcome-title"
+             className="mt-3 rounded-2xl border border-primary/15 bg-primary/5 p-4 sm:p-5"
+           >
+             <div className="flex flex-wrap items-end justify-between gap-3">
+               <div>
+                 <p className="text-xs font-semibold uppercase tracking-[0.13em] text-primary">The working loop</p>
+                 <h2 id="course-outcome-title" className="mt-1 font-display text-xl font-semibold tracking-[-0.025em]">Learn it. Use it. Prove it.</h2>
+               </div>
+               <Button variant="outline" size="sm" asChild>
+                 <Link href="/dashboard#next-move">Build your path <ArrowRight /></Link>
+               </Button>
+             </div>
+             <div className="mt-4 grid gap-2 sm:grid-cols-3">
+               <div className="rounded-xl border border-primary/10 bg-card p-3">
+                 <BookOpen className="size-4 text-primary" aria-hidden="true" />
+                 <p className="mt-2 text-sm font-semibold">Learn</p>
+                 <p className="mt-1 text-xs leading-relaxed text-muted-foreground">Short lessons turn the concept into a usable mental model.</p>
+               </div>
+               <div className="rounded-xl border border-primary/10 bg-card p-3">
+                 <FlaskConical className="size-4 text-primary" aria-hidden="true" />
+                 <p className="mt-2 text-sm font-semibold">Practice</p>
+                 <p className="mt-1 text-xs leading-relaxed text-muted-foreground">Hands-on prompts make the tradeoffs visible before they matter.</p>
+               </div>
+               <div className="rounded-xl border border-primary/10 bg-card p-3">
+                 <CheckCircle2 className="size-4 text-success-strong" aria-hidden="true" />
+                 <p className="mt-2 text-sm font-semibold">Prove</p>
+                 <p className="mt-1 text-xs leading-relaxed text-muted-foreground">Verified work becomes evidence you can return to and share.</p>
+               </div>
+             </div>
+           </section>
+           <CourseTrustPanel courseId={course.id} />
         </div>
 
         {/* CTA card */}

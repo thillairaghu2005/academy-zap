@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { ChevronRight } from "lucide-react";
+import { ArrowRight, ChevronRight } from "lucide-react";
 
 import { MobileNav } from "@/components/layout/side-nav";
 import { UserMenu } from "@/components/layout/user-menu";
@@ -98,12 +98,18 @@ export function TopNav() {
           {sectionLabel}
         </span>
 
-        <div className="hidden min-w-0 flex-1 items-center gap-4 md:flex">
-           <div className="hidden min-w-0 shrink-0 lg:flex">
-             <TopNavBreadcrumbs pathname={pathname} />
-           </div>
-           <GlobalSearch className="w-full justify-start rounded-xl bg-surface-1/70" />
-        </div>
+         <div className="hidden min-w-0 flex-1 items-center gap-4 md:flex">
+            <div className="hidden min-w-0 shrink-0 lg:flex">
+              <TopNavBreadcrumbs pathname={pathname} />
+            </div>
+            <Link
+              href="/dashboard#next-move"
+              className="hidden shrink-0 items-center gap-1.5 rounded-lg px-2.5 py-2 text-xs font-semibold text-primary outline-none transition-colors hover:bg-primary-light focus-visible:ring-2 focus-visible:ring-ring lg:inline-flex"
+            >
+              Continue <ArrowRight className="size-3.5" />
+            </Link>
+            <GlobalSearch className="w-full justify-start rounded-xl bg-surface-1/70" />
+         </div>
 
         <div className="ml-auto flex items-center gap-1.5">
 

@@ -19,6 +19,7 @@ import {
   CheckCircle2,
   ChevronDown,
   Clock,
+  CodeXml,
   Download,
   FileText,
   Gauge,
@@ -544,9 +545,24 @@ export function PlayerClient({ course }: { course: Course }) {
                     courseId={course.id}
                     lessonId={activeLesson.id}
                     lessonTitle={activeLesson.title}
-                  />
-                  <LessonNavigation previous={previousLesson} next={nextLesson} onSelect={setPickedLessonId} />
-                </>
+                   />
+                   <LessonNavigation previous={previousLesson} next={nextLesson} onSelect={setPickedLessonId} />
+                   <div className="flex flex-col gap-3 rounded-2xl border border-primary/15 bg-primary/5 p-4 sm:flex-row sm:items-center sm:justify-between">
+                     <div className="flex items-start gap-3">
+                       <span className="grid size-9 shrink-0 place-items-center rounded-xl bg-primary/10 text-primary">
+                         <CodeXml className="size-4" aria-hidden="true" />
+                       </span>
+                       <div>
+                         <p className="text-xs font-semibold uppercase tracking-[0.12em] text-primary">Use this next</p>
+                         <p className="mt-1 text-sm font-semibold">Turn this lesson into a practice signal.</p>
+                         <p className="mt-1 text-xs leading-relaxed text-muted-foreground">Try one matching Judge problem before the idea gets cold.</p>
+                       </div>
+                     </div>
+                     <Button variant="outline" size="sm" className="shrink-0" asChild>
+                       <Link href="/judge">Practice in Judge <ArrowRight /></Link>
+                     </Button>
+                   </div>
+                 </>
               ) : null}
             </div>
           ) : null}
@@ -796,6 +812,7 @@ function LessonNotes({
   lessonTitle: string;
 }) {
   const [note, setNote] = React.useState(() => getLessonNote(courseId, lessonId));
+  const [saveState, setSaveState] = React.useState<"saved" | "saving">("saved");
   const announce = useAnnounce();
   const savedRef = React.useRef(false);
 
@@ -805,14 +822,17 @@ function LessonNotes({
       savedRef.current = true;
       return;
     }
+    setSaveState("saving");
     const timer = window.setTimeout(() => {
       saveLessonNote(courseId, lessonId, note);
+      setSaveState("saved");
     }, 500);
     return () => window.clearTimeout(timer);
   }, [note, courseId, lessonId]);
 
   const handleSave = () => {
     saveLessonNote(courseId, lessonId, note);
+    setSaveState("saved");
     announce("Note saved");
   };
 
@@ -840,7 +860,7 @@ function LessonNotes({
         className="mt-3 w-full resize-y rounded-lg border border-input bg-surface-1 p-3 text-sm leading-relaxed outline-none transition-colors placeholder:text-muted-foreground/50 focus-visible:ring-2 focus-visible:ring-ring"
       />
       <p className="mt-2 flex items-center justify-between text-caption text-muted-foreground">
-        <span>Saved automatically in your browser.</span>
+        <span aria-live="polite">{saveState === "saving" ? "Saving locally..." : "Saved locally in your browser."}</span>
         <span className={cn(note.trim() && "text-success-strong")}>
           {note.trim() ? `${note.trim().split(/\s+/).length} words` : "Empty"}
         </span>

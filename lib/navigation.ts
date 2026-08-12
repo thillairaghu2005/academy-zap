@@ -40,17 +40,21 @@ export const sideNavGroups: NavGroup[] = [
     items: [
       { href: "/judge", label: "Judge Engine", icon: CodeXml },
       { href: "/labs", label: "Virtual Labs", icon: FlaskConical },
-      { href: "/assessments", label: "Assessments", icon: ClipboardList },
     ],
   },
   {
-    label: "Climb",
+    label: "Prove",
     items: [
+      { href: "/assessments", label: "Assessments", icon: ClipboardList },
       { href: "/rank", label: "Rank Ladder", icon: Trophy },
       { href: "/leaderboards", label: "Leaderboards", icon: ChartColumn },
       { href: "/guilds", label: "Guilds", icon: Users },
       { href: "/mentors", label: "Mentors", icon: UserRound },
     ],
+  },
+  {
+    label: "Account",
+    items: [{ href: "/profile", label: "Profile & preferences", icon: UserRound }],
   },
   {
     label: "Commerce",

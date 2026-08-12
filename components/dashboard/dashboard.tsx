@@ -30,6 +30,7 @@ import { useSession } from "@/components/providers/session-provider";
 import { OnboardingDialog } from "@/components/dashboard/onboarding-dialog";
 import { Progress } from "@/components/ui/progress";
 import { ProgressPulse } from "@/components/dashboard/progress-pulse";
+import { NextMove } from "@/components/learning/next-move";
 
 function SurfaceCard({ surface }: { surface: SurfaceMeta }) {
   const Icon = surface.icon;
@@ -193,10 +194,12 @@ export function Dashboard() {
         </div>
       </motion.section>
 
-      <ProgressPulse userId={user?.id ?? ""} />
+      <NextMove />
 
       {/* My learning — enrollments + progress from the mock state */}
       <MyLearning />
+
+      <ProgressPulse userId={user?.id ?? ""} />
 
       {/* Surfaces */}
       <section className="mt-12">

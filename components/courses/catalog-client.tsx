@@ -6,6 +6,7 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { motion, useReducedMotion } from "framer-motion";
 import {
+  ArrowRight,
   BookOpen,
   Bookmark,
   BookmarkCheck,
@@ -31,6 +32,7 @@ import type {
 } from "@/lib/contracts/content";
 import type { CatalogProduct } from "@/lib/contracts/commerce";
 import { searchCatalog } from "@/lib/data/demo/content";
+import { listMyLearning, type MyLearningItem } from "@/lib/data/demo/content";
 import { listCatalogProducts } from "@/lib/data/demo/commerce";
 import {
   isCourseBookmarked,
@@ -57,6 +59,7 @@ import { EmptyState } from "@/components/shared/empty-state";
 import { ErrorState } from "@/components/shared/error-state";
 import { SkeletonCourseGrid } from "@/components/shared/skeletons";
 import { useDemoPreferences } from "@/components/providers/demo-preferences-provider";
+import { useSession } from "@/components/providers/session-provider";
 
 /*
  * Catalog UX spec, distilled from the supplied reference:
@@ -402,10 +405,12 @@ function CourseCard({
   course,
   product,
   view = "grid",
+  learning,
 }: {
   course: CourseSummary;
   product?: CatalogProduct;
   view?: "grid" | "list";
+  learning?: MyLearningItem;
 }) {
   const difficulty = course.level.charAt(0).toUpperCase() + course.level.slice(1);
   const [saved, setSaved] = React.useState(() => isCourseBookmarked(course.id));
@@ -468,7 +473,7 @@ function CourseCard({
             <p className="mt-2 line-clamp-2 text-sm leading-relaxed text-muted-foreground">{course.subtitle}</p>
           </div>
 
-          <div className="flex flex-wrap items-center gap-x-3 gap-y-2 text-xs text-muted-foreground">
+           <div className="flex flex-wrap items-center gap-x-3 gap-y-2 text-xs text-muted-foreground">
             <span className="inline-flex items-center gap-1 font-medium text-foreground">
               <Star className="size-3.5 fill-primary text-primary" aria-hidden="true" />
               {course.rating > 0 ? course.rating.toFixed(1) : "New"}
@@ -482,16 +487,37 @@ function CourseCard({
               <Clock3 className="size-3.5" aria-hidden="true" />
               {course.estimated_hours}h
             </span>
-          </div>
+           </div>
 
-          <div className="mt-auto flex items-center justify-between gap-3 border-t border-border pt-3 text-xs text-muted-foreground">
+           {learning ? (
+             <div className="rounded-xl border border-primary/15 bg-primary/5 p-3">
+               <div className="flex items-center justify-between gap-2 text-xs">
+                 <span className="font-semibold text-primary">Your progress</span>
+                 <span className="font-mono tabular-nums text-muted-foreground">{Math.round(learning.enrollment.progress_pct)}%</span>
+               </div>
+               <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-primary/10">
+                 <div className="h-full rounded-full bg-primary" style={{ width: `${learning.enrollment.progress_pct}%` }} />
+               </div>
+             </div>
+           ) : null}
+
+           <div className="mt-auto flex items-center justify-between gap-3 border-t border-border pt-3 text-xs text-muted-foreground">
             <span className="min-w-0 truncate">{course.instructor_name}</span>
             <span className="shrink-0 rounded-full bg-surface-1 px-2.5 py-1 font-medium text-foreground">{difficulty}</span>
           </div>
         </CardContent>
       </Link>
 
-      {product ? (
+      {learning ? (
+        <div className={`border-t border-border p-3 ${view === "list" ? "sm:w-full" : ""}`}>
+          <Button asChild size="sm" sheen className="w-full">
+            <Link href={`/courses/${course.id}/learn`}>
+              {learning.enrollment.progress_pct > 0 ? "Continue course" : "Start course"}
+              <ArrowRight className="size-4" />
+            </Link>
+          </Button>
+        </div>
+      ) : product ? (
         <div className={`flex gap-2 border-t border-border p-3 ${view === "list" ? "sm:w-full" : ""}`}>
           <AddToCartButton
             productId={course.id}
@@ -525,10 +551,12 @@ function CourseGrid({
   courses,
   products,
   view,
+  learningByCourse,
 }: {
   courses: CourseSummary[];
   products: Map<string, CatalogProduct>;
   view: "grid" | "list";
+  learningByCourse: Map<string, MyLearningItem>;
 }) {
   const reducedMotion = useReducedMotion() ?? false;
 
@@ -542,7 +570,7 @@ function CourseGrid({
            transition={reducedMotion ? undefined : { delay: 0.04 * index, duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
           className="min-w-0"
         >
-          <CourseCard course={course} product={products.get(course.id)} view={view} />
+           <CourseCard course={course} product={products.get(course.id)} view={view} learning={learningByCourse.get(course.id)} />
         </motion.div>
       ))}
     </div>
@@ -580,6 +608,7 @@ export function CatalogClient({
   const [minRating, setMinRating] = React.useState(Number.isFinite(initialMinRating) ? initialMinRating : 0);
   const [sort, setSort] = React.useState<CourseSort>(SORT_OPTIONS.some((option) => option.value === initialSort) ? initialSort : "popular");
   const { catalogView: view, setCatalogView: setView } = useDemoPreferences();
+  const { user } = useSession();
   const [page, setPage] = React.useState(1);
 
   const debouncedQuery = useDebouncedValue(query, 300);
@@ -685,7 +714,13 @@ export function CatalogClient({
   });
 
   const catalogQuery = useQuery({ queryKey: ["catalog-products"], queryFn: () => listCatalogProducts() });
+  const learningQuery = useQuery({
+    queryKey: ["my-learning", user?.id ?? ""],
+    queryFn: () => listMyLearning(user?.id ?? ""),
+    enabled: Boolean(user),
+  });
   const products = new Map(catalogQuery.data?.map((product) => [product.product_id, product]) ?? []);
+  const learningByCourse = new Map(learningQuery.data?.map((item) => [item.course.id, item]) ?? []);
   const totalPages = data ? Math.ceil(data.estimatedTotalHits / data.limit) : 0;
 
   return (
@@ -770,7 +805,7 @@ export function CatalogClient({
                    </Button>
                  </div>
                </div>
-               <CourseGrid courses={data.hits} products={products} view={view} />
+                <CourseGrid courses={data.hits} products={products} view={view} learningByCourse={learningByCourse} />
               {totalPages > 1 ? (
                 <div className="flex items-center justify-center gap-2 pt-5">
                    <Button variant="outline" size="sm" disabled={page <= 1} onClick={() => setPage((current) => Math.max(1, current - 1))}>Previous</Button>
