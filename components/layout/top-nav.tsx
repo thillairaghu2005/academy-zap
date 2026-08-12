@@ -111,23 +111,25 @@ export function TopNav() {
             <GlobalSearch className="w-full justify-start rounded-xl bg-surface-1/70" />
          </div>
 
-        <div className="ml-auto flex items-center gap-1.5">
+        <div className="ml-auto flex items-center gap-3">
 
           {/* Offline status — visible only while disconnected */}
           <OfflineIndicator />
 
-          {/* Cart — live item count badge (Task 2) */}
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <CartBadge />
-            </TooltipTrigger>
-            <TooltipContent>Cart</TooltipContent>
-          </Tooltip>
+          <div className="flex items-center gap-3">
+            {/* Cart — live item count badge (Task 2) */}
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <CartBadge />
+              </TooltipTrigger>
+              <TooltipContent>Cart</TooltipContent>
+            </Tooltip>
 
-          {/* Notification center — mock event feed until push/SSE lands */}
-          <NotificationCenter />
+            {/* Notification center — mock event feed until push/SSE lands */}
+            <NotificationCenter />
 
-          <KeyboardShortcuts />
+            <KeyboardShortcuts />
+          </div>
 
           <Tooltip>
             <TooltipTrigger asChild>

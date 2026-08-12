@@ -7,6 +7,7 @@ import { ShoppingCart } from "lucide-react";
 import { getCart } from "@/lib/data/demo/commerce";
 import { useSession } from "@/components/providers/session-provider";
 import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 
 /**
  * Live cart badge (Task 2). The count comes from the same ["cart", userId]
@@ -15,7 +16,7 @@ import { Button } from "@/components/ui/button";
  * full refresh. The pill is HIDDEN entirely when the cart is empty (never a
  * bare "0"), and the link's aria-label conveys the count to screen readers.
  */
-export function CartBadge() {
+export function CartBadge({ className }: { className?: string }) {
   const { user } = useSession();
   const userId = user?.id ?? "";
 
@@ -32,12 +33,15 @@ export function CartBadge() {
     <Button
       variant="ghost"
       size="icon"
-      className="relative text-muted-foreground"
+      className={cn(
+        "relative h-9 w-9 rounded-xl border border-border bg-white text-muted-foreground shadow-none hover:border-border-strong hover:bg-secondary hover:text-foreground active:bg-primary-light",
+        className,
+      )}
       asChild
       aria-label={count > 0 ? `Cart, ${count} items` : "Cart, empty"}
     >
       <Link href="/cart">
-        <ShoppingCart />
+        <ShoppingCart className="size-4" />
         {count > 0 ? (
           <span
             aria-hidden="true"

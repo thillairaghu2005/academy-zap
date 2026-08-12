@@ -25,7 +25,6 @@ import {
 import type { NotificationCategory, NotificationEvent, NotificationType } from "@/lib/contracts/notification";
 import { getNotifications, markAllNotificationsRead, markNotificationRead } from "@/lib/data/demo/notifications";
 import { Button } from "@/components/ui/button";
-import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { EmptyState } from "@/components/shared/empty-state";
 import { cn } from "@/lib/utils";
 
@@ -117,6 +116,8 @@ function NotificationRow({
 
 export function NotificationCenter() {
   const [open, setOpen] = React.useState(false);
+  const centerRef = React.useRef<HTMLDivElement>(null);
+  const triggerRef = React.useRef<HTMLButtonElement>(null);
   const [category, setCategory] = React.useState<"all" | NotificationCategory>("all");
   const loadMoreRef = React.useRef<HTMLDivElement>(null);
   const categoryRefs = React.useRef<Array<HTMLButtonElement | null>>([]);
@@ -135,6 +136,28 @@ export function NotificationCenter() {
   const visibleNotifications = category === "all" ? allNotifications : allNotifications.filter((notification) => notification.category === category);
   const unreadCount = notifications.data?.pages[0]?.unread_count ?? 0;
   const { fetchNextPage, hasNextPage, isFetchingNextPage } = notifications;
+
+  React.useEffect(() => {
+    if (!open) return;
+
+    const closeOnOutsidePointer = (event: PointerEvent) => {
+      if (!centerRef.current?.contains(event.target as Node)) setOpen(false);
+    };
+    const closeOnEscape = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        event.preventDefault();
+        setOpen(false);
+        triggerRef.current?.focus();
+      }
+    };
+
+    document.addEventListener("pointerdown", closeOnOutsidePointer);
+    document.addEventListener("keydown", closeOnEscape);
+    return () => {
+      document.removeEventListener("pointerdown", closeOnOutsidePointer);
+      document.removeEventListener("keydown", closeOnEscape);
+    };
+  }, [open]);
 
   const moveCategory = (index: number, direction: "next" | "previous" | "first" | "last") => {
     const nextIndex = direction === "next"
@@ -161,21 +184,40 @@ export function NotificationCenter() {
   }, [fetchNextPage, hasNextPage, isFetchingNextPage]);
 
   return (
-    <Sheet open={open} onOpenChange={setOpen}>
-      <SheetTrigger asChild>
-        <Button variant="ghost" size="icon" className="relative text-muted-foreground" aria-label={unreadCount ? `${unreadCount} unread notifications` : "Notifications"}>
-          <Bell />
-          {unreadCount ? <span className="absolute right-1.5 top-1.5 flex min-w-4 items-center justify-center rounded-full bg-primary px-1 text-caption font-bold leading-4 text-primary-foreground ring-2 ring-background">{unreadCount > 9 ? "9+" : unreadCount}</span> : null}
-        </Button>
-      </SheetTrigger>
-      <SheetContent className="w-full gap-0 p-0 sm:max-w-md">
-        <SheetHeader className="border-b border-border px-5 pb-4 pt-6">
-          <div className="flex items-center justify-between pr-8">
-            <SheetTitle>Notifications</SheetTitle>
-            {unreadCount ? <Button variant="ghost" size="sm" className="h-8 text-xs" onClick={() => markAllRead.mutate()} disabled={markAllRead.isPending}><Check /> Mark all read</Button> : null}
+    <div ref={centerRef} className="relative shrink-0">
+      <Button
+        ref={triggerRef}
+        variant="ghost"
+        size="icon"
+        className={cn(
+          "relative h-9 w-9 rounded-xl border border-border bg-white text-muted-foreground shadow-none hover:border-primary/25 hover:bg-primary-muted hover:text-primary active:bg-primary-light",
+          open && "border-primary/30 bg-primary-light text-primary",
+        )}
+        aria-expanded={open}
+        aria-controls="notification-panel"
+        aria-haspopup="dialog"
+        aria-label={unreadCount ? `${unreadCount} unread notifications` : "Notifications"}
+        onClick={() => setOpen((current) => !current)}
+      >
+        <Bell className="size-4" />
+        {unreadCount ? <span className="absolute -right-1 -top-1 grid h-4 min-w-4 place-items-center rounded-full bg-primary px-1 text-[10px] font-bold leading-4 text-primary-foreground ring-2 ring-background">{unreadCount > 9 ? "9+" : unreadCount}</span> : null}
+      </Button>
+
+      {open ? <div
+        id="notification-panel"
+        role="dialog"
+        aria-labelledby="notification-panel-title"
+        className="absolute right-0 top-[calc(100%+0.75rem)] z-50 flex max-h-[min(640px,calc(100dvh-5rem))] w-[min(360px,calc(100vw-1rem))] flex-col overflow-hidden rounded-2xl border border-border bg-white text-foreground shadow-[0_14px_36px_rgb(23_23_23_/_11%)] animate-in fade-in-0 zoom-in-95 duration-150"
+      >
+        <div className="border-b border-border px-4 pb-3 pt-4">
+          <div className="flex items-center justify-between gap-3">
+            <div>
+              <h2 id="notification-panel-title" className="font-display text-base font-semibold">Notifications</h2>
+              <p className="mt-0.5 text-xs text-muted-foreground">Updates from your learning journey.</p>
+            </div>
+            {unreadCount ? <Button variant="ghost" size="sm" className="h-8 shrink-0 px-2 text-xs" onClick={() => markAllRead.mutate()} disabled={markAllRead.isPending}><Check /> Mark all as read</Button> : null}
           </div>
-          <SheetDescription>Updates from your learning journey.</SheetDescription>
-        </SheetHeader>
+        </div>
 
         <div className="flex gap-1 overflow-x-auto border-b border-border px-4 py-2" role="tablist" aria-label="Notification categories" aria-orientation="horizontal">
           {CATEGORY_VALUES.map((value, index) => (
@@ -186,7 +228,7 @@ export function NotificationCenter() {
               id={`notification-tab-${value}`}
               role="tab"
               aria-selected={category === value}
-              aria-controls="notification-panel"
+              aria-controls="notification-panel-list"
               tabIndex={category === value ? 0 : -1}
               onClick={() => setCategory(value)}
               onKeyDown={(event) => {
@@ -211,7 +253,7 @@ export function NotificationCenter() {
           ))}
         </div>
 
-        <div id="notification-panel" role="tabpanel" aria-labelledby={`notification-tab-${category}`} tabIndex={0} className="flex-1 overflow-y-auto p-2 outline-none">
+        <div id="notification-panel-list" role="tabpanel" aria-labelledby={`notification-tab-${category}`} tabIndex={0} className="min-h-0 flex-1 overflow-y-auto p-2 outline-none">
           {notifications.isLoading ? (
             <div role="status" className="flex items-center justify-center gap-2 px-3 py-12 text-sm text-muted-foreground"><LoaderCircle className="size-4 animate-spin" /> Loading notifications...</div>
           ) : notifications.isError ? (
@@ -227,7 +269,7 @@ export function NotificationCenter() {
             <EmptyState icon={Bell} title="No notifications" description="You are all caught up. New learning and achievement updates will appear here." primaryAction={<Button variant="outline" size="sm" asChild><Link href="/dashboard" onClick={() => setOpen(false)}>Go to dashboard</Link></Button>} />
           )}
         </div>
-      </SheetContent>
-    </Sheet>
+      </div> : null}
+    </div>
   );
 }

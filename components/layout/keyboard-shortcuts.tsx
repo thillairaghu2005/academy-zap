@@ -31,8 +31,14 @@ export function KeyboardShortcuts() {
 
   return (
     <>
-      <Button variant="ghost" size="icon" className="text-muted-foreground" onClick={() => setOpen(true)} aria-label="View keyboard shortcuts">
-        <Keyboard />
+      <Button
+        variant="ghost"
+        size="icon"
+        className="h-9 w-9 rounded-xl border border-border bg-white text-muted-foreground shadow-none hover:border-border-strong hover:bg-secondary hover:text-foreground active:bg-primary-light"
+        onClick={() => setOpen(true)}
+        aria-label="View keyboard shortcuts"
+      >
+        <Keyboard className="size-4" />
       </Button>
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent className="sm:max-w-md">
