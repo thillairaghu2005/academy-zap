@@ -27,8 +27,8 @@ export type Verdict =
 
 export type ProblemDifficulty = "easy" | "medium" | "hard";
 
-/** Judge engine Phase-1 language slice (build.md F2) — Python only. */
-export type JudgeLanguage = "python";
+/** Languages supported by the Judge Engine demo executor. */
+export type JudgeLanguage = "python" | "java" | "javascript" | "cpp";
 
 export type SubmissionStatus = "queued" | "graded";
 

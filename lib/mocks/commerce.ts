@@ -86,14 +86,14 @@ export const MOCK_PLANS: Plan[] = [
     plan_id: "pl-team",
     name: "Team",
     price_per_seat_cents: 2500,
-    currency: "usd",
+    currency: "inr",
     billing_cycle: "monthly",
   },
   {
     plan_id: "pl-org",
     name: "Organization",
     price_per_seat_cents: 2100,
-    currency: "usd",
+    currency: "inr",
     billing_cycle: "annual",
   },
 ];
@@ -164,6 +164,8 @@ function entitlementsForStoredUser(userId: string): Map<string, Entitlement> {
 /* ------------------------------------------------------------------ */
 
 const CART_STORAGE_KEY = "zapsters.mock.cart";
+const CART_UPDATED_EVENT = "zapsters:cart-updated";
+export const demoCartSeeded = new Set<string>();
 
 /** DemoCart extends Cart with the local promo fields (never in the contract). */
 export interface DemoCart extends Cart {
@@ -177,21 +179,44 @@ function loadPersistedCart(): void {
     const raw = window.localStorage.getItem(CART_STORAGE_KEY);
     if (!raw) return;
     const parsed = JSON.parse(raw) as {
-      user_id: string;
-      items: CartItem[];
-      coupon_code?: string | null;
-      discount_cents?: number;
+      user_id?: unknown;
+      items?: unknown;
+      coupon_code?: unknown;
+      discount_cents?: unknown;
     };
-    if (!parsed || !Array.isArray(parsed.items)) return;
-    const cart = cartForUser(parsed.user_id || MOCK_DEMO_USER_ID) as DemoCart;
-    cart.items = parsed.items;
+    if (
+      !parsed ||
+      typeof parsed.user_id !== "string" ||
+      !Array.isArray(parsed.items)
+    ) {
+      window.localStorage.removeItem(CART_STORAGE_KEY);
+      return;
+    }
+    const cart = cartForUser(parsed.user_id) as DemoCart;
+    cart.items = parsed.items.filter(isPersistedCartItem);
     if (typeof parsed.coupon_code === "string") cart.coupon_code = parsed.coupon_code;
-    if (typeof parsed.discount_cents === "number") cart.discount_cents = parsed.discount_cents;
+    if (typeof parsed.discount_cents === "number" && Number.isFinite(parsed.discount_cents)) {
+      cart.discount_cents = Math.max(0, parsed.discount_cents);
+    }
     cart.total_cents = recomputeTotalCents(cart);
     cart.updated_at = new Date().toISOString();
+    if (cart.user_id === MOCK_DEMO_USER_ID) demoCartSeeded.add(MOCK_DEMO_USER_ID);
   } catch {
     // Corrupt storage is ignored — the in-memory store stands in.
   }
+}
+
+function isPersistedCartItem(value: unknown): value is CartItem {
+  if (!value || typeof value !== "object") return false;
+  const item = value as Partial<CartItem>;
+  return (
+    typeof item.product_id === "string" &&
+    (item.kind === "course" || item.kind === "lab" || item.kind === "subscription") &&
+    typeof item.title === "string" &&
+    Number.isFinite(item.unit_price_cents) &&
+    Number.isInteger(item.quantity) &&
+    (item.quantity ?? 0) > 0
+  );
 }
 
 export function persistCart(cart: Cart): void {
@@ -205,6 +230,11 @@ export function persistCart(cart: Cart): void {
         items: cart.items,
         coupon_code: demo.coupon_code ?? null,
         discount_cents: demo.discount_cents ?? 0,
+      }),
+    );
+    window.dispatchEvent(
+      new CustomEvent(CART_UPDATED_EVENT, {
+        detail: { userId: cart.user_id },
       }),
     );
   } catch {
@@ -287,7 +317,6 @@ export function cartForUser(userId: string): Cart {
     };
     mockCarts.set(userId, cart);
   }
-  if (cart.user_id === MOCK_DEMO_USER_ID) persistCart(cart);
   return cart;
 }
 
@@ -296,13 +325,9 @@ export function recomputeTotal(items: CartItem[]): number {
 }
 
 /**
- * Seed the demo user's cart exactly ONCE per browser session. A per-session
- * guard (rather than "seed when empty") is deliberate: after the user removes
- * items or completes a purchase, the cart stays empty so the empty state is
- * actually reachable — it doesn't silently refill on the next query.
+ * Paid checkout fixtures can explicitly seed the demo user's cart once. Normal
+ * cart reads and mutations never add demo products behind the user's back.
  */
-export const demoCartSeeded = new Set<string>();
-
 export function seedDemoCart(): Cart {
   const cart = cartForUser(MOCK_DEMO_USER_ID);
   if (!demoCartSeeded.has(MOCK_DEMO_USER_ID)) {
@@ -352,7 +377,7 @@ export function createCheckoutSession(cart: Cart): CheckoutSession {
     checkout_url: `/checkout/embed/${id}`,
     cart: snapshot,
     amount_cents: snapshot.total_cents,
-    currency: "usd",
+    currency: "inr",
     idempotency_key: `idem-${uuid()}`,
     created_at: now.toISOString(),
     expires_at: new Date(now.getTime() + 30 * 60_000).toISOString(),
@@ -405,7 +430,7 @@ export function seedDemoSession(
     checkout_url: `/checkout/embed/${id}`,
     cart: snapshot,
     amount_cents: snapshot.total_cents,
-    currency: "usd",
+    currency: "inr",
     idempotency_key: `idem-${id}`,
     created_at: new Date(now - 45 * 60_000).toISOString(),
     expires_at: expired
@@ -423,7 +448,7 @@ export function seedDemoSession(
       checkout_id: id,
       provider: "razorpay",
       amount_cents: session.amount_cents,
-      currency: "usd",
+      currency: "inr",
       status: "paid",
       items: snapshot.items,
       created_at: session.created_at,
@@ -577,7 +602,7 @@ function seedOrder(
     checkout_id: `cs-${id.replace("ord-", "")}`,
     provider,
     amount_cents: amountCents,
-    currency: "usd",
+    currency: "inr",
     status,
     items: [
       {

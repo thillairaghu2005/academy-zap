@@ -1,33 +1,26 @@
 "use client";
 
 import Link from "next/link";
-import { useQuery } from "@tanstack/react-query";
 import { ShoppingCart } from "lucide-react";
 
-import { getCart } from "@/lib/data/demo/commerce";
+import { cartItemCount, useCartQuery } from "@/components/commerce/cart-query";
 import { useSession } from "@/components/providers/session-provider";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
 /**
  * Live cart badge (Task 2). The count comes from the same ["cart", userId]
- * query every cart mutation invalidates, so it updates immediately from any
- * page. The mock cart store persists to localStorage, so the count survives a
- * full refresh. The pill is HIDDEN entirely when the cart is empty (never a
- * bare "0"), and the link's aria-label conveys the count to screen readers.
+ * query every cart mutation updates, so it stays consistent from any page.
+ * The mock cart store persists to localStorage, so the count survives a full
+ * refresh. The pill is HIDDEN entirely when the cart is empty (never a bare
+ * "0"), and the link's aria-label conveys the count to screen readers.
  */
 export function CartBadge({ className }: { className?: string }) {
   const { user } = useSession();
   const userId = user?.id ?? "";
 
-  const cartQuery = useQuery({
-    queryKey: ["cart", userId],
-    queryFn: () => getCart(userId),
-    enabled: Boolean(user),
-  });
-
-  const count =
-    cartQuery.data?.items.reduce((sum, item) => sum + item.quantity, 0) ?? 0;
+  const cartQuery = useCartQuery(userId);
+  const count = cartItemCount(cartQuery.data);
 
   return (
     <Button

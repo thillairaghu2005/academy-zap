@@ -38,6 +38,7 @@ import {
 import { downloadReceipt } from "@/lib/demo/receipts";
 import { formatMoney } from "@/lib/format";
 import { DEMO_MODE } from "@/lib/config";
+import { cartQueryKey } from "@/components/commerce/cart-query";
 import { useSession } from "@/components/providers/session-provider";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -426,6 +427,7 @@ export function CheckoutClient({ checkoutId }: { checkoutId: string }) {
   const refreshSession = (order: Order | null) => {
     setPaidOrder(order);
     queryClient.invalidateQueries({ queryKey: ["checkout", checkoutId] });
+    void queryClient.invalidateQueries({ queryKey: cartQueryKey(userId) });
   };
 
   /* ---------- Loading ---------- */

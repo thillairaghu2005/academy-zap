@@ -50,7 +50,6 @@ import {
   persistCart,
   recomputeTotalCents,
   refreshCouponDiscount,
-  seedDemoCart,
   seedDemoSession,
 } from "@/lib/mocks/commerce";
 import { MockDataError } from "@/lib/data/demo/errors";
@@ -63,7 +62,6 @@ import { recordDemoActivity } from "@/lib/demo/activity";
 
 export async function getCart(userId: string): Promise<Cart> {
   await delay(jitter(160));
-  if (userId === MOCK_DEMO_USER_ID) seedDemoCart();
   return cartForUser(userId);
 }
 
@@ -76,7 +74,6 @@ export async function addToCart(
   if (!Number.isInteger(quantity) || quantity < 1 || quantity > 100) {
     throw new MockDataError("validation_error", "Quantity must be between 1 and 100.", 400);
   }
-  if (userId === MOCK_DEMO_USER_ID) seedDemoCart();
   const cart = cartForUser(userId);
   const product = MOCK_CATALOG.find((p) => p.product_id === productId);
   if (!product) {
@@ -129,7 +126,6 @@ export async function applyCoupon(
   cart: Cart;
 }> {
   await delay(jitter(140));
-  if (userId === MOCK_DEMO_USER_ID) seedDemoCart();
   const cart = cartForUser(userId);
   const result = applyDemoCoupon(cart, code);
   persistCart(cart);
@@ -184,7 +180,6 @@ export async function createCheckout(userId: string): Promise<CheckoutSession> {
       503,
     );
   }
-  if (userId === MOCK_DEMO_USER_ID) seedDemoCart();
   const cart = cartForUser(userId);
   if (cart.items.length === 0) {
     throw new MockDataError("cart_empty", "Add something to your cart first.", 400);

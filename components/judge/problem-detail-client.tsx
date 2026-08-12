@@ -6,8 +6,9 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { History, MessageCircle, ShieldQuestion, WandSparkles } from "lucide-react";
 
-import type { Problem, Verdict } from "@/lib/contracts/judge";
+import type { JudgeLanguage, Problem, Verdict } from "@/lib/contracts/judge";
 import { getProblem, getResult, listSubmissions, submit } from "@/lib/data/demo/judge";
+import { JUDGE_LANGUAGE_CONFIG, isJudgeLanguage } from "@/lib/judge-language-config";
 import { DEMO_MODE } from "@/lib/config";
 import { useSession } from "@/components/providers/session-provider";
 import { IDE, type IDEExecution } from "@/components/ide/IDE";
@@ -79,18 +80,21 @@ export function ProblemDetailClient({
   const router = useRouter();
   const queryClient = useQueryClient();
   const problemQuery = useQuery({ queryKey: ["judge-problem", problemId], queryFn: () => getProblem(problemId), initialData: initialProblem });
-  const [code, setCode] = React.useState<string | null>(null);
+  const codeRef = React.useRef(initialProblem?.starter_code ?? "");
+  const languageRef = React.useRef<JudgeLanguage>("python");
   const [resetKey, setResetKey] = React.useState(0);
-  const editorValue = code ?? problemQuery.data?.starter_code ?? "";
-  const resetCode = React.useCallback(() => { setCode(null); setResetKey((current) => current + 1); }, []);
-  const ideFiles = React.useMemo(() => problemQuery.data ? [createIDEFile("solution.py", problemQuery.data.starter_code)] : [], [problemQuery.data]);
-  const handleIDEContentChange = React.useCallback((content: string, file: { path: string } | undefined) => { if (file?.path === "solution.py") setCode(content); }, []);
+  const resetCode = React.useCallback(() => { setResetKey((current) => current + 1); }, []);
+  const ideFiles = React.useMemo(() => problemQuery.data ? [createIDEFile(JUDGE_LANGUAGE_CONFIG.python.filename, problemQuery.data.starter_code)] : [], [problemQuery.data]);
+  const handleIDEContentChange = React.useCallback((content: string, file: { path: string; language?: string } | undefined) => {
+    codeRef.current = content;
+    if (isJudgeLanguage(file?.language)) languageRef.current = file.language;
+  }, []);
 
   const [submissionId, setSubmissionId] = React.useState<string | null>(null);
   const [elapsed, setElapsed] = React.useState(0);
   const [timedOut, setTimedOut] = React.useState(false);
   const submitMutation = useMutation({
-    mutationFn: (source: string) => submit({ problem_id: problemId, user_id: userId ?? "demo-user", language: "python", source_code: source }),
+    mutationFn: ({ source, language }: { source: string; language: JudgeLanguage }) => submit({ problem_id: problemId, user_id: userId ?? "demo-user", language, source_code: source }),
     onSuccess: (accepted) => { setSubmissionId(accepted.submission_id); setElapsed(0); setTimedOut(false); },
   });
   const resultQuery = useQuery({
@@ -139,7 +143,7 @@ export function ProblemDetailClient({
   const canSubmit = !submitMutation.isPending && !judging && !problemQuery.isLoading && !problemQuery.isError;
   const handleSubmit = () => {
     if (!userId) { router.push(`/login?next=/judge/${problemId}`); return; }
-    if (canSubmit) submitMutation.mutate(editorValue);
+    if (canSubmit) submitMutation.mutate({ source: codeRef.current, language: languageRef.current });
   };
 
   if (problemQuery.isLoading) {

@@ -13,6 +13,7 @@ import {
   Lock,
   Minus,
   Plus,
+  ReceiptText,
   ShieldCheck,
   ShoppingCart,
   TicketPercent,
@@ -25,16 +26,21 @@ import {
   addToCart,
   applyCoupon,
   createCheckout,
-  getCart,
   listDemoCoupons,
   removeCoupon,
   removeFromCart,
 } from "@/lib/data/demo/commerce";
+import type { Cart } from "@/lib/contracts/commerce";
 import { MockDataError } from "@/lib/data/demo/errors";
 import { formatMoney } from "@/lib/format";
 import { DEMO_MODE } from "@/lib/config";
 import { CheckoutOutage } from "@/components/commerce/checkout-outage";
 import { cn } from "@/lib/utils";
+import {
+  cartItemCount,
+  cartQueryKey,
+  useCartQuery,
+} from "@/components/commerce/cart-query";
 import { useSession } from "@/components/providers/session-provider";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -58,25 +64,27 @@ export function CartClient() {
   const { user } = useSession();
   const userId = user?.id ?? "";
 
-  const cartQuery = useQuery({
-    queryKey: ["cart", userId],
-    queryFn: () => getCart(userId),
-    enabled: Boolean(user),
-  });
+  const cartQuery = useCartQuery(userId);
 
-  const invalidate = () =>
-    queryClient.invalidateQueries({ queryKey: ["cart", userId] });
+  const syncCart = (cart: Cart) => {
+    // Update both the page and header from the mutation result before any refetch.
+    // The query remains the single source of truth for all cart UI.
+    queryClient.setQueryData(cartQueryKey(userId), {
+      ...cart,
+      items: cart.items.map((item) => ({ ...item })),
+    });
+  };
 
   const qtyMutation = useMutation({
     mutationFn: ({ productId, delta }: { productId: string; delta: number }) =>
       addToCart(userId, productId, delta),
-    onSuccess: invalidate,
+    onSuccess: syncCart,
     onError: (error: Error) => toast.error(error.message),
   });
 
   const removeMutation = useMutation({
     mutationFn: (productId: string) => removeFromCart(userId, productId),
-    onSuccess: invalidate,
+    onSuccess: syncCart,
     onError: (error: Error) => toast.error(error.message),
   });
 
@@ -89,7 +97,7 @@ export function CartClient() {
     mutationFn: (code: string) => applyCoupon(userId, code),
     onSuccess: (result) => {
       setCouponInput("");
-      invalidate();
+      syncCart(result.cart);
       if (result.applied && result.label) {
         toast.success(`${result.label} applied — ${formatMoney(result.discount_cents)} off.`);
       } else {
@@ -100,7 +108,7 @@ export function CartClient() {
   });
   const removeCouponMutation = useMutation({
     mutationFn: () => removeCoupon(userId),
-    onSuccess: invalidate,
+    onSuccess: syncCart,
     onError: (error: Error) => toast.error(error.message),
   });
 
@@ -165,6 +173,7 @@ export function CartClient() {
   }
 
   const cart = cartQuery.data;
+  const itemCount = cartItemCount(cart);
 
   /* ---------- Empty ---------- */
   if (cart.items.length === 0) {
@@ -193,81 +202,90 @@ export function CartClient() {
   }
 
   return (
-    <PageContainer>
+    <PageContainer className="max-w-6xl">
       <div className="flex items-end justify-between gap-4">
         <div>
-        <h1 className="font-display text-h1">
+          <div className="mb-3 flex items-center gap-2 text-caption font-semibold uppercase tracking-[0.14em] text-primary">
+            <ShoppingCart className="size-4" />
+            Secure learning checkout
+          </div>
+          <h1 className="font-display text-h1">
             Your cart
           </h1>
-          <p className="mt-1 text-sm text-muted-foreground">
-            {cart.items.reduce((n, i) => n + i.quantity, 0)} item
-            {cart.items.reduce((n, i) => n + i.quantity, 0) === 1 ? "" : "s"} ·
+          <p className="mt-2 text-sm text-muted-foreground">
+            {itemCount} item
+            {itemCount === 1 ? "" : "s"} ·
             payment handled by a hosted provider page
           </p>
         </div>
+        <div className="hidden items-center gap-2 text-caption text-muted-foreground sm:flex">
+          <ShieldCheck className="size-4 text-success-strong" />
+          Secure payment
+        </div>
       </div>
 
-      <div className="mt-6 grid items-start gap-6 lg:grid-cols-[1fr_320px]">
+      <div className="mt-8 grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_360px]">
         {/* Item list */}
         <div className="flex flex-col gap-3">
           {cart.items.map((item) => (
-            <Card key={item.product_id}>
-              <CardContent className="flex items-center gap-4 p-4">
-                <div
-                  className={cn(
-                    "grid size-11 shrink-0 place-items-center rounded-lg",
-                    item.kind === "lab"
-                      ? "bg-emerald-500/10 text-emerald-700"
-                      : "bg-primary/10 text-primary",
-                  )}
-                >
-                  {item.kind === "lab" ? (
-                    <FlaskConical className="size-5" />
-                  ) : (
-                    <BookOpen className="size-5" />
-                  )}
-                </div>
+            <Card
+              key={item.product_id}
+              className="group overflow-hidden hover:border-primary/25 hover:shadow-[0_6px_18px_rgb(16_24_40_/_6%)]"
+            >
+              <CardContent className="grid gap-5 p-4 sm:p-5 md:grid-cols-[minmax(0,1fr)_auto_auto] md:items-center">
+                <div className="flex min-w-0 items-center gap-4">
+                  <div
+                    className={cn(
+                      "flex size-14 shrink-0 items-center justify-center rounded-xl border",
+                      item.kind === "lab"
+                        ? "border-emerald-200 bg-emerald-50 text-emerald-700"
+                        : "border-primary-border bg-primary-muted text-primary",
+                    )}
+                  >
+                    {item.kind === "lab" ? (
+                      <FlaskConical className="size-5" />
+                    ) : (
+                      <BookOpen className="size-5" />
+                    )}
+                  </div>
 
-                <div className="min-w-0 flex-1">
-                  <div className="flex items-center gap-2">
-                    <Badge variant="outline" className="text-caption">
+                  <div className="min-w-0">
+                    <Badge variant="outline" className="border-primary/15 px-2 py-0.5 text-[10px] uppercase tracking-[0.13em] text-primary">
                       {item.kind === "lab" ? "Lab pass" : "Course"}
                     </Badge>
-                    <p className="truncate text-sm font-medium">
+                    <p className="mt-2 truncate font-display text-lg font-semibold tracking-[-0.02em]">
                       {item.title}
                     </p>
+                    <p className="mt-1 text-xs text-muted-foreground">
+                      {item.kind === "lab" ? "Hands-on lab · Flexible access" : "Self-paced course · Lifetime access"}
+                    </p>
                   </div>
-                  <p className="mt-0.5 text-xs text-muted-foreground">
-                    {formatMoney(item.unit_price_cents)} each
-                  </p>
                 </div>
 
                 {/* Qty stepper */}
-                <div className="flex items-center gap-1 rounded-lg border border-border p-0.5">
+                <div className="flex items-center justify-between gap-4 md:justify-center">
+                  <span className="text-xs font-medium text-muted-foreground md:hidden">Quantity</span>
+                  <div className="flex items-center gap-1 rounded-lg border border-border bg-surface-2 p-1">
                   <Button
                     variant="ghost"
                     size="icon"
-                    className="size-7"
+                    className="size-8 rounded-md"
                     aria-label={`Decrease quantity of ${item.title}`}
-                    disabled={qtyMutation.isPending}
-                    onClick={() =>
-                      item.quantity === 1
-                        ? removeMutation.mutate(item.product_id)
-                        : qtyMutation.mutate({
-                            productId: item.product_id,
-                            delta: -1,
-                          })
-                    }
+                    disabled={qtyMutation.isPending || item.quantity === 1}
+                    onClick={() => qtyMutation.mutate({
+                      productId: item.product_id,
+                      delta: -1,
+                    })}
                   >
                     <Minus className="size-3.5" />
                   </Button>
-                  <span className="w-6 text-center font-mono text-sm">
+                  <span className="w-7 text-center font-mono text-sm font-medium" aria-live="polite">
                     {item.quantity}
                   </span>
                   <Button
                     variant="ghost"
                     size="icon"
-                    className="size-7"
+                    className="size-8 rounded-md"
                     aria-label={`Increase quantity of ${item.title}`}
                     disabled={qtyMutation.isPending || item.quantity >= 9}
                     onClick={() =>
@@ -279,21 +297,26 @@ export function CartClient() {
                   >
                     <Plus className="size-3.5" />
                   </Button>
+                  </div>
                 </div>
 
-                <p className="w-20 text-right font-display text-small font-semibold">
-                  {formatMoney(item.unit_price_cents * item.quantity)}
-                </p>
-
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="text-muted-foreground hover:text-destructive"
-                  aria-label={`Remove ${item.title} from cart`}
-                  onClick={() => removeMutation.mutate(item.product_id)}
-                >
-                  <Trash2 className="size-4" />
-                </Button>
+                <div className="flex items-center justify-between gap-5 border-t border-border pt-4 md:border-0 md:pt-0">
+                  <div className="text-left md:min-w-[126px] md:text-right">
+                    <p className="text-caption text-muted-foreground">{formatMoney(item.unit_price_cents)} each</p>
+                    <p className="mt-0.5 font-display text-xl font-semibold tracking-[-0.02em]">
+                      {formatMoney(item.unit_price_cents * item.quantity)}
+                    </p>
+                  </div>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="text-muted-foreground hover:bg-destructive/5 hover:text-destructive"
+                    aria-label={`Remove ${item.title} from cart`}
+                    onClick={() => removeMutation.mutate(item.product_id)}
+                  >
+                    <Trash2 className="size-4" />
+                  </Button>
+                </div>
               </CardContent>
             </Card>
           ))}
@@ -301,9 +324,17 @@ export function CartClient() {
 
         {/* Summary */}
         <div className="flex flex-col gap-4 lg:sticky lg:top-20">
-          <Card>
-            <CardContent className="flex flex-col gap-3 p-5">
-              <p className="font-display text-small font-semibold">Summary</p>
+          <Card className="overflow-hidden">
+            <CardContent className="flex flex-col gap-4 p-5 sm:p-6">
+              <div className="flex items-start justify-between gap-3">
+                <div>
+                  <p className="font-display text-xl font-semibold tracking-[-0.02em]">Summary</p>
+                  <p className="mt-1 text-xs text-muted-foreground">Your learning access, ready when you are.</p>
+                </div>
+                <span className="grid size-9 place-items-center rounded-lg bg-primary-muted text-primary">
+                  <ReceiptText className="size-4" />
+                </span>
+              </div>
               <div className="flex items-center justify-between text-sm text-muted-foreground">
                 <span>Subtotal</span>
                 <span className="font-medium text-foreground">
@@ -315,6 +346,13 @@ export function CartClient() {
                   )}
                 </span>
               </div>
+
+              {(cart as { discount_cents?: number }).discount_cents ? (
+                <div className="flex items-center justify-between text-sm text-success-strong">
+                  <span>Discount</span>
+                  <span className="font-medium">−{formatMoney((cart as { discount_cents?: number }).discount_cents ?? 0)}</span>
+                </div>
+              ) : null}
 
               {/* Demo coupon — promo code simulation (Task 4) */}
               <CouponField
@@ -332,9 +370,9 @@ export function CartClient() {
                 suggestions={Object.keys(couponQuery.data ?? {})}
               />
 
-              <div className="flex items-center justify-between border-t border-border pt-3 text-sm">
-                <span className="font-medium">Total</span>
-                <span className="font-display text-h3">
+              <div className="flex items-end justify-between border-t border-border pt-4">
+                <span className="text-sm font-semibold">Total</span>
+                <span className="font-display text-2xl font-semibold tracking-[-0.03em]">
                   {formatMoney(cart.total_cents)}
                 </span>
               </div>
@@ -490,7 +528,7 @@ function CouponField({
 
   return (
     <div className="flex flex-col gap-1.5">
-      <label htmlFor="coupon-code" className="flex items-center gap-1.5 text-caption font-medium text-muted-foreground">
+      <label htmlFor="coupon-code" className="flex items-center gap-1.5 text-caption font-medium text-foreground">
         <TicketPercent className="size-3.5" />
         Promo code
       </label>
@@ -505,7 +543,7 @@ function CouponField({
               onApply();
             }
           }}
-          placeholder="Try ZAP10 or HUNT"
+          placeholder="Enter promo code"
           className="h-9 min-w-0 flex-1 rounded-md border border-input bg-background px-3 text-sm outline-none transition-colors placeholder:text-muted-foreground/60 focus-visible:ring-2 focus-visible:ring-ring"
         />
         <Button
@@ -520,7 +558,7 @@ function CouponField({
       </div>
       {suggestions.length > 0 ? (
         <p className="text-caption text-muted-foreground">
-          Try{" "}
+          Available codes: {" "}
           {suggestions.map((code, index) => (
             <React.Fragment key={code}>
               {index > 0 ? " · " : ""}

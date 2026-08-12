@@ -5,6 +5,7 @@ import dynamic from "next/dynamic";
 
 import type { JudgeResult, Problem } from "@/lib/contracts/judge";
 import type { IDEFile, IDETheme } from "@/types/ide";
+import { getJudgeLanguageConfig } from "@/lib/judge-language-config";
 import { BottomPanel } from "./panel/BottomPanel";
 import { CommandPalette } from "./shell/CommandPalette";
 import { SplitDivider } from "./shell/SplitDivider";
@@ -67,7 +68,7 @@ export function IDE(props: IDEProps) {
 
   return (
     <div ref={workspaceRef} className={`ide-workspace ${styles.workspace} ${dragging ? styles.workspaceDragging : ""}`} data-ide-root data-running={runBusy || effectiveExecution.status === "running" ? "true" : undefined} data-frontend={isFrontend ? "true" : undefined} style={style}>
-      <Toolbar title={problem?.title ?? problemTitle} difficulty={problem?.difficulty} topics={problem?.topics} language={active?.language ?? "python"} theme={chrome.theme} settings={settings} settingsOpen={settingsOpen} canRun={Boolean(active)} runBusy={runBusy} primaryAction={primaryAction} onLanguageChange={changeLanguage} onThemeChange={(theme: IDETheme) => changeTheme(theme)} onSettingsToggle={() => setSettingsOpen((current) => !current)} onSettingsChange={updateSettings} onRun={handleRun} onFontStep={stepFont} onOpenPalette={() => setPaletteOpen(true)} />
+       <Toolbar title={problem?.title ?? problemTitle} difficulty={problem?.difficulty} topics={problem?.topics} language={getJudgeLanguageConfig(active?.language).value} theme={chrome.theme} settings={settings} settingsOpen={settingsOpen} canRun={Boolean(active)} runBusy={runBusy} primaryAction={primaryAction} onLanguageChange={changeLanguage} onThemeChange={(theme: IDETheme) => changeTheme(theme)} onSettingsToggle={() => setSettingsOpen((current) => !current)} onSettingsChange={updateSettings} onRun={handleRun} onFontStep={stepFont} onOpenPalette={() => setPaletteOpen(true)} />
       {problem ? <div className={styles.mobileTabs} role="tablist" aria-label="Mobile IDE views"><button type="button" role="tab" aria-selected={mobileView === "problem"} onClick={() => setMobileView("problem")}>Problem</button><button type="button" role="tab" aria-selected={mobileView === "code"} onClick={() => setMobileView("code")}>Code</button><button type="button" role="tab" aria-selected={mobileView === "results"} onClick={() => { setMobileView("results"); chrome.setBottomPanel("results"); }}>Results</button></div> : null}
       <main className={`${styles.splitLayout} ${!problem || !statementVisible ? styles.statementHidden : ""}`} data-dragging={dragging ? "true" : undefined}>
         {problem ? <div className={`${styles.statementSlot} ${mobileView === "problem" ? styles.mobileVisible : ""}`}><StatementPane problem={problem} colorizeCode={colorizeCode} /></div> : null}

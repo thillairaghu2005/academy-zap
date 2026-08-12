@@ -3,8 +3,9 @@
 import * as React from "react";
 import type { OnMount } from "@monaco-editor/react";
 
-import type { Verdict } from "@/lib/contracts/judge";
-import type { IDELanguage, IDETheme } from "@/types/ide";
+import type { JudgeLanguage, Verdict } from "@/lib/contracts/judge";
+import type { IDETheme } from "@/types/ide";
+import { getJudgeLanguageConfig, isJudgeLanguage } from "@/lib/judge-language-config";
 import { getMonacoThemeName } from "@/lib/monaco";
 import { useEditor } from "@/hooks/useEditor";
 import { useFiles } from "@/hooks/useFiles";
@@ -26,9 +27,9 @@ function isVerdict(status: IDEExecution["status"]): status is Verdict {
   return status !== "idle" && status !== "running";
 }
 
-type WorkspaceProps = Pick<IDEProps, "initialFiles" | "storageKey" | "onActiveContentChange" | "resetKey" | "resetContent" | "primaryAction" | "onReset" | "execution">;
+type WorkspaceProps = Pick<IDEProps, "initialFiles" | "storageKey" | "problem" | "onActiveContentChange" | "resetKey" | "resetContent" | "primaryAction" | "onReset" | "execution">;
 
-export function useIDEWorkspace({ initialFiles, storageKey = "ide:files", onActiveContentChange, resetKey = 0, resetContent = "", primaryAction, onReset, execution = IDLE_EXECUTION }: WorkspaceProps) {
+export function useIDEWorkspace({ initialFiles, storageKey = "ide:files", problem, onActiveContentChange, resetKey = 0, resetContent = "", primaryAction, onReset, execution = IDLE_EXECUTION }: WorkspaceProps) {
   const workspaceRef = React.useRef<HTMLDivElement>(null);
   const chrome = useIDE();
   const filesState = useFiles(initialFiles, storageKey);
@@ -87,12 +88,15 @@ export function useIDEWorkspace({ initialFiles, storageKey = "ide:files", onActi
     handledResetKey.current = resetKey;
     if (parentChangeTimer.current) window.clearTimeout(parentChangeTimer.current);
     if (persistTimer.current) window.clearTimeout(persistTimer.current);
-    filesState.resetContent(active.path, resetContent);
-    contentRef.current = resetContent;
+    const nextContent = problem && isJudgeLanguage(active.language)
+      ? getJudgeLanguageConfig(active.language).template(problem)
+      : resetContent;
+    filesState.resetContent(active.path, nextContent);
+    contentRef.current = nextContent;
     const resetTimer = window.setTimeout(() => setLocalDirty(false), 0);
-    onActiveContentChange?.(resetContent, { ...active, content: resetContent, dirty: false });
+    onActiveContentChange?.(nextContent, { ...active, content: nextContent, dirty: false });
     return () => window.clearTimeout(resetTimer);
-  }, [active, filesState, onActiveContentChange, resetContent, resetKey]);
+  }, [active, filesState, onActiveContentChange, problem, resetContent, resetKey]);
 
   React.useEffect(() => () => {
     if (parentChangeTimer.current) window.clearTimeout(parentChangeTimer.current);
@@ -126,7 +130,8 @@ export function useIDEWorkspace({ initialFiles, storageKey = "ide:files", onActi
     const file = activeRef.current;
     if (!file || runBusy) return;
     setRunBusy(true);
-    setRunExecution({ status: "running", detail: file.language === "javascript" || file.language === "typescript" ? "Executing in the browser sandbox" : "Run is available for browser challenges" });
+    const language = getJudgeLanguageConfig(file.language);
+    setRunExecution({ status: "running", detail: language.value === "javascript" ? `Executing ${language.label} in the browser sandbox` : `Running ${language.label} solution` });
     chrome.setBottomPanel("console");
     chrome.setBottomPanelOpen(true);
     if (file.language === "javascript" || file.language === "typescript") chrome.runJavaScript(contentRef.current);
@@ -137,11 +142,14 @@ export function useIDEWorkspace({ initialFiles, storageKey = "ide:files", onActi
   const handleReset = React.useCallback(() => {
     const file = activeRef.current;
     if (!file) return;
-    filesState.resetContent(file.path, resetContent);
-    contentRef.current = resetContent;
+    const nextContent = problem && isJudgeLanguage(file.language)
+      ? getJudgeLanguageConfig(file.language).template(problem)
+      : resetContent;
+    filesState.resetContent(file.path, nextContent);
+    contentRef.current = nextContent;
     setLocalDirty(false);
     onReset?.();
-  }, [filesState, onReset, resetContent]);
+  }, [filesState, onReset, problem, resetContent]);
 
   const handleMount = React.useCallback<OnMount>((editor, monaco) => {
     editorRef.current = editor;
@@ -212,14 +220,26 @@ export function useIDEWorkspace({ initialFiles, storageKey = "ide:files", onActi
     { id: "panel", label: "Toggle bottom panel", shortcut: "⌘/", icon: COMMAND_ICONS.panel, onSelect: togglePanel },
   ];
 
-  const isFrontend = initialFiles.some((file) => file.language === "html" || file.language === "css" || file.language === "javascript");
+  const isFrontend = filesState.files.some((file) => file.language === "html" || file.language === "css" || file.language === "javascript");
+  const changeLanguage = React.useCallback((language: JudgeLanguage) => {
+    const current = activeRef.current;
+    if (!current || current.language === language) return;
+    flushSave();
+    const config = getJudgeLanguageConfig(language);
+    const existing = filesState.files.find((file) => file.path === config.filename);
+    if (existing) {
+      filesState.openFile(existing.path);
+      return;
+    }
+    filesState.addFile(config.filename, problem ? config.template(problem) : resetContent);
+  }, [filesState, flushSave, problem, resetContent]);
   return {
     workspaceRef, chrome, filesState, active, settings, updateSettings, settingsOpen, setSettingsOpen, paletteOpen, setPaletteOpen,
     split, setSplit, dragging, setDragging, localDirty, runBusy, mobileView, setMobileView, statementVisible, setStatementVisible,
     logs, cursor, effectiveExecution: execution.status !== "idle" ? execution : runExecution, isFrontend,
     style: { "--statement-width": `${split}%` } as React.CSSProperties, actions, handleRun, handleReset, handleMount, handleChange,
     handleUndo, handleRedo, handleFormat, handleCursorChange, layoutEditor, colorizeCode, flushSave, toggleFullscreen, togglePanel,
-    changeLanguage: (language: IDELanguage | "plaintext") => { if (active && language !== "plaintext") filesState.setLanguage(active.path, language); },
+    changeLanguage,
     changeTheme: (theme: IDETheme) => chrome.setTheme(theme),
     stepFont: (delta: number) => updateSettings({ fontSize: settings.fontSize + delta }),
   };

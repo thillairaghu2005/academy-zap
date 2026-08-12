@@ -31,7 +31,7 @@ export function EditorHeader({
     <header className={styles.editorHeader}>
       <div className={styles.editorFileName}>
         <FileCode2 size={14} aria-hidden="true" />
-        <strong>{file?.name ?? "solution.py"}</strong>
+        <strong>{file?.name ?? "solution"}</strong>
         <span className={styles.languagePill}>{file?.language ?? "plaintext"}</span>
         <span className={`${styles.editorSaveState} ${saved ? "" : styles.editorUnsaved}`}><span /> {saved ? "Saved" : "Unsaved"}</span>
       </div>

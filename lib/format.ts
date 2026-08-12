@@ -4,10 +4,10 @@
  * API; the client never derives amounts, it only formats them.
  */
 
-/** Minor units (cents/paise) → "$1,299" style display string. */
-export function formatMoney(cents: number, currency = "usd"): string {
+/** Minor units (cents/paise) → an INR-formatted display string. */
+export function formatMoney(cents: number, currency = "inr"): string {
   const amount = cents / 100;
-  const formatted = amount.toLocaleString("en-US", {
+  const formatted = amount.toLocaleString(currency.toLowerCase() === "inr" ? "en-IN" : "en-US", {
     style: "currency",
     currency: currency.toUpperCase(),
     maximumFractionDigits: cents % 100 === 0 ? 0 : 2,

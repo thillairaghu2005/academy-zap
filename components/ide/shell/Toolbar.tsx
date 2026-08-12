@@ -13,26 +13,10 @@ import {
   SlidersHorizontal,
 } from "lucide-react";
 
-import type { IDELanguage, IDESettings, IDETheme } from "@/types/ide";
-import type { ProblemDifficulty } from "@/lib/contracts/judge";
+import type { IDESettings, IDETheme } from "@/types/ide";
+import type { JudgeLanguage, ProblemDifficulty } from "@/lib/contracts/judge";
+import { JUDGE_LANGUAGE_OPTIONS } from "@/lib/judge-language-config";
 import styles from "../ide.module.css";
-
-const LANGUAGE_OPTIONS: Array<{ value: IDELanguage | "plaintext"; label: string }> = [
-  { value: "python", label: "Python" },
-  { value: "javascript", label: "JavaScript" },
-  { value: "typescript", label: "TypeScript" },
-  { value: "html", label: "HTML" },
-  { value: "css", label: "CSS" },
-  { value: "json", label: "JSON" },
-  { value: "java", label: "Java" },
-  { value: "c", label: "C" },
-  { value: "cpp", label: "C++" },
-  { value: "go", label: "Go" },
-  { value: "rust", label: "Rust" },
-  { value: "sql", label: "SQL" },
-  { value: "shell", label: "Shell" },
-  { value: "plaintext", label: "Plain Text" },
-];
 
 const THEME_OPTIONS: Array<{ value: IDETheme; label: string }> = [
   { value: "vs-light", label: "Zapsters Light" },
@@ -111,14 +95,14 @@ export interface ToolbarProps {
   title: string;
   difficulty?: ProblemDifficulty;
   topics?: string[];
-  language: IDELanguage | "plaintext";
+  language: JudgeLanguage;
   theme: IDETheme;
   settings: IDESettings;
   settingsOpen: boolean;
   canRun: boolean;
   runBusy: boolean;
   primaryAction?: { label: string; onClick: () => void; disabled?: boolean };
-  onLanguageChange: (language: IDELanguage) => void;
+  onLanguageChange: (language: JudgeLanguage) => void;
   onThemeChange: (theme: IDETheme) => void;
   onSettingsToggle: () => void;
   onSettingsChange: (patch: Partial<IDESettings>) => void;
@@ -165,9 +149,9 @@ export function Toolbar({
         <MenuSelect
           className={styles.toolbarLanguage}
           value={language}
-          options={LANGUAGE_OPTIONS}
+          options={JUDGE_LANGUAGE_OPTIONS}
           label="Programming language"
-          onChange={(next) => { if (next !== "plaintext") onLanguageChange(next); }}
+            onChange={onLanguageChange}
         />
         <MenuSelect
           className={styles.toolbarTheme}

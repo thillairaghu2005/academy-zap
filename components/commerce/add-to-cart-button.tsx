@@ -10,6 +10,7 @@ import { addToCart } from "@/lib/data/demo/commerce";
 import { useSession } from "@/components/providers/session-provider";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { cartQueryKey } from "@/components/commerce/cart-query";
 
 /**
  * Shared "Add to cart" action (Task 3) — used on product cards and detail
@@ -33,8 +34,11 @@ export function AddToCartButton({
 
   const mutation = useMutation({
     mutationFn: () => addToCart(userId, productId, 1),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["cart", userId] });
+    onSuccess: (cart) => {
+      queryClient.setQueryData(cartQueryKey(userId), {
+        ...cart,
+        items: cart.items.map((item) => ({ ...item })),
+      });
       toast.success("Added to cart.");
     },
     onError: (error: Error) => toast.error(error.message),

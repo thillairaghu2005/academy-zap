@@ -4,6 +4,7 @@ import * as React from "react";
 import Editor, { loader } from "@monaco-editor/react";
 
 import { CodeEditorSkeleton } from "@/components/shared/skeletons";
+import { JUDGE_LANGUAGE_CONFIG } from "@/lib/judge-language-config";
 
 // Self-hosted Monaco. The default @monaco-editor/react loader fetches Monaco
 // from a CDN at runtime; instead we point it at the AMD build synced to
@@ -30,12 +31,13 @@ export interface EditorPaneProps {
 /**
  * Monaco editor pane (Judge Engine, platform §2.7 — Monaco locked).
  * Loaded only on the client via next/dynamic (see editor-shell.tsx) — monaco
- * is never bundled for the server. Python is the Phase-1 language slice.
+ * is never bundled for the server. Language modes are supplied by the active
+ * editor configuration.
  */
 export function EditorPane({
   value,
   onChange,
-  language = "python",
+  language = JUDGE_LANGUAGE_CONFIG.python.editorLanguage,
   height = "100%",
   readOnly = false,
   theme = "vs",

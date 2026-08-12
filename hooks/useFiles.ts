@@ -68,7 +68,11 @@ export function useFiles(initialFiles: IDEFile[], storageKey = "ide:files") {
       const stored = window.localStorage.getItem(storageKey);
       if (stored) {
         const parsed = JSON.parse(stored) as Partial<PersistedFiles>;
-        const storedFiles = parsed.files?.filter((file) => file.path && file.name && file.kind);
+        const storedFiles = parsed.files
+          ?.filter((file) => file.path && file.name && file.kind)
+          .map((file) => file.kind === "folder"
+            ? file
+            : { ...file, language: createIDEFile(file.path).language });
         timer = window.setTimeout(() => {
           if (storedFiles && storedFiles.length > 0) setFiles(storedFiles);
           if (parsed.openFiles) setOpenFiles(parsed.openFiles);

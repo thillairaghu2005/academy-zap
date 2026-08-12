@@ -101,6 +101,7 @@ export async function submit(
     },
     problem_id: submission.problem_id,
     user_id: submission.user_id,
+    language: submission.language,
     source_code: submission.source_code,
     verdict: null,
     runtime_ms: null,

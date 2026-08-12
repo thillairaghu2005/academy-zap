@@ -1,4 +1,4 @@
-import type { JudgeResult, Problem, SubmissionAccepted, Verdict } from "@/lib/contracts/judge";
+import type { JudgeLanguage, JudgeResult, Problem, SubmissionAccepted, Verdict } from "@/lib/contracts/judge";
 
 /**
  * Judge Engine fixtures + in-memory submission store.
@@ -30,6 +30,7 @@ export interface StoredSubmission {
   submission: SubmissionAccepted;
   problem_id: string;
   user_id: string;
+  language: JudgeLanguage;
   source_code: string;
   verdict: (typeof VERDICTS)[number] | null;
   runtime_ms: number | null;
@@ -393,6 +394,7 @@ export function seedSubmissionHistory(): void {
       },
       problem_id: seed.problemId,
       user_id: "seed-user",
+      language: "python",
       source_code: seed.source,
       verdict: graded.verdict,
       runtime_ms: graded.runtime_ms,
