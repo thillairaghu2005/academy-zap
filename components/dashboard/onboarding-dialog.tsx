@@ -15,6 +15,8 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Progress } from "@/components/ui/progress";
 import { cn } from "@/lib/utils";
 
+const STEP_TITLES = ["Choose your goal", "Set your level", "Choose your rhythm", "Your path is ready"];
+
 type Role = "student" | "professional" | "team-admin";
 type Draft = { goal: string; level: ExperienceLevel; weeklyHours: number; role: Role };
 
@@ -60,9 +62,7 @@ export function OnboardingDialog() {
 
   const next = () => setStep((current) => Math.min(3, current + 1));
   const back = () => setStep((current) => Math.max(0, current - 1));
-  const stepTitles = ["Choose your goal", "Set your level", "Choose your rhythm", "Your path is ready"];
-
-  return <Dialog open={open} onOpenChange={(nextOpen) => { if (!nextOpen) finish(false); }}><DialogContent className="sm:max-w-xl"><DialogHeader><div className="mb-1 flex items-center gap-3"><span className="grid size-10 place-items-center rounded-xl bg-primary/10 text-primary"><Sparkles className="size-5" /></span><div><DialogTitle>{stepTitles[step]}</DialogTitle><DialogDescription className="mt-1">A few choices make the dashboard more useful from day one.</DialogDescription></div></div><div className="mt-3"><div className="mb-2 flex items-center justify-between text-[11px] text-muted-foreground"><span>Step {step + 1} of 4</span><span>{Math.round(((step + 1) / 4) * 100)}%</span></div><Progress value={((step + 1) / 4) * 100} className="h-1.5" /></div></DialogHeader>
+  return <Dialog open={open} onOpenChange={(nextOpen) => { if (!nextOpen) finish(false); }}><DialogContent className="sm:max-w-xl"><DialogHeader><div className="mb-1 flex items-center gap-3"><span className="grid size-10 place-items-center rounded-xl bg-primary/10 text-primary"><Sparkles className="size-5" /></span><div><DialogTitle>{STEP_TITLES[step]}</DialogTitle><DialogDescription className="mt-1">A few choices make the dashboard more useful from day one.</DialogDescription></div></div><div className="mt-3"><div className="mb-2 flex items-center justify-between text-[11px] text-muted-foreground"><span>Step {step + 1} of 4</span><span>{Math.round(((step + 1) / 4) * 100)}%</span></div><Progress value={((step + 1) / 4) * 100} className="h-1.5" /></div></DialogHeader>
     <div className="min-h-52 py-2">
       {step === 0 ? <fieldset className="grid gap-2"><legend className="mb-2 text-sm font-semibold">What would make the next month feel useful?</legend>{GOALS.map((goal) => <button key={goal} type="button" onClick={() => update("goal", goal)} aria-pressed={draft.goal === goal} className={cn("flex items-center justify-between rounded-xl border px-4 py-3.5 text-left text-sm outline-none transition-colors focus-visible:ring-2 focus-visible:ring-ring", draft.goal === goal ? "border-primary bg-primary/10 font-semibold text-primary" : "border-border hover:bg-primary/5")}>{goal}{draft.goal === goal ? <Check className="size-4" /> : null}</button>)}</fieldset> : null}
       {step === 1 ? <fieldset className="grid gap-2"><legend className="mb-2 text-sm font-semibold">Where are you starting?</legend>{(["beginner", "intermediate", "advanced"] as ExperienceLevel[]).map((level) => <button key={level} type="button" onClick={() => update("level", level)} aria-pressed={draft.level === level} className={cn("rounded-xl border px-4 py-4 text-left capitalize outline-none transition-colors focus-visible:ring-2 focus-visible:ring-ring", draft.level === level ? "border-primary bg-primary/10 text-primary" : "border-border hover:bg-primary/5")}><span className="font-semibold">{level}</span><span className="mt-1 block text-xs text-muted-foreground">{level === "beginner" ? "I am building the fundamentals." : level === "intermediate" ? "I know the basics and want depth." : "I want advanced patterns and challenge."}</span></button>)}</fieldset> : null}

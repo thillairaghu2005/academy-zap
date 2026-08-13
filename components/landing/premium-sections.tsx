@@ -9,7 +9,10 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
+import { JsonLd } from "@/components/seo/json-ld";
 import { cn } from "@/lib/utils";
+
+const TRUSTED_NAMES = ["Northstar", "Meridian", "Orbital", "Fieldnote", "Cinder", "Signal Labs"];
 
 function useLiveLearners() {
   const [learners, setLearners] = React.useState(1204);
@@ -19,21 +22,20 @@ function useLiveLearners() {
     const stored = window.sessionStorage.getItem("zapsters-live-learners");
     if (stored) {
       try {
-        const value = JSON.parse(stored) as { learners: number; recent: number };
-        React.startTransition(() => {
-          setLearners(value.learners);
-          setRecent(value.recent);
-        });
+      const value = JSON.parse(stored) as { learners: number; recent: number };
+        if (Number.isFinite(value.learners) && Number.isFinite(value.recent)) {
+          React.startTransition(() => {
+            setLearners(value.learners);
+            setRecent(value.recent);
+          });
+        }
       } catch {
         // A stale session value should never block the marketing page.
       }
     }
     const timer = window.setInterval(() => {
-      setLearners((value) => {
-        const next = Math.max(1120, value + Math.floor(Math.random() * 15) - 7);
-        setRecent((current) => Math.max(280, current + Math.floor(Math.random() * 9) - 4));
-        return next;
-      });
+      setLearners((value) => Math.max(1120, value + Math.floor(Math.random() * 15) - 7));
+      setRecent((current) => Math.max(280, current + Math.floor(Math.random() * 9) - 4));
     }, 4500);
     return () => window.clearInterval(timer);
   }, []);
@@ -61,13 +63,12 @@ export function LiveLearningTicker() {
 }
 
 export function TrustedByStrip() {
-  const names = ["Northstar", "Meridian", "Orbital", "Fieldnote", "Cinder", "Signal Labs"];
   return (
     <section aria-label="Trusted by teams" className="border-b border-border bg-background">
       <div className="mx-auto flex max-w-7xl flex-col gap-4 px-5 py-7 sm:px-8 lg:flex-row lg:items-center lg:px-10">
         <p className="shrink-0 text-xs font-semibold uppercase tracking-[0.16em] text-muted-foreground">Built for people who ship</p>
         <div className="flex min-w-0 gap-7 overflow-hidden [mask-image:linear-gradient(to_right,transparent,black_8%,black_92%,transparent)]" aria-hidden="true">
-          {[...names, ...names].map((name, index) => (
+          {[...TRUSTED_NAMES, ...TRUSTED_NAMES].map((name, index) => (
             <span key={`${name}-${index}`} className="shrink-0 font-display text-sm font-semibold tracking-[-0.02em] text-muted-foreground/65">{name}</span>
           ))}
         </div>
@@ -147,7 +148,7 @@ export function FaqSection() {
   const jsonLd = { "@context": "https://schema.org", "@type": "FAQPage", mainEntity: MARKETING_FAQ.map((item) => ({ "@type": "Question", name: item.question, acceptedAnswer: { "@type": "Answer", text: item.answer } })) };
   return (
     <section className="border-b border-border bg-surface-1">
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+      <JsonLd data={jsonLd} />
       <div className="mx-auto max-w-4xl px-5 py-16 sm:px-8 sm:py-20">
         <div className="text-center"><p className="text-xs font-semibold uppercase tracking-[0.16em] text-primary">Questions, answered</p><h2 className="mt-3 font-display text-3xl font-semibold tracking-[-0.045em]">A clear start, without the fine print.</h2></div>
         <div className="mt-9 divide-y divide-border rounded-xl border border-border bg-card">

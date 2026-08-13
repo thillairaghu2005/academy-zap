@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { motion, useReducedMotion } from "framer-motion";
+import { m as motion, useReducedMotion } from "framer-motion";
 import { Check, Circle } from "lucide-react";
 
 import type { ProfileChecklistItem } from "@/lib/contracts/profile";
@@ -33,9 +33,10 @@ export function ProfileCompletion({
         </div>
         <div className="relative mt-4 h-2 overflow-hidden rounded-full bg-secondary" aria-hidden="true">
           <motion.div
-            initial={reducedMotion ? { width: `${percentage}%` } : { width: 0 }}
-            animate={{ width: `${percentage}%` }}
+            initial={{ scaleX: reducedMotion ? 1 : 0 }}
+            animate={{ scaleX: 1 }}
             transition={{ duration: reducedMotion ? 0 : 0.3, ease: "easeOut" }}
+            style={{ width: `${percentage}%`, originX: 0 }}
             className="h-full rounded-full bg-primary"
           />
         </div>

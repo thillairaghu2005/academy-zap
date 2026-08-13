@@ -139,7 +139,7 @@ export function MyTicketsClient() {
                 href={`/support/${ticket.id}`}
                  className="group block rounded-[inherit] outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
               >
-                <Card className="transition-all group-hover:-translate-y-0.5 group-hover:border-primary/40 group-hover:shadow-lg group-hover:shadow-primary/5">
+                <Card className="transition-[transform,border-color,box-shadow] group-hover:-translate-y-0.5 group-hover:border-primary/40 group-hover:shadow-lg group-hover:shadow-primary/5">
                   <CardContent className="flex items-center gap-4 p-4">
                     <div className="grid size-10 shrink-0 place-items-center rounded-lg bg-primary/10 text-primary">
                       <MessageSquare className="size-4.5" />

@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import { formatLocalDateTime } from "@/lib/format";
 import Link from "next/link";
 import { BookOpen, Download, HardDrive, LoaderCircle, Trash2, WifiOff } from "lucide-react";
 
@@ -114,7 +115,7 @@ export function OfflineIndex() {
                      {course.title}
                    </span>
                    <span className="block text-caption text-muted-foreground">
-                     {course.lessons} lessons · Saved {new Date(course.cached_at).toLocaleString()}
+                      {course.lessons} lessons · Saved {formatLocalDateTime(course.cached_at)}
                    </span>
                 </span>
                 <Button variant="outline" size="sm" asChild>

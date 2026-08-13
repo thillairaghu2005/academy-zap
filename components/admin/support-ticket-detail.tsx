@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import { formatSupportDateTime, formatLongEnglishDate } from "@/lib/format";
 import Link from "next/link";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import {
@@ -55,12 +56,7 @@ function InternalNote({ message }: { message: TicketMessage }) {
           </span>
           <span className="text-xs font-semibold">{message.author_name}</span>
           <span className="text-caption text-muted-foreground/70">
-            {new Date(message.created_at).toLocaleString("en-US", {
-              month: "short",
-              day: "numeric",
-              hour: "2-digit",
-              minute: "2-digit",
-            })}
+            {formatSupportDateTime(message.created_at)}
           </span>
         </div>
         <p className="mt-1.5 whitespace-pre-wrap leading-relaxed">
@@ -99,12 +95,7 @@ function MessageBubble({
             {message.author_role === "agent" ? "You" : "Learner"}
           </span>
           <span className="text-caption text-muted-foreground/70">
-            {new Date(message.created_at).toLocaleString("en-US", {
-              month: "short",
-              day: "numeric",
-              hour: "2-digit",
-              minute: "2-digit",
-            })}
+            {formatSupportDateTime(message.created_at)}
           </span>
         </div>
         <p className="mt-1.5 whitespace-pre-wrap leading-relaxed">
@@ -163,14 +154,12 @@ export function AdminSupportTicketDetail({ ticketId }: { ticketId: string }) {
       assignTicket(ticketId, agentId === "unassigned" ? null : agentId, user!),
     );
 
-  const submitReply = () => {
+  const submitReply = async () => {
     const text = body.trim();
     if (!text || submitting) return;
-    runAction(async () => {
-      await replyToTicket(ticketId, { body: text, internal_note: internalNote }, user!);
-      setBody("");
-      setInternalNote(false);
-    });
+    await runAction(() => replyToTicket(ticketId, { body: text, internal_note: internalNote }, user!));
+    setBody("");
+    setInternalNote(false);
   };
 
   if (ticketQuery.isLoading) {
@@ -236,11 +225,7 @@ export function AdminSupportTicketDetail({ ticketId }: { ticketId: string }) {
           </h1>
           <p className="mt-1 text-xs text-muted-foreground">
             Opened by <span className="font-medium text-foreground">{ticket.created_by_name}</span> on{" "}
-            {new Date(ticket.created_at).toLocaleDateString("en-US", {
-              month: "long",
-              day: "numeric",
-              year: "numeric",
-            })}
+            {formatLongEnglishDate(ticket.created_at)}
           </p>
         </div>
 

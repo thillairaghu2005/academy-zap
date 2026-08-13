@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import { useQuery } from "@tanstack/react-query";
-import { motion } from "framer-motion";
+import { m as motion } from "framer-motion";
 import { Crown, Gem, Gift, Lock, Ticket } from "lucide-react";
 
 import { getSeasonPass } from "@/lib/data/demo/gamification";
@@ -82,9 +82,10 @@ export function SeasonPassCard() {
         <div className="relative flex items-start justify-between gap-1">
           <div className="absolute left-4 right-4 top-3.5 h-0.5 rounded bg-secondary" />
           <motion.div
-            initial={{ width: 0 }}
-            animate={{ width: `${overall * 100}%` }}
+            initial={{ scaleX: 0 }}
+            animate={{ scaleX: 1 }}
             transition={{ duration: 0.9, ease: "easeOut" }}
+            style={{ width: `${overall * 100}%`, originX: 0 }}
             className="absolute left-4 top-3.5 h-0.5 rounded bg-primary"
           />
           {data.milestones.map((m) => {

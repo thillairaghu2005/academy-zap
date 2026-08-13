@@ -17,14 +17,10 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${SITE_URL}/pricing`, lastModified, changeFrequency: "monthly", priority: 0.7 },
   ];
 
-  const courseRoutes = MOCK_COURSES.filter((course) => course.status === "published").map(
-    (course) => ({
-      url: `${SITE_URL}/courses/${course.id}`,
-      lastModified: course.updated_at,
-      changeFrequency: "weekly" as const,
-      priority: 0.8,
-    }),
-  );
+  const courseRoutes = MOCK_COURSES.reduce<MetadataRoute.Sitemap>((routes, course) => {
+    if (course.status === "published") routes.push({ url: `${SITE_URL}/courses/${course.id}`, lastModified: course.updated_at, changeFrequency: "weekly", priority: 0.8 });
+    return routes;
+  }, []);
   const judgeRoutes = MOCK_PROBLEMS.map((problem) => ({
     url: `${SITE_URL}/judge/${problem.id}`,
     lastModified,

@@ -40,24 +40,24 @@ export function DemoPreferencesProvider({ children }: { children: React.ReactNod
     document.documentElement.dataset.reduceData = preferences.reduceData ? "true" : "false";
   }, [preferences]);
 
-  const update = (next: DemoPreferences) => {
+  const update = React.useCallback((next: DemoPreferences) => {
     setPreferences(next);
     saveDemoPreferences(next);
-  };
+  }, []);
+
+  const value = React.useMemo<DemoPreferencesContextValue>(() => ({
+    ...preferences,
+    catalogView,
+    setCompactMode: (value) => update({ ...preferences, compactMode: value }),
+    setReduceData: (value) => update({ ...preferences, reduceData: value }),
+    setCatalogView: (value) => {
+      setCatalogViewState(value);
+      saveCatalogView(value);
+    },
+  }), [catalogView, preferences, update]);
 
   return (
-    <DemoPreferencesContext.Provider
-      value={{
-        ...preferences,
-        catalogView,
-        setCompactMode: (value) => update({ ...preferences, compactMode: value }),
-        setReduceData: (value) => update({ ...preferences, reduceData: value }),
-        setCatalogView: (value) => {
-          setCatalogViewState(value);
-          saveCatalogView(value);
-        },
-      }}
-    >
+    <DemoPreferencesContext.Provider value={value}>
       {children}
     </DemoPreferencesContext.Provider>
   );

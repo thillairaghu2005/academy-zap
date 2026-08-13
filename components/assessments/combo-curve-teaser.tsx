@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import { useQuery } from "@tanstack/react-query";
-import { motion } from "framer-motion";
+import { m as motion } from "framer-motion";
 import { Flame, TrendingUp } from "lucide-react";
 
 import { getComboCurve } from "@/lib/data/demo/assessment";
@@ -61,9 +61,10 @@ export function ComboCurveTeaser() {
               className="group relative flex flex-1 flex-col items-center justify-end"
             >
               <motion.div
-                initial={{ height: 0 }}
-                animate={{ height: `${heightPct}%` }}
+                initial={{ scaleY: 0 }}
+                animate={{ scaleY: 1 }}
                 transition={{ delay: 0.03 * i, duration: 0.4, ease: "easeOut" }}
+                style={{ height: `${heightPct}%`, originY: 1 }}
                 className={cn(
                   "w-full rounded-t-sm",
                   maxed

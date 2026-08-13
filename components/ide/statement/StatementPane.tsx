@@ -139,7 +139,7 @@ export const StatementPane = React.memo(function StatementPane({ problem, colori
               {problem.sample_cases.map((sample, index) => {
                 const inputSegment = sampleBase + index * 3;
                 const outputSegment = inputSegment + 1;
-                return <SampleCase key={`${sample.input}-${index}`} sample={sample} index={index} searchTerm={searchTerm} inputOffset={offsetFor(segments, inputSegment, searchTerm)} outputOffset={offsetFor(segments, outputSegment, searchTerm)} currentMatch={currentMatch} />;
+                 return <SampleCase key={`${sample.input}-${sample.output}`} sample={sample} index={index} searchTerm={searchTerm} inputOffset={offsetFor(segments, inputSegment, searchTerm)} outputOffset={offsetFor(segments, outputSegment, searchTerm)} currentMatch={currentMatch} />;
               })}
             </div>
           </section>

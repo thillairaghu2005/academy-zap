@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import { formatLongEnglishDate } from "@/lib/format";
 import { Award, BadgeCheck, Download } from "lucide-react";
 
 import type { Course } from "@/lib/contracts/content";
@@ -33,11 +34,7 @@ export function CertificateDialog({
 }) {
   const announce = useAnnounce();
   const certificateRef = React.useRef<HTMLDivElement>(null);
-  const completedAt = new Date().toLocaleDateString("en", {
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-  });
+  const completedAt = formatLongEnglishDate(new Date());
   const credentialId = `cred-${course.id.slice(0, 8).toLowerCase()}-${course.id.length}`;
 
   const downloadCertificate = () => {

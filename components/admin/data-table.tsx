@@ -82,6 +82,7 @@ interface DataTableProps<T> {
 }
 
 type SortDir = "asc" | "desc";
+const EMPTY_FILTERS: DataTableFilter<never>[] = [];
 
 function compareValues(a: string | number, b: string | number): number {
   if (typeof a === "number" && typeof b === "number") return a - b;
@@ -95,7 +96,7 @@ export function DataTable<T>({
   searchable = true,
   searchPlaceholder = "Search…",
   searchText,
-  filters = [],
+  filters: filtersProp,
   pageSize = 8,
   loading = false,
   error = false,
@@ -109,6 +110,7 @@ export function DataTable<T>({
   expandedRow,
   caption,
 }: DataTableProps<T>) {
+  const filters = filtersProp ?? (EMPTY_FILTERS as DataTableFilter<T>[]);
   const [query, setQuery] = React.useState("");
   const [filterValues, setFilterValues] = React.useState<Record<string, string>>(
     () => Object.fromEntries(filters.map((f) => [f.id, "all"])),

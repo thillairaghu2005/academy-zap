@@ -68,11 +68,11 @@ export function useFiles(initialFiles: IDEFile[], storageKey = "ide:files") {
       const stored = window.localStorage.getItem(storageKey);
       if (stored) {
         const parsed = JSON.parse(stored) as Partial<PersistedFiles>;
-        const storedFiles = parsed.files
-          ?.filter((file) => file.path && file.name && file.kind)
-          .map((file) => file.kind === "folder"
-            ? file
-            : { ...file, language: createIDEFile(file.path).language });
+        const storedFiles = parsed.files?.reduce<IDEFile[]>((result, file) => {
+          if (!file.path || !file.name || !file.kind) return result;
+          result.push(file.kind === "folder" ? file : { ...file, language: createIDEFile(file.path).language });
+          return result;
+        }, []);
         timer = window.setTimeout(() => {
           if (storedFiles && storedFiles.length > 0) setFiles(storedFiles);
           if (parsed.openFiles) setOpenFiles(parsed.openFiles);
@@ -99,10 +99,13 @@ export function useFiles(initialFiles: IDEFile[], storageKey = "ide:files") {
   }, []);
 
   React.useEffect(() => {
-    const dirtyFiles = files.filter((file) => file.dirty).map((file) => file.path);
-    if (dirtyFiles.length === 0) return;
+     const dirtyFiles = files.reduce((paths, file) => {
+       if (file.dirty) paths.add(file.path);
+       return paths;
+     }, new Set<string>());
+     if (dirtyFiles.size === 0) return;
     const timer = window.setTimeout(() => {
-      setFiles((current) => current.map((file) => dirtyFiles.includes(file.path) ? { ...file, dirty: false } : file));
+       setFiles((current) => current.map((file) => dirtyFiles.has(file.path) ? { ...file, dirty: false } : file));
     }, 900);
     return () => window.clearTimeout(timer);
   }, [files]);
@@ -115,12 +118,10 @@ export function useFiles(initialFiles: IDEFile[], storageKey = "ide:files") {
   const closeFile = React.useCallback((path: string) => {
     const file = files.find((item) => item.path === path);
     if (file?.dirty && !window.confirm(`${file.name} has unsaved changes. Close it anyway?`)) return;
-    setOpenFiles((current) => {
-      const next = current.filter((item) => item !== path);
-      if (path === activeFile) setActiveFile(next[next.length - 1] ?? "");
-      return next;
-    });
-  }, [activeFile, files]);
+    const next = openFiles.filter((item) => item !== path);
+    setOpenFiles(next);
+    if (path === activeFile) setActiveFile(next[next.length - 1] ?? "");
+  }, [activeFile, files, openFiles]);
 
   const addFile = React.useCallback((path: string, content = "") => {
     const normalized = normalizePath(path);

@@ -7,7 +7,7 @@ import {
   useQueryClient,
 } from "@tanstack/react-query";
 import Link from "next/link";
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, m as motion } from "framer-motion";
 import {
   AlertTriangle,
   ArrowLeft,
@@ -183,10 +183,6 @@ export function AssessmentAttemptClient({
   const userId = user?.id ?? "";
   const queryClient = useQueryClient();
 
-  const refreshAttempt = React.useCallback(() => {
-    void queryClient.invalidateQueries({ queryKey: ["attempt", attemptId] });
-  }, [queryClient, attemptId]);
-
   // Light polling while the attempt is live — keeps the answered counter and
   // expiry state in sync with the server (same pattern as the lab client).
   const attemptQuery = useQuery({
@@ -313,7 +309,7 @@ export function AssessmentAttemptClient({
       // CRITICAL: re-read the attempt from the demo service so answers/score/counter
       // refresh — otherwise the answered counter stays stale and the final
       // submit gate never opens.
-      refreshAttempt();
+      void queryClient.invalidateQueries({ queryKey: ["attempt", attemptId] });
     },
   });
 
@@ -601,11 +597,11 @@ export function AssessmentAttemptClient({
                   role="radiogroup"
                   aria-labelledby={`question-${question.id}-prompt`}
                 >
-                  {question.options.map((option, i) => {
+                   {question.options.map((option, i) => {
                     const selected = draft?.type === "mcq" && draft.option_index === i;
                     return (
                       <button
-                        key={i}
+                         key={option}
                         type="button"
                         role="radio"
                         aria-checked={selected}

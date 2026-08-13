@@ -1,7 +1,8 @@
 "use client";
 
 import * as React from "react";
-import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
+import { formatLocalTime } from "@/lib/format";
+import { AnimatePresence, m as motion, useReducedMotion } from "framer-motion";
 import {
   AlertCircle,
   Check,
@@ -45,6 +46,7 @@ const VERDICT_META: Record<Verdict, { label: string; className: string; icon: ty
 };
 
 export interface IDELogEntry {
+  id: string;
   stage: "queued" | "running" | "grading" | "graded";
   at: string;
 }
@@ -82,7 +84,7 @@ function PanelEmpty({ icon: Icon, title, detail }: { icon: typeof Info; title: s
 function ConsoleTab({ entries, lastRunAt, onClear }: { entries: IDEOutputEntry[]; lastRunAt: string | null; onClear: () => void }) {
   return (
     <div className={styles.panelTabBody}>
-      <div className={styles.panelToolbar}><span>{lastRunAt ? `Last run ${new Date(lastRunAt).toLocaleTimeString()}` : "Sandbox console"}</span><button type="button" onClick={onClear}><Eraser size={13} /> Clear</button></div>
+      <div className={styles.panelToolbar}><span>{lastRunAt ? `Last run ${formatLocalTime(lastRunAt)}` : "Sandbox console"}</span><button type="button" onClick={onClear}><Eraser size={13} /> Clear</button></div>
       <div className={styles.consoleRows} aria-live="polite">
         {entries.length === 0 ? <PanelEmpty icon={TerminalSquare} title="Console is quiet" detail="Run JavaScript to stream sandbox console output here." /> : entries.map((entry) => {
           const Icon = entry.level === "error" ? CircleAlert : entry.level === "warn" ? AlertCircle : entry.level === "info" ? Info : Check;
@@ -209,7 +211,7 @@ function GaugeIcon(props: { size?: number }) { return <Clock3 {...props} />; }
 function ChartIcon(props: { size?: number }) { return <Info {...props} />; }
 
 function LogsTab({ logs }: { logs: IDELogEntry[] }) {
-  return logs.length === 0 ? <PanelEmpty icon={Clock3} title="No submission lifecycle" detail="Queue and grading events will appear after submit." /> : <div className={styles.logRows}>{logs.map((entry, index) => <div className={styles.logRow} key={`${entry.stage}-${index}`}><span className={styles.logDot} /><strong>{entry.stage}</strong><time>{entry.at}</time></div>)}</div>;
+  return logs.length === 0 ? <PanelEmpty icon={Clock3} title="No submission lifecycle" detail="Queue and grading events will appear after submit." /> : <div className={styles.logRows}>{logs.map((entry) => <div className={styles.logRow} key={entry.id}><span className={styles.logDot} /><strong>{entry.stage}</strong><time>{entry.at}</time></div>)}</div>;
 }
 
 export function BottomPanel({ execution, output, logs, lastRunAt, requestTab, open, height, mobileResults, onClearOutput, onToggle, onHeightChange, files, isFrontend }: BottomPanelProps) {

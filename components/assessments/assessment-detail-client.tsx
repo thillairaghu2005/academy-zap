@@ -1,10 +1,10 @@
 "use client";
 
 import * as React from "react";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { motion } from "framer-motion";
+import { m as motion } from "framer-motion";
 import {
   AlertTriangle,
   Clock,
@@ -54,6 +54,7 @@ export function AssessmentDetailClient({
   assessmentId: string;
 }) {
   const router = useRouter();
+  const queryClient = useQueryClient();
   const { user } = useSession();
 
   const assessmentQuery = useQuery({
@@ -66,6 +67,9 @@ export function AssessmentDetailClient({
       startAttempt(assessmentId, user?.id ?? "", 1).then((attempt) => {
         router.push(`/assessments/${assessmentId}/attempt/${attempt.attempt_id}`);
       }),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: ["assessment", assessmentId] });
+    },
   });
 
   /* ---------- Loading ---------- */

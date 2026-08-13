@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { motion, useReducedMotion } from "framer-motion";
+import { m as motion, useReducedMotion } from "framer-motion";
 
 import { motionDurations, motionEasings, motionStagger } from "./motion-tokens";
 
@@ -15,6 +15,7 @@ type TextRevealProps = {
 export function TextReveal({ text, className, mode = "words", delay = 0 }: TextRevealProps) {
   const reducedMotion = useReducedMotion() ?? false;
   const parts = mode === "lines" ? text.split("\n") : text.split(" ");
+  const partOccurrences = new Map<string, number>();
 
   return (
     <motion.span
@@ -27,8 +28,10 @@ export function TextReveal({ text, className, mode = "words", delay = 0 }: TextR
         visible: { transition: { delayChildren: delay, staggerChildren: motionStagger.tight } },
       }}
     >
-      {parts.map((part, index) => (
-        <span key={`${part}-${index}`} className={mode === "lines" ? "block overflow-hidden" : "inline-block overflow-hidden"}>
+      {parts.map((part, index) => {
+        const occurrence = partOccurrences.get(part) ?? 0;
+        partOccurrences.set(part, occurrence + 1);
+        return <span key={`${mode}-${part}-${occurrence}`} className={mode === "lines" ? "block overflow-hidden" : "inline-block overflow-hidden"}>
           <motion.span
             aria-hidden="true"
             className="inline-block"
@@ -41,8 +44,8 @@ export function TextReveal({ text, className, mode = "words", delay = 0 }: TextR
             {part}
           </motion.span>
           {mode === "words" && index < parts.length - 1 ? " " : null}
-        </span>
-      ))}
+        </span>;
+      })}
     </motion.span>
   );
 }

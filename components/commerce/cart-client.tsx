@@ -114,7 +114,10 @@ export function CartClient() {
 
   const checkoutMutation = useMutation({
     mutationFn: () => createCheckout(userId),
-    onSuccess: (session) => router.push(`/checkout/${session.checkout_id}`),
+    onSuccess: (session) => {
+      void queryClient.invalidateQueries({ queryKey: cartQueryKey(userId) });
+      router.push(`/checkout/${session.checkout_id}`);
+    },
     onError: (error: Error) => {
       toast.error(error.message);
     },

@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import { formatLocalDate } from "@/lib/format";
 import { useQuery } from "@tanstack/react-query";
 import {
   ArrowRight,
@@ -259,7 +260,7 @@ export function BillingClient() {
                 <p className="text-sm font-medium">Next invoice</p>
                 <p className="flex items-center gap-1.5 text-xs text-muted-foreground">
                   <CalendarClock className="size-3.5" />
-                  renews {new Date(subscription.renews_at).toLocaleDateString()}
+                  renews {formatLocalDate(subscription.renews_at)}
                 </p>
               </div>
             </div>

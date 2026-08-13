@@ -48,6 +48,7 @@ import {
 } from "@/components/ui/dialog";
 import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
+import { formatLocalTimeMinutes } from "@/lib/format";
 
 /* ------------------------------------------------------------------ */
 /*  Demo settings — the frontend demo's control surface.              */
@@ -136,7 +137,7 @@ function Toggle({
   );
 }
 
-export function DemoSettings() {
+export function DemoSettings({ onOpenChange }: { onOpenChange?: (open: boolean) => void }) {
   const queryClient = useQueryClient();
   const announce = useAnnounce();
   const online = useOnlineStatus();
@@ -183,7 +184,7 @@ export function DemoSettings() {
   ];
 
   return (
-    <Dialog>
+    <Dialog onOpenChange={onOpenChange}>
       <DialogTrigger asChild>
         <Button variant="ghost" size="sm" className="w-full justify-start px-2">
           <Settings2 className="size-4" />
@@ -305,10 +306,7 @@ export function DemoSettings() {
                       {entry.label}
                     </span>
                     <span className="shrink-0 text-caption text-muted-foreground">
-                      {new Date(entry.created_at).toLocaleTimeString([], {
-                        hour: "2-digit",
-                        minute: "2-digit",
-                      })}
+                      {formatLocalTimeMinutes(entry.created_at)}
                     </span>
                   </li>
                 ))}

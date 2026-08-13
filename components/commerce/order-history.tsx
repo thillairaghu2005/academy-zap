@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import { formatLocalDate } from "@/lib/format";
 import { useQuery } from "@tanstack/react-query";
 import { BookOpen, Download, FlaskConical, ReceiptText } from "lucide-react";
 
@@ -70,7 +71,7 @@ export function OrderHistory() {
                     {order.items.map((item) => item.title).join(", ")}
                   </span>
                   <span className="block text-caption text-muted-foreground">
-                    {new Date(order.created_at).toLocaleDateString()} ·{" "}
+                    {formatLocalDate(order.created_at)} ·{" "}
                     {order.order_id}
                   </span>
                 </span>

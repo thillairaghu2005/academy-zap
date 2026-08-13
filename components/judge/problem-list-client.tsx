@@ -3,7 +3,7 @@
 import * as React from "react";
 import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
-import { motion, useReducedMotion } from "framer-motion";
+import { m as motion, useReducedMotion } from "framer-motion";
 import {
   ArrowUpRight,
   BarChart3,
@@ -115,8 +115,10 @@ function problemMeta(problem: Problem) {
   return PROBLEM_META[problem.id] ?? { companies: ["Zapsters"], solves: 0, xp: 100 };
 }
 
+const NUMBER_FORMATTER = new Intl.NumberFormat("en-US");
+
 function formatNumber(value: number) {
-  return new Intl.NumberFormat("en-US").format(value);
+  return NUMBER_FORMATTER.format(value);
 }
 
 function categoryFor(problem: Problem) {
@@ -349,6 +351,7 @@ export function ProblemListClient() {
   });
 
   const solvedIds = React.useMemo(() => solvedQuery.data ?? [], [solvedQuery.data]);
+  const solvedIdSet = React.useMemo(() => new Set(solvedIds), [solvedIds]);
   const counts = React.useMemo(() => {
     const result: Record<ProblemDifficulty, number> = { easy: 0, medium: 0, hard: 0 };
     for (const problem of data ?? []) result[problem.difficulty]++;
@@ -370,7 +373,7 @@ export function ProblemListClient() {
       const meta = problemMeta(problem);
       const matchesSearch = !query || [problem.title, problem.slug, problem.statement, ...problem.topics].join(" ").toLowerCase().includes(query);
       const matchesDifficulty = difficulty === "all" || problem.difficulty === difficulty;
-      const matchesStatus = status === "all" || (status === "solved" ? solvedIds.includes(problem.id) : !solvedIds.includes(problem.id));
+       const matchesStatus = status === "all" || (status === "solved" ? solvedIdSet.has(problem.id) : !solvedIdSet.has(problem.id));
       const matchesTag = tag === "all" || problem.topics.includes(tag);
       const matchesCompany = company === "all" || meta.companies.includes(company);
       return matchesSearch && matchesDifficulty && matchesStatus && matchesTag && matchesCompany;
@@ -390,7 +393,7 @@ export function ProblemListClient() {
           return 0;
       }
     });
-  }, [company, data, difficulty, search, solvedIds, sort, status, tag]);
+  }, [company, data, difficulty, search, solvedIdSet, sort, status, tag]);
 
   const resetFilters = () => {
     setSearch("");
@@ -485,7 +488,7 @@ export function ProblemListClient() {
       {data && data.length > 0 ? (
         <section className="mt-8 grid gap-4 lg:grid-cols-[1.2fr_0.8fr]" aria-label="Practice queue">
           {(() => {
-            const next = data.find((problem) => !solvedIds.includes(problem.id)) ?? data[0];
+             const next = data.find((problem) => !solvedIdSet.has(problem.id)) ?? data[0];
             if (!next) return null;
             const topic = next?.topics[0];
             return (
@@ -532,7 +535,7 @@ export function ProblemListClient() {
             <EmptyState icon={CheckCircle2} title={status === "solved" ? "No solved Judge problems" : "No problems match these filters"} description={status === "solved" ? "Solve your first challenge and your accepted submissions will collect here." : "Try widening your search or resetting the filters."} primaryAction={<Button variant="gradient" size="sm" onClick={resetFilters}>Browse all problems</Button>} secondaryAction={<Button variant="outline" size="sm" asChild><Link href="/courses">Learn the fundamentals</Link></Button>} />
           </div>
         ) : (
-          filtered.map((problem, index) => <ProblemCard key={problem.id} problem={problem} index={index} solved={solvedIds.includes(problem.id)} />)
+           filtered.map((problem, index) => <ProblemCard key={problem.id} problem={problem} index={index} solved={solvedIdSet.has(problem.id)} />)
         )}
       </div>
 

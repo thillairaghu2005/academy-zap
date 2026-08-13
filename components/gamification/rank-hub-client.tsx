@@ -1,8 +1,9 @@
 "use client";
 
 import * as React from "react";
+import { formatLocalDate } from "@/lib/format";
 import { useQuery } from "@tanstack/react-query";
-import { motion } from "framer-motion";
+import { m as motion } from "framer-motion";
 import { useRouter } from "next/navigation";
 import {
   BookOpen,
@@ -205,7 +206,7 @@ export function RankHubClient() {
                 <div className="flex flex-col items-end gap-2">
                   <p className="font-mono text-[11px] text-muted-foreground">
                     ctx v{ctx.context_version} ·{" "}
-                    {new Date(ctx.computed_at).toLocaleDateString()}
+                    {formatLocalDate(ctx.computed_at)}
                   </p>
                   <div className="flex gap-2">
                     <Button
@@ -343,9 +344,10 @@ function DualXpTracks({
       </div>
       <div className="h-2 overflow-hidden rounded-full bg-primary-light">
         <motion.div
-          initial={{ width: 0 }}
-          animate={{ width: `${cPct}%` }}
+          initial={{ scaleX: 0 }}
+          animate={{ scaleX: 1 }}
           transition={{ duration: 0.8, ease: "easeOut" }}
+          style={{ width: `${cPct}%`, originX: 0 }}
           className="h-full rounded-full bg-primary"
         />
       </div>
@@ -359,9 +361,10 @@ function DualXpTracks({
       </div>
       <div className="h-2 overflow-hidden rounded-full bg-primary-muted">
         <motion.div
-          initial={{ width: 0 }}
-          animate={{ width: `${mPct}%` }}
+          initial={{ scaleX: 0 }}
+          animate={{ scaleX: 1 }}
           transition={{ duration: 0.8, ease: "easeOut", delay: 0.1 }}
+          style={{ width: `${mPct}%`, originX: 0 }}
           className="h-full rounded-full bg-secondary-accent"
         />
       </div>

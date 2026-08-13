@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import Editor, { loader } from "@monaco-editor/react";
+import dynamic from "next/dynamic";
 
 import { CodeEditorSkeleton } from "@/components/shared/skeletons";
 import { JUDGE_LANGUAGE_CONFIG } from "@/lib/judge-language-config";
@@ -14,9 +14,11 @@ import { JUDGE_LANGUAGE_CONFIG } from "@/lib/judge-language-config";
 // needed — Turbopack cannot resolve monaco's worker entry, and this sidesteps
 // that entirely. Guarded for the server even though this module only loads
 // client-side (editor-shell.tsx, ssr: false).
-if (typeof window !== "undefined") {
-  loader.config({ paths: { vs: "/vs" } });
-}
+const MonacoEditor = dynamic(async () => {
+  const monacoReact = await import("@monaco-editor/react");
+  monacoReact.loader.config({ paths: { vs: "/vs" } });
+  return monacoReact.default;
+}, { ssr: false });
 
 export interface EditorPaneProps {
   value: string;
@@ -43,7 +45,7 @@ export function EditorPane({
   theme = "vs",
 }: EditorPaneProps) {
   return (
-    <Editor
+    <MonacoEditor
       height={height}
       language={language}
       value={value}

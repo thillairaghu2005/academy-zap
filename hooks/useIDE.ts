@@ -14,9 +14,14 @@ export const SANDBOX_DOCUMENT = `<!doctype html><html><body><script>
     try { return JSON.stringify(value, (_, nested) => typeof nested === "bigint" ? nested.toString() + "n" : nested); }
     catch { return String(value); }
   };
+  const parentOrigin = (() => {
+    try { return new URL(document.referrer).origin; }
+    catch { return null; }
+  })();
   window.addEventListener("message", (event) => {
+    if (event.source !== window.parent || !parentOrigin || event.origin !== parentOrigin) return;
     const data = event.data;
-    if (!data || data.type !== "ide-run") return;
+    if (!data || data.type !== "ide-run" || typeof data.runId !== "string" || typeof data.source !== "string") return;
     const entries = [];
     const write = (level, values) => entries.push({ level, text: values.map(serialize).join(" ") });
     const original = { log: console.log, info: console.info, warn: console.warn, error: console.error };
@@ -32,7 +37,7 @@ export const SANDBOX_DOCUMENT = `<!doctype html><html><body><script>
     } catch (error) {
       write("error", [error]);
     }
-    window.setTimeout(() => event.source?.postMessage({ type: "ide-run-result", runId: data.runId, entries }, "*"), 150);
+    window.setTimeout(() => event.source?.postMessage({ type: "ide-run-result", runId: data.runId, entries }, event.origin), 150);
   });
 })();
 </script></body></html>`;
@@ -46,7 +51,11 @@ interface SandboxMessage {
 function isSandboxMessage(value: unknown): value is SandboxMessage {
   if (!value || typeof value !== "object") return false;
   const candidate = value as Partial<SandboxMessage>;
-  return candidate.type === "ide-run-result" && typeof candidate.runId === "string" && Array.isArray(candidate.entries);
+  return candidate.type === "ide-run-result" && typeof candidate.runId === "string" && Array.isArray(candidate.entries) && candidate.entries.every((entry) => {
+    if (!entry || typeof entry !== "object") return false;
+    const item = entry as { level?: unknown; text?: unknown };
+    return (item.level === "log" || item.level === "info" || item.level === "warn" || item.level === "error") && typeof item.text === "string";
+  });
 }
 
 export function useIDE() {
@@ -103,7 +112,7 @@ export function useIDE() {
 
   React.useEffect(() => {
     const onMessage = (event: MessageEvent<unknown>) => {
-      if (event.source !== frameRef.current?.contentWindow || !isSandboxMessage(event.data)) return;
+      if (event.source !== frameRef.current?.contentWindow || event.origin !== window.location.origin || !isSandboxMessage(event.data)) return;
       const data = event.data;
       const resolve = pendingRuns.current.get(data.runId);
       if (!resolve) return;

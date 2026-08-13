@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import { formatLocalTimeMinutes } from "@/lib/format";
 import dynamic from "next/dynamic";
 import Link from "next/link";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -187,11 +188,10 @@ export function PlayerClient({ course }: { course: Course }) {
   const filteredLessons = React.useMemo(() => {
     const query = lessonSearch.trim().toLowerCase();
     if (!query) return null;
-    const matches = new Set(
-      allLessons
-        .filter((lesson) => lesson.title.toLowerCase().includes(query))
-        .map((lesson) => lesson.id),
-    );
+     const matches = allLessons.reduce((ids, lesson) => {
+       if (lesson.title.toLowerCase().includes(query)) ids.add(lesson.id);
+       return ids;
+     }, new Set<string>());
     return matches.size > 0 ? matches : new Set<string>();
   }, [lessonSearch, allLessons]);
   const hasSearch = filteredLessons !== null;
@@ -488,10 +488,7 @@ export function PlayerClient({ course }: { course: Course }) {
                   <Clock className="size-3.5" />
                   <span className="hidden sm:inline">Signed manifest · </span>
                   expires{" "}
-                  {new Date(manifest.expires_at).toLocaleTimeString([], {
-                    hour: "2-digit",
-                    minute: "2-digit",
-                  })}
+                  {formatLocalTimeMinutes(manifest.expires_at)}
                 </div>
 
                 {manifest.captions_url ? (

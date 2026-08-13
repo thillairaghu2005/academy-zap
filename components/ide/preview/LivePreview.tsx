@@ -8,10 +8,15 @@ import styles from "../ide.module.css";
 
 function previewDocument(files: IDEFile[]): string {
   const html = files.find((file) => file.path === "index.html")?.content ?? "<main><h1>Preview is ready</h1><p>Add an index.html entry point to render your challenge.</p></main>";
-  const css = files.filter((file) => file.language === "css").map((file) => file.content).join("\n");
-  const javascript = files.filter((file) => file.language === "javascript" || file.language === "typescript").map((file) => file.content).join("\n");
-  const safeScript = javascript.replaceAll("</script>", "<\\/script>");
-  return html.replace("</head>", `<style>${css}</style></head>`).replace("</body>", `<script>${safeScript}</script></body>`);
+  const { css, javascript } = files.reduce((result, file) => {
+    if (file.language === "css") result.css.push(file.content);
+    if (file.language === "javascript" || file.language === "typescript") result.javascript.push(file.content);
+    return result;
+  }, { css: [] as string[], javascript: [] as string[] });
+  const cssText = css.join("\n");
+  const javascriptText = javascript.join("\n");
+  const safeScript = javascriptText.replaceAll("</script>", "<\\/script>");
+  return html.replace("</head>", `<style>${cssText}</style></head>`).replace("</body>", `<script>${safeScript}</script></body>`);
 }
 
 export function LivePreview({ files }: { files: IDEFile[] }) {

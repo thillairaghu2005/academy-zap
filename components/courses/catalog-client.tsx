@@ -3,8 +3,8 @@
 import * as React from "react";
 import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
-import { useRouter, useSearchParams } from "next/navigation";
-import { motion, useReducedMotion } from "framer-motion";
+import { useSearchParams } from "next/navigation";
+import { m as motion, useReducedMotion } from "framer-motion";
 import {
   ArrowRight,
   BookOpen,
@@ -138,6 +138,17 @@ interface CatalogFilterValues {
   projectBased: boolean;
   certificateIncluded: boolean;
   minRating: number;
+}
+
+interface CatalogState extends CatalogFilterValues {
+  query: string;
+  category: string;
+  sort: CourseSort;
+  page: number;
+}
+
+function catalogReducer(state: CatalogState, action: { type: "patch"; patch: Partial<CatalogState> }): CatalogState {
+  return action.type === "patch" ? { ...state, ...action.patch } : state;
 }
 
 function SearchBar({
@@ -582,7 +593,6 @@ export function CatalogClient({
 }: {
   initialData?: MeilisearchCatalogResponse;
 }) {
-  const router = useRouter();
   const searchParams = useSearchParams();
 
   const initialQuery = searchParams.get("q") ?? "";
@@ -596,21 +606,36 @@ export function CatalogClient({
   const initialSort = (searchParams.get("sort") ?? "popular") as CourseSort;
   const initialMinRating = Number(searchParams.get("rating") ?? "0");
 
-  const [query, setQuery] = React.useState(initialQuery);
-  const [category, setCategory] = React.useState(initialCategory);
-  const [price, setPrice] = React.useState<"free" | "paid" | "all">(initialPrice);
-  const [level, setLevel] = React.useState<CourseLevel | "all">(initialLevel);
-  const [duration, setDuration] = React.useState<DurationFilter | "all">(initialDuration);
-  const [format, setFormat] = React.useState<CourseFormat | "all">(initialFormat);
-  const [careerTrack, setCareerTrack] = React.useState<CareerTrack | "all">(initialCareerTrack);
-  const [projectBased, setProjectBased] = React.useState(searchParams.get("project") === "1");
-  const [certificateIncluded, setCertificateIncluded] = React.useState(searchParams.get("certificate") === "1");
-  const [minRating, setMinRating] = React.useState(Number.isFinite(initialMinRating) ? initialMinRating : 0);
-  const [sort, setSort] = React.useState<CourseSort>(SORT_OPTIONS.some((option) => option.value === initialSort) ? initialSort : "popular");
+  const [catalogState, dispatchCatalog] = React.useReducer(catalogReducer, {
+    query: initialQuery,
+    category: initialCategory,
+    price: initialPrice,
+    level: initialLevel,
+    duration: initialDuration,
+    format: initialFormat,
+    careerTrack: initialCareerTrack,
+    projectBased: searchParams.get("project") === "1",
+    certificateIncluded: searchParams.get("certificate") === "1",
+    minRating: Number.isFinite(initialMinRating) ? initialMinRating : 0,
+    sort: SORT_OPTIONS.some((option) => option.value === initialSort) ? initialSort : "popular",
+    page: 1,
+  });
+  const { query, category, price, level, duration, format, careerTrack, projectBased, certificateIncluded, minRating, sort, page } = catalogState;
+  const updateCatalog = React.useCallback((patch: Partial<CatalogState>) => dispatchCatalog({ type: "patch", patch }), []);
+  const setQuery = React.useCallback((value: string) => updateCatalog({ query: value }), [updateCatalog]);
+  const setCategory = React.useCallback((value: string) => updateCatalog({ category: value }), [updateCatalog]);
+  const setPrice = React.useCallback((value: "free" | "paid" | "all") => updateCatalog({ price: value }), [updateCatalog]);
+  const setLevel = React.useCallback((value: CourseLevel | "all") => updateCatalog({ level: value }), [updateCatalog]);
+  const setDuration = React.useCallback((value: DurationFilter | "all") => updateCatalog({ duration: value }), [updateCatalog]);
+  const setFormat = React.useCallback((value: CourseFormat | "all") => updateCatalog({ format: value }), [updateCatalog]);
+  const setCareerTrack = React.useCallback((value: CareerTrack | "all") => updateCatalog({ careerTrack: value }), [updateCatalog]);
+  const setProjectBased = React.useCallback((value: boolean) => updateCatalog({ projectBased: value }), [updateCatalog]);
+  const setCertificateIncluded = React.useCallback((value: boolean) => updateCatalog({ certificateIncluded: value }), [updateCatalog]);
+  const setMinRating = React.useCallback((value: number) => updateCatalog({ minRating: value }), [updateCatalog]);
+  const setSort = React.useCallback((value: CourseSort) => updateCatalog({ sort: value }), [updateCatalog]);
+  const setPage = React.useCallback((value: number) => updateCatalog({ page: value }), [updateCatalog]);
   const { catalogView: view, setCatalogView: setView } = useDemoPreferences();
   const { user } = useSession();
-  const [page, setPage] = React.useState(1);
-
   const debouncedQuery = useDebouncedValue(query, 300);
 
   React.useEffect(() => {
@@ -627,8 +652,8 @@ export function CatalogClient({
     if (minRating > 0) params.set("rating", String(minRating));
     if (sort !== "popular") params.set("sort", sort);
     const str = params.toString();
-    router.replace(`/courses${str ? `?${str}` : ""}`, { scroll: false });
-  }, [debouncedQuery, category, price, level, duration, format, careerTrack, projectBased, certificateIncluded, minRating, sort, router]);
+    window.history.replaceState(null, "", `/courses${str ? `?${str}` : ""}`);
+  }, [debouncedQuery, category, price, level, duration, format, careerTrack, projectBased, certificateIncluded, minRating, sort]);
 
   React.useEffect(() => {
     const timer = window.setTimeout(() => {
@@ -655,7 +680,7 @@ export function CatalogClient({
       setPage(1);
     }, 0);
     return () => window.clearTimeout(timer);
-  }, [searchParams]);
+  }, [searchParams, setCareerTrack, setCategory, setCertificateIncluded, setDuration, setFormat, setLevel, setMinRating, setPage, setPrice, setProjectBased, setQuery, setSort]);
 
   const applyQuery = (next: string) => { setQuery(next); setPage(1); };
   const applyCategory = (next: string) => { setCategory(next); setPage(1); };
@@ -743,8 +768,8 @@ export function CatalogClient({
             onDuration={(value) => { setDuration(value); resetPage(); }}
             onFormat={(value) => { setFormat(value); resetPage(); }}
             onCareerTrack={(value) => { setCareerTrack(value); resetPage(); }}
-            onProjectBased={() => { setProjectBased((value) => !value); resetPage(); }}
-            onCertificateIncluded={() => { setCertificateIncluded((value) => !value); resetPage(); }}
+             onProjectBased={() => { setProjectBased(!projectBased); resetPage(); }}
+             onCertificateIncluded={() => { setCertificateIncluded(!certificateIncluded); resetPage(); }}
             onRating={(value) => { setMinRating(value); resetPage(); }}
             onSort={(value) => { setSort(value); resetPage(); }}
             activeFilters={activeFilters}
@@ -808,9 +833,9 @@ export function CatalogClient({
                 <CourseGrid courses={data.hits} products={products} view={view} learningByCourse={learningByCourse} />
               {totalPages > 1 ? (
                 <div className="flex items-center justify-center gap-2 pt-5">
-                   <Button variant="outline" size="sm" disabled={page <= 1} onClick={() => setPage((current) => Math.max(1, current - 1))}>Previous</Button>
+                    <Button variant="outline" size="sm" disabled={page <= 1} onClick={() => setPage(Math.max(1, page - 1))}>Previous</Button>
                    <span className="px-3 text-sm text-muted-foreground">Page {page} of {totalPages}</span>
-                   <Button variant="outline" size="sm" disabled={page >= totalPages} onClick={() => setPage((current) => current + 1)}>Next</Button>
+                    <Button variant="outline" size="sm" disabled={page >= totalPages} onClick={() => setPage(page + 1)}>Next</Button>
                 </div>
               ) : null}
             </section>

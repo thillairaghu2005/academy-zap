@@ -1,8 +1,8 @@
 "use client";
 
 import * as React from "react";
-import Editor, { loader, type OnMount, type BeforeMount } from "@monaco-editor/react";
-import type { Monaco } from "@monaco-editor/react";
+import dynamic from "next/dynamic";
+import type { Monaco, OnMount, BeforeMount } from "@monaco-editor/react";
 
 import type { IDEFile, IDEProblem, IDESettings, IDETheme } from "@/types/ide";
 import type { IDEExecution } from "../IDE";
@@ -12,7 +12,11 @@ import styles from "../ide.module.css";
 
 // Monaco is intentionally kept on the self-hosted AMD loader. Turbopack cannot
 // resolve Monaco's worker entry, so bundler worker integration is not an option.
-if (typeof window !== "undefined") loader.config({ paths: { vs: "/vs" } });
+const MonacoEditor = dynamic(async () => {
+  const monacoReact = await import("@monaco-editor/react");
+  monacoReact.loader.config({ paths: { vs: "/vs" } });
+  return monacoReact.default;
+}, { ssr: false });
 
 const FORMAT_LANGUAGES = new Set(["json", "javascript", "typescript", "css", "html"]);
 
@@ -86,7 +90,7 @@ export function EditorPane({ file, theme, settings, saved, execution, onChange, 
     <section className={styles.editorPane} aria-label="Code editor">
       <EditorHeader file={file} saved={saved} onUndo={onUndo} onRedo={onRedo} onFormat={onFormat} formatAvailable={formatAvailable} wordWrap={settings.wordWrap} onToggleWordWrap={onToggleWordWrap} onFullscreen={onFullscreen} />
       <div className={styles.editorCanvas}>
-        <Editor
+        <MonacoEditor
           height="100%"
           language={file?.language === "plaintext" ? "plaintext" : file?.language ?? "plaintext"}
           value={file?.content ?? ""}

@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useForm, useWatch } from "react-hook-form";
@@ -290,10 +291,10 @@ export function CourseForm({ courseId }: { courseId?: string }) {
   return (
     <PageContainer narrow>
       <Button variant="ghost" size="sm" asChild className="-ml-2 mb-4">
-        <a href="/admin/courses">
+        <Link href="/admin/courses">
           <ArrowLeft className="size-4" />
           Back to courses
-        </a>
+        </Link>
       </Button>
 
       <div className="flex flex-wrap items-center gap-3">

@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import { formatSupportDateTime, formatLongEnglishDate } from "@/lib/format";
 import Link from "next/link";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import {
@@ -64,12 +65,7 @@ function MessageBubble({
             {message.author_role === "agent" ? "Support" : "You"}
           </span>
           <span className="text-caption text-muted-foreground/70">
-            {new Date(message.created_at).toLocaleString("en-US", {
-              month: "short",
-              day: "numeric",
-              hour: "2-digit",
-              minute: "2-digit",
-            })}
+            {formatSupportDateTime(message.created_at)}
           </span>
         </div>
         <p className="mt-1.5 whitespace-pre-wrap leading-relaxed">
@@ -186,11 +182,7 @@ export function TicketThreadClient({ ticketId }: { ticketId: string }) {
             {ticket.subject}
           </h1>
           <p className="mt-1 text-xs text-muted-foreground">
-            Opened {new Date(ticket.created_at).toLocaleDateString("en-US", {
-              month: "long",
-              day: "numeric",
-              year: "numeric",
-            })}
+            Opened {formatLongEnglishDate(ticket.created_at)}
             {ticket.assignee_name ? ` · Assigned to ${ticket.assignee_name}` : ""}
           </p>
         </div>

@@ -20,11 +20,14 @@ export function StaggerGroup({
 }: StaggerGroupProps) {
   return (
     <div className={className}>
-      {React.Children.toArray(children).map((child, index) => (
-        <Reveal key={index} className={childClassName} delay={index * step}>
-          {child}
-        </Reveal>
-      ))}
+      {React.Children.toArray(children).map((child, index) => {
+        const childKey = React.isValidElement(child) ? child.key : String(child);
+        return (
+          <Reveal key={childKey} className={childClassName} delay={index * step}>
+            {child}
+          </Reveal>
+        );
+      })}
     </div>
   );
 }

@@ -187,7 +187,7 @@ export function Toolbar({
       </div>
 
       {settingsOpen ? (
-        <div className={styles.settingsPopover} role="dialog" aria-label="IDE settings">
+        <dialog open className={styles.settingsPopover} aria-label="IDE settings">
           <div className={styles.settingsPopoverTitle}><SlidersHorizontal size={14} /> Editor settings</div>
           <label className={styles.settingsRow}><span>Word wrap</span><input type="checkbox" checked={settings.wordWrap} onChange={(event) => onSettingsChange({ wordWrap: event.target.checked })} /></label>
           <label className={styles.settingsRow}><span>Minimap</span><input type="checkbox" checked={settings.minimap} onChange={(event) => onSettingsChange({ minimap: event.target.checked })} /></label>
@@ -196,7 +196,7 @@ export function Toolbar({
             <span>Theme</span>
             <MenuSelect value={theme} options={THEME_OPTIONS} label="Editor theme" onChange={onThemeChange} />
           </div>
-        </div>
+        </dialog>
       ) : null}
     </header>
   );

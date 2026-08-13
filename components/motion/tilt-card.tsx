@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { motion, useMotionTemplate, useMotionValue, useReducedMotion, useSpring } from "framer-motion";
+import { m as motion, useMotionTemplate, useMotionValue, useReducedMotion, useSpring } from "framer-motion";
 
 import { cn } from "@/lib/utils";
 import { motionEasings } from "./motion-tokens";

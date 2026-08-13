@@ -11,9 +11,10 @@ const LiveRegionContext = React.createContext<LiveRegionValue | null>(null);
 export function LiveRegionProvider({ children }: { children: React.ReactNode }) {
   const [message, setMessage] = React.useState("");
   const announce = React.useCallback((next: string) => setMessage(next), []);
+  const value = React.useMemo(() => ({ announce }), [announce]);
 
   return (
-    <LiveRegionContext.Provider value={{ announce }}>
+    <LiveRegionContext.Provider value={value}>
       {children}
       <div className="sr-only" aria-live="polite" aria-atomic="true">
         {message}

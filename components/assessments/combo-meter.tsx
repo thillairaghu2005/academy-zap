@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { motion } from "framer-motion";
+import { m as motion } from "framer-motion";
 import { Flame } from "lucide-react";
 
 import type { ComboState } from "@/lib/contracts/assessment";
@@ -63,9 +63,10 @@ export function ComboMeter({ combo }: { combo: ComboState }) {
         <div className="h-1.5 w-full overflow-hidden rounded-full bg-secondary">
           <motion.div
             className="h-full rounded-full bg-primary"
-            initial={{ width: 0 }}
-            animate={{ width: `${pct}%` }}
+            initial={{ scaleX: 0 }}
+            animate={{ scaleX: 1 }}
             transition={{ duration: 0.4, ease: "easeOut" }}
+            style={{ width: `${pct}%`, originX: 0 }}
           />
         </div>
           <span className="text-caption text-muted-foreground">

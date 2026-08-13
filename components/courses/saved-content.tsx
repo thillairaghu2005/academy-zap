@@ -26,7 +26,8 @@ export function SavedContent({ courses }: { courses: CourseSummary[] }) {
     return () => window.removeEventListener("zapsters:demo-state", sync);
   }, []);
 
-  const savedCourses = courses.filter((course) => savedIds.includes(course.id));
+  const savedIdSet = new Set(savedIds);
+  const savedCourses = courses.filter((course) => savedIdSet.has(course.id));
   const remove = (course: CourseSummary) => {
     toggleCourseBookmark(course.id);
     setSavedIds((current) => current.filter((id) => id !== course.id));

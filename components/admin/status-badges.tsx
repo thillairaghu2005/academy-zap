@@ -8,40 +8,42 @@ import type { ProblemDifficulty } from "@/lib/contracts/judge";
 
 /** Shared status badges for the admin tables (F7). */
 
+const COURSE_STATUS_STYLES: Record<ContentStatus, string> = {
+  draft: "border-slate-400/40 bg-slate-500/10 text-slate-500",
+  in_review: "border-amber-500/40 bg-amber-500/10 text-amber-700",
+  published: "border-emerald-500/40 bg-emerald-500/10 text-emerald-700",
+};
+const COURSE_STATUS_LABELS: Record<ContentStatus, string> = { draft: "Draft", in_review: "In review", published: "Published" };
+const ORDER_STATUS_STYLES: Record<Order["status"], string> = {
+  paid: "border-emerald-500/40 bg-emerald-500/10 text-emerald-700",
+  failed: "border-primary-border bg-primary-light text-primary",
+  refunded: "border-slate-400/40 bg-slate-500/10 text-slate-500",
+};
+const DIFFICULTY_STYLES: Record<string, string> = {
+  easy: "border-emerald-500/40 bg-emerald-500/10 text-emerald-700", beginner: "border-emerald-500/40 bg-emerald-500/10 text-emerald-700",
+  medium: "border-amber-500/40 bg-amber-500/10 text-amber-700", intermediate: "border-amber-500/40 bg-amber-500/10 text-amber-700",
+  hard: "border-primary-border bg-primary-light text-primary", advanced: "border-primary-border bg-primary-light text-primary",
+};
+
 export function CourseStatusBadge({ status }: { status: ContentStatus }) {
-  const styles: Record<ContentStatus, string> = {
-    draft: "border-slate-400/40 bg-slate-500/10 text-slate-500",
-    in_review: "border-amber-500/40 bg-amber-500/10 text-amber-700",
-    published: "border-emerald-500/40 bg-emerald-500/10 text-emerald-700",
-  };
-  const labels: Record<ContentStatus, string> = {
-    draft: "Draft",
-    in_review: "In review",
-    published: "Published",
-  };
   return (
     <span
       className={cn(
         "inline-flex items-center rounded-full border px-2 py-0.5 text-caption font-semibold uppercase tracking-wide",
-        styles[status],
+         COURSE_STATUS_STYLES[status],
       )}
     >
-      {labels[status]}
+      {COURSE_STATUS_LABELS[status]}
     </span>
   );
 }
 
 export function OrderStatusBadge({ status }: { status: Order["status"] }) {
-  const styles: Record<Order["status"], string> = {
-    paid: "border-emerald-500/40 bg-emerald-500/10 text-emerald-700",
-    failed: "border-primary-border bg-primary-light text-primary",
-    refunded: "border-slate-400/40 bg-slate-500/10 text-slate-500",
-  };
   return (
     <span
       className={cn(
         "inline-flex items-center rounded-full border px-2 py-0.5 text-caption font-semibold uppercase tracking-wide",
-        styles[status],
+         ORDER_STATUS_STYLES[status],
       )}
     >
       {status}
@@ -69,19 +71,11 @@ export function DifficultyBadge({
 }: {
   difficulty: LabDifficulty | ProblemDifficulty;
 }) {
-  const styles: Record<string, string> = {
-    easy: "border-emerald-500/40 bg-emerald-500/10 text-emerald-700",
-    beginner: "border-emerald-500/40 bg-emerald-500/10 text-emerald-700",
-    medium: "border-amber-500/40 bg-amber-500/10 text-amber-700",
-    intermediate: "border-amber-500/40 bg-amber-500/10 text-amber-700",
-    hard: "border-primary-border bg-primary-light text-primary",
-    advanced: "border-primary-border bg-primary-light text-primary",
-  };
   return (
     <span
       className={cn(
         "inline-flex items-center rounded-full border px-2 py-0.5 text-caption font-semibold uppercase tracking-wide",
-        styles[difficulty] ?? "border-border bg-secondary text-muted-foreground",
+         DIFFICULTY_STYLES[difficulty] ?? "border-border bg-secondary text-muted-foreground",
       )}
     >
       {difficulty}

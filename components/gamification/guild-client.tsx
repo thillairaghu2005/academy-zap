@@ -3,7 +3,7 @@
 import * as React from "react";
 import dynamic from "next/dynamic";
 import { useQuery } from "@tanstack/react-query";
-import { motion } from "framer-motion";
+import { m as motion } from "framer-motion";
 import Link from "next/link";
 import { ArrowUpRight, Crown, Shield, Swords, Trophy, Users } from "lucide-react";
 
@@ -247,9 +247,10 @@ function VsRow({
       </div>
       <div className="mt-1 h-1.5 overflow-hidden rounded-full bg-secondary">
         <motion.div
-          initial={{ width: 0 }}
-          animate={{ width: `${pct}%` }}
+          initial={{ scaleX: 0 }}
+          animate={{ scaleX: 1 }}
           transition={{ duration: 0.7, ease: "easeOut" }}
+          style={{ width: `${pct}%`, originX: 0 }}
           className={cn(
             "h-full rounded-full",
             ours

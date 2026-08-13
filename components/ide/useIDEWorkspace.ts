@@ -46,6 +46,7 @@ export function useIDEWorkspace({ initialFiles, storageKey = "ide:files", proble
   const monacoRef = React.useRef<Parameters<OnMount>[1] | null>(null);
   const handledResetKey = React.useRef(0);
   const lastLogStage = React.useRef<string | null>(null);
+  const logId = React.useRef(0);
   const [settingsOpen, setSettingsOpen] = React.useState(false);
   const [paletteOpen, setPaletteOpen] = React.useState(false);
   const [split, setSplit] = React.useState(() => {
@@ -189,7 +190,9 @@ export function useIDEWorkspace({ initialFiles, storageKey = "ide:files", proble
     } else if (isVerdict(execution.status)) stage = "graded";
     if (!stage || lastLogStage.current === stage) return;
     lastLogStage.current = stage;
-    setLogs((current) => [...current, { stage, at: new Date().toLocaleTimeString() }]);
+    const id = `${stage}-${logId.current++}`;
+    const at = new Date().toLocaleTimeString();
+    setLogs((current) => [...current, { id, stage, at }]);
   }, [execution.detail, execution.status]);
 
   React.useEffect(() => {

@@ -95,7 +95,12 @@ export function ProblemDetailClient({
   const [timedOut, setTimedOut] = React.useState(false);
   const submitMutation = useMutation({
     mutationFn: ({ source, language }: { source: string; language: JudgeLanguage }) => submit({ problem_id: problemId, user_id: userId ?? "demo-user", language, source_code: source }),
-    onSuccess: (accepted) => { setSubmissionId(accepted.submission_id); setElapsed(0); setTimedOut(false); },
+    onSuccess: (accepted) => {
+      setSubmissionId(accepted.submission_id);
+      setElapsed(0);
+      setTimedOut(false);
+      void queryClient.invalidateQueries({ queryKey: ["judge-history", problemId] });
+    },
   });
   const resultQuery = useQuery({
     queryKey: ["judge-result", submissionId],

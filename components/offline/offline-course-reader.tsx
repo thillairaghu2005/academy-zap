@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import { formatLocalDateTime } from "@/lib/format";
 import Link from "next/link";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
@@ -107,7 +108,7 @@ export function OfflineCourseReader({ courseId }: { courseId: string }) {
         <div className="min-w-0">
           <p className="flex items-center gap-1.5 text-xs font-medium text-warning-strong">
             <WifiOff className="size-3.5" />
-            Offline copy · cached {new Date(cachedAt).toLocaleString()}
+            Offline copy · cached {formatLocalDateTime(cachedAt)}
           </p>
           <h1 className="mt-2 font-display text-h1">{course.title}</h1>
           <p className="mt-1 text-sm text-muted-foreground">

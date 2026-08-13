@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import { formatLongEnglishDate } from "@/lib/format";
 import { useQuery } from "@tanstack/react-query";
 import {
   BadgeCheck,
@@ -145,11 +146,7 @@ export function VerifyClient({ credentialId }: { credentialId: string }) {
 
   const meta = STATUS_META[data.status];
   const StatusIcon = meta.icon;
-  const earnedDate = new Date(data.claim.earned_at).toLocaleDateString(undefined, {
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-  });
+  const earnedDate = formatLongEnglishDate(data.claim.earned_at);
 
   return (
     <PageContainer className="max-w-5xl">

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 
 import logoSource from "@/src/assets/images/zapsters-logo.png";
 import { cn } from "@/lib/utils";
@@ -30,14 +31,13 @@ export function Logo({
   const imageStyle = typeof size === "number" ? { height: size } : undefined;
 
   const image = (
-    /* The product requirement explicitly calls for a native img element. */
-    /* eslint-disable-next-line @next/next/no-img-element */
-    <img
-      src={logoSource.src}
+    <Image
+      src={logoSource}
       width={logoSource.width}
       height={logoSource.height}
       alt="Zapsters Logo"
       loading={eager ? "eager" : "lazy"}
+      priority={eager}
       decoding="async"
       data-variant={variant}
       className={cn("block object-contain", imageClassName)}

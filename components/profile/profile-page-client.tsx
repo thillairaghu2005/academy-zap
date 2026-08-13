@@ -164,7 +164,8 @@ function SavedCourses({ courseIds }: { courseIds: string[] }) {
     enabled: courseIds.length > 0,
   });
 
-  const courses = coursesQuery.data?.hits.filter((course) => courseIds.includes(course.id)) ?? [];
+   const courseIdSet = new Set(courseIds);
+   const courses = coursesQuery.data?.hits.filter((course) => courseIdSet.has(course.id)) ?? [];
 
   return (
     <Card>

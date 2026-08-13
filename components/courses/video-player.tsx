@@ -66,15 +66,6 @@ export function VideoPlayer({
     const player = videojs(element, options, () => {
       resumeAppliedRef.current = false;
 
-      if (captionsUrl) {
-        // Add the signed captions as a text track so the native CC button
-        // appears in the control bar. Mock: WebVTT from a public sample.
-        player.addRemoteTextTrack(
-          { kind: "subtitles", src: captionsUrl, srclang: "en", label: "English" },
-          false,
-        );
-      }
-
       // Resume position — seek once metadata is available.
       const tryResume = () => {
         if (resumeAppliedRef.current) return;
@@ -112,7 +103,9 @@ export function VideoPlayer({
     <div data-vjs-player className="w-full">
       {/* Captions come from the signed manifest's text track, added in the
           effect below — the native CC button appears when present. */}
-      <video ref={videoRef} className="video-js vjs-big-play-centered" playsInline />
+       <video ref={videoRef} className="video-js vjs-big-play-centered" playsInline>
+         {captionsUrl ? <track kind="captions" src={captionsUrl} srcLang="en" label="English" /> : null}
+       </video>
     </div>
   );
 }

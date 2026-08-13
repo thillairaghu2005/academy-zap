@@ -1,8 +1,9 @@
 "use client";
 
 import * as React from "react";
+import { formatLocalDate } from "@/lib/format";
 import { useQuery } from "@tanstack/react-query";
-import { motion } from "framer-motion";
+import { m as motion } from "framer-motion";
 import {
   BookMarked,
   CheckCircle2,
@@ -202,7 +203,7 @@ function LedgerEntriesTable({ entries }: { entries: LedgerAuditView["entries"] }
             )}
           >
             <td className="whitespace-nowrap px-3 py-2 font-mono text-muted-foreground">
-              {new Date(e.created_at).toLocaleDateString()}
+              {formatLocalDate(e.created_at)}
             </td>
             <td className="px-3 py-2">
               <div className="flex flex-wrap items-center gap-1.5">
@@ -307,7 +308,7 @@ function VersionsView({
               {s.rank_name} · level {s.level}
             </p>
             <p className="font-mono text-[10px] text-muted-foreground">
-              {new Date(s.computed_at).toLocaleDateString()} · C{" "}
+              {formatLocalDate(s.computed_at)} · C{" "}
               {s.completion_xp.toLocaleString()} · M {s.mastery_xp.toLocaleString()}{" "}
               · {s.current_streak_days}-day streak
             </p>

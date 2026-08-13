@@ -1,10 +1,10 @@
 "use client";
 
 import * as React from "react";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { motion } from "framer-motion";
+import { m as motion } from "framer-motion";
 import {
   AlertTriangle,
   CheckCircle2,
@@ -72,6 +72,7 @@ export function LabDetailClient({
   initialLab?: Lab;
 }) {
   const router = useRouter();
+  const queryClient = useQueryClient();
   const { user } = useSession();
 
   const labQuery = useQuery({
@@ -112,6 +113,10 @@ export function LabDetailClient({
       provisionSession(labId, user?.id ?? "").then((session) => {
         router.push(`/labs/${labId}/session/${session.session_id}`);
       }),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: ["lab", labId] });
+      void queryClient.invalidateQueries({ queryKey: ["entitlement", labId] });
+    },
   });
 
   /* ---------- Loading ---------- */

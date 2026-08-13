@@ -3,7 +3,7 @@
 import * as React from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { LoaderCircle, Zap } from "lucide-react";
 
@@ -40,6 +40,7 @@ export function BuyNowButton({
 }) {
   const pathname = usePathname();
   const router = useRouter();
+  const queryClient = useQueryClient();
   const { user } = useSession();
   const userId = user?.id ?? "";
 
@@ -59,6 +60,7 @@ export function BuyNowButton({
   const mutation = useMutation({
     mutationFn: () => buyNow(userId, productId, quantity),
     onSuccess: (session) => {
+      void queryClient.invalidateQueries({ queryKey: ["catalog-product", productId] });
       router.push(`/checkout/${session.checkout_id}`);
     },
     onError: (error: Error) => {

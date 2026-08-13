@@ -3,8 +3,8 @@
 import * as React from "react";
 import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
-import { useRouter, useSearchParams } from "next/navigation";
-import { motion, useReducedMotion } from "framer-motion";
+import { useSearchParams } from "next/navigation";
+import { m as motion, useReducedMotion } from "framer-motion";
 import {
   FlaskConical,
   Bookmark,
@@ -99,7 +99,7 @@ function LabCard({
       animate={reducedMotion ? undefined : { opacity: 1, y: 0 }}
       transition={reducedMotion ? undefined : { delay: 0.04 * index, duration: 0.35, ease: "easeOut" }}
     >
-      <Card className="group relative flex h-full flex-col overflow-hidden transition-all duration-200 group-hover:-translate-y-0.5 group-hover:border-primary-border group-hover:shadow-[0_8px_24px_rgb(16_24_40_/_6%)]">
+      <Card className="group relative flex h-full flex-col overflow-hidden transition-[transform,border-color,box-shadow] duration-200 group-hover:-translate-y-0.5 group-hover:border-primary-border group-hover:shadow-[0_8px_24px_rgb(16_24_40_/_6%)]">
         <Link
           href={`/labs/${lab.id}`}
           className="flex-1 outline-none focus-visible:ring-2 focus-visible:ring-ring"
@@ -177,7 +177,6 @@ function LabCard({
 }
 
 export function LabCatalogClient({ initialData }: { initialData?: Lab[] }) {
-  const router = useRouter();
   const searchParams = useSearchParams();
 
   const initialQuery = searchParams.get("q") ?? "";
@@ -198,8 +197,8 @@ export function LabCatalogClient({ initialData }: { initialData?: Lab[] }) {
     if (debouncedQuery) params.set("q", debouncedQuery);
     if (difficulty !== "all") params.set("difficulty", difficulty);
     const str = params.toString();
-    router.replace(`/labs${str ? `?${str}` : ""}`, { scroll: false });
-  }, [debouncedQuery, difficulty, router]);
+    window.history.replaceState(null, "", `/labs${str ? `?${str}` : ""}`);
+  }, [debouncedQuery, difficulty]);
 
   const applyQuery = (next: string) => setQuery(next);
   const applyDifficulty = (next: LabDifficulty | "all") =>

@@ -3,7 +3,7 @@
 import * as React from "react";
 import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
-import { motion, useReducedMotion } from "framer-motion";
+import { m as motion, useReducedMotion } from "framer-motion";
 import {
   ClipboardList,
   Clock,
@@ -52,7 +52,7 @@ function AssessmentCard({ assessment, index }: { assessment: Assessment; index: 
       transition={reducedMotion ? undefined : { delay: 0.04 * index, duration: 0.35, ease: "easeOut" }}
     >
       <Link href={`/assessments/${assessment.id}`} className="group block h-full rounded-[inherit] outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background">
-          <Card className="h-full overflow-hidden transition-all duration-200 group-hover:-translate-y-0.5 group-hover:border-primary-border group-hover:shadow-[0_8px_24px_rgb(16_24_40_/_6%)]">
+          <Card className="h-full overflow-hidden transition-[transform,border-color,box-shadow] duration-200 group-hover:-translate-y-0.5 group-hover:border-primary-border group-hover:shadow-[0_8px_24px_rgb(16_24_40_/_6%)]">
           <div className="relative h-28 w-full overflow-hidden bg-surface-1">
             <div className="absolute inset-0 aurora opacity-70" aria-hidden="true" />
             <div className="absolute inset-0 bg-grid opacity-60" aria-hidden="true" />

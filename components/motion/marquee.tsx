@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import {
-  motion,
+  m as motion,
   useAnimationFrame,
   useMotionValue,
   useReducedMotion,

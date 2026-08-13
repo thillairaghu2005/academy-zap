@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import { formatShortMonthDay } from "@/lib/format";
 import Link from "next/link";
 import { useQuery } from "@tanstack/react-query";
 import { ArrowRight, BookOpen, CalendarDays, Flame, Target } from "lucide-react";
@@ -48,6 +49,8 @@ function weekDays(activity: DemoActivity[]): number[] {
   });
 }
 
+const WEEKDAY_LABELS = ["M", "T", "W", "T", "F", "S", "S"];
+
 function WeeklyGoal({ activity }: { activity: DemoActivity[] }) {
   const { user } = useSession();
   const profileQuery = useQuery({
@@ -59,7 +62,6 @@ function WeeklyGoal({ activity }: { activity: DemoActivity[] }) {
   const minutes = weeklyMinutes(activity);
   const progress = Math.min(100, Math.round((minutes / (goalHours * 60)) * 100));
   const days = weekDays(activity);
-  const labels = ["M", "T", "W", "T", "F", "S", "S"];
 
   return (
     <Card className="h-full rounded-2xl">
@@ -78,11 +80,11 @@ function WeeklyGoal({ activity }: { activity: DemoActivity[] }) {
         <Progress value={progress} className="mt-4 h-2" />
         <div className="mt-5 grid grid-cols-7 gap-1.5" aria-label="Activity this week">
           {days.map((count, index) => (
-            <div key={`${labels[index]}-${index}`} className="text-center">
+             <div key={`${WEEKDAY_LABELS[index]}-${index}`} className="text-center">
               <span className={`mx-auto grid size-7 place-items-center rounded-lg text-[10px] font-semibold ${count ? "bg-primary text-primary-foreground" : "bg-secondary text-muted-foreground"}`} title={`${count} activities`}>
                 {count || "·"}
               </span>
-              <span className="mt-1 block text-[10px] text-muted-foreground">{labels[index]}</span>
+               <span className="mt-1 block text-[10px] text-muted-foreground">{WEEKDAY_LABELS[index]}</span>
             </div>
           ))}
         </div>
@@ -102,7 +104,7 @@ function RecentActivity({ activity }: { activity: DemoActivity[] }) {
       <CardContent>
         {entries.length ? (
           <div className="divide-y divide-border">
-            {entries.map((entry) => <div key={`${entry.created_at}-${entry.label}`} className="flex items-center gap-3 py-2.5 first:pt-0 last:pb-0"><span className="grid size-7 shrink-0 place-items-center rounded-full bg-primary/10 text-primary"><Flame className="size-3.5" /></span><span className="min-w-0 flex-1 truncate text-xs font-medium">{entry.label}</span><span className="shrink-0 text-[10px] text-muted-foreground">{new Date(entry.created_at).toLocaleDateString([], { month: "short", day: "numeric" })}</span></div>)}
+            {entries.map((entry) => <div key={`${entry.created_at}-${entry.label}`} className="flex items-center gap-3 py-2.5 first:pt-0 last:pb-0"><span className="grid size-7 shrink-0 place-items-center rounded-full bg-primary/10 text-primary"><Flame className="size-3.5" /></span><span className="min-w-0 flex-1 truncate text-xs font-medium">{entry.label}</span><span className="shrink-0 text-[10px] text-muted-foreground">{formatShortMonthDay(entry.created_at)}</span></div>)}
           </div>
         ) : <p className="text-sm leading-relaxed text-muted-foreground">Your completed lessons, labs, assessments, and Judge attempts will appear here.</p>}
         <Button variant="ghost" size="sm" className="mt-4 px-0 text-primary" asChild><Link href="/rank">View your progress <ArrowRight /></Link></Button>
@@ -119,7 +121,7 @@ function Recommendations({ items }: { items: MyLearningItem[] }) {
   return (
     <section>
       <div className="flex items-end justify-between gap-3"><div><p className="text-xs font-semibold uppercase tracking-[0.14em] text-primary">Keep exploring</p><h3 className="mt-1 font-display text-xl font-semibold">Recommended next steps</h3></div><Button variant="ghost" size="sm" asChild><Link href="/courses">View catalog <ArrowRight /></Link></Button></div>
-      <div className="mt-4 grid gap-3 md:grid-cols-3">{recommendations.map((course) => <Link key={course.id} href={`/courses/${course.id}`} className="group rounded-2xl border border-border bg-card p-4 outline-none transition-all hover:-translate-y-0.5 hover:border-primary/30 focus-visible:ring-2 focus-visible:ring-ring"><div className="flex items-center justify-between gap-3"><span className="grid size-9 place-items-center rounded-xl bg-primary/10 text-primary"><BookOpen className="size-4" /></span><Badge variant="outline">{course.level}</Badge></div><h4 className="mt-4 line-clamp-2 font-display font-semibold group-hover:text-primary">{course.title}</h4><p className="mt-1 line-clamp-2 text-xs leading-relaxed text-muted-foreground">{course.subtitle}</p><p className="mt-4 text-xs font-medium text-primary">{course.estimated_hours}h · {course.category}</p></Link>)}</div>
+       <div className="mt-4 grid gap-3 md:grid-cols-3">{recommendations.map((course) => <Link key={course.id} href={`/courses/${course.id}`} className="group rounded-2xl border border-border bg-card p-4 outline-none transition-[transform,border-color] hover:-translate-y-0.5 hover:border-primary/30 focus-visible:ring-2 focus-visible:ring-ring"><div className="flex items-center justify-between gap-3"><span className="grid size-9 place-items-center rounded-xl bg-primary/10 text-primary"><BookOpen className="size-4" /></span><Badge variant="outline">{course.level}</Badge></div><h4 className="mt-4 line-clamp-2 font-display font-semibold group-hover:text-primary">{course.title}</h4><p className="mt-1 line-clamp-2 text-xs leading-relaxed text-muted-foreground">{course.subtitle}</p><p className="mt-4 text-xs font-medium text-primary">{course.estimated_hours}h · {course.category}</p></Link>)}</div>
     </section>
   );
 }

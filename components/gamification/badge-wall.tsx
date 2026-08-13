@@ -1,8 +1,9 @@
 "use client";
 
 import * as React from "react";
+import { formatLocalDate } from "@/lib/format";
 import { useQuery } from "@tanstack/react-query";
-import { motion } from "framer-motion";
+import { m as motion } from "framer-motion";
 import { useRouter } from "next/navigation";
 import {
   Award,
@@ -142,7 +143,7 @@ export function BadgeWall() {
                     {b.category}
                   </span>
                   <span className="font-mono">
-                    {new Date(b.earned_at).toLocaleDateString()}
+                    {formatLocalDate(b.earned_at)}
                   </span>
                 </div>
                 <Button

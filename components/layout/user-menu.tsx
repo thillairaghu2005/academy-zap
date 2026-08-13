@@ -102,9 +102,7 @@ export function UserMenu() {
         <DropdownMenuSeparator />
         {/* Close the menu before opening the settings dialog so the two
             portals never stack (demo settings is a full Dialog). */}
-        <div onClick={() => setMenuOpen(false)}>
-          <DemoSettings />
-        </div>
+        <DemoSettings onOpenChange={(open) => { if (open) setMenuOpen(false); }} />
         {user.role === "admin" && (
           <>
             <DropdownMenuSeparator />

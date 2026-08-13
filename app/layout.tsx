@@ -10,6 +10,7 @@ import { LiveRegionProvider } from "@/components/providers/live-region-provider"
 import { DemoAnalyticsProvider } from "@/components/providers/demo-analytics-provider";
 import { DemoPreferencesProvider } from "@/components/providers/demo-preferences-provider";
 import { Toaster } from "@/components/ui/sonner";
+import { getSiteUrl } from "@/lib/seo";
 
 export const metadata: Metadata = {
   title: {
@@ -20,9 +21,7 @@ export const metadata: Metadata = {
     "Zapsters is a learning platform: Udemy-shaped courses, a HackerRank-shaped code judge, TryHackMe-shaped virtual labs, and a full gamification layer.",
   keywords: ["Zapsters", "cybersecurity courses", "coding judge", "virtual labs", "learning platform"],
   robots: { index: false, follow: false },
-  metadataBase: new URL(
-    process.env.NEXT_PUBLIC_SITE_URL ?? "https://zapsters.dev",
-  ),
+  metadataBase: getSiteUrl(),
   openGraph: {
     type: "website",
     siteName: "Zapsters",

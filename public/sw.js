@@ -19,14 +19,10 @@ self.addEventListener("activate", (event) => {
       .keys()
       .then((keys) =>
         Promise.all(
-          keys
-            .filter(
-              (key) =>
-                key !== SHELL_CACHE &&
-                key !== STATIC_CACHE &&
-                key !== "zapsters-course-content-v1",
-            )
-            .map((key) => caches.delete(key)),
+          keys.reduce((staleKeys, key) => {
+            if (key !== SHELL_CACHE && key !== STATIC_CACHE && key !== "zapsters-course-content-v1") staleKeys.push(key);
+            return staleKeys;
+          }, []).map((key) => caches.delete(key)),
         ),
       )
       .then(() => self.clients.claim()),

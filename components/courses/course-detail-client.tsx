@@ -51,6 +51,7 @@ import { PageContainer } from "@/components/shared/page-container";
 import { ErrorState } from "@/components/shared/error-state";
 import { EmptyState } from "@/components/shared/empty-state";
 import { cn } from "@/lib/utils";
+import { formatReviewDate } from "@/lib/format";
 import { InstructorCard } from "@/components/courses/instructor-card";
 import { CourseTrustPanel } from "@/components/courses/course-trust-panel";
 import {
@@ -64,13 +65,6 @@ import {
 function formatDuration(seconds: number): string {
   const mins = Math.round(seconds / 60);
   return `${mins} min`;
-}
-
-function formatReviewDate(date: string): string {
-  return new Intl.DateTimeFormat("en", {
-    month: "short",
-    year: "numeric",
-  }).format(new Date(date));
 }
 
 function initials(name: string): string {

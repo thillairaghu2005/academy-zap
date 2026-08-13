@@ -3,7 +3,7 @@
 import * as React from "react";
 import Link from "next/link";
 import { useQuery } from "@tanstack/react-query";
-import { motion, useReducedMotion } from "framer-motion";
+import { m as motion, useReducedMotion } from "framer-motion";
 import {
   ArrowRight,
   BookOpen,
@@ -140,7 +140,7 @@ function ContinueLearning({ item }: { item: MyLearningItem }) {
   const ctaLabel = progress > 0 ? "Resume course" : "Start course";
 
   return (
-    <Card variant="glow" className="group relative overflow-hidden rounded-3xl border-primary-border bg-primary-muted shadow-[0_4px_12px_rgb(16_24_40_/_6%)] transition-all duration-300 hover:-translate-y-0.5 hover:border-primary/30 hover:shadow-[0_8px_24px_rgb(16_24_40_/_8%)]">
+    <Card variant="glow" className="group relative overflow-hidden rounded-3xl border-primary-border bg-primary-muted shadow-[0_4px_12px_rgb(16_24_40_/_6%)] transition-[transform,border-color,box-shadow] duration-300 hover:-translate-y-0.5 hover:border-primary/30 hover:shadow-[0_8px_24px_rgb(16_24_40_/_8%)]">
       <div className="pointer-events-none absolute -right-24 -top-28 size-72 rounded-full bg-primary/10 blur-3xl transition-opacity duration-300 group-hover:opacity-80" />
       <div className="pointer-events-none absolute inset-y-0 right-0 hidden w-1/3 bg-primary-muted/60 lg:block" />
 
@@ -228,7 +228,7 @@ function LearningCard({ item }: { item: MyLearningItem }) {
       href={href}
       className="group block outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
     >
-      <Card className="h-full rounded-xl border-border/80 shadow-none transition-all duration-200 group-hover:-translate-y-0.5 group-hover:border-primary/30 group-hover:shadow-[0_12px_30px_-22px_rgba(31,41,55,0.65)]">
+      <Card className="h-full rounded-xl border-border/80 shadow-none transition-[transform,border-color,box-shadow] duration-200 group-hover:-translate-y-0.5 group-hover:border-primary/30 group-hover:shadow-[0_12px_30px_-22px_rgba(31,41,55,0.65)]">
         <div className="flex min-h-[108px] items-center gap-3.5 p-4 sm:gap-4 sm:p-4.5">
           <div
             className="relative size-12 shrink-0 overflow-hidden rounded-lg shadow-sm transition-transform duration-300 group-hover:scale-[1.04] sm:size-14"
@@ -250,7 +250,7 @@ function LearningCard({ item }: { item: MyLearningItem }) {
                   {course.instructor_name}
                 </p>
               </div>
-              <span className="grid size-7 shrink-0 place-items-center rounded-full text-muted-foreground transition-all duration-200 group-hover:bg-primary/10 group-hover:text-primary">
+              <span className="grid size-7 shrink-0 place-items-center rounded-full text-muted-foreground transition-[background-color,color] duration-200 group-hover:bg-primary/10 group-hover:text-primary">
                 <ArrowRight className="size-4 transition-transform duration-200 group-hover:translate-x-0.5" />
               </span>
             </div>

@@ -4,7 +4,7 @@ import * as React from "react";
 import Link from "next/link";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { motion } from "framer-motion";
+import { m as motion } from "framer-motion";
 import {
   ArrowRight,
   BadgeCheck,
@@ -97,9 +97,11 @@ function HostedEmbed({
   session: CheckoutSession;
   onPaid: (order: Order | null) => void;
 }) {
+  const queryClient = useQueryClient();
   const payMutation = useMutation({
     mutationFn: () => simulatePaymentCompletion(session.checkout_id),
     onSuccess: (result) => {
+      void queryClient.invalidateQueries({ queryKey: ["checkout", session.checkout_id] });
       if (result.duplicated) {
         toast.info("Webhook replay detected — no new charge.");
       }
@@ -420,7 +422,12 @@ export function CheckoutClient({ checkoutId }: { checkoutId: string }) {
 
   const replayMutation = useMutation({
     mutationFn: () => replayWebhook(checkoutId),
-    onSuccess: (result) => setReplayResult(result),
+    onSuccess: (result) => {
+      setReplayResult(result);
+      void queryClient.invalidateQueries({ queryKey: ["checkout", checkoutId] });
+      void queryClient.invalidateQueries({ queryKey: ["order-for-checkout", checkoutId] });
+      void queryClient.invalidateQueries({ queryKey: ["entitlements", userId] });
+    },
     onError: (error: Error) => toast.error(error.message),
   });
 
