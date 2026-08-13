@@ -5,3 +5,4 @@ strictDepBuilds: true
 verifyDepsBeforeRun: warn
 minimumReleaseAge: 10080
 trustPolicy: no-downgrade
+trustPolicyIgnoreAfter: 10080
