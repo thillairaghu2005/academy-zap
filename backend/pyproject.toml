@@ -1,0 +1,105 @@
+[project]
+name = "zapsters-backend"
+version = "0.1.0"
+description = "Zapsters platform core + subsystem services (FastAPI, Python 3.12)"
+requires-python = ">=3.12,<3.13"
+readme = "README.md"
+dependencies = [
+    # FastAPI 0.115.x resolves to Starlette 0.46.x, which has advisories with no
+    # patched release on that line. Keep the API-compatible current line and force
+    # the patched Starlette floor until the architecture document is versioned again.
+    "fastapi[standard]>=0.141,<0.142",
+    "starlette>=1.0.1,<2",
+    "uvicorn[standard]>=0.32,<0.33",
+    "gunicorn>=23.0",
+    "pydantic>=2.9,<3",
+    "pydantic-settings>=2.4,<3",
+    "sqlalchemy[asyncio]>=2.0,<2.1",
+    "asyncpg>=0.29",
+    "alembic>=1.13,<1.14",
+    "redis[hiredis]>=5.0",
+    "pwdlib[argon2]>=0.2",
+    "pyjwt>=2.9,<3",
+    # 0.1.6 is the Redis-backed release. Its route scan is not compatible with FastAPI's
+    # newer nested router entries, so platform_core.core.rate_limiting wraps that dependency
+    # without changing its Redis/Lua enforcement semantics.
+    "fastapi-limiter>=0.1.6,<0.2",
+    "structlog>=24.1",
+    "httpx>=0.27,<0.28",
+    "arq>=0.26",
+    "prometheus-fastapi-instrumentator>=7.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "ruff>=0.6",
+    "mypy>=1.11",
+    "bandit>=1.7",
+    "pip-audit>=2.7",
+    "pre-commit>=3.8",
+    "import-linter>=2.1",
+    "pytest>=8.3",
+    "pytest-asyncio>=0.24",
+    "pytest-postgresql>=6.1",
+    # pytest-postgresql's DatabaseJanitor needs psycopg (v3); [binary] bundles a libpq wheel so
+    # this doesn't also require a system libpq install on the dev machine.
+    "psycopg[binary]>=3.1",
+    "pytest-cov>=5.0",
+    "pytest-timeout>=2.3",
+    # [lua] pulls in lupa — fastapi-limiter's atomic rate-limit check is a Lua script
+    # (EVAL/SCRIPT), which fakeredis can't emulate without it.
+    "fakeredis[lua]>=2.24",
+    "types-redis",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["platform_core", "content", "judge", "labs", "assessments", "gamification", "commerce", "search", "notifications", "admin"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "T201", "ASYNC"]
+ignore = []
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**" = ["S101"]
+"*/tests/**" = ["S101"]
+
+[tool.mypy]
+python_version = "3.12"
+strict = true
+plugins = ["pydantic.mypy"]
+exclude = ["alembic/"]
+
+[[tool.mypy.overrides]]
+module = ["arq.*", "fastapi_limiter.*"]
+ignore_missing_imports = true
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+asyncio_default_fixture_loop_scope = "function"
+testpaths = ["tests", "gamification/tests"]
+timeout = 30
+
+[tool.coverage.run]
+source = ["platform_core", "content", "judge", "labs", "assessments", "gamification", "commerce", "search", "notifications", "admin"]
+
+[tool.importlinter]
+root_packages = ["gamification"]
+include_external_packages = true
+
+[[tool.importlinter.contracts]]
+name = "Gamification context/rank/streaks never import ML/AI libraries"
+type = "forbidden"
+source_modules = [
+    "gamification.context.rank",
+    "gamification.context.streaks",
+    "gamification.context.resolver",
+]
+forbidden_modules = ["anthropic", "sklearn", "torch", "tensorflow", "openai"]

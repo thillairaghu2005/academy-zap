@@ -280,7 +280,11 @@ export function PlayerClient({ course }: { course: Course }) {
 
   const handleEnded = () => {
     if (activeLesson) {
-      progressMutation.mutate({ lessonId: activeLesson.id, completed: true });
+      progressMutation.mutate({
+        lessonId: activeLesson.id,
+        positionSeconds: activeLesson.duration_seconds || 1,
+        completed: true,
+      });
     }
   };
 
@@ -437,6 +441,9 @@ export function PlayerClient({ course }: { course: Course }) {
                   onComplete={() =>
                     progressMutation.mutate({
                       lessonId: activeLesson.id,
+                      positionSeconds: !isActiveCompleted
+                        ? activeLesson.duration_seconds || 1
+                        : 0,
                       completed: !isActiveCompleted,
                     })
                   }
@@ -528,6 +535,9 @@ export function PlayerClient({ course }: { course: Course }) {
                     onComplete={() =>
                       progressMutation.mutate({
                         lessonId: activeLessonId!,
+                        positionSeconds: !isActiveCompleted
+                          ? activeLesson?.duration_seconds || 1
+                          : 0,
                         completed: !isActiveCompleted,
                       })
                     }

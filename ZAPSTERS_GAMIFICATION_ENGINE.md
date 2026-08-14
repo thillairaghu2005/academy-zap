@@ -66,7 +66,7 @@ lockfile per side, no per-engineer version choices.
 
 | Layer | Library | Version | Purpose |
 |---|---|---|---|
-| Web framework | **FastAPI** | 0.115.x | All APIs — same platform pattern as OX1 |
+| Web framework | **FastAPI** | 0.141.x | Patched production baseline; compatible with the SOP's 0.115 minimum |
 | ASGI server | **Uvicorn** + gunicorn (prod) | 0.32.x | Serve FastAPI |
 | Validation | **Pydantic** | 2.9.x | Event schemas, ledger entries, module contracts |
 | ORM | **SQLAlchemy 2.0 (async)** | 2.0.x | DB access — `AsyncSession` only |
@@ -83,6 +83,10 @@ lockfile per side, no per-engineer version choices.
 | HTTP client | **httpx** | 0.27.x | Outbound calls (LinkedIn share intents, webhook notifications) |
 | AI client | **anthropic** | latest pinned | **Narrative only** — end-of-season recap copy, motivational nudges. Never scores. |
 | Structured logging | **structlog** | pinned | Same as `fastapi-backend-sop.md` §10 |
+
+**Security baseline amendment (2026-08-14):** The implementation uses FastAPI 0.141.x and Starlette
+1.x because the 0.115.x dependency resolution is vulnerable. Redis-backed `fastapi-limiter` 0.1.x
+is retained with a route-tree compatibility wrapper, preserving distributed Redis/Lua limits.
 
 ### 2.3 Frontend
 

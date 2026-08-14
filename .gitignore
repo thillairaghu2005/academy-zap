@@ -45,8 +45,10 @@ yarn-error.log*
 next-env.d.ts
 
 # docs
-audit.md
-session.md
-UI.md
-SKILL.md
 /design-ref/
+audit.md
+result.md
+session.md
+SKILL.md
+E2-frontend-SOP.md
+fastapi-backend-sop.md

@@ -66,7 +66,7 @@ whole platform.
 
 | Layer | Library | Version | Purpose |
 |---|---|---|---|
-| Web framework | **FastAPI** | 0.115.x | Every subsystem's API, same platform pattern as OX1 |
+| Web framework | **FastAPI** | 0.141.x | Patched production baseline; remains compatible with the SOP's 0.115 minimum |
 | ASGI server | **Uvicorn** + gunicorn | 0.32.x | |
 | Validation | **Pydantic** | 2.9.x | Contracts between core and every subsystem |
 | ORM | **SQLAlchemy 2.0 async** | 2.0.x | |
@@ -79,6 +79,12 @@ whole platform.
 | Payments | **Razorpay** (India, primary) + **Stripe** (international) | pinned | Dual-provider from day one given AMITH/Zapsters's India base; never store card data — both are hosted-checkout/tokenized only |
 | Email | **Postal** (self-hosted) or **Amazon SES** (if self-hosting mail deliverability becomes a problem) | pinned | Transactional email — receipts, cert issuance, streak-reminder digests |
 | Push notifications | **Web Push (VAPID)** via `pywebpush` | pinned | PWA-first, no native push infra needed for v1 |
+
+**Security baseline amendment (2026-08-14):** FastAPI 0.115.x resolves to a vulnerable Starlette
+0.46.x line in the current security database. The implementation therefore adopts FastAPI 0.141.x
+with Starlette 1.x. The Redis-backed `fastapi-limiter` 0.1.x release remains in use through a small
+route-tree compatibility wrapper; rate limiting remains Redis/Lua-backed and is not replaced with
+process-local state.
 
 ### 2.3 Content delivery (Udemy-shaped subsystem)
 

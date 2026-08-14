@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
+import { ApiError } from "@/lib/api/client";
 import { getCourse } from "@/lib/data/demo/content";
 import { MockDataError } from "@/lib/data/demo/errors";
 import { CourseDetailClient } from "@/components/courses/course-detail-client";
@@ -37,7 +38,12 @@ export default async function CoursePage({
     course = await getCourse(id);
   } catch (err) {
     // Deterministic mock 404 for "missing-course" (detail error state).
-    if (err instanceof MockDataError && err.status === 404) notFound();
+    if (
+      (err instanceof MockDataError && err.status === 404) ||
+      (err instanceof ApiError && err.status === 404)
+    ) {
+      notFound();
+    }
     throw err;
   }
 

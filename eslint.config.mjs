@@ -27,6 +27,9 @@ const eslintConfig = defineConfig([
     // Self-hosted monaco AMD build, synced from node_modules by
     // scripts/sync-monaco.mjs — vendored third-party code, not ours.
     "public/vs/**",
+    // The backend has its own Python quality gates. Its virtualenv and generated
+    // third-party assets are outside this frontend lint boundary.
+    "backend/**",
   ]),
 ]);
 

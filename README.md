@@ -1,11 +1,13 @@
 # Zapsters
 
-Zapsters is a learning-platform frontend demo with courses, a simulated code
-judge, virtual labs, assessments, commerce, support, and gamification.
+Zapsters is a learning-platform frontend with courses, a code judge, virtual
+labs, assessments, commerce, support, and gamification.
 
 ## Current Architecture
 
-Zapsters currently runs as a frontend-only application:
+The frontend uses FastAPI for authentication through a same-origin Next.js
+proxy. Deferred feature surfaces still remain explicitly separate demo data
+until their production vertical slices exist:
 
 ```text
 Next.js UI
@@ -14,6 +16,10 @@ Next.js UI
   -> lib/mocks fixtures and browser state
   -> TanStack Query and React state
 ```
+
+`backend/` contains the FastAPI foundation with PostgreSQL, Redis,
+Alembic, event contracts, authentication, and the Phase 0 gamification ledger
+path. The frontend has not been switched to that API yet.
 
 Authentication is provided by `src/lib/demoAuth.ts` and exposed globally by
 `SessionProvider` and `useSession()`. The demo account is:
@@ -59,16 +65,16 @@ pnpm typecheck
 pnpm test
 ```
 
-No backend, database, secret, API server, payment provider, Docker service, or
-additional startup command is required. The project can be deployed to Vercel
-as a frontend demo.
+The frontend can still be deployed to Vercel as a standalone demo. Production
+API development uses the commands in `backend/README.md` and requires Docker,
+PostgreSQL, Redis, and a configured environment.
 
 ## Future Integration
 
-A real backend can be integrated later by replacing or extending the modules in
-`lib/data/demo/` while keeping the component contracts and `lib/contracts/`
-types stable. The current mock data remains the source for the standalone demo.
+The remaining `lib/data/demo/` modules are deferred-surface fixtures, not the
+authentication or security boundary. Each deferred backend route returns an
+explicit typed 501 rather than pretending to execute production behavior.
 
 The design and domain references in `ZAPSTERS_PLATFORM_FULL_ARCHITECTURE.md`,
-`ZAPSTERS_GAMIFICATION_ENGINE.md`, and `build.md` document possible future
-platform behavior. They are not runtime requirements for this repository.
+`ZAPSTERS_GAMIFICATION_ENGINE.md`, `E2-frontend-SOP.md`, and
+`fastapi-backend-sop.md` are the production engineering source of truth.

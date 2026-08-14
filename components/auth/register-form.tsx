@@ -27,7 +27,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Logo } from "@/src/components/Logo/Logo";
 import { useSession } from "@/components/providers/session-provider";
-import { authErrorMessage } from "@/src/lib/demoAuth";
+import { apiErrorMessage } from "@/lib/api/client";
 
 const registerSchema = z.object({
   display_name: z
@@ -48,7 +48,6 @@ export function RegisterForm() {
   const { register, session, isLoading } = useSession();
   const [pending, setPending] = React.useState(false);
   const [showPassword, setShowPassword] = React.useState(false);
-  const [ssoPending, setSsoPending] = React.useState<"Google" | "GitHub" | null>(null);
 
   const form = useForm<RegisterValues>({
     resolver: zodResolver(registerSchema),
@@ -68,7 +67,7 @@ export function RegisterForm() {
       router.push("/dashboard");
     } catch (err) {
       form.setError("email", {
-        message: authErrorMessage(err, "Sign up failed. Please try again later."),
+        message: apiErrorMessage(err, "Sign up failed. Please try again later."),
       });
     } finally {
       setPending(false);
@@ -85,17 +84,6 @@ export function RegisterForm() {
   const strength = checks.filter((check) => check.valid).length;
   const strengthLabel = strength <= 1 ? "Weak" : strength === 2 ? "Fair" : strength === 3 ? "Good" : "Strong";
 
-  const signInWithSso = async (provider: "Google" | "GitHub") => {
-    setSsoPending(provider);
-    await new Promise((resolve) => window.setTimeout(resolve, 700));
-    try {
-      await register({ display_name: `${provider} learner`, email: `${provider.toLowerCase()}-learner@zapsters.dev`, password: "Zapsters!2026" });
-      router.push("/dashboard");
-    } catch {
-      setSsoPending(null);
-    }
-  };
-
   return (
     <Card className="w-full max-w-md border-border bg-card shadow-[0_12px_36px_rgb(23_23_23_/_8%)]">
       <CardHeader className="items-center gap-2 pb-6 pt-8 text-center">
@@ -107,11 +95,11 @@ export function RegisterForm() {
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col gap-4">
             <div className="grid gap-2 sm:grid-cols-2">
-              <Button type="button" variant="outline" disabled={pending || Boolean(ssoPending)} onClick={() => void signInWithSso("Google")}>
-                {ssoPending === "Google" ? <LoaderCircle className="animate-spin" /> : <Globe2 />} {ssoPending === "Google" ? "Connecting..." : "Continue with Google"}
+              <Button type="button" variant="outline" disabled>
+                <Globe2 /> Google sign-in (coming soon)
               </Button>
-              <Button type="button" variant="outline" disabled={pending || Boolean(ssoPending)} onClick={() => void signInWithSso("GitHub")}>
-                {ssoPending === "GitHub" ? <LoaderCircle className="animate-spin" /> : <GitBranch />} {ssoPending === "GitHub" ? "Connecting..." : "Continue with GitHub"}
+              <Button type="button" variant="outline" disabled>
+                <GitBranch /> GitHub sign-in (coming soon)
               </Button>
             </div>
             <div className="relative py-1 text-center text-[11px] text-muted-foreground before:absolute before:left-0 before:right-0 before:top-1/2 before:border-t before:border-border"><span className="relative bg-card px-3">or use your email</span></div>

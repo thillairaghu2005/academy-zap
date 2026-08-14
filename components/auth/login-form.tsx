@@ -27,7 +27,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Logo } from "@/src/components/Logo/Logo";
 import { useSession } from "@/components/providers/session-provider";
-import { authErrorMessage, DEMO_CREDENTIALS } from "@/src/lib/demoAuth";
+import { apiErrorMessage } from "@/lib/api/client";
 
 const loginSchema = z.object({
   email: z
@@ -84,8 +84,8 @@ export function LoginForm({ next }: { next?: string }) {
   const form = useForm<LoginValues>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
-      email: DEMO_CREDENTIALS.email,
-      password: DEMO_CREDENTIALS.password,
+      email: "",
+      password: "",
     },
   });
 
@@ -103,17 +103,11 @@ export function LoginForm({ next }: { next?: string }) {
       router.replace(safeNext(next));
     } catch (err) {
       form.setError("password", {
-        message: authErrorMessage(err, "Sign in failed. Please try again later."),
+        message: apiErrorMessage(err, "Sign in failed. Please try again later."),
       });
     } finally {
       setPending(false);
     }
-  };
-
-  const useDemoAccount = () => {
-    form.setValue("email", DEMO_CREDENTIALS.email, { shouldValidate: true });
-    form.setValue("password", DEMO_CREDENTIALS.password, { shouldValidate: true });
-    form.clearErrors();
   };
 
   return (
@@ -188,23 +182,11 @@ export function LoginForm({ next }: { next?: string }) {
               <p className="flex items-start gap-2 text-xs leading-relaxed text-muted-foreground">
                 <Sparkles className="mt-0.5 size-3.5 shrink-0 text-warning-strong" />
                 <span>
-                  <span className="font-medium text-foreground">Demo account</span>
+                  <span className="font-medium text-foreground">Secure session</span>
                   <br />
-                  {DEMO_CREDENTIALS.email}
-                  <br />
-                  {DEMO_CREDENTIALS.password}
+                  Your session is protected with a secure, httpOnly refresh cookie.
                 </span>
               </p>
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                className="mt-3"
-                onClick={useDemoAccount}
-                disabled={pending}
-              >
-                Use Demo Account
-              </Button>
             </div>
             <Button type="submit" variant="gradient" className="mt-1 h-10 w-full" disabled={pending}>
               {pending && <LoaderCircle className="animate-spin" />}

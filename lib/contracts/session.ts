@@ -5,16 +5,23 @@
  * frontend demo shell needs today: identity and role for navigation.
  */
 
-export type SessionRole = "user" | "student" | "learner" | "admin";
+export type SessionRole =
+  | "user"
+  | "instructor"
+  | "org_admin"
+  | "platform_ops"
+  // Legacy fixture roles remain type-compatible for deferred demo surfaces only.
+  | "student"
+  | "learner"
+  | "admin";
 
 export interface SessionUser {
-  /** Stable identity used by the current frontend demo session. */
+  /** Stable identity issued by Platform Core. */
   id: string;
   display_name: string;
   email: string;
   avatar_url: string | null;
   role: SessionRole;
-  isDemo?: boolean;
   /** B2B org scoping (null for consumer accounts) */
   org_id: string | null;
 }

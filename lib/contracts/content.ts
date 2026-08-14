@@ -166,6 +166,11 @@ export interface Enrollment {
   updated_at: string;
 }
 
+export interface CourseProgress {
+  enrollment: Enrollment | null;
+  completed_lesson_ids: string[];
+}
+
 /* ------------------------------------------------------------------ */
 /*  Catalog search — mock Meilisearch response shape                    */
 /*  (mirrors the real Meilisearch JSON API field names so the later     */

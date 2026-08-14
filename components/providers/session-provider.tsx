@@ -4,31 +4,29 @@ import * as React from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 
+import {
+  clearAccessToken,
+  getCurrentUser,
+  login as apiLogin,
+  logout as apiLogout,
+  register as apiRegister,
+} from "@/lib/api/client";
+import type { ApiUser } from "@/lib/api/contracts";
 import type {
   LoginInput,
   RegisterInput,
   SessionState,
   SessionUser,
 } from "@/lib/contracts/session";
-import {
-  authenticateDemoUser,
-  clearDemoSession,
-  DEMO_SESSION_STORAGE_KEY,
-  getDemoSession,
-  registerDemo,
-} from "@/src/lib/demoAuth";
 
 const SESSION_KEY = ["session"] as const;
 
 interface SessionContextValue {
   session: SessionState;
-  /** True while the initial localStorage session is resolving */
+  /** True while the initial server session is resolving. */
   isLoading: boolean;
   user: SessionUser | null;
-  /**
-   * Role-derived demo check. This is frontend-only and is not a security
-    * boundary; it only controls the demo UI.
-   */
+  /** UI hint only. Backend authorization remains authoritative. */
   isAdmin: boolean;
   login: (input: LoginInput) => Promise<void>;
   register: (input: RegisterInput) => Promise<void>;
@@ -37,32 +35,35 @@ interface SessionContextValue {
 
 const SessionContext = React.createContext<SessionContextValue | null>(null);
 
-/**
- * The session is a client-only demo record in localStorage. This provider is
- * the single source of truth for the current user and auth state.
- */
+function toSessionUser(user: ApiUser): SessionUser {
+  return {
+    id: user.id,
+    display_name: user.display_name,
+    email: user.email,
+    avatar_url: null,
+    role: user.role,
+    org_id: user.org_id,
+  };
+}
+
+async function loadSession(): Promise<SessionState> {
+  try {
+    const user = await getCurrentUser();
+    return { status: "authenticated", user: toSessionUser(user) };
+  } catch {
+    return { status: "anonymous", user: null };
+  }
+}
+
 export function SessionProvider({ children }: { children: React.ReactNode }) {
   const queryClient = useQueryClient();
   const { data: session, isLoading } = useQuery({
     queryKey: SESSION_KEY,
-    queryFn: getDemoSession,
-    // The session is owned by localStorage + mutations below; no
-    // need to refetch more often than the session freshness window.
-    staleTime: 60_000,
-    refetchInterval: 60_000,
+    queryFn: loadSession,
+    staleTime: 30_000,
     refetchOnWindowFocus: true,
     retry: false,
   });
-
-  React.useEffect(() => {
-    const handleStorage = (event: StorageEvent) => {
-      if (event.key !== DEMO_SESSION_STORAGE_KEY) return;
-      queryClient.setQueryData(SESSION_KEY, getDemoSession());
-    };
-
-    window.addEventListener("storage", handleStorage);
-    return () => window.removeEventListener("storage", handleStorage);
-  }, [queryClient]);
 
   const applySession = React.useCallback(
     (next: SessionState) => {
@@ -73,7 +74,8 @@ export function SessionProvider({ children }: { children: React.ReactNode }) {
 
   const login = React.useCallback(
     async (input: LoginInput) => {
-      const next = authenticateDemoUser(input);
+      const result = await apiLogin(input);
+      const next = { status: "authenticated" as const, user: toSessionUser(result.user) };
       applySession(next);
       toast.success(
         `Welcome back, ${next.user?.display_name ?? "Zapster"} ⚡`,
@@ -84,7 +86,8 @@ export function SessionProvider({ children }: { children: React.ReactNode }) {
 
   const register = React.useCallback(
     async (input: RegisterInput) => {
-      const next = registerDemo(input);
+      const result = await apiRegister(input);
+      const next = { status: "authenticated" as const, user: toSessionUser(result.user) };
       applySession(next);
       toast.success("Account created — welcome to Zapsters ⚡");
     },
@@ -92,9 +95,13 @@ export function SessionProvider({ children }: { children: React.ReactNode }) {
   );
 
   const logout = React.useCallback(async () => {
-    clearDemoSession();
-    applySession({ status: "anonymous", user: null });
-    toast.info("Signed out.");
+    try {
+      await apiLogout();
+    } finally {
+      clearAccessToken();
+      applySession({ status: "anonymous", user: null });
+      toast.info("Signed out.");
+    }
   }, [applySession]);
 
   const value = React.useMemo<SessionContextValue>(
@@ -102,7 +109,10 @@ export function SessionProvider({ children }: { children: React.ReactNode }) {
       session: session ?? { status: "loading", user: null },
       isLoading,
       user: session?.user ?? null,
-      isAdmin: session?.user?.role === "admin",
+      isAdmin:
+        session?.user?.role === "org_admin" ||
+        session?.user?.role === "platform_ops" ||
+        session?.user?.role === "admin",
       login,
       register,
       logout,
