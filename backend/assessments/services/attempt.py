@@ -4,6 +4,7 @@ from datetime import UTC, datetime, timedelta
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from assessments.models import Assessment as AssessmentModel
 from assessments.models import AssessmentSubmission
 from assessments.repositories.assessment import AssessmentRepository
 from assessments.repositories.attempt import AttemptRepository
@@ -42,7 +43,8 @@ def _answers(row: AssessmentSubmission) -> list[AttemptAnswer]:
     ]
 
 
-def _attempt_contract(row: AssessmentSubmission) -> AssessmentAttempt:
+def _attempt_contract(row: AssessmentSubmission, assessment: AssessmentModel) -> AssessmentAttempt:
+    total_score = sum(_points(question.difficulty) for question in assessment.questions)
     return AssessmentAttempt(
         attempt_id=row.attempt_id,
         assessment_id=row.assessment_id,
@@ -55,6 +57,12 @@ def _attempt_contract(row: AssessmentSubmission) -> AssessmentAttempt:
         score=float(row.score),
         integrity_flags=row.integrity_flags,
         submitted_at=row.submitted_at,
+        total_score=total_score,
+        passed=(
+            row.status == "submitted"
+            and total_score > 0
+            and float(row.score) / total_score * 100 >= float(assessment.passing_percent)
+        ),
     )
 
 
@@ -90,17 +98,20 @@ class AttemptService:
             )
         )
         await self._session.commit()
-        return _attempt_contract(row)
+        return _attempt_contract(row, assessment)
 
     async def get(self, attempt_id: uuid.UUID, user_id: uuid.UUID) -> AssessmentAttempt:
         row = await self._attempts.get(attempt_id, for_update=True)
         if row is None or row.user_id != user_id:
             raise ResourceNotFound("Assessment attempt not found.")
+        assessment = await self._assessments.get_by_id(row.assessment_id)
+        if assessment is None:
+            raise ResourceNotFound("Assessment not found.")
         if row.status == "in_progress" and datetime.now(UTC) >= row.expires_at:
             row.status = "expired"
             row.submitted_at = datetime.now(UTC)
             await self._session.commit()
-        return _attempt_contract(row)
+        return _attempt_contract(row, assessment)
 
     async def list(
         self, assessment_id: uuid.UUID, user_id: uuid.UUID

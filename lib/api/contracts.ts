@@ -150,6 +150,8 @@ export const apiAttemptSchema = z.object({
   score: z.number(),
   integrity_flags: z.array(z.string()),
   submitted_at: z.string().nullable(),
+  total_score: z.number(),
+  passed: z.boolean(),
 });
 export const apiAttemptSummariesSchema = z.array(
   z.object({

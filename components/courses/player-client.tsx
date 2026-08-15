@@ -62,7 +62,6 @@ import {
   toggleCourseBookmark,
 } from "@/lib/demo/course-notes";
 import { CertificateDialog } from "@/components/courses/certificate-dialog";
-import { trackDemoEvent } from "@/lib/demo/analytics";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
 // video.js is not SSR-safe — load the wrapper only on the client.
@@ -87,7 +86,7 @@ function PlayerSkeleton() {
   );
 }
 
-/** Mock article body for the frontend demo. */
+/** Authored article body from the Content Engine. */
 function ArticleBody({ lesson }: { lesson: CourseLesson }) {
   const body = lesson.preview_body?.trim() || `## ${lesson.title}
 
@@ -222,9 +221,7 @@ export function PlayerClient({ course }: { course: Course }) {
 
   const isVideo = activeLesson?.kind === "video";
 
-  // Signed manifest for the active video lesson (never for articles). An
-  // expired manifest surfaces as a mock 403 (manifest_expired) — the same
-  // error the player would see from a real CDN.
+  // Signed manifest delivery is deferred for this vertical slice.
   const manifestQuery = useQuery({
     queryKey: ["manifest", activeLessonId, userId],
     queryFn: () => getPlaybackManifest(activeLessonId!, userId),
@@ -251,14 +248,12 @@ export function PlayerClient({ course }: { course: Course }) {
       }),
     onSuccess: (enrollment, input) => {
       // Refetch the progress snapshot so completed_lesson_ids (which drives
-      // the sidebar checkmarks/counters) reflects the write. The demo service
+      // the sidebar checkmarks/counters) reflects the backend write.
       // derives progress; components never compute it.
       queryClient.invalidateQueries({
         queryKey: ["course-progress", course.id, userId],
       });
       if (input.completed) {
-        trackDemoEvent("lesson_completed", { course_id: course.id });
-        window.dispatchEvent(new CustomEvent("zapsters:xp-earned", { detail: { amount: 50 } }));
         toast.success("Lesson marked complete ⚡", { position: "top-center" });
       }
     },
@@ -462,7 +457,7 @@ export function PlayerClient({ course }: { course: Course }) {
           ) : manifestExpired ? (
             <ErrorState
               title="Signed manifest expired"
-              message="The media URL signature has expired (403 from the CDN). In production the player refetches a fresh signed URL; the mock returns a 403 to demo this exact state."
+               message="Signed playback delivery is not enabled in this production slice."
               code="MANIFEST_EXPIRED"
               onRetry={() => manifestQuery.refetch()}
             />

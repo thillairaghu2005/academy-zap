@@ -42,7 +42,15 @@ class GamificationEventProcessor:
 
     async def process(self, event: BaseEvent) -> None:
         if isinstance(event, CourseCompletedEvent):
-            gate = run_integrity_gate(IntegritySignals(time_spent_seconds=event.time_spent_seconds))
+            content_duration = event.payload.get("content_duration_seconds")
+            gate = run_integrity_gate(
+                IntegritySignals(
+                    content_duration_seconds=content_duration
+                    if isinstance(content_duration, int)
+                    else None,
+                    time_spent_seconds=event.time_spent_seconds,
+                )
+            )
             await self._append_and_resolve(
                 event=event,
                 xp_type="completion",

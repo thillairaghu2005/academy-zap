@@ -3,6 +3,7 @@ import uuid
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
+from sqlalchemy.sql.elements import ColumnElement
 
 from content.models import Course, Module
 
@@ -11,8 +12,17 @@ class CourseRepository:
     def __init__(self, session: AsyncSession) -> None:
         self._session = session
 
-    async def list_published(self, *, limit: int = 50, offset: int = 0) -> tuple[list[Course], int]:
-        base = select(Course).where(Course.status == "published", Course.org_id.is_(None))
+    async def list_published(
+        self,
+        *,
+        limit: int = 50,
+        offset: int = 0,
+        org_id: uuid.UUID | None = None,
+    ) -> tuple[list[Course], int]:
+        scope: ColumnElement[bool] = Course.org_id.is_(None)
+        if org_id is not None:
+            scope = scope | (Course.org_id == org_id)
+        base = select(Course).where(Course.status == "published", scope)
         total = (
             await self._session.execute(select(func.count()).select_from(base.subquery()))
         ).scalar_one()

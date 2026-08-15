@@ -107,6 +107,10 @@ async def test_mcq_assessment_is_server_graded_and_feeds_gamification(
     assert final.json()["score"] == 10
     assert final.json()["total_score"] == 25
     assert final.json()["passed"] is True
+    repeated_final = await client.post(
+        f"/api/v1/assessments/attempts/{attempt_id}/submit-final", headers=headers
+    )
+    assert repeated_final.status_code == 409
 
     consumer = EventConsumer(group="assessment-test", consumer_name="worker", redis=redis)
     messages = [message async for message in consumer.read_batch(count=10, block_ms=100)]

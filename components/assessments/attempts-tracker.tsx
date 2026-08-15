@@ -149,7 +149,7 @@ export function AttemptsTracker({
             {exhausted ? (
               <p className="flex items-center gap-1.5 font-medium text-primary">
                 <AlertTriangle className="size-3.5" />
-                Attempts used up — further attempts are blocked by the demo service.
+                 Attempts used up — further attempts are blocked by the server.
               </p>
             ) : lastPassed ? (
               <p className="flex items-center gap-1.5 font-medium text-emerald-700">
@@ -196,7 +196,7 @@ function AttemptReview({
       <DialogContent className="max-h-[min(85dvh,42rem)] overflow-y-auto sm:max-w-2xl">
         <DialogHeader>
           <DialogTitle>Attempt review</DialogTitle>
-          <DialogDescription>Review each answer and the deterministic result recorded by the demo grader.</DialogDescription>
+         <DialogDescription>Review each answer and the deterministic result recorded by the server.</DialogDescription>
         </DialogHeader>
         {attemptQuery.isLoading || assessmentQuery.isLoading ? (
           <div className="py-8 text-center text-sm text-muted-foreground">Loading review…</div>

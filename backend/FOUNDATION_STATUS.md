@@ -9,7 +9,8 @@ is not implemented must remain an explicit typed 501 response; it must not creat
 |---|---|
 | Platform health | Implemented at `/api/v1/health` |
 | Authentication | Implemented with Argon2id, short-lived access JWTs, httpOnly refresh cookies, Redis denylist, origin checks, and RBAC |
-| Content catalog | Published-only catalog/detail reads implemented; enrollment/progress/playback remain deferred |
+| Course vertical slice | Published catalog/detail, authenticated enrollment, server-derived lesson progress, and completion events implemented |
+| Assessment vertical slice | MCQ attempts, server grading, final results, telemetry, and assessment events implemented |
 | Event bus | Redis Streams producer/consumer and PostgreSQL idempotency markers implemented |
 | Gamification Phase 0 | Course/assessment events flow through Integrity Gate, hash-chained ledger, and ProgressContext |
 | Database | PostgreSQL 16/TimescaleDB with Alembic subsystem heads merged into one release head |
@@ -21,7 +22,7 @@ is not implemented must remain an explicit typed 501 response; it must not creat
 | Judge execution | D | Typed, authenticated, rate-limited 501; no code is executed |
 | Lab provisioning | D | Typed, authenticated 501; no session or sandbox is provisioned |
 | Lab terminal | D | Authenticated and ownership/expiry checked, then explicit WebSocket 4501 |
-| Assessment grading | D | Catalog reads work; attempts and grading are explicit 501 |
+| Assessment grading beyond MCQ | D | Short-answer and code grading remain deferred; MCQ grading is live |
 | SSE judge/gamification updates | D | No fake stream and no polling substitute is exposed |
 | Leaderboards/projections | D | No public projection is exposed as live data; route returns typed 501 |
 | Credentials/badges | D | Public verify route returns typed 501; no unsigned claims are issued |

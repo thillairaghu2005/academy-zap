@@ -49,6 +49,19 @@ async def get_current_user(
 CurrentUser = Annotated[User, Depends(get_current_user)]
 
 
+async def get_optional_current_user(
+    session: DbSession,
+    redis: RedisClient,
+    credentials: Annotated[HTTPAuthorizationCredentials | None, Depends(_bearer_scheme)],
+) -> User | None:
+    if credentials is None:
+        return None
+    return await get_current_user(session, redis, credentials)
+
+
+OptionalCurrentUser = Annotated[User | None, Depends(get_optional_current_user)]
+
+
 def require_role(*allowed: Role) -> Any:
     async def _guard(user: CurrentUser) -> User:
         if Role(user.role) not in allowed:

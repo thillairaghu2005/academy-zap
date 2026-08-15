@@ -21,8 +21,14 @@ class CourseService:
         self._courses = CourseRepository(session)
         self._identity = identity or IdentityService(session)
 
-    async def list_courses(self, *, limit: int = 50, offset: int = 0) -> CourseListResponse:
-        rows, total = await self._courses.list_published(limit=limit, offset=offset)
+    async def list_courses(
+        self,
+        *,
+        limit: int = 50,
+        offset: int = 0,
+        org_id: uuid.UUID | None = None,
+    ) -> CourseListResponse:
+        rows, total = await self._courses.list_published(limit=limit, offset=offset, org_id=org_id)
         items = []
         for row in rows:
             instructor = await self._identity.get_public_identity(row.instructor_user_id)
@@ -49,8 +55,8 @@ class CourseService:
             )
         return CourseListResponse(items=items, total=total)
 
-    async def get_course(self, course_id: uuid.UUID) -> Course:
-        row = await self._courses.get_published_by_id(course_id)
+    async def get_course(self, course_id: uuid.UUID, org_id: uuid.UUID | None = None) -> Course:
+        row = await self._courses.get_published_by_id(course_id, org_id=org_id)
         if row is None:
             raise ResourceNotFound("Course not found.")
 

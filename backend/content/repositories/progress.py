@@ -64,3 +64,11 @@ class ProgressRepository:
             .where(Module.course_id == course_id, LessonProgress.user_id == user_id)
         )
         return int(result.scalar_one())
+
+    async def total_lesson_duration(self, course_id: uuid.UUID) -> int:
+        result = await self._session.execute(
+            select(func.coalesce(func.sum(Lesson.duration_seconds), 0))
+            .join(Module, Module.id == Lesson.module_id)
+            .where(Module.course_id == course_id)
+        )
+        return int(result.scalar_one())

@@ -12,7 +12,7 @@ from content.schemas.progress import CourseProgress, LessonProgressInput, MyLear
 from platform_core.bus.producer import publish
 from platform_core.contracts.content import CourseSummary
 from platform_core.contracts.content import Enrollment as EnrollmentContract
-from platform_core.core.exceptions import ResourceNotFound
+from platform_core.core.exceptions import ConflictError, ResourceNotFound
 from platform_core.core.redis import AsyncRedis
 from platform_core.core.services.identity import IdentityService
 from platform_core.events.schema import CourseCompletedEvent
@@ -86,6 +86,8 @@ class EnrollmentService:
         course = await self._courses.get_published_by_id(course_id, org_id=org_id)
         if course is None:
             raise ResourceNotFound("Course not found.")
+        if course.price_cents > 0:
+            raise ConflictError("Purchase entitlement is required before enrollment.")
         existing = await self._enrollments.get(course_id, user_id)
         if existing is not None:
             return _enrollment_contract(existing)
@@ -192,6 +194,11 @@ class ProgressService:
                 category=course.category,
                 time_spent_seconds=await self._progress.total_position_seconds(course.id, user_id),
                 completion_pct=100.0,
+                payload={
+                    "content_duration_seconds": await self._progress.total_lesson_duration(
+                        course.id
+                    )
+                },
             )
             if self._redis is None:
                 raise RuntimeError("Redis is required to publish course completion events")

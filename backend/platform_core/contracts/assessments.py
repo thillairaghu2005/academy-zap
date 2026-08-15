@@ -106,6 +106,8 @@ class AssessmentAttempt(BaseModel):
     score: float
     integrity_flags: list[str]
     submitted_at: datetime | None
+    total_score: float = 0
+    passed: bool = False
 
 
 class AssessmentAttemptSummary(BaseModel):

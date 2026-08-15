@@ -139,7 +139,7 @@ export function AssessmentCatalogClient() {
             message={
               error instanceof Error
                 ? error.message
-                : "The assessment demo data is unavailable."
+                 : "The assessment catalog is unavailable."
             }
             onRetry={() => refetch()}
           />

@@ -303,7 +303,7 @@ export async function submitMcqAnswerFromApi(
 
 export async function submitAssessmentFromApi(attemptId: string): Promise<AssessmentSubmittedEvent> {
   const result = await apiRequest(`/assessments/attempts/${attemptId}/submit-final`, apiAssessmentResultSchema, { method: "POST" });
-  return { event_type: "assessment.submitted", assessment_id: result.assessment_id, attempt_id: result.attempt_id, score: result.score, total_score: result.total_score, correct_count: result.correct_count, question_count: result.question_count, time_taken_seconds: result.time_taken_seconds, max_combo: result.max_combo, integrity_flags: result.integrity_flags };
+  return { event_type: "assessment.submitted", assessment_id: result.assessment_id, attempt_id: result.attempt_id, score: result.score, total_score: result.total_score, correct_count: result.correct_count, question_count: result.question_count, time_taken_seconds: result.time_taken_seconds, max_combo: result.max_combo, integrity_flags: result.integrity_flags, passed: result.passed };
 }
 
 export async function reportAssessmentTelemetryFromApi(

@@ -12,7 +12,7 @@ import { cn } from "@/lib/utils";
 /* ------------------------------------------------------------------ */
 /*  Combo curve teaser — the ×1.0 → ×3.0 multiplier curve.             */
 /*                                                                     */
-/*  The curve comes from the demo service (getComboCurve), so what the detail */
+/*  The curve is a server-rule preview; final scoring remains backend-owned. */
 /*  page advertises is exactly the formula the grader applies.         */
 /* ------------------------------------------------------------------ */
 

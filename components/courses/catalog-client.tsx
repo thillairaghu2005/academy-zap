@@ -789,7 +789,7 @@ export function CatalogClient({
           ) : isError ? (
             <ErrorState
               title="Search unavailable"
-               message={error instanceof Error ? error.message : "The catalog demo data is unavailable."}
+               message={error instanceof Error ? error.message : "The course catalog is unavailable."}
               code="SEARCH_ERR"
               onRetry={() => refetch()}
             />

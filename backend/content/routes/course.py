@@ -7,7 +7,7 @@ from content.schemas.progress import CourseProgress, LessonProgressInput, MyLear
 from content.services.course import CourseService
 from content.services.enrollment import EnrollmentService, ProgressService
 from platform_core.contracts.content import Enrollment, SignedManifest
-from platform_core.core.deps import CurrentUser, DbSession, RedisClient
+from platform_core.core.deps import CurrentUser, DbSession, OptionalCurrentUser, RedisClient
 from platform_core.core.exceptions import NotImplementedFoundationError
 
 router = APIRouter(tags=["content"])
@@ -20,14 +20,23 @@ async def list_my_learning(session: DbSession, current_user: CurrentUser) -> lis
 
 @router.get("/courses", response_model=CourseListResponse)
 async def list_courses(
-    session: DbSession, limit: int = Query(50, le=100), offset: int = Query(0, ge=0)
+    session: DbSession,
+    current_user: OptionalCurrentUser,
+    limit: int = Query(50, le=100),
+    offset: int = Query(0, ge=0),
 ) -> CourseListResponse:
-    return await CourseService(session).list_courses(limit=limit, offset=offset)
+    return await CourseService(session).list_courses(
+        limit=limit, offset=offset, org_id=current_user.org_id if current_user else None
+    )
 
 
 @router.get("/courses/{course_id}", response_model=Course)
-async def get_course(course_id: uuid.UUID, session: DbSession) -> Course:
-    return await CourseService(session).get_course(course_id)
+async def get_course(
+    course_id: uuid.UUID, session: DbSession, current_user: OptionalCurrentUser
+) -> Course:
+    return await CourseService(session).get_course(
+        course_id, current_user.org_id if current_user else None
+    )
 
 
 @router.post("/courses/{course_id}/enroll", response_model=Enrollment, status_code=201)

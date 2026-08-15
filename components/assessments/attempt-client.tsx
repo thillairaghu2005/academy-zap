@@ -60,9 +60,8 @@ import { cn } from "@/lib/utils";
 /*  server grading) → GradeResult feedback + combo tick → next.        */
 /*  Final submit → assessment.submitted event shape.                   */
 /*                                                                     */
-/*  Anti-cheat: tab-visibility + paste events captured on mount and    */
-/*  pushed to reportTelemetry() (console-logged in mock; Integrity     */
-/*  Gate later). Timer expiry is enforced in the demo service.          */
+/*  Anti-cheat: tab-visibility + paste events are sent to the backend    */
+/*  telemetry endpoint and persisted for Integrity Gate use.            */
 /* ------------------------------------------------------------------ */
 
 const COMBO_POLL_MS = 2000;
@@ -104,6 +103,7 @@ function AttemptSummary({
     time_taken_seconds: number;
     max_combo: number;
     integrity_flags: string[];
+    passed?: boolean;
   };
   passed: boolean;
 }) {
@@ -202,7 +202,7 @@ export function AssessmentAttemptClient({
 
   // Timer tick — Date.now() must not run during render (purity rule). The
   // tick also refreshes the attempt when the countdown crosses zero so the
-      // The demo-service expiry transition surfaces as the "Time's up" state.
+       // The backend expiry transition surfaces as the "Time's up" state.
   const [nowMs, setNowMs] = React.useState(() => Date.now());
   React.useEffect(() => {
     const timer = window.setInterval(() => setNowMs(Date.now()), 1000);
@@ -232,6 +232,7 @@ export function AssessmentAttemptClient({
     time_taken_seconds: number;
     max_combo: number;
     integrity_flags: string[];
+    passed?: boolean;
   } | null>(null);
 
   // Server-derived combo polling (SSE-shaped preview, §7.6).
@@ -306,7 +307,7 @@ export function AssessmentAttemptClient({
       setLastResult(result);
       setCombo(result.combo);
       setDraft(null);
-      // CRITICAL: re-read the attempt from the demo service so answers/score/counter
+       // CRITICAL: re-read the attempt from the backend so answers/score/counter
       // refresh — otherwise the answered counter stays stale and the final
       // submit gate never opens.
       void queryClient.invalidateQueries({ queryKey: ["attempt", attemptId] });
@@ -372,10 +373,7 @@ export function AssessmentAttemptClient({
 
   /* ---------- Summary (submitted) ---------- */
   if (summary || attempt.status === "submitted") {
-    const totalScore = assessment.questions.reduce(
-      (sum, q) => sum + (q.difficulty === "hard" ? 25 : q.difficulty === "medium" ? 15 : 10),
-      0,
-    );
+    const totalScore = attempt.total_score ?? 0;
     const event = summary ?? {
       score: attempt.score,
       total_score: totalScore,
@@ -391,12 +389,13 @@ export function AssessmentAttemptClient({
       ),
       max_combo: 0,
       integrity_flags: attempt.integrity_flags,
+      passed: attempt.passed,
     };
     return (
       <PageContainer>
         <AttemptSummary
           event={event}
-          passed={(event.score / event.total_score) * 100 >= assessment.passing_percent}
+           passed={event.passed ?? attempt.passed ?? false}
         />
       </PageContainer>
     );
@@ -744,7 +743,7 @@ export function AssessmentAttemptClient({
                   className="mt-4 flex items-center justify-between"
                 >
                   <p className="text-caption text-muted-foreground">
-                    {lastResult ? "" : "Your answer is graded deterministically by the demo service."}
+                     {lastResult ? "" : "Your answer is graded deterministically by the server."}
                   </p>
                   <Button
                     onClick={handleSubmitAnswer}

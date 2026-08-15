@@ -131,6 +131,8 @@ export interface AssessmentAttempt {
   /** Anti-cheat flags captured this attempt (tab-switch, paste). */
   integrity_flags: string[];
   submitted_at: string | null;
+  total_score?: number;
+  passed?: boolean;
 }
 
 /** Compact attempt row for the detail-page attempts tracker. */
@@ -160,6 +162,7 @@ export interface AssessmentSubmittedEvent {
   time_taken_seconds: number;
   max_combo: number;
   integrity_flags: string[];
+  passed?: boolean;
 }
 
 /** Anti-cheat telemetry (build.md F4) — captured now, Integrity Gate later. */

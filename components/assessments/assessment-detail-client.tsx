@@ -113,7 +113,7 @@ export function AssessmentDetailClient({
             message={
               err instanceof Error
                 ? err.message
-                : "The assessment demo data is unavailable."
+                : "The assessment is unavailable."
             }
             onRetry={() => assessmentQuery.refetch()}
           />
@@ -123,6 +123,7 @@ export function AssessmentDetailClient({
   }
 
   const assessment = assessmentQuery.data;
+  const mcqOnly = assessment.questions.every((question) => question.type === "mcq");
   const totalPoints = assessment.questions.reduce(
     (sum, q) => sum + DIFF_POINTS[q.difficulty],
     0,
@@ -261,7 +262,7 @@ export function AssessmentDetailClient({
 
             <Button
               onClick={() => start.mutate()}
-              disabled={!user || start.isPending}
+              disabled={!user || start.isPending || !mcqOnly}
               className="w-full gap-2"
             >
               {start.isPending ? (
@@ -295,6 +296,12 @@ export function AssessmentDetailClient({
               </p>
             ) : null}
 
+            {!mcqOnly ? (
+              <p className="text-xs text-muted-foreground">
+                Only MCQ assessments are enabled in this production slice.
+              </p>
+            ) : null}
+
             {start.isError ? (
               <div className="flex items-start gap-2 rounded-lg border border-destructive/25 bg-destructive/5 p-3 text-xs text-destructive">
                 <AlertTriangle className="mt-0.5 size-3.5 shrink-0" />
@@ -309,8 +316,7 @@ export function AssessmentDetailClient({
 
           <p className="mt-3 flex items-start gap-1.5 text-caption leading-relaxed text-muted-foreground">
             <Code2 className="mt-0.5 size-3 shrink-0" />
-            Code questions are graded by the Judge Engine mock — one grading
-            truth across both surfaces.
+             MCQ questions are graded deterministically by the Assessment Engine.
           </p>
 
           <div className="mt-4 flex flex-col gap-4">
