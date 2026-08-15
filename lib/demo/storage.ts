@@ -14,6 +14,8 @@ export const DEMO_STORAGE_KEYS = {
   labSessions: "zapsters.demo.lab-sessions.v1",
   notificationReads: "zapsters.demo.notification-reads.v1",
   commerce: "zapsters.demo.commerce.v1",
+  authSession: "zapsters.mock.auth-session.v1",
+  authAccounts: "zapsters.mock.auth-accounts.v1",
 } as const;
 
 export function readDemoStorage<T>(key: string, fallback: T): T {

@@ -184,7 +184,7 @@ export function LoginForm({ next }: { next?: string }) {
                 <span>
                   <span className="font-medium text-foreground">Secure session</span>
                   <br />
-                  Your session is protected with a secure, httpOnly refresh cookie.
+                   Your demo session is stored securely in this browser.
                 </span>
               </p>
             </div>

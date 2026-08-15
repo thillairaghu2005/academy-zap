@@ -29,6 +29,7 @@ import { SocialProof } from "@/components/landing/social-proof";
 import { SkillCard } from "@/components/landing/skill-card";
 import { VerifiedProgression } from "@/components/landing/verified-progression";
 import { TrustHighlights } from "@/components/landing/trust-highlights";
+import { ErrorState } from "@/components/shared/error-state";
 import {
   FaqSection,
   FinalCta,
@@ -41,6 +42,7 @@ import {
 
 export interface LandingPageProps {
   courses: CourseSummary[];
+  catalogUnavailable?: boolean;
 }
 
 const categoryVisuals: Record<string, { icon: typeof Code2; tone: string }> = {
@@ -68,7 +70,7 @@ const visualClasses = [
   "bg-surface-1",
 ] as const;
 
-function LandingSections({ courses }: LandingPageProps) {
+function LandingSections({ courses, catalogUnavailable = false }: LandingPageProps) {
   const [activeCategory, setActiveCategory] = React.useState("All");
   const categories = courses.reduce<{ name: string; count: number }[]>((result, course) => {
     const existing = result.find((category) => category.name === course.category);
@@ -128,21 +130,28 @@ function LandingSections({ courses }: LandingPageProps) {
           <div className="mt-8">
             <FilterTabs tabs={tabs} value={activeCategory} onChange={setActiveCategory} label="Filter featured courses by category" />
           </div>
-          <div className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-            {filteredCourses.slice(0, 6).map((course, index) => {
-              const visualClass =
-                visualClasses[index % visualClasses.length] ??
-                 "bg-surface-1";
-              return (
-                <FeaturedCourseCard
-                  key={course.id}
-                  course={course}
-                  visualClass={visualClass}
-                  index={index}
-                />
-              );
-            })}
-          </div>
+          {catalogUnavailable ? (
+            <ErrorState
+              title="Course catalog unavailable"
+              message="The catalog could not be reached. Retry shortly to request the latest courses."
+            />
+          ) : (
+            <div className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+              {filteredCourses.slice(0, 6).map((course, index) => {
+                const visualClass =
+                  visualClasses[index % visualClasses.length] ??
+                   "bg-surface-1";
+                return (
+                  <FeaturedCourseCard
+                    key={course.id}
+                    course={course}
+                    visualClass={visualClass}
+                    index={index}
+                  />
+                );
+              })}
+            </div>
+          )}
         </div>
       </section>
 
@@ -169,7 +178,7 @@ function LandingSections({ courses }: LandingPageProps) {
   );
 }
 
-export function LandingPage({ courses }: LandingPageProps) {
+export function LandingPage({ courses, catalogUnavailable = false }: LandingPageProps) {
   return (
     <div className="min-h-dvh overflow-x-hidden bg-background">
       <a
@@ -184,7 +193,7 @@ export function LandingPage({ courses }: LandingPageProps) {
         <HomeHero />
         <TrustedByStrip />
         <LearningLoop />
-        <LandingSections courses={courses} />
+        <LandingSections courses={courses} catalogUnavailable={catalogUnavailable} />
         <PricingSection />
         <TestimonialWall />
         <FaqSection />

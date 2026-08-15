@@ -27,7 +27,6 @@ import {
 import { Input } from "@/components/ui/input";
 import { Logo } from "@/src/components/Logo/Logo";
 import { useSession } from "@/components/providers/session-provider";
-import { apiErrorMessage } from "@/lib/api/client";
 
 const registerSchema = z.object({
   display_name: z
@@ -67,7 +66,7 @@ export function RegisterForm() {
       router.push("/dashboard");
     } catch (err) {
       form.setError("email", {
-        message: apiErrorMessage(err, "Sign up failed. Please try again later."),
+        message: err instanceof Error ? err.message : "Sign up failed. Please try again later.",
       });
     } finally {
       setPending(false);

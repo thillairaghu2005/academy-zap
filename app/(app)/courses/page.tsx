@@ -22,10 +22,16 @@ export default async function CoursesPage({
   // CatalogClient reads useSearchParams (URL-synced filters) — it must be
   // inside a Suspense boundary for static prerendering.
   const params = await searchParams;
-  const initialData: MeilisearchCatalogResponse | undefined =
-    Object.keys(params).length === 0
-      ? await searchCatalog({ page: 1, pageSize: 6 })
-      : undefined;
+  let initialData: MeilisearchCatalogResponse | undefined;
+  if (Object.keys(params).length === 0) {
+    try {
+      initialData = await searchCatalog({ page: 1, pageSize: 6 });
+    } catch (error) {
+      console.error("[course-catalog] initial request failed", {
+        error: error instanceof Error ? error.name : "UnknownError",
+      });
+    }
+  }
   return (
     <Suspense fallback={<CourseCatalogLoading />}>
       <CatalogClient initialData={initialData} />

@@ -1,32 +1,33 @@
 "use client";
 
 import * as React from "react";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 
-import {
-  clearAccessToken,
-  getCurrentUser,
-  login as apiLogin,
-  logout as apiLogout,
-  register as apiRegister,
-} from "@/lib/api/client";
-import type { ApiUser } from "@/lib/api/contracts";
 import type {
   LoginInput,
   RegisterInput,
   SessionState,
   SessionUser,
 } from "@/lib/contracts/session";
+import {
+  DEMO_STORAGE_KEYS,
+  readDemoStorage,
+  removeDemoStorage,
+  subscribeDemoStorage,
+  writeDemoStorage,
+} from "@/lib/demo/storage";
 
-const SESSION_KEY = ["session"] as const;
+interface MockAccount {
+  user: SessionUser;
+  password: string;
+}
 
 interface SessionContextValue {
   session: SessionState;
   /** True while the initial server session is resolving. */
   isLoading: boolean;
   user: SessionUser | null;
-  /** UI hint only. Backend authorization remains authoritative. */
+  /** UI hint only for the frontend demo. */
   isAdmin: boolean;
   login: (input: LoginInput) => Promise<void>;
   register: (input: RegisterInput) => Promise<void>;
@@ -35,79 +36,91 @@ interface SessionContextValue {
 
 const SessionContext = React.createContext<SessionContextValue | null>(null);
 
-function toSessionUser(user: ApiUser): SessionUser {
-  return {
-    id: user.id,
-    display_name: user.display_name,
-    email: user.email,
+const DEFAULT_ACCOUNT: MockAccount = {
+  user: {
+    id: "00000000-0000-4000-8000-000000000001",
+    display_name: "Demo Zapster",
+    email: "demo@zapsters.dev",
     avatar_url: null,
-    role: user.role,
-    org_id: user.org_id,
+    role: "user",
+    org_id: null,
+  },
+  password: "zapsters-demo",
+};
+
+function accounts(): MockAccount[] {
+  return readDemoStorage(DEMO_STORAGE_KEYS.authAccounts, [DEFAULT_ACCOUNT]);
+}
+
+function createUser(input: RegisterInput): SessionUser {
+  return {
+    id: crypto.randomUUID(),
+    display_name: input.display_name.trim(),
+    email: input.email.trim().toLowerCase(),
+    avatar_url: null,
+    role: "user",
+    org_id: null,
   };
 }
 
-async function loadSession(): Promise<SessionState> {
-  try {
-    const user = await getCurrentUser();
-    return { status: "authenticated", user: toSessionUser(user) };
-  } catch {
-    return { status: "anonymous", user: null };
-  }
+function persistSession(user: SessionUser): void {
+  writeDemoStorage(DEMO_STORAGE_KEYS.authSession, user);
 }
 
 export function SessionProvider({ children }: { children: React.ReactNode }) {
-  const queryClient = useQueryClient();
-  const { data: session, isLoading } = useQuery({
-    queryKey: SESSION_KEY,
-    queryFn: loadSession,
-    staleTime: 30_000,
-    refetchOnWindowFocus: true,
-    retry: false,
-  });
+  const [session, setSession] = React.useState<SessionState>({ status: "loading", user: null });
 
-  const applySession = React.useCallback(
-    (next: SessionState) => {
-      queryClient.setQueryData(SESSION_KEY, next);
-    },
-    [queryClient],
-  );
+  React.useEffect(() => {
+    const restore = () => {
+      const user = readDemoStorage<SessionUser | null>(DEMO_STORAGE_KEYS.authSession, null);
+      setSession(user ? { status: "authenticated", user } : { status: "anonymous", user: null });
+    };
+    restore();
+    return subscribeDemoStorage(restore);
+  }, []);
 
   const login = React.useCallback(
     async (input: LoginInput) => {
-      const result = await apiLogin(input);
-      const next = { status: "authenticated" as const, user: toSessionUser(result.user) };
-      applySession(next);
+      const account = accounts().find(
+        (candidate) => candidate.user.email === input.email.trim().toLowerCase(),
+      );
+      if (!account || account.password !== input.password) {
+        throw new Error("Email or password is incorrect.");
+      }
+      persistSession(account.user);
+      setSession({ status: "authenticated", user: account.user });
       toast.success(
-        `Welcome back, ${next.user?.display_name ?? "Zapster"} ⚡`,
+        `Welcome back, ${account.user.display_name} ⚡`,
       );
     },
-    [applySession],
+    [],
   );
 
   const register = React.useCallback(
     async (input: RegisterInput) => {
-      const result = await apiRegister(input);
-      const next = { status: "authenticated" as const, user: toSessionUser(result.user) };
-      applySession(next);
+      const normalizedEmail = input.email.trim().toLowerCase();
+      if (accounts().some((candidate) => candidate.user.email === normalizedEmail)) {
+        throw new Error("An account with that email already exists.");
+      }
+      const user = createUser({ ...input, email: normalizedEmail });
+      writeDemoStorage(DEMO_STORAGE_KEYS.authAccounts, [...accounts(), { user, password: input.password }]);
+      persistSession(user);
+      setSession({ status: "authenticated", user });
       toast.success("Account created — welcome to Zapsters ⚡");
     },
-    [applySession],
+    [],
   );
 
   const logout = React.useCallback(async () => {
-    try {
-      await apiLogout();
-    } finally {
-      clearAccessToken();
-      applySession({ status: "anonymous", user: null });
-      toast.info("Signed out.");
-    }
-  }, [applySession]);
+    removeDemoStorage(DEMO_STORAGE_KEYS.authSession);
+    setSession({ status: "anonymous", user: null });
+    toast.info("Signed out.");
+  }, []);
 
   const value = React.useMemo<SessionContextValue>(
     () => ({
       session: session ?? { status: "loading", user: null },
-      isLoading,
+      isLoading: session.status === "loading",
       user: session?.user ?? null,
       isAdmin:
         session?.user?.role === "org_admin" ||
@@ -117,7 +130,7 @@ export function SessionProvider({ children }: { children: React.ReactNode }) {
       register,
       logout,
     }),
-    [session, isLoading, login, register, logout],
+    [session, login, register, logout],
   );
 
   return (

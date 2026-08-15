@@ -5,6 +5,10 @@ import { BACKEND_API_URL } from "@/lib/server/backend-url";
 type RouteContext = { params: Promise<{ path: string[] }> };
 
 async function proxy(request: Request, context: RouteContext): Promise<Response> {
+  if (!BACKEND_API_URL) {
+    return Response.json({ detail: "Backend is not configured." }, { status: 503 });
+  }
+
   const { path } = await context.params;
   const target = new URL(`/api/v1/${path.map((segment) => encodeURIComponent(segment)).join("/")}`, BACKEND_API_URL);
   target.search = new URL(request.url).search;
@@ -21,7 +25,12 @@ async function proxy(request: Request, context: RouteContext): Promise<Response>
       body: body && body.byteLength > 0 ? body : undefined,
       cache: "no-store",
     });
-  } catch {
+  } catch (error) {
+    console.error("[backend-proxy] upstream request failed", {
+      method: request.method,
+      path: path.join("/"),
+      error: error instanceof Error ? error.name : "UnknownError",
+    });
     return Response.json({ detail: "Backend unavailable." }, { status: 503 });
   }
 
