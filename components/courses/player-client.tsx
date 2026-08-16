@@ -34,9 +34,11 @@ import {
 import type { Course, CourseLesson } from "@/lib/contracts/content";
 import {
   getCourseProgress,
+  getLessonContent,
   getPlaybackManifest,
   recordProgress,
 } from "@/lib/data/demo/content";
+import { AUTH_MODE } from "@/lib/config";
 import { MockDataError } from "@/lib/data/demo/errors";
 import { useSession } from "@/components/providers/session-provider";
 import { useAnnounce } from "@/components/providers/live-region-provider";
@@ -220,6 +222,19 @@ export function PlayerClient({ course }: { course: Course }) {
   const nextLesson = activeLessonIndex >= 0 && activeLessonIndex < allLessons.length - 1 ? allLessons[activeLessonIndex + 1] ?? null : null;
 
   const isVideo = activeLesson?.kind === "video";
+
+  // Full lesson content is enrollment-gated on the backend (slice 02 §2) and is never part of
+  // the public course payload. In demo mode the mock fixtures already carry the body on the
+  // course object, so this fetch only runs in backend mode.
+  const lessonContentQuery = useQuery({
+    queryKey: ["lesson-content", activeLessonId, userId],
+    queryFn: () => getLessonContent(activeLessonId!, userId),
+    enabled:
+      AUTH_MODE === "backend" &&
+      Boolean(userId) &&
+      Boolean(activeLessonId) &&
+      !isVideo,
+  });
 
   // Signed manifest delivery is deferred for this vertical slice.
   const manifestQuery = useQuery({
@@ -435,7 +450,30 @@ export function PlayerClient({ course }: { course: Course }) {
           ) : !isVideo ? (
             activeLesson ? (
               <div className="flex flex-col gap-4">
-                <ArticleBody lesson={activeLesson} />
+                {AUTH_MODE === "backend" && lessonContentQuery.isLoading ? (
+                  <PlayerSkeleton />
+                ) : AUTH_MODE === "backend" && lessonContentQuery.isError ? (
+                  <ErrorState
+                    title="Lesson unavailable"
+                    message={
+                      lessonContentQuery.error instanceof Error
+                        ? lessonContentQuery.error.message
+                        : "This lesson could not be loaded."
+                    }
+                    code="LESSON_ERR"
+                    onRetry={() => lessonContentQuery.refetch()}
+                  />
+                ) : (
+                  <ArticleBody
+                    lesson={{
+                      ...activeLesson,
+                      preview_body:
+                        AUTH_MODE === "backend"
+                          ? (lessonContentQuery.data?.body ?? null)
+                          : activeLesson.preview_body,
+                    }}
+                  />
+                )}
                 <MarkCompleteButton
                   completed={isActiveCompleted}
                   pending={progressMutation.isPending}

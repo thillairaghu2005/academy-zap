@@ -24,7 +24,9 @@ router = APIRouter(prefix="/assessments", tags=["assessments"])
 async def start_attempt(
     assessment_id: uuid.UUID, session: DbSession, current_user: CurrentUser
 ) -> AssessmentAttempt:
-    return await AttemptService(session).start(assessment_id, current_user.id)
+    return await AttemptService(session).start(
+        assessment_id, current_user.id, current_user.org_id
+    )
 
 
 @router.post("/attempts/{attempt_id}/submit", response_model=GradeResult)
@@ -58,7 +60,9 @@ async def submit_final(
     redis: RedisClient,
     current_user: CurrentUser,
 ) -> AssessmentResult:
-    return await AttemptService(session, redis).submit(attempt_id, current_user.id)
+    return await AttemptService(session, redis).submit(
+        attempt_id, current_user.id, current_user.org_id
+    )
 
 
 @router.post("/attempts/{attempt_id}/telemetry", status_code=204)

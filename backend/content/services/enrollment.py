@@ -12,7 +12,7 @@ from content.schemas.progress import CourseProgress, LessonProgressInput, MyLear
 from platform_core.bus.producer import publish
 from platform_core.contracts.content import CourseSummary
 from platform_core.contracts.content import Enrollment as EnrollmentContract
-from platform_core.core.exceptions import ConflictError, ResourceNotFound
+from platform_core.core.exceptions import ConflictError, ResourceNotFound, UnprocessableEntity
 from platform_core.core.redis import AsyncRedis
 from platform_core.core.services.identity import IdentityService
 from platform_core.events.schema import CourseCompletedEvent
@@ -148,9 +148,17 @@ class ProgressService:
         enrollment = await self._enrollments.get(course.id, user_id, for_update=True)
         if enrollment is None:
             raise ResourceNotFound("Enrollment not found.")
-        progress = await self._progress.get_lesson_progress(lesson_id, user_id)
-        now = datetime.now(UTC)
         duration = max(1, lesson.duration_seconds)
+        # Slice 02 §5/§6: the server rejects progress beyond the lesson's duration instead of
+        # clamping, so a client can never jump past the end to force a completion.
+        if data.position_seconds > duration:
+            raise UnprocessableEntity("Progress cannot exceed the lesson duration.")
+        progress = await self._progress.get_lesson_progress(lesson_id, user_id)
+        # Idempotent no-op: a report that does not advance the stored position can change no
+        # completion state, so skip the write entirely (slice 02 §6 — no polling-write churn).
+        if progress is not None and data.position_seconds <= progress.last_position_seconds:
+            return await self.get_progress(course.id, user_id, org_id)
+        now = datetime.now(UTC)
         completed = data.position_seconds >= duration
         progress_pct = min(100, round(data.position_seconds / duration * 100, 2))
         if progress is None:

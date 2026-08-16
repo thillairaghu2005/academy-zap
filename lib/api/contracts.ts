@@ -111,6 +111,17 @@ export const apiEnrollmentSchema = z.object({
   updated_at: z.string(),
 });
 
+export const apiLessonContentSchema = z.object({
+  id: z.string().uuid(),
+  title: z.string(),
+  kind: z.enum(["video", "article"]),
+  duration_seconds: z.number(),
+  position: z.number(),
+  is_preview: z.boolean(),
+  /** Article body — `null` for video lessons (playback is a signed manifest). */
+  body: z.string().nullable(),
+});
+
 export const apiCourseProgressSchema = z.object({
   enrollment: apiEnrollmentSchema.nullable(),
   completed_lesson_ids: z.array(z.string().uuid()),
@@ -196,6 +207,59 @@ export const apiAssessmentResultSchema = z.object({
   max_combo: z.number(),
   integrity_flags: z.array(z.string()),
   passed: z.boolean(),
+});
+
+const apiRankStateSchema = z.object({
+  user_id: z.string().uuid(),
+  level: z.number(),
+  rank_name: z.string(),
+  prestige_tier: z.number(),
+  completion_xp: z.number(),
+  mastery_xp: z.number(),
+  rank_progress_pct: z.number(),
+  percentile_global: z.number(),
+  percentile_cohort: z.number().nullable(),
+  specialization_tag: z.string().nullable(),
+});
+
+const apiStreakStateSchema = z.object({
+  user_id: z.string().uuid(),
+  current_streak_days: z.number(),
+  longest_streak_days: z.number(),
+  freeze_tokens_available: z.number(),
+  momentum_multiplier: z.number(),
+  last_active_date: z.string(),
+  status: z.enum(["active", "grace_period", "broken", "frozen"]),
+});
+
+const apiLeagueStandingSchema = z.object({
+  user_id: z.string().uuid(),
+  season_id: z.string().uuid(),
+  league_tier: z.enum(["bronze", "silver", "gold", "platinum", "obsidian"]),
+  rank_in_league: z.number(),
+  xp_this_season: z.number(),
+  promotion_zone: z.boolean(),
+  relegation_zone: z.boolean(),
+});
+
+const apiGuildRollupSchema = z.object({
+  guild_id: z.string().uuid(),
+  member_count: z.number(),
+  combined_xp_this_week: z.number(),
+  guild_rank_global: z.number(),
+});
+
+/** §5.3 ProgressContext — the backend's authoritative progression state (GET /me/progress). */
+export const apiProgressContextSchema = z.object({
+  context_version: z.number(),
+  user_id: z.string().uuid(),
+  computed_at: z.string(),
+  rank: apiRankStateSchema,
+  streak: apiStreakStateSchema,
+  league: apiLeagueStandingSchema.nullable(),
+  guild: apiGuildRollupSchema.nullable(),
+  unresolved_flags: z.array(z.string()),
+  freeze_status: z.enum(["live", "frozen_pending_review"]),
 });
 
 export type ApiUser = z.infer<typeof apiUserSchema>;

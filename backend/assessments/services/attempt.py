@@ -14,6 +14,7 @@ from assessments.schemas.attempt import (
     SubmitMcqAnswer,
     TelemetryInput,
 )
+from assessments.services.access import get_accessible_assessment
 from platform_core.bus.producer import publish
 from platform_core.contracts.assessments import (
     AssessmentAttempt,
@@ -73,7 +74,14 @@ class AttemptService:
         self._assessments = AssessmentRepository(session)
         self._attempts = AttemptRepository(session)
 
-    async def start(self, assessment_id: uuid.UUID, user_id: uuid.UUID) -> AssessmentAttempt:
+    async def start(
+        self, assessment_id: uuid.UUID, user_id: uuid.UUID, org_id: uuid.UUID | None
+    ) -> AssessmentAttempt:
+        # Slice 03 §2/§4: attempt creation is gated on publication, tenant scope, course
+        # publication, and enrollment — never reachable by guessing an id.
+        assessment = await get_accessible_assessment(
+            self._session, assessment_id, user_id, org_id
+        )
         await self._session.execute(
             select(
                 func.pg_advisory_xact_lock(
@@ -81,9 +89,6 @@ class AttemptService:
                 )
             )
         )
-        assessment = await self._assessments.get_by_id(assessment_id)
-        if assessment is None:
-            raise ResourceNotFound("Assessment not found.")
         count = await self._attempts.count_for_user(assessment_id, user_id)
         if count >= assessment.attempts_allowed:
             raise ConflictError("You have used all attempts for this assessment.")
@@ -188,7 +193,9 @@ class AttemptService:
             ),
         )
 
-    async def submit(self, attempt_id: uuid.UUID, user_id: uuid.UUID) -> AssessmentResult:
+    async def submit(
+        self, attempt_id: uuid.UUID, user_id: uuid.UUID, org_id: uuid.UUID | None
+    ) -> AssessmentResult:
         row = await self._attempts.get(attempt_id, for_update=True)
         if row is None or row.user_id != user_id:
             raise ResourceNotFound("Assessment attempt not found.")
@@ -221,6 +228,7 @@ class AttemptService:
         await publish(
             AssessmentSubmittedEvent(
                 user_id=user_id,
+                org_id=org_id,  # slice 03 §9: the event envelope carries org identity
                 idempotency_key=f"assessment.submitted:{attempt_id}",
                 session_fingerprint=f"auth:{user_id}",
                 assessment_id=assessment.id,
