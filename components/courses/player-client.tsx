@@ -426,6 +426,12 @@ export function PlayerClient({ course }: { course: Course }) {
               message="Refresh to retry."
               code="PROGRESS_ERR"
             />
+          ) : !enrollment ? (
+            <ErrorState
+              title="Enrollment required"
+              message="Enroll in this course before opening its lessons."
+              code="ENROLLMENT_REQUIRED"
+            />
           ) : !isVideo ? (
             activeLesson ? (
               <div className="flex flex-col gap-4">

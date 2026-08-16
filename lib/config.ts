@@ -3,3 +3,6 @@ export const CHECKOUT_DEMO_503 =
 
 /** Optional demo-state controls are disabled unless explicitly enabled. */
 export const DEMO_MODE = process.env.NEXT_PUBLIC_DEMO_MODE === "true";
+
+export const AUTH_MODE =
+  process.env.NEXT_PUBLIC_AUTH_MODE === "backend" ? "backend" : "demo";

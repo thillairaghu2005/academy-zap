@@ -42,6 +42,7 @@ import { AddToCartButton } from "@/components/commerce/add-to-cart-button";
 import { BuyNowButton } from "@/components/commerce/buy-now-button";
 import { hueForId } from "@/lib/visual";
 import { useSession } from "@/components/providers/session-provider";
+import { AUTH_MODE } from "@/lib/config";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
@@ -254,7 +255,7 @@ export function CourseDetailClient({
   // The mock owns the truth — the client never guesses access.
   const ownedQuery = useQuery({
     queryKey: ["entitlement", course.id, userId],
-    queryFn: () => hasEntitlement(userId, course.id),
+    queryFn: () => AUTH_MODE === "demo" && hasEntitlement(userId, course.id),
     enabled: isEnrolledUser && !isFree && isPublished,
   });
   const owned = ownedQuery.data ?? false;

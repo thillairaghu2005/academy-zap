@@ -5,33 +5,42 @@ labs, assessments, commerce, support, and gamification.
 
 ## Current Architecture
 
-The frontend uses FastAPI for authentication through a same-origin Next.js
-proxy. Deferred feature surfaces still remain explicitly separate demo data
-until their production vertical slices exist:
+Authentication and course data run through a single boundary selected by
+`NEXT_PUBLIC_AUTH_MODE` (see `.env.example`):
 
 ```text
 Next.js UI
-  -> frontend demo authentication (localStorage)
-  -> local demo data services
-  -> lib/mocks fixtures and browser state
+  -> SessionProvider / lib/data/demo services (AUTH_MODE switch)
+  -> demo mode:  local demo stores (localStorage, lib/mocks fixtures)
+  -> backend mode: same-origin /api/backend proxy -> FastAPI (real API)
   -> TanStack Query and React state
 ```
 
-`backend/` contains the FastAPI foundation with PostgreSQL, Redis,
-Alembic, event contracts, authentication, and the Phase 0 gamification ledger
-path. The frontend has not been switched to that API yet.
+- **`NEXT_PUBLIC_AUTH_MODE=demo` (default):** frontend-only demo auth
+  (localStorage) plus local demo course data, enrollment, and progress — no
+  FastAPI needed.
+- **`NEXT_PUBLIC_AUTH_MODE=backend`:** the same UI calls the real FastAPI
+  course APIs (`/api/v1/courses`, enroll, progress, my-learning) and the
+  backend derives the user from the access token; the frontend never sends a
+  `user_id`.
 
-Authentication is provided by `src/lib/demoAuth.ts` and exposed globally by
-`SessionProvider` and `useSession()`. The demo account is:
+The switch lives at the data boundary only — one UI, one set of components.
+The session is local to the browser in demo mode. It is not a JWT, server
+session, cookie, or security boundary.
+
+`backend/` contains the FastAPI foundation with PostgreSQL, Redis, Alembic,
+event contracts, authentication, and the gamification ledger path. The course
+catalog → enrollment → course-access vertical slice is implemented there with
+organization/tenant isolation, publication-state enforcement, and idempotent
+enrollment.
+
+The seeded demo account is:
 
 ```text
 Email:    demo@zapsters.dev
-Password: Demo@12345
+Password: zapsters-demo
 User:     Raghunandhan
 ```
-
-The session is local to the browser. It is not a JWT, server session, cookie,
-or security boundary.
 
 ## Data Layer
 

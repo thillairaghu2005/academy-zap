@@ -20,6 +20,17 @@ export const authSessionSchema = z.object({
   tokens: tokenPairSchema,
 });
 
+const apiCourseFormatSchema = z.enum(["video", "interactive", "lab", "project", "judge"]);
+const apiCareerTrackSchema = z.enum([
+  "cyber_security",
+  "web_development",
+  "ai_ml",
+  "cloud",
+  "data_science",
+  "game_dev",
+  "interview_prep",
+]);
+
 const apiLessonSchema = z.object({
   id: z.string().uuid(),
   title: z.string(),
@@ -58,8 +69,8 @@ export const apiCourseSchema = z.object({
   syllabus: z.array(apiSectionSchema),
   created_at: z.string(),
   updated_at: z.string(),
-  format: z.enum(["video", "interactive", "lab", "project", "judge"]).nullable().optional(),
-  career_track: z.string().nullable().optional(),
+  format: apiCourseFormatSchema.nullable().optional(),
+  career_track: apiCareerTrackSchema.nullable().optional(),
   is_project_based: z.boolean().optional(),
   certificate_included: z.boolean().optional(),
 });
@@ -80,8 +91,8 @@ export const apiCourseListSchema = z.object({
       total_lessons: z.number(),
       instructor_name: z.string(),
       language: z.string(),
-      format: z.enum(["video", "interactive", "lab", "project", "judge"]),
-      career_track: z.string(),
+      format: apiCourseFormatSchema,
+      career_track: apiCareerTrackSchema,
       is_project_based: z.boolean(),
       certificate_included: z.boolean(),
     }),

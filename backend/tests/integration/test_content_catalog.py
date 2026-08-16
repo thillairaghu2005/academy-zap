@@ -6,9 +6,12 @@ import uuid
 
 import pytest
 from httpx import AsyncClient
+from sqlalchemy import select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from content.models import Course, Lesson, Module
+from platform_core.core.models.user import User
+from tests.conftest import register_and_login
 
 
 @pytest.mark.asyncio
@@ -99,3 +102,46 @@ async def test_get_course_does_not_expose_a_draft(
     response = await client.get(f"/api/v1/courses/{draft.id}")
 
     assert response.status_code == 404
+
+
+@pytest.mark.asyncio
+async def test_catalog_does_not_expose_courses_from_another_organization(
+    client: AsyncClient, db_session: AsyncSession
+) -> None:
+    access_token = await register_and_login(client, "catalog-tenant@example.com")
+    user_id = (
+        await db_session.execute(select(User.id).where(User.email == "catalog-tenant@example.com"))
+    ).scalar_one()
+    organization_a = uuid.uuid4()
+    organization_b = uuid.uuid4()
+    await db_session.execute(update(User).where(User.id == user_id).values(org_id=organization_a))
+    visible = Course(
+        id=uuid.uuid4(),
+        title="Visible Organization Course",
+        category="web_development",
+        level="beginner",
+        instructor_user_id=uuid.uuid4(),
+        status="published",
+        org_id=organization_a,
+    )
+    hidden = Course(
+        id=uuid.uuid4(),
+        title="Hidden Organization Course",
+        category="web_development",
+        level="beginner",
+        instructor_user_id=uuid.uuid4(),
+        status="published",
+        org_id=organization_b,
+    )
+    db_session.add_all([visible, hidden])
+    await db_session.commit()
+
+    response = await client.get(
+        "/api/v1/courses",
+        headers={"Authorization": f"Bearer {access_token}"},
+    )
+
+    assert response.status_code == 200
+    titles = [item["title"] for item in response.json()["items"]]
+    assert "Visible Organization Course" in titles
+    assert "Hidden Organization Course" not in titles

@@ -3,6 +3,14 @@
 import * as React from "react";
 import { toast } from "sonner";
 
+import {
+  clearAccessToken,
+  getCurrentUser,
+  login as backendLogin,
+  logout as backendLogout,
+  register as backendRegister,
+} from "@/lib/api/client";
+import type { ApiUser } from "@/lib/api/contracts";
 import type {
   LoginInput,
   RegisterInput,
@@ -16,6 +24,8 @@ import {
   subscribeDemoStorage,
   writeDemoStorage,
 } from "@/lib/demo/storage";
+import { AUTH_MODE } from "@/lib/config";
+import { MOCK_LEARNER } from "@/lib/mocks/users";
 
 interface MockAccount {
   user: SessionUser;
@@ -37,16 +47,20 @@ interface SessionContextValue {
 const SessionContext = React.createContext<SessionContextValue | null>(null);
 
 const DEFAULT_ACCOUNT: MockAccount = {
-  user: {
-    id: "00000000-0000-4000-8000-000000000001",
-    display_name: "Demo Zapster",
-    email: "demo@zapsters.dev",
-    avatar_url: null,
-    role: "user",
-    org_id: null,
-  },
+  user: MOCK_LEARNER,
   password: "zapsters-demo",
 };
+
+function toSessionUser(user: ApiUser): SessionUser {
+  return {
+    id: user.id,
+    display_name: user.display_name,
+    email: user.email,
+    avatar_url: null,
+    role: user.role,
+    org_id: user.org_id,
+  };
+}
 
 function accounts(): MockAccount[] {
   return readDemoStorage(DEMO_STORAGE_KEYS.authAccounts, [DEFAULT_ACCOUNT]);
@@ -71,6 +85,20 @@ export function SessionProvider({ children }: { children: React.ReactNode }) {
   const [session, setSession] = React.useState<SessionState>({ status: "loading", user: null });
 
   React.useEffect(() => {
+    if (AUTH_MODE === "backend") {
+      let cancelled = false;
+      void getCurrentUser()
+        .then((user) => {
+          if (!cancelled) setSession({ status: "authenticated", user: toSessionUser(user) });
+        })
+        .catch(() => {
+          if (!cancelled) setSession({ status: "anonymous", user: null });
+        });
+      return () => {
+        cancelled = true;
+      };
+    }
+
     const restore = () => {
       const user = readDemoStorage<SessionUser | null>(DEMO_STORAGE_KEYS.authSession, null);
       setSession(user ? { status: "authenticated", user } : { status: "anonymous", user: null });
@@ -81,6 +109,14 @@ export function SessionProvider({ children }: { children: React.ReactNode }) {
 
   const login = React.useCallback(
     async (input: LoginInput) => {
+      if (AUTH_MODE === "backend") {
+        const result = await backendLogin(input);
+        const user = toSessionUser(result.user);
+        setSession({ status: "authenticated", user });
+        toast.success(`Welcome back, ${user.display_name} ⚡`);
+        return;
+      }
+
       const account = accounts().find(
         (candidate) => candidate.user.email === input.email.trim().toLowerCase(),
       );
@@ -98,6 +134,14 @@ export function SessionProvider({ children }: { children: React.ReactNode }) {
 
   const register = React.useCallback(
     async (input: RegisterInput) => {
+      if (AUTH_MODE === "backend") {
+        const result = await backendRegister(input);
+        const user = toSessionUser(result.user);
+        setSession({ status: "authenticated", user });
+        toast.success("Account created — welcome to Zapsters ⚡");
+        return;
+      }
+
       const normalizedEmail = input.email.trim().toLowerCase();
       if (accounts().some((candidate) => candidate.user.email === normalizedEmail)) {
         throw new Error("An account with that email already exists.");
@@ -112,6 +156,17 @@ export function SessionProvider({ children }: { children: React.ReactNode }) {
   );
 
   const logout = React.useCallback(async () => {
+    if (AUTH_MODE === "backend") {
+      try {
+        await backendLogout();
+      } finally {
+        clearAccessToken();
+        setSession({ status: "anonymous", user: null });
+        toast.info("Signed out.");
+      }
+      return;
+    }
+
     removeDemoStorage(DEMO_STORAGE_KEYS.authSession);
     setSession({ status: "anonymous", user: null });
     toast.info("Signed out.");
