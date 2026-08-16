@@ -74,6 +74,18 @@ class ConflictError(AppError):
     detail = "The requested operation conflicts with the current resource state."
 
 
+class UnprocessableEntity(AppError):
+    """A request was well-formed but semantically invalid (HTTP 422).
+
+    Distinct from schema validation (which FastAPI answers with its own 422): this is for
+    domain rules a route/service checks after the request parses, e.g. progress that exceeds
+    the lesson's duration.
+    """
+
+    status_code = status.HTTP_422_UNPROCESSABLE_CONTENT
+    detail = "The request could not be processed."
+
+
 # --- Gamification integrity (gamification doc §7.2) --------------------------------------------
 
 

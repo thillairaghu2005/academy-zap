@@ -7,11 +7,13 @@ import {
   apiAttemptSchema,
   apiAttemptSummariesSchema,
   apiCourseListSchema,
+  apiLessonContentSchema,
   apiMyLearningSchema,
   apiCourseProgressSchema,
   apiCourseSchema,
   apiGradeResultSchema,
   apiEnrollmentSchema,
+  apiProgressContextSchema,
   type ApiUser,
   apiUserSchema,
   authSessionSchema,
@@ -32,6 +34,7 @@ import type {
   Enrollment,
   GradeResult,
   MeilisearchCatalogResponse,
+  ProgressContext,
 } from "@/lib/contracts/index";
 import type { LoginInput, RegisterInput } from "@/lib/contracts/session";
 import { hueForId } from "@/lib/visual";
@@ -232,6 +235,12 @@ export async function getCourseFromApi(courseId: string): Promise<Course> {
   return courseDetail(await apiRequest(`/courses/${courseId}`, apiCourseSchema));
 }
 
+export async function getLessonFromApi(
+  lessonId: string,
+): Promise<z.infer<typeof apiLessonContentSchema>> {
+  return apiRequest(`/lessons/${lessonId}`, apiLessonContentSchema);
+}
+
 export async function enrollCourse(courseId: string): Promise<Enrollment> {
   return toEnrollment(
     await apiRequest(`/courses/${courseId}/enroll`, apiEnrollmentSchema, { method: "POST" }),
@@ -311,6 +320,10 @@ export async function reportAssessmentTelemetryFromApi(
   event: { type: string; detail: string; occurred_at: string },
 ): Promise<void> {
   await apiRequest("/assessments/attempts/" + attemptId + "/telemetry", z.undefined(), { method: "POST", body: JSON.stringify(event) });
+}
+
+export async function getMyProgressFromApi(): Promise<ProgressContext> {
+  return apiRequest("/me/progress", apiProgressContextSchema);
 }
 
 export async function getAssessmentComboFromApi(attemptId: string): Promise<ComboState> {

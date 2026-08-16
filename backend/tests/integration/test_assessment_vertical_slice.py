@@ -8,13 +8,28 @@ from httpx import AsyncClient
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from assessments.models import Assessment, Question
+from content.models import Course, Enrollment
 from gamification.context.resolver import ProgressContextResolver
 from gamification.services.event_processor import GamificationEventProcessor
 from platform_core.bus.consumer import EventConsumer
 from tests.conftest import register_and_login
 
 
-async def _assessment(db_session: AsyncSession) -> Assessment:
+async def _assessment(
+    db_session: AsyncSession, *, user_id: uuid.UUID | None = None
+) -> Assessment:
+    course = Course(
+        id=uuid.uuid4(),
+        title="Assessment Host Course",
+        category="web_development",
+        level="beginner",
+        status="published",
+        instructor_user_id=uuid.uuid4(),
+    )
+    db_session.add(course)
+    await db_session.flush()
+    if user_id is not None:
+        db_session.add(Enrollment(course_id=course.id, user_id=user_id))
     assessment = Assessment(
         id=uuid.uuid4(),
         slug=f"mcq-{uuid.uuid4()}",
@@ -24,6 +39,7 @@ async def _assessment(db_session: AsyncSession) -> Assessment:
         attempts_allowed=2,
         estimated_minutes=30,
         passing_percent=40,
+        course_id=course.id,
     )
     assessment.questions = [
         Question(
@@ -58,8 +74,12 @@ async def test_mcq_assessment_is_server_graded_and_feeds_gamification(
     db_session: AsyncSession,
     redis: fakeredis.FakeAsyncRedis,
 ) -> None:
-    assessment = await _assessment(db_session)
     access_token = await register_and_login(client, "assessment@example.com")
+    me = await client.get(
+        "/api/v1/auth/me", headers={"Authorization": f"Bearer {access_token}"}
+    )
+    user_id = uuid.UUID(me.json()["id"])
+    assessment = await _assessment(db_session, user_id=user_id)
     headers = {"Authorization": f"Bearer {access_token}"}
     question_ids = [question.id for question in assessment.questions]
 
@@ -128,8 +148,12 @@ async def test_mcq_assessment_is_server_graded_and_feeds_gamification(
 async def test_assessment_attempt_is_not_readable_by_another_user(
     client: AsyncClient, db_session: AsyncSession
 ) -> None:
-    assessment = await _assessment(db_session)
     owner_token = await register_and_login(client, "assessment-owner@example.com")
+    me = await client.get(
+        "/api/v1/auth/me", headers={"Authorization": f"Bearer {owner_token}"}
+    )
+    owner_id = uuid.UUID(me.json()["id"])
+    assessment = await _assessment(db_session, user_id=owner_id)
     started = await client.post(
         f"/api/v1/assessments/{assessment.id}/attempts",
         headers={"Authorization": f"Bearer {owner_token}"},

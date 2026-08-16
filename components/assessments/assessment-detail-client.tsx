@@ -24,6 +24,7 @@ import {
 
 import type { Assessment, QuestionType } from "@/lib/contracts/assessment";
 import { getAssessment, startAttempt } from "@/lib/data/demo/assessment";
+import { AUTH_MODE } from "@/lib/config";
 import { useSession } from "@/components/providers/session-provider";
 import { ComboCurveTeaser } from "@/components/assessments/combo-curve-teaser";
 import { AttemptsTracker } from "@/components/assessments/attempts-tracker";
@@ -123,7 +124,10 @@ export function AssessmentDetailClient({
   }
 
   const assessment = assessmentQuery.data;
+  // The backend slice grades MCQ only; the demo service also grades short-answer and code
+  // questions deterministically (slice 03 §6), so the gate applies to backend mode alone.
   const mcqOnly = assessment.questions.every((question) => question.type === "mcq");
+  const startDisabledByFormat = AUTH_MODE === "backend" && !mcqOnly;
   const totalPoints = assessment.questions.reduce(
     (sum, q) => sum + DIFF_POINTS[q.difficulty],
     0,
@@ -262,7 +266,7 @@ export function AssessmentDetailClient({
 
             <Button
               onClick={() => start.mutate()}
-              disabled={!user || start.isPending || !mcqOnly}
+              disabled={!user || start.isPending || startDisabledByFormat}
               className="w-full gap-2"
             >
               {start.isPending ? (
@@ -296,7 +300,7 @@ export function AssessmentDetailClient({
               </p>
             ) : null}
 
-            {!mcqOnly ? (
+            {startDisabledByFormat ? (
               <p className="text-xs text-muted-foreground">
                 Only MCQ assessments are enabled in this production slice.
               </p>

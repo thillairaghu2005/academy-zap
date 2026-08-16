@@ -3,9 +3,11 @@ import uuid
 from fastapi import APIRouter, Query
 
 from content.schemas.course import Course, CourseListResponse
+from content.schemas.lesson import LessonContent
 from content.schemas.progress import CourseProgress, LessonProgressInput, MyLearningItem
 from content.services.course import CourseService
 from content.services.enrollment import EnrollmentService, ProgressService
+from content.services.lesson import LessonService
 from platform_core.contracts.content import Enrollment, SignedManifest
 from platform_core.core.deps import CurrentUser, DbSession, OptionalCurrentUser, RedisClient
 from platform_core.core.exceptions import NotImplementedFoundationError
@@ -63,6 +65,16 @@ async def record_progress(
 ) -> CourseProgress:
     return await ProgressService(session, redis).record_lesson_progress(
         lesson_id, current_user.id, current_user.org_id, data
+    )
+
+
+@router.get("/lessons/{lesson_id}", response_model=LessonContent)
+async def get_lesson(
+    lesson_id: uuid.UUID, session: DbSession, current_user: CurrentUser
+) -> LessonContent:
+    """Enrollment-gated lesson content (slice 02 §2) — never trusts a client-supplied identity."""
+    return await LessonService(session).get_lesson_content(
+        lesson_id, current_user.id, current_user.org_id
     )
 
 

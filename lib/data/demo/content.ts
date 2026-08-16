@@ -3,6 +3,7 @@ import {
   enrollCourse,
   getCourseFromApi,
   getCourseProgressFromApi,
+  getLessonFromApi,
   listMyLearningFromApi,
   recordLessonProgressFromApi,
   searchCourses,
@@ -129,6 +130,14 @@ export async function getCourseForAdmin(_courseId: string): Promise<Course> {
   throw new ApiError(501, "Course authoring is not part of this production slice.");
 }
 
+async function getDemoLessonContent(lessonId: string): Promise<{ body: string | null }> {
+  for (const course of MOCK_COURSES) {
+    const lesson = course.syllabus.flatMap((section) => section.lessons).find((item) => item.id === lessonId);
+    if (lesson) return { body: lesson.preview_body ?? null };
+  }
+  throw new ApiError(404, "Lesson was not found.");
+}
+
 async function getDemoLessonPreview(_lessonId: string): Promise<LessonPreview> {
   for (const course of MOCK_COURSES) {
     const lesson = course.syllabus.flatMap((section) => section.lessons).find((item) => item.id === _lessonId);
@@ -206,6 +215,19 @@ export async function getLessonPreview(lessonId: string): Promise<LessonPreview>
     throw new ApiError(501, "Lesson preview delivery is not implemented in the backend slice.");
   }
   return getDemoLessonPreview(lessonId);
+}
+
+export async function getLessonContent(
+  lessonId: string,
+  _userId: string,
+): Promise<{ body: string | null }> {
+  // Backend mode: enrollment-gated GET /lessons/{id} — the server derives the user from the
+  // access token, never from `_userId`. Demo mode: the mock fixture's own local lesson body.
+  if (AUTH_MODE === "backend") {
+    const lesson = await getLessonFromApi(lessonId);
+    return { body: lesson.body };
+  }
+  return getDemoLessonContent(lessonId);
 }
 
 export async function getPlaybackManifest(lessonId: string, userId: string): Promise<SignedManifest> {

@@ -35,6 +35,14 @@ class Assessment(Base):
     estimated_minutes: Mapped[int] = mapped_column(Integer, nullable=False, default=30)
     attempts_allowed: Mapped[int] = mapped_column(Integer, nullable=False, default=1)
     passing_percent: Mapped[float] = mapped_column(Numeric(5, 2), nullable=False, default=70)
+    # Slice 03 §2 (assessment access): an assessment belongs to a course; publication state and
+    # tenant scope gate every read. `course_id`/`org_id` are plain UUID columns, never foreign
+    # keys into Content/Core tables (platform §4.2, §8.1 — cross-boundary references by id only).
+    course_id: Mapped[uuid.UUID | None] = mapped_column(
+        UUID(as_uuid=True), nullable=True, index=True
+    )
+    org_id: Mapped[uuid.UUID | None] = mapped_column(UUID(as_uuid=True), nullable=True, index=True)
+    status: Mapped[str] = mapped_column(String(20), nullable=False, default="published")
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
 
     questions: Mapped[list["Question"]] = relationship(

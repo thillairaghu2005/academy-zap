@@ -74,7 +74,11 @@ class CourseService:
                         duration_seconds=lesson.duration_seconds,
                         position=lesson.position,
                         is_preview=lesson.is_preview,
-                        preview_body=lesson.preview_body,
+                        # Only free-preview lessons expose their body through the public course
+                        # detail. Full lesson content is served enrollment-gated via
+                        # GET /lessons/{lesson_id} (slice 02 §2) — the syllabus must not be a
+                        # back door past that boundary.
+                        preview_body=lesson.preview_body if lesson.is_preview else None,
                     )
                     for lesson in sorted(module.lessons, key=lambda item: item.position)
                 ],
