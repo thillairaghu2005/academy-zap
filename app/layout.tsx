@@ -1,5 +1,6 @@
 import { Suspense } from "react";
 import type { Metadata, Viewport } from "next";
+import { Analytics } from "@vercel/analytics/next";
 
 import "./globals.css";
 import { QueryProvider } from "@/components/providers/query-provider";
@@ -101,6 +102,7 @@ export default function RootLayout({
           </MotionProvider>
         </LiveRegionProvider>
         <ServiceWorkerProvider />
+        <Analytics />
       </body>
     </html>
   );
