@@ -99,13 +99,16 @@ async def poll_gamification_events(_ctx: dict[Any, Any], *_args: Any, **_kwargs:
                 continue
 
             context = None
+            awarded_badges: list[Any] = []
             if await repo.try_mark_processed(
                 idempotency_key=delivered.event.idempotency_key,
                 consumer_group=GAMIFICATION_CONSUMER_GROUP,
                 event_type=delivered.event_type,
                 raw_event=json.loads(delivered.raw_data),
             ):
-                context = await processor.process(delivered.event)
+                result = await processor.process(delivered.event)
+                context = result.context
+                awarded_badges = result.awarded_badges
                 processed += 1
             else:
                 # Redelivery path: ledger and context are already committed,
@@ -132,12 +135,17 @@ async def poll_gamification_events(_ctx: dict[Any, Any], *_args: Any, **_kwargs:
                     context, display_name=user.display_name if user else "Learner"
                 )
                 from gamification.realtime.sse import (
+                    publish_badges_updated,
                     publish_leaderboard_updated,
                     publish_progress_updated,
                 )
 
                 await publish_progress_updated(redis, str(context.user_id))
                 await publish_leaderboard_updated(redis)
+            if awarded_badges:
+                from gamification.realtime.sse import publish_badges_updated
+
+                await publish_badges_updated(redis, str(delivered.event.user_id))
             await session.commit()
             await consumer.ack(delivered.message_id)
     return processed

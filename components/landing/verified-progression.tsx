@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowRight, CheckCircle2, ShieldCheck, Trophy } from "lucide-react";
+import { CheckCircle2, ShieldCheck, Trophy } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { TrustBadge } from "@/components/shared/trust-badge";
@@ -9,11 +9,14 @@ const ranks = ["Initiate", "Oracle", "Spartan", "Titan", "Atlas", "Hyperion", "O
 /** Real F5 vocabulary: rank ladder plus the two XP tracks that feed it. */
 export function VerifiedProgression() {
   return (
-    <section className="border-y border-border bg-surface-1 text-foreground">
+    <section className="bg-surface-1 text-foreground">
       <div className="grid gap-10 px-5 py-10 sm:px-8 sm:py-12 lg:grid-cols-[0.75fr_1.25fr] lg:items-center lg:px-12">
         <div>
-          <p className="font-mono text-xs uppercase tracking-widest text-primary">F5 / ProgressContext</p>
-          <h2 className="mt-4 max-w-md font-display text-h2">
+          <p className="font-mono text-xs uppercase tracking-widest text-muted-foreground">F5 / ProgressContext</p>
+          <h2
+            className="mt-4 max-w-md text-h2"
+            style={{ fontFamily: "'Geist Variable', sans-serif", fontWeight: 100, letterSpacing: "-0.03em" }}
+          >
             Your rank is two tracks, not one score.
           </h2>
           <p className="mt-4 max-w-md text-sm leading-7 text-muted-foreground">
@@ -21,7 +24,7 @@ export function VerifiedProgression() {
           </p>
            <Button variant="default" className="mt-6" asChild>
             <Link href="/rank">
-              Inspect the ladder <ArrowRight />
+              Inspect the ladder
             </Link>
           </Button>
         </div>

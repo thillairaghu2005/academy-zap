@@ -47,6 +47,7 @@ logger = logging.getLogger(__name__)
 # Client-facing SSE event types — the small explicit transport envelope (slice 07 §3).
 PROGRESS_UPDATED = "progress.updated"
 LEADERBOARD_UPDATED = "leaderboard.updated"
+BADGES_UPDATED = "badges.updated"
 
 
 def leaderboard_channel() -> str:
@@ -235,6 +236,7 @@ def _event_type_for(payload: str) -> str:
     if isinstance(event_type, str) and event_type in (
         PROGRESS_UPDATED,
         LEADERBOARD_UPDATED,
+        BADGES_UPDATED,
         "connected",
     ):
         return event_type
@@ -260,6 +262,17 @@ async def publish_leaderboard_updated(redis: AsyncRedis) -> None:
         )
     except Exception:  # noqa: BLE001 - a notification must never fail the event pipeline
         logger.exception("sse publish leaderboard.updated failed")
+
+
+async def publish_badges_updated(redis: AsyncRedis, user_id: str) -> None:
+    """Notify the user's private stream that a badge/credential was issued (slice 08). The
+    payload carries NO values — the frontend invalidates and refetches GET /me/badges."""
+    try:
+        await redis.publish(
+            f"{SSE_USER_CHANNEL_PREFIX}{user_id}", _sse_payload(BADGES_UPDATED)
+        )
+    except Exception:  # noqa: BLE001 - a notification must never fail the event pipeline
+        logger.exception("sse publish badges.updated failed")
 
 
 class SseTicketService:

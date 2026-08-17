@@ -2,9 +2,16 @@
 
 The event processor is the only application path that turns platform activity into XP. Routes and
 frontend state never provide an XP amount or mutate rank state directly.
+
+Slice 08 adds the badge/credential stage to the same authoritative path: after the ledger
+append and ProgressContext resolution, the minimal applicable badge definitions are evaluated
+and any new awards are issued with signed credentials (gamification §7.3). Replayed events go
+through the idempotency marker and never re-enter this path, and the database-level
+uniqueness invariants make duplicate awards impossible even under concurrent delivery.
 """
 
 from collections.abc import Mapping
+from dataclasses import dataclass, field
 from typing import Any
 
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -12,8 +19,11 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from gamification.context.resolver import ProgressContextResolver
 from gamification.context.schema import ProgressContext
 from gamification.integrity.gate import IntegritySignals, run_integrity_gate
+from gamification.models import UserBadge
+from gamification.projections.badges import BadgeEvaluator
 from gamification.repositories.ledger import LedgerRepository
 from gamification.rules import (
+    ANSWER_TIMING_MIN_MS_PER_QUESTION,
     ASSESSMENT_MAX_MASTERY_XP,
     COURSE_COMPLETION_XP,
     SIDE_ASSESSMENT_MULTIPLIER,
@@ -25,8 +35,21 @@ from platform_core.events.schema import (
 )
 
 
+@dataclass
+class EventProcessResult:
+    """The outcome of processing one authoritative event.
+
+    `context` is the resolved ProgressContext (None when the event type is not handled).
+    `awarded_badges` lists the badge awards created by THIS processing call — empty for
+    replayed events, unknown event types, or events that made no badge newly eligible. The
+    event pipeline uses this to publish notification-only SSE freshness signals.
+    """
+
+    context: ProgressContext | None
+    awarded_badges: list[UserBadge] = field(default_factory=list)
+
+
 def _suspicious_answer_count(answers: list[dict[str, Any]]) -> int | None:
-    from gamification.rules import ANSWER_TIMING_MIN_MS_PER_QUESTION
     count = 0
     total = 0
     for answer in answers:
@@ -42,12 +65,16 @@ def _suspicious_answer_count(answers: list[dict[str, Any]]) -> int | None:
 
 class GamificationEventProcessor:
     def __init__(self, session: AsyncSession) -> None:
+        self._session = session
         self._ledger = LedgerRepository(session)
         self._resolver = ProgressContextResolver(session)
+        self._badges = BadgeEvaluator(session)
 
-    async def process(self, event: BaseEvent) -> ProgressContext | None:
-        """Append the authoritative XP entry and resolve the user's ProgressContext. Returns
-        the resolved context so the event pipeline can feed projections (slice 06)."""
+    async def process(self, event: BaseEvent) -> EventProcessResult:
+        """Append the authoritative XP entry, resolve the user's ProgressContext, then
+        evaluate the minimal applicable badge definitions and issue any new credentials.
+        Returns the resolved context + the awards created by this call so the event
+        pipeline can feed projections and notification-only SSE freshness signals."""
         if isinstance(event, CourseCompletedEvent):
             content_duration = event.payload.get("content_duration_seconds")
             gate = run_integrity_gate(
@@ -58,7 +85,7 @@ class GamificationEventProcessor:
                     time_spent_seconds=event.time_spent_seconds,
                 )
             )
-            return await self._append_and_resolve(
+            context = await self._append_and_resolve(
                 event=event,
                 xp_type="completion",
                 xp_delta=COURSE_COMPLETION_XP,
@@ -69,29 +96,26 @@ class GamificationEventProcessor:
                 source_id=event.course_id,
                 event_timestamp=event.occurred_at,
             )
-        if isinstance(event, AssessmentSubmittedEvent):
+        elif isinstance(event, AssessmentSubmittedEvent):
             gate = run_integrity_gate(
                 IntegritySignals(
                     question_count=len(event.question_level_answers),
                     suspicious_answer_count=_suspicious_answer_count(event.question_level_answers),
                 )
             )
-            print(f"DEBUG: question_level_answers={event.question_level_answers}")
-            print(f"DEBUG: suspicious_answer_count={_suspicious_answer_count(event.question_level_answers)}")
-            print(f"DEBUG: gate result={gate}")
             multiplier = SIDE_ASSESSMENT_MULTIPLIER if event.assessment_kind == "side" else 1.0
             raw_xp = round(ASSESSMENT_MAX_MASTERY_XP * event.score_pct / 100 * multiplier)
-            
+
             entries = await self._ledger.list_for_user(event.user_id)
             previous_mastery = sum(
-                e.xp_delta 
-                for e in entries 
+                e.xp_delta
+                for e in entries
                 if e.source_id == event.assessment_id and e.xp_type == "mastery"
             )
-            
+
             xp_delta = max(0, raw_xp - previous_mastery)
-            
-            return await self._append_and_resolve(
+
+            context = await self._append_and_resolve(
                 event=event,
                 xp_type="mastery",
                 xp_delta=xp_delta,
@@ -107,7 +131,14 @@ class GamificationEventProcessor:
                 source_id=event.assessment_id,
                 event_timestamp=event.occurred_at,
             )
-        return None
+        else:
+            return EventProcessResult(context=None)
+
+        if context is None:
+            return EventProcessResult(context=None)
+
+        awarded = await self._badges.evaluate_and_award(event=event, context=context)
+        return EventProcessResult(context=context, awarded_badges=awarded)
 
     async def _append_and_resolve(
         self,

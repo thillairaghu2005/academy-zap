@@ -26,8 +26,13 @@ import { useQueryClient } from "@tanstack/react-query";
 import { getSseTicketFromApi } from "@/lib/api/client";
 import { AUTH_MODE } from "@/lib/config";
 
-/** Client-facing SSE event types (the backend's transport envelope, slice 07 §3). */
-export type SseEventType = "connected" | "progress.updated" | "leaderboard.updated" | "update";
+/** Client-facing SSE event types (the backend's transport envelope, slice 07 §3 + slice 08). */
+export type SseEventType =
+  | "connected"
+  | "progress.updated"
+  | "leaderboard.updated"
+  | "badges.updated"
+  | "update";
 
 const SSE_PATH = "/api/backend/events";
 const MAX_RECONNECT_DELAY_MS = 15_000;
@@ -61,6 +66,8 @@ export function invalidationsFor(type: SseEventType): string[][] {
       return [["progress-context"]];
     case "leaderboard.updated":
       return [["leaderboard"], ["my-standing"], ["public-leaderboard-preview"]];
+    case "badges.updated":
+      return [["badges"]];
     case "connected":
     case "update":
     default:
@@ -71,6 +78,7 @@ export function invalidationsFor(type: SseEventType): string[][] {
         ["leaderboard"],
         ["my-standing"],
         ["public-leaderboard-preview"],
+        ["badges"],
       ];
   }
 }
@@ -110,7 +118,13 @@ export function useRealtimeUpdates(enabled: boolean): { connected: boolean } {
         // progress.updated`, ...). `onmessage` only fires for the default `message` type,
         // so we must register one listener per client-facing type. Unknown/generic frames
         // arrive as `update` (the backend maps them) and refetch progression + board.
-        const TYPES: SseEventType[] = ["connected", "progress.updated", "leaderboard.updated", "update"];
+        const TYPES: SseEventType[] = [
+          "connected",
+          "progress.updated",
+          "leaderboard.updated",
+          "badges.updated",
+          "update",
+        ];
         for (const type of TYPES) {
           source.addEventListener(type, (event) => {
             const update = parseEventData((event as MessageEvent).data);

@@ -37,6 +37,10 @@ describe("sse invalidationsFor", () => {
     ]);
   });
 
+  it("badges.updated invalidates the badge wall query only", () => {
+    expect(invalidationsFor("badges.updated")).toEqual([["badges"]]);
+  });
+
   it("connected and unknown events refresh all authoritative surfaces (idempotent)", () => {
     for (const type of ["connected", "update"] as const) {
       const keys = invalidationsFor(type);
@@ -44,6 +48,7 @@ describe("sse invalidationsFor", () => {
       expect(keys).toContainEqual(["leaderboard"]);
       expect(keys).toContainEqual(["my-standing"]);
       expect(keys).toContainEqual(["public-leaderboard-preview"]);
+      expect(keys).toContainEqual(["badges"]);
     }
   });
 });
