@@ -12,7 +12,7 @@ import { Input } from "@/components/ui/input";
 import { JsonLd } from "@/components/seo/json-ld";
 import { cn } from "@/lib/utils";
 
-const TRUSTED_NAMES = ["Northstar", "Meridian", "Orbital", "Fieldnote", "Cinder", "Signal Labs"];
+
 
 function useLiveLearners() {
   const [learners, setLearners] = React.useState(1204);
@@ -61,31 +61,21 @@ export function LiveLearningTicker() {
   );
 }
 
-export function TrustedByStrip() {
-  return (
-    <section aria-label="Trusted by teams" className="border-b border-border bg-background">
-      <div className="mx-auto flex max-w-7xl flex-col gap-4 px-5 py-7 sm:px-8 lg:flex-row lg:items-center lg:px-10">
-        <p className="shrink-0 text-xs font-semibold uppercase tracking-[0.16em] text-muted-foreground">Built for people who ship</p>
-        <div className="flex min-w-0 gap-7 overflow-hidden [mask-image:linear-gradient(to_right,transparent,black_8%,black_92%,transparent)]" aria-hidden="true">
-          {[...TRUSTED_NAMES, ...TRUSTED_NAMES].map((name, index) => (
-            <span key={`${name}-${index}`} className="shrink-0 font-display text-sm font-semibold tracking-[-0.02em] text-muted-foreground/65">{name}</span>
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-}
+
 
 export function PricingSection({ standalone = false }: { standalone?: boolean }) {
   const [yearly, setYearly] = React.useState(false);
 
   return (
-    <section id="pricing" className={cn("border-y border-border bg-surface-1", standalone ? "min-h-[calc(100dvh-5rem)]" : "")}>
+    <section id="pricing" className={cn("bg-surface-1", standalone ? "min-h-[calc(100dvh-5rem)]" : "")}>
       <div className="mx-auto max-w-7xl px-5 py-16 sm:px-8 sm:py-20 lg:px-10">
         <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
           <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.16em] text-primary">Simple plans, serious practice</p>
-            <h2 className="mt-3 max-w-2xl font-display text-3xl font-semibold tracking-[-0.045em] sm:text-4xl">Choose the amount of structure you need.</h2>
+            <p className="text-xs font-semibold uppercase tracking-[0.16em] text-muted-foreground">Simple plans, serious practice</p>
+            <h2
+              className="mt-3 max-w-2xl text-3xl tracking-[-0.045em] sm:text-4xl"
+              style={{ fontFamily: "'Geist Variable', sans-serif", fontWeight: 100 }}
+            >Choose the amount of structure you need.</h2>
             <p className="mt-3 max-w-xl text-sm leading-6 text-muted-foreground">Start free, build a rhythm, and upgrade when the next level of feedback is worth it.</p>
           </div>
           <div className="inline-flex w-fit items-center rounded-lg border border-border bg-card p-1 text-sm shadow-sm" role="group" aria-label="Billing interval">
@@ -122,9 +112,9 @@ export function PricingSection({ standalone = false }: { standalone?: boolean })
 export function TestimonialWall() {
   const [active, setActive] = React.useState<(typeof MARKETING_TESTIMONIALS)[number] | null>(null);
   return (
-    <section className="border-b border-border bg-background">
+    <section className="bg-background">
       <div className="mx-auto max-w-7xl px-5 py-16 sm:px-8 sm:py-20 lg:px-10">
-        <div className="flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between"><div><p className="text-xs font-semibold uppercase tracking-[0.16em] text-primary">Learner signal</p><h2 className="mt-3 font-display text-3xl font-semibold tracking-[-0.045em]">Progress feels better when it is visible.</h2></div><p className="max-w-md text-sm leading-6 text-muted-foreground">A calmer learning loop for people who want to leave each session with something they can use.</p></div>
+        <div className="flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between"><div><p className="text-xs font-semibold uppercase tracking-[0.16em] text-muted-foreground">Learner signal</p><h2 className="mt-3 text-3xl tracking-[-0.045em]" style={{ fontFamily: "'Geist Variable', sans-serif", fontWeight: 100 }}>Progress feels better when it is visible.</h2></div><p className="max-w-md text-sm leading-6 text-muted-foreground">A calmer learning loop for people who want to leave each session with something they can use.</p></div>
         <div className="mt-9 grid gap-4 lg:grid-cols-3">
           {MARKETING_TESTIMONIALS.map((testimonial) => (
             <Card key={testimonial.name} className={cn("p-6", testimonial.featured && "border-primary/30 bg-primary/[0.025]")}>
@@ -146,10 +136,10 @@ export function FaqSection() {
   const [open, setOpen] = React.useState(0);
   const jsonLd = { "@context": "https://schema.org", "@type": "FAQPage", mainEntity: MARKETING_FAQ.map((item) => ({ "@type": "Question", name: item.question, acceptedAnswer: { "@type": "Answer", text: item.answer } })) };
   return (
-    <section className="border-b border-border bg-surface-1">
+    <section className="bg-surface-1">
       <JsonLd data={jsonLd} />
       <div className="mx-auto max-w-4xl px-5 py-16 sm:px-8 sm:py-20">
-        <div className="text-center"><p className="text-xs font-semibold uppercase tracking-[0.16em] text-primary">Questions, answered</p><h2 className="mt-3 font-display text-3xl font-semibold tracking-[-0.045em]">A clear start, without the fine print.</h2></div>
+        <div className="text-center"><p className="text-xs font-semibold uppercase tracking-[0.16em] text-muted-foreground">Questions, answered</p><h2 className="mt-3 text-3xl tracking-[-0.045em]" style={{ fontFamily: "'Geist Variable', sans-serif", fontWeight: 100 }}>A clear start, without the fine print.</h2></div>
         <div className="mt-9 divide-y divide-border rounded-xl border border-border bg-card">
           {MARKETING_FAQ.map((item, index) => { const expanded = open === index; return <div key={item.question}><button type="button" aria-expanded={expanded} onClick={() => setOpen(expanded ? -1 : index)} className="flex min-h-14 w-full items-center justify-between gap-4 px-5 py-4 text-left text-sm font-semibold outline-none transition-colors hover:text-primary focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring sm:px-6"><span>{item.question}</span><ChevronDown className={cn("size-4 shrink-0 text-muted-foreground transition-transform", expanded && "rotate-180 text-primary")} /></button>{expanded ? <div className="px-5 pb-5 text-sm leading-6 text-muted-foreground sm:px-6">{item.answer}</div> : null}</div>; })}
         </div>

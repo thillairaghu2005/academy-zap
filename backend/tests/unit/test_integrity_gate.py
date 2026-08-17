@@ -4,7 +4,6 @@ deterministic — no ML, no DB, no Redis.
 
 from gamification.integrity.gate import IntegritySignals, run_integrity_gate
 from gamification.rules import (
-    ANSWER_TIMING_MIN_MS_PER_QUESTION,
     RETRY_PATTERN_MAX_ATTEMPTS_NO_GAP,
     RETRY_PATTERN_MIN_GAP_SECONDS,
     SESSION_FINGERPRINT_MAX_DISTINCT_USERS,

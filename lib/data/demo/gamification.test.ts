@@ -222,3 +222,86 @@ describe("leaderboard data boundary", () => {
     );
   });
 });
+
+const BADGES_RESPONSE = [
+  {
+    badge_id: "course_complete",
+    name: "Course Conqueror",
+    description: "Completed a full course.",
+    credential_id: "b-verified-7f3a",
+    verify_url: "/rank/verify/b-verified-7f3a",
+    earned_at: "2026-01-02T00:00:00+00:00",
+    status: "verified",
+    category: "foundations",
+  },
+];
+
+const VERIFY_RESPONSE = {
+  credential_id: "b-verified-7f3a",
+  badge_name: "Course Conqueror",
+  issuer: "Zapsters",
+  subject: {
+    user_id: "00000000-0000-4000-8000-000000000001",
+    display_name: "Demo Zapster",
+  },
+  claim: {
+    category: "foundations",
+    earned_at: "2026-01-02T00:00:00+00:00",
+    level: 1,
+    rank_name: "Initiate",
+  },
+  signature: "ab12cd34ef56",
+  status: "verified",
+  note: "Signature valid — backed by an intact Zapsters ledger.",
+};
+
+describe("badge + credential data boundary", () => {
+  it("serves the isolated demo badge wall in demo mode", async () => {
+    const gamification = await import("@/lib/data/demo/gamification");
+    const badges = await gamification.getBadges("demo-user-001");
+
+    expect(Array.isArray(badges)).toBe(true);
+    expect(badges[0]?.verify_url).toContain("/rank/verify/");
+  });
+
+  it("reads the authoritative badge wall in backend mode — no local eligibility", async () => {
+    vi.stubEnv("NEXT_PUBLIC_AUTH_MODE", "backend");
+    vi.stubEnv("ZAPSTERS_API_URL", "https://api.example.test");
+    vi.stubGlobal(
+      "fetch",
+      vi.fn().mockResolvedValue(
+        new Response(JSON.stringify(BADGES_RESPONSE), { status: 200 }),
+      ),
+    );
+
+    const gamification = await import("@/lib/data/demo/gamification");
+    const badges = await gamification.getBadges("ignored-in-backend-mode");
+
+    expect(badges).toEqual(BADGES_RESPONSE);
+    expect(fetch).toHaveBeenCalledWith(
+      "https://api.example.test/api/v1/me/badges",
+      expect.objectContaining({ credentials: "include", cache: "no-store" }),
+    );
+  });
+
+  it("re-verifies through the public read-only endpoint in backend mode", async () => {
+    vi.stubEnv("NEXT_PUBLIC_AUTH_MODE", "backend");
+    vi.stubEnv("ZAPSTERS_API_URL", "https://api.example.test");
+    vi.stubGlobal(
+      "fetch",
+      vi.fn().mockResolvedValue(
+        new Response(JSON.stringify(VERIFY_RESPONSE), { status: 200 }),
+      ),
+    );
+
+    const gamification = await import("@/lib/data/demo/gamification");
+    const result = await gamification.verifyBadge("b-verified-7f3a");
+
+    expect(result.status).toBe("verified");
+    expect(result.issuer).toBe("Zapsters");
+    expect(fetch).toHaveBeenCalledWith(
+      "https://api.example.test/api/v1/verify/b-verified-7f3a",
+      expect.objectContaining({ credentials: "include", cache: "no-store" }),
+    );
+  });
+});

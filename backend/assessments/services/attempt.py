@@ -166,13 +166,6 @@ class AttemptService:
         correct = str(data.option_index) in (question.accepted_answers or [])
         score = _points(question.difficulty) if correct else 0
         now = datetime.now(UTC)
-        if row.question_level_answers:
-            last_timestamp = datetime.fromisoformat(
-                str(row.question_level_answers[-1]["submitted_at"])
-            )
-        else:
-            last_timestamp = row.started_at
-            
         time_spent_ms = data.time_spent_ms
 
         answer = {

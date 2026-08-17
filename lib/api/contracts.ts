@@ -287,5 +287,46 @@ export const apiLeaderboardPageSchema = z.object({
 /** §5.5 "My standing" read (GET /leaderboards/{scope}/me) — null when unranked. */
 export const apiMyStandingSchema = apiLeaderboardEntrySchema.nullable();
 
+/* ------------------------------------------------------------------ */
+/*  Badges & credentials (§7.3, slice 08)                              */
+/* ------------------------------------------------------------------ */
+
+/** §7.3 Badge read (GET /me/badges) — the locked `Badge` contract. Status and verify
+ * identity come from the server-owned signed credential, never from client state. */
+export const apiBadgeSchema = z.object({
+  badge_id: z.string(),
+  name: z.string(),
+  description: z.string(),
+  credential_id: z.string(),
+  verify_url: z.string(),
+  earned_at: z.string(),
+  status: z.enum(["verified", "flagged", "revoked"]),
+  category: z.string(),
+});
+
+export const apiBadgesSchema = z.array(apiBadgeSchema);
+
+/** §7.3 Public credential verification (GET /verify/{credential_id}) — read-only,
+ * unauthenticated, server-side Ed25519 re-verification. Exposes only the fields the
+ * verify page is allowed to show. */
+export const apiCredentialVerifySchema = z.object({
+  credential_id: z.string(),
+  badge_name: z.string(),
+  issuer: z.string(),
+  subject: z.object({
+    user_id: z.string(),
+    display_name: z.string(),
+  }),
+  claim: z.object({
+    category: z.string(),
+    earned_at: z.string(),
+    level: z.number(),
+    rank_name: z.string(),
+  }),
+  signature: z.string(),
+  status: z.enum(["verified", "flagged", "revoked"]),
+  note: z.string(),
+});
+
 export type ApiUser = z.infer<typeof apiUserSchema>;
 export type AuthSession = z.infer<typeof authSessionSchema>;

@@ -61,7 +61,7 @@ export function SocialProof() {
     leaderboardQuery.isLoading || guildQuery.isLoading || ladderQuery.isLoading;
   if (loading) {
     return (
-      <section className="border-y border-border bg-muted/40">
+      <section className="bg-muted/40">
         <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 sm:py-20 lg:px-8">
           <SectionIntro />
           <div className="mt-8">
@@ -77,7 +77,7 @@ export function SocialProof() {
   const ladder = ladderQuery.data?.slice(0, 5) ?? [];
 
   return (
-    <section className="border-y border-border bg-muted/40">
+    <section className="bg-muted/40">
       <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 sm:py-20 lg:px-8">
         <SectionIntro />
         <div className="mt-8 grid gap-4 lg:grid-cols-3">
@@ -205,8 +205,11 @@ function SectionIntro() {
   return (
     <div className="flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
       <div>
-        <p className="font-mono text-xs uppercase tracking-widest text-primary">Proof, not promises</p>
-        <h2 className="mt-3 font-display text-h2">See who is climbing with you.</h2>
+        <p className="font-mono text-xs uppercase tracking-widest text-muted-foreground">Proof, not promises</p>
+        <h2
+          className="mt-3 text-h2"
+          style={{ fontFamily: "'Geist Variable', sans-serif", fontWeight: 100, letterSpacing: "-0.03em" }}
+        >See who is climbing with you.</h2>
       </div>
       <p className="max-w-xl text-sm leading-relaxed text-muted-foreground">
         Live-feeling projections make the loop social: individual progress has

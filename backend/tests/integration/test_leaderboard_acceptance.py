@@ -28,7 +28,6 @@ from content.models import Course, Enrollment
 from gamification.projections.leaderboard import LeaderboardProjection
 from gamification.repositories.ledger import LedgerRepository
 from platform_core.bus.producer import publish
-from platform_core.bus.worker import poll_gamification_events
 from platform_core.core.config import settings
 from platform_core.core.db.session import get_session
 from platform_core.core.redis import get_redis

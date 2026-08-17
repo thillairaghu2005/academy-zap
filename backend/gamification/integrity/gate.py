@@ -11,7 +11,6 @@ freezes public visibility for a flagged context (context/resolver.py step 6).
 from dataclasses import dataclass, field
 
 from gamification.rules import (
-    ANSWER_TIMING_MIN_MS_PER_QUESTION,
     DEVICE_SHARING_MAX_UNRELATED_ACCOUNTS,
     INTEGRITY_CONFIDENCE_FLAG_THRESHOLD,
     RETRY_PATTERN_MAX_ATTEMPTS_NO_GAP,

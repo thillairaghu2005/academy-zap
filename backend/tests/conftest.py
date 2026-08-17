@@ -8,6 +8,7 @@
 """
 
 import os
+import uuid
 from collections.abc import AsyncGenerator, Generator
 
 # SECRET_KEY/DATABASE_URL/REDIS_URL must exist before any module that imports
@@ -20,13 +21,21 @@ os.environ.setdefault(
 )
 os.environ.setdefault("REDIS_URL", "redis://localhost:6380/0")
 
+from typing import TYPE_CHECKING  # noqa: E402
+
 import fakeredis  # noqa: E402
 import pytest  # noqa: E402
 import pytest_asyncio  # noqa: E402
 from httpx import ASGITransport, AsyncClient  # noqa: E402
 from pytest_postgresql.janitor import DatabaseJanitor  # noqa: E402
+from redis.asyncio import Redis  # noqa: E402
+from sqlalchemy import Engine  # noqa: E402
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine  # noqa: E402
-from redis.asyncio import Redis as AsyncRedis  # noqa: E402
+
+if TYPE_CHECKING:
+    AsyncRedis = Redis[str]
+else:
+    AsyncRedis = Redis
 
 # Import every subsystem's models so Base.metadata is fully populated for create_all.
 import assessments.models  # noqa: E402, F401
@@ -75,6 +84,7 @@ def postgres_test_db() -> Generator[str]:
 
         sync_engine = create_engine(sync_url)
         Base.metadata.create_all(sync_engine)
+        _seed_test_badge_definitions(sync_engine)
         sync_engine.dispose()
         yield TEST_DATABASE_URL
     finally:
@@ -147,15 +157,38 @@ async def register_and_login(
     return access_token
 
 
-async def drain_outbox_for_test(db_session: AsyncSession, redis: fakeredis.FakeAsyncRedis | AsyncRedis) -> int:
-    """Helper for acceptance tests that bypasses isolation issues by draining outbox rows directly
-    from the test's `db_session` (which contains the uncommitted outbox rows) and flushing.
+def _seed_test_badge_definitions(sync_engine: Engine) -> None:
+    """The throwaway DB is built with `create_all`, not Alembic, so the badge catalog seed
+    (normally applied by the migration `da96596d5d81`) is inserted here from the shared
+    `gamification.badge_catalog` module — same rows the migration seeds, so the acceptance
+    tier exercises the real definitions.
+    """
+    from sqlalchemy import insert
+
+    from gamification.badge_catalog import BADGE_DEFINITIONS
+    from gamification.models import BadgeDefinition
+
+    with sync_engine.begin() as connection:
+        for definition in BADGE_DEFINITIONS:
+            connection.execute(
+                insert(BadgeDefinition).values(id=uuid.uuid4(), enabled=True, **definition)
+            )
+
+
+async def drain_outbox_for_test(
+    db_session: AsyncSession, redis: fakeredis.FakeAsyncRedis | AsyncRedis
+) -> int:
+    """Helper for acceptance tests that bypasses isolation issues by draining outbox rows
+    directly from the test's `db_session` (which contains the uncommitted outbox rows) and
+    flushing.
     """
     from datetime import UTC, datetime
+
     from sqlalchemy import select
+
+    from platform_core.bus.producer import publish
     from platform_core.events.models import OutboxEvent
     from platform_core.events.schema import EVENT_TYPE_REGISTRY
-    from platform_core.bus.producer import publish
 
     result = await db_session.execute(
         select(OutboxEvent).where(OutboxEvent.dispatched_at.is_(None))

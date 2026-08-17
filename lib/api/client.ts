@@ -13,6 +13,8 @@ import {
   apiCourseSchema,
   apiGradeResultSchema,
   apiEnrollmentSchema,
+  apiBadgesSchema,
+  apiCredentialVerifySchema,
   apiLeaderboardPageSchema,
   apiMyStandingSchema,
   apiProgressContextSchema,
@@ -29,6 +31,8 @@ import type {
   AssessmentAttemptSummary,
   AssessmentSubmittedEvent,
   AssessmentSubmission,
+  Badge,
+  BadgeVerifyResult,
   ComboState,
   Course,
   CourseProgress,
@@ -351,6 +355,19 @@ export async function getLeaderboardFromApi(
 
 export async function getMyStandingFromApi(scope: string): Promise<LeaderboardEntry | null> {
   return apiRequest(`/leaderboards/${scope}/me`, apiMyStandingSchema);
+}
+
+export async function getMyBadgesFromApi(): Promise<Badge[]> {
+  return apiRequest("/me/badges", apiBadgesSchema);
+}
+
+export async function verifyCredentialFromApi(
+  credentialId: string,
+): Promise<BadgeVerifyResult> {
+  return apiRequest(
+    `/verify/${encodeURIComponent(credentialId)}`,
+    apiCredentialVerifySchema,
+  );
 }
 
 export async function getAssessmentComboFromApi(attemptId: string): Promise<ComboState> {

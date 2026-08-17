@@ -1,9 +1,13 @@
 import {
   getLeaderboardFromApi,
+  getMyBadgesFromApi,
   getMyProgressFromApi,
   getMyStandingFromApi,
+  verifyCredentialFromApi,
 } from "@/lib/api/client";
 import type {
+  Badge,
+  BadgeVerifyResult,
   LeaderboardEntry,
   LeaderboardPage,
   LeaderboardScope,
@@ -13,10 +17,12 @@ import type {
 } from "@/lib/contracts/gamification";
 import { AUTH_MODE } from "@/lib/config";
 import {
+  getBadges as getDemoBadges,
   getLeaderboard as getDemoLeaderboard,
   getMyStanding as getDemoMyStanding,
   getProgressContext as getDemoProgressContext,
   getPublicLeaderboardPreview as getDemoPublicLeaderboardPreview,
+  verifyBadge as getDemoVerifyBadge,
 } from "./engines/gamification";
 
 /**
@@ -85,8 +91,23 @@ export async function getPublicLeaderboardPreview(): Promise<LeaderboardPage> {
   return getDemoPublicLeaderboardPreview();
 }
 
+/** §7.3 Badge wall — backend mode reads `GET /me/badges` (authoritative awards + signed
+ * credentials); demo mode reads the isolated demo fixture. The frontend never computes
+ * badge eligibility in either mode. */
+export async function getBadges(userId: string): Promise<Badge[]> {
+  if (AUTH_MODE === "backend") return getMyBadgesFromApi();
+  return getDemoBadges(userId);
+}
+
+/** §7.3 Independent re-verification — backend mode reads the public `GET /verify/{id}`
+ * (read-only, server-side signature re-verification); demo mode reads the demo fixture.
+ * The verify page is public, so this must work without a session in both modes. */
+export async function verifyBadge(credentialId: string): Promise<BadgeVerifyResult> {
+  if (AUTH_MODE === "backend") return verifyCredentialFromApi(credentialId);
+  return getDemoVerifyBadge(credentialId);
+}
+
 export {
-  getBadges,
   getGuildBoard,
   getGuildVsGuild,
   getLedgerAudit,
@@ -99,6 +120,5 @@ export {
   getShareCard,
   getSkillTree,
   reconcileLedgerBalance,
-  verifyBadge,
 } from "./engines/gamification";
 export type { LedgerReconciliation } from "./engines/gamification";

@@ -333,8 +333,8 @@ async def test_ledger_tampering_is_detected_at_the_database_level(
     await db_session.commit()
     db_session.expunge_all()
 
-    new_first = (await ledger.list_for_user(user_id))[0]
-    print(f"OLD: {first.xp_delta}, NEW: {new_first.xp_delta}")
+    tampered = (await ledger.list_for_user(user_id))[0]
+    assert tampered.xp_delta == 999_999  # the tamper is real
 
     # The resolver no longer checks the chain on the read path.
     # We explicitly verify the chain here to ensure the tamper is detected.
@@ -527,8 +527,9 @@ async def test_c1_outbox_publish_failure_and_unknown_event(
 ) -> None:
     client, real_redis = real_redis_client
     
-    from platform_core.events.models import OutboxEvent
     from datetime import UTC, datetime
+
+    from platform_core.events.models import OutboxEvent
     
     unknown_event = OutboxEvent(
         id=uuid.uuid4(),
@@ -574,7 +575,9 @@ async def test_c2_timing_check_with_suspicious_answers(
         answers = []
         for i in range(total):
             time_ms = 500 if i < fast_count else 2000
-            answers.append({"question_id": str(uuid.uuid4()), "option_index": 0, "time_spent_ms": time_ms})
+            answers.append(
+                {"question_id": str(uuid.uuid4()), "option_index": 0, "time_spent_ms": time_ms}
+            )
         return AssessmentSubmittedEvent(
             user_id=user_id,
             org_id=None,
@@ -645,7 +648,7 @@ async def test_h1_projection_ordering_and_redelivery(
     class ProjectionExplosion(Exception):
         pass
 
-    async def exploding_update_user(*args, **kwargs):
+    async def exploding_update_user(*args: object, **kwargs: object) -> None:
         raise ProjectionExplosion("crash between commit and ZADD")
 
     monkeypatch.setattr(LeaderboardProjection, "update_user", exploding_update_user)
@@ -710,7 +713,10 @@ async def test_h6_cap_on_mastery_xp(
 
     await publish(make_attempt(80.0, 1), real_redis)
     await _drain_until_ledger_entry(
-        user_id=user_id, postgres_test_db=postgres_test_db, redis=real_redis, monkeypatch=monkeypatch
+        user_id=user_id,
+        postgres_test_db=postgres_test_db,
+        redis=real_redis,
+        monkeypatch=monkeypatch,
     )
     entries = await LedgerRepository(db_session).list_for_user(user_id)
     assert len(entries) == 1
@@ -718,7 +724,12 @@ async def test_h6_cap_on_mastery_xp(
 
     await publish(make_attempt(100.0, 2), real_redis)
     await _drain_until_ledger_entry(
-        user_id=user_id, postgres_test_db=postgres_test_db, redis=real_redis, monkeypatch=monkeypatch, max_polls=5, expected_count=2
+        user_id=user_id,
+        postgres_test_db=postgres_test_db,
+        redis=real_redis,
+        monkeypatch=monkeypatch,
+        max_polls=5,
+        expected_count=2,
     )
     entries = await LedgerRepository(db_session).list_for_user(user_id)
     assert len(entries) == 2
@@ -726,7 +737,12 @@ async def test_h6_cap_on_mastery_xp(
     
     await publish(make_attempt(90.0, 3), real_redis)
     await _drain_until_ledger_entry(
-        user_id=user_id, postgres_test_db=postgres_test_db, redis=real_redis, monkeypatch=monkeypatch, max_polls=5, expected_count=3
+        user_id=user_id,
+        postgres_test_db=postgres_test_db,
+        redis=real_redis,
+        monkeypatch=monkeypatch,
+        max_polls=5,
+        expected_count=3,
     )
     entries = await LedgerRepository(db_session).list_for_user(user_id)
     assert len(entries) == 3

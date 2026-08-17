@@ -37,7 +37,6 @@ import {
   MarketingProofBar,
   PricingSection,
   TestimonialWall,
-  TrustedByStrip,
 } from "@/components/landing/premium-sections";
 
 export interface LandingPageProps {
@@ -121,7 +120,7 @@ function LandingSections({ courses, catalogUnavailable = false }: LandingPagePro
         </div>
       </section>
 
-      <section id="featured-courses" className="scroll-mt-24 border-y border-border bg-muted/40">
+      <section id="featured-courses" className="scroll-mt-24 bg-muted/40">
         <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 sm:py-20 lg:px-8">
           <SectionTitle
             title="Courses that build the base for submissions"
@@ -155,7 +154,7 @@ function LandingSections({ courses, catalogUnavailable = false }: LandingPagePro
         </div>
       </section>
 
-      <section className="border-y border-border bg-background">
+      <section className="bg-background">
         <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 sm:py-20 lg:px-8">
           <SectionTitle
             title="Topics you can submit, shell into, and climb with"
@@ -191,7 +190,6 @@ export function LandingPage({ courses, catalogUnavailable = false }: LandingPage
       <LiveLearningTicker />
       <main id="main-content">
         <HomeHero />
-        <TrustedByStrip />
         <LearningLoop />
         <LandingSections courses={courses} catalogUnavailable={catalogUnavailable} />
         <PricingSection />
