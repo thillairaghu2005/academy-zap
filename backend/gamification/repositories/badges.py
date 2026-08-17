@@ -11,11 +11,11 @@ import uuid
 from datetime import UTC, datetime
 from typing import Any
 
-from sqlalchemy import select
+from sqlalchemy import select, update
 from sqlalchemy.dialects.postgresql import insert as pg_insert
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from gamification.models import BadgeDefinition, Credential, UserBadge
+from gamification.models import BadgeDefinition, Credential, CredentialStatusHistory, UserBadge
 
 
 class BadgeDefinitionRepository:
@@ -166,3 +166,107 @@ class CredentialRepository:
         self._session.add(credential)
         await self._session.flush()
         return credential
+
+    async def list_for_review(
+        self,
+        *,
+        status: str,
+        org_id: uuid.UUID | None,
+        badge_id: str | None = None,
+        limit: int = 50,
+        offset: int = 0,
+    ) -> list[Credential]:
+        """The B3 admin review queue — flagged (and optionally badge/org-filtered)
+        credentials, oldest first so reviewers work through the backlog. Org scope comes from
+        the award's `user_badge.org_id` (the credential table itself has no org column);
+        `org_id=None` means platform-ops (all orgs)."""
+        statement = (
+            select(Credential)
+            .join(UserBadge, UserBadge.credential_id == Credential.id)
+            .where(Credential.status == status)
+            .order_by(Credential.issued_at, Credential.id)
+            .limit(limit)
+            .offset(offset)
+        )
+        if org_id is not None:
+            statement = statement.where(UserBadge.org_id == org_id)
+        if badge_id is not None:
+            statement = statement.where(Credential.badge_id == badge_id)
+        result = await self._session.execute(statement)
+        return list(result.scalars().all())
+
+    async def get_by_internal_id(self, credential_id: uuid.UUID) -> Credential | None:
+        """Admin review detail lookup by the internal id (the public verify URL uses the
+        non-guessable public_id; the review queue is internal-only)."""
+        result = await self._session.execute(
+            select(Credential).where(Credential.id == credential_id)
+        )
+        return result.scalar_one_or_none()
+
+    async def get_org_for_credential(self, credential_id: uuid.UUID) -> uuid.UUID | None:
+        """The award org that owns this credential (via `user_badge`), used by the review
+        routes to enforce org-admin scope before a transition."""
+        result = await self._session.execute(
+            select(UserBadge.org_id).where(UserBadge.credential_id == credential_id)
+        )
+        return result.scalar_one_or_none()
+
+    async def transition_status(
+        self,
+        *,
+        credential_id: uuid.UUID,
+        previous_status: str,
+        new_status: str,
+        reviewer_id: uuid.UUID,
+        org_id: uuid.UUID | None,
+        reason: str | None,
+    ) -> Credential | None:
+        """Atomically move a credential to a new status with an immutable history row.
+
+        The `WHERE status = previous_status` guard makes concurrent reviewers safe: if two
+        admins review the same credential at once, exactly one sees its UPDATE match and the
+        loser gets a zero-row result (the caller surfaces a 409). The status UPDATE and the
+        history INSERT run in the same transaction — they commit or roll back together.
+        """
+        result = await self._session.execute(
+            update(Credential)
+            .where(
+                Credential.id == credential_id,
+                Credential.status == previous_status,
+            )
+            .values(status=new_status)
+            .returning(Credential.id)
+        )
+        row = result.first()
+        if row is None:
+            return None
+
+        # Python-side timestamp, not server_default: PostgreSQL's now() is frozen per
+        # transaction, so multiple transitions inside one transaction (or the test suite's
+        # savepoint-isolated session) would share a created_at and lose ordering. The guarded
+        # UPDATE serializes transitions per credential, so Python timestamps are strictly
+        # increasing and the append-only history reads back in decision order.
+        history = CredentialStatusHistory(
+            id=uuid.uuid4(),
+            credential_id=credential_id,
+            previous_status=previous_status,
+            new_status=new_status,
+            reviewer_id=reviewer_id,
+            org_id=org_id,
+            reason=reason,
+            created_at=datetime.now(UTC),
+        )
+        self._session.add(history)
+        await self._session.flush()
+        updated = await self.get_by_internal_id(credential_id)
+        return updated
+
+    async def list_history(self, credential_id: uuid.UUID) -> list[CredentialStatusHistory]:
+        """Immutable review history for one credential, oldest first — the append-only audit
+        trail behind every status transition (B3)."""
+        result = await self._session.execute(
+            select(CredentialStatusHistory)
+            .where(CredentialStatusHistory.credential_id == credential_id)
+            .order_by(CredentialStatusHistory.created_at, CredentialStatusHistory.id)
+        )
+        return list(result.scalars().all())

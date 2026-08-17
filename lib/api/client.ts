@@ -15,7 +15,13 @@ import {
   apiEnrollmentSchema,
   apiBadgesSchema,
   apiCredentialVerifySchema,
+  apiCredentialReviewDetailSchema,
+  apiCredentialReviewListSchema,
+  apiCredentialTransitionResultSchema,
+  apiCurrentSeasonSchema,
   apiLeaderboardPageSchema,
+  apiLeagueBoardSchema,
+  apiLeagueStandingSchema,
   apiMyStandingSchema,
   apiProgressContextSchema,
   type ApiUser,
@@ -357,6 +363,26 @@ export async function getMyStandingFromApi(scope: string): Promise<LeaderboardEn
   return apiRequest(`/leaderboards/${scope}/me`, apiMyStandingSchema);
 }
 
+export async function getCurrentSeasonFromApi(): Promise<
+  z.infer<typeof apiCurrentSeasonSchema>
+> {
+  return apiRequest("/seasons/current", apiCurrentSeasonSchema);
+}
+
+export async function getMyLeagueFromApi(): Promise<
+  z.infer<typeof apiLeagueStandingSchema> | null
+> {
+  return apiRequest("/me/league", apiLeagueStandingSchema.nullable());
+}
+
+export async function getMyLeagueBoardFromApi(
+  offset: number,
+  limit: number,
+): Promise<z.infer<typeof apiLeagueBoardSchema>> {
+  const params = new URLSearchParams({ offset: String(offset), limit: String(limit) });
+  return apiRequest(`/me/league/leaderboard?${params.toString()}`, apiLeagueBoardSchema);
+}
+
 export async function getMyBadgesFromApi(): Promise<Badge[]> {
   return apiRequest("/me/badges", apiBadgesSchema);
 }
@@ -378,4 +404,31 @@ export async function getAssessmentComboFromApi(attemptId: string): Promise<Comb
     count += 1;
   }
   return { count, multiplier: Math.min(3, 1 + count * 0.25), best: count };
+}
+
+export async function listCredentialReviewsFromApi(
+  status: string,
+): Promise<z.infer<typeof apiCredentialReviewListSchema>> {
+  return apiRequest(`/admin/reviews/credentials?status=${status}`, apiCredentialReviewListSchema);
+}
+
+export async function getCredentialReviewFromApi(
+  credentialId: string,
+): Promise<z.infer<typeof apiCredentialReviewDetailSchema>> {
+  return apiRequest(
+    `/admin/reviews/credentials/${credentialId}`,
+    apiCredentialReviewDetailSchema,
+  );
+}
+
+export async function transitionCredentialFromApi(
+  credentialId: string,
+  toStatus: "verified" | "revoked",
+  reason: string | null,
+): Promise<z.infer<typeof apiCredentialTransitionResultSchema>> {
+  return apiRequest(
+    `/admin/reviews/credentials/${credentialId}/transition`,
+    apiCredentialTransitionResultSchema,
+    { method: "POST", body: JSON.stringify({ to_status: toStatus, reason }) },
+  );
 }

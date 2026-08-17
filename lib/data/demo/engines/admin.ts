@@ -35,18 +35,28 @@ import {
 import { listLabs } from "@/lib/data/demo/engines/lab";
 import { listProblems } from "@/lib/data/demo/engines/judge";
 import {
+  applyDemoReviewTransition,
   auditEntries,
   ledgerEntryIdForAuditSeed,
   logAudit,
   MOCK_ADMIN_USERS,
+  MOCK_CREDENTIAL_REVIEW_DETAILS,
+  MOCK_CREDENTIAL_REVIEWS,
   type AuditEntry,
 } from "@/lib/mocks/admin";
+import type {
+  BadgeStatus,
+  CredentialReview,
+  CredentialReviewDetail,
+  CredentialTransitionResult,
+} from "@/lib/contracts/gamification";
 import {
   MOCK_DEMO_USER_ID,
   mockOrders,
   seedDemoOrders,
 } from "@/lib/mocks/commerce";
 import { mockTickets } from "@/lib/mocks/support";
+import { MOCK_ADMIN } from "@/lib/mocks/users";
 import { MockDataError } from "@/lib/data/demo/errors";
 import { delay, jitter } from "@/lib/data/demo/helpers";
 
@@ -481,4 +491,65 @@ export async function listAuditEntries(): Promise<AuditEntry[]> {
     );
   }
   return enriched;
+}
+
+/** B3 — the admin credential review queue (flagged first, oldest first). */
+export async function listCredentialReviews(
+  status: BadgeStatus = "flagged",
+): Promise<CredentialReview[]> {
+  await delay(jitter(220));
+  return MOCK_CREDENTIAL_REVIEWS.filter((review) => review.status === status);
+}
+
+/** B3 — one review with its full immutable history. */
+export async function getCredentialReview(
+  credentialId: string,
+): Promise<CredentialReviewDetail> {
+  await delay(jitter(200));
+  const detail = MOCK_CREDENTIAL_REVIEW_DETAILS[credentialId];
+  if (!detail) {
+    throw new MockDataError("review_not_found", "No review with this id exists.", 404);
+  }
+  return detail;
+}
+
+/** B3 — server-owned decision: clear (verified) or revoke; history is appended, never
+ * rewritten. Invalid transitions (e.g. revoke -> verified) fail like the real API. */
+export async function transitionCredentialReview(
+  credentialId: string,
+  toStatus: "verified" | "revoked",
+  reason: string | null,
+): Promise<CredentialTransitionResult> {
+  await delay(jitter(260));
+  const existing = MOCK_CREDENTIAL_REVIEW_DETAILS[credentialId];
+  if (!existing) {
+    throw new MockDataError("review_not_found", "No review with this id exists.", 404);
+  }
+  const allowed =
+    existing.status === "flagged"
+      ? new Set(["verified", "revoked"])
+      : existing.status === "verified"
+        ? new Set(["revoked"])
+        : new Set<string>();
+  if (!allowed.has(toStatus)) {
+    throw new MockDataError(
+      "invalid_transition",
+      `Cannot transition a ${existing.status} credential to ${toStatus}.`,
+      409,
+    );
+  }
+  logAudit({
+    actor_id: MOCK_ADMIN.id,
+    actor_name: MOCK_ADMIN.display_name,
+    action: toStatus === "verified" ? "credential.cleared" : "credential.revoked",
+    entity: "credential",
+    entity_id: existing.public_id,
+    detail: `${toStatus === "verified" ? "Cleared" : "Revoked"} credential ${existing.public_id}.`,
+  });
+  const updated = applyDemoReviewTransition(credentialId, toStatus, reason);
+  return {
+    id: updated.id,
+    status: updated.status,
+    history: updated.history,
+  };
 }

@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import {
   BookOpen,
   BarChart3,
+  BadgeCheck,
   CodeXml,
   Compass,
   FlaskConical,
@@ -25,6 +26,7 @@ const ADMIN_NAV = [
   { href: "/admin/orders", label: "Orders", icon: ShoppingCart },
   { href: "/admin/users", label: "Users", icon: Users },
   { href: "/admin/analytics", label: "Analytics", icon: BarChart3 },
+  { href: "/admin/reviews", label: "Credential reviews", icon: BadgeCheck },
   { href: "/admin/audit", label: "Audit log", icon: ScrollText },
   { href: "/admin/support", label: "Support", icon: LifeBuoy },
 ] as const;

@@ -20,6 +20,7 @@ import type {
   LeaderboardEntry,
   LeaderboardPage,
   LeaderboardScope,
+  LeagueBoard,
   LeagueStanding,
   LedgerAuditView,
   LedgerEntry,
@@ -27,6 +28,7 @@ import type {
   ProgressContext,
   RankLevel,
   SeasonPassState,
+  SeasonSummary,
   ShareCardData,
   SkillTreeNode,
   StreakState,
@@ -101,6 +103,62 @@ export async function getLeagueStanding(userId: string): Promise<LeagueStanding 
   if (!context) throw new MockDataError("user_not_found", "No league standing for this learner.", 404);
   return context.league;
 }
+
+/** The active season's public metadata — isolated demo fixture (slice 09). */
+export async function getCurrentSeason(): Promise<SeasonSummary | null> {
+  await delay(jitter(140));
+  return {
+    id: "a3f1c2e8-9b0d-4f6a-8e2c-1d5b7a9f3c21",
+    name: "Season 3 — Null Pointer",
+    status: "active",
+    start_at: new Date(Date.now() - 21 * 24 * 60 * 60 * 1000).toISOString(),
+    end_at: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
+  };
+}
+
+/** The caller's tier board — deterministic demo board over the same league standing
+ * (slice 09). Ranks and scores are derived by the demo service, only rendered by the
+ * client — the same discipline rule as every other projection. */
+export async function getLeagueBoard(
+  offset: number,
+  limit: number,
+  userId: string,
+  displayName: string,
+): Promise<LeagueBoard> {
+  await delay(jitter(240));
+  assertReachable(userId);
+  const ctx = await contextForUser(userId);
+  const me = ctx?.league;
+  const total = 48;
+  const rows: LeagueBoard["entries"] = [];
+  for (let i = offset; i < Math.min(offset + limit, total); i++) {
+    const rank = i + 1;
+    const isMe =
+      me !== null && me !== undefined && rank === me.rank_in_league && userId !== MISSING;
+    rows.push({
+      rank,
+      user_id: isMe ? userId : `league-rival-${i}`,
+      display_name: isMe ? displayName : DEMO_LEAGUE_RIVALS[i % DEMO_LEAGUE_RIVALS.length]!,
+      avatar_url: null,
+      xp_this_season: Math.max(0, 5_120 - i * 96 + ((i * 41) % 150)),
+      is_me: isMe,
+    });
+  }
+  return {
+    season_id: me?.season_id ?? "a3f1c2e8-9b0d-4f6a-8e2c-1d5b7a9f3c21",
+    tier: me?.league_tier ?? "bronze",
+    offset,
+    total,
+    entries: rows,
+    has_more: offset + limit < total,
+  };
+}
+
+const DEMO_LEAGUE_RIVALS = [
+  "Zara Khan", "Liam O'Connor", "Maya Chen", "Rohan Das", "Nina Petrova",
+  "Diego Álvarez", "Sofia Rossi", "Kenji Tanaka", "Amara Okafor", "Felix Weber",
+  "Priya Nair", "Leo Martins", "Ingrid Larsen", "Omar Haddad", "Yuki Sato",
+];
 
 /** ZRANGE-shaped paginated leaderboard read (Redis sorted-set projection). */
 export async function getLeaderboard(

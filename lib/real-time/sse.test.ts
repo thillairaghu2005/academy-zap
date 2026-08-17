@@ -41,6 +41,14 @@ describe("sse invalidationsFor", () => {
     expect(invalidationsFor("badges.updated")).toEqual([["badges"]]);
   });
 
+  it("league.updated invalidates the season/league queries only", () => {
+    expect(invalidationsFor("league.updated")).toEqual([
+      ["league"],
+      ["my-league"],
+      ["my-league-board"],
+    ]);
+  });
+
   it("connected and unknown events refresh all authoritative surfaces (idempotent)", () => {
     for (const type of ["connected", "update"] as const) {
       const keys = invalidationsFor(type);
@@ -49,6 +57,9 @@ describe("sse invalidationsFor", () => {
       expect(keys).toContainEqual(["my-standing"]);
       expect(keys).toContainEqual(["public-leaderboard-preview"]);
       expect(keys).toContainEqual(["badges"]);
+      expect(keys).toContainEqual(["league"]);
+      expect(keys).toContainEqual(["my-league"]);
+      expect(keys).toContainEqual(["my-league-board"]);
     }
   });
 });

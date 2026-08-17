@@ -305,3 +305,141 @@ describe("badge + credential data boundary", () => {
     );
   });
 });
+
+const SEASON_RESPONSE = {
+  status: "active",
+  season: {
+    id: "a3f1c2e8-9b0d-4f6a-8e2c-1d5b7a9f3c21",
+    name: "Season 3 — Null Pointer",
+    status: "active",
+    start_at: "2026-07-27T00:00:00+00:00",
+    end_at: "2026-08-24T00:00:00+00:00",
+  },
+};
+
+const LEAGUE_STANDING_RESPONSE = {
+  user_id: "00000000-0000-4000-8000-000000000001",
+  season_id: "a3f1c2e8-9b0d-4f6a-8e2c-1d5b7a9f3c21",
+  league_tier: "gold",
+  rank_in_league: 42,
+  xp_this_season: 4710,
+  promotion_zone: true,
+  relegation_zone: false,
+};
+
+const LEAGUE_BOARD_RESPONSE = {
+  season_id: "a3f1c2e8-9b0d-4f6a-8e2c-1d5b7a9f3c21",
+  tier: "gold",
+  offset: 0,
+  total: 48,
+  entries: [
+    {
+      rank: 1,
+      user_id: "00000000-0000-4000-8000-000000000002",
+      display_name: "Zara Khan",
+      avatar_url: null,
+      xp_this_season: 5120,
+      is_me: false,
+    },
+  ],
+  has_more: true,
+};
+
+describe("league + season data boundary (slice 09)", () => {
+  it("serves the isolated demo season fixture in demo mode", async () => {
+    const gamification = await import("@/lib/data/demo/gamification");
+    const season = await gamification.getCurrentSeason();
+
+    expect(season?.status).toBe("active");
+    expect(season?.name).toBeTruthy();
+  });
+
+  it("reads the authoritative active season in backend mode", async () => {
+    vi.stubEnv("NEXT_PUBLIC_AUTH_MODE", "backend");
+    vi.stubEnv("ZAPSTERS_API_URL", "https://api.example.test");
+    vi.stubGlobal(
+      "fetch",
+      vi.fn().mockResolvedValue(
+        new Response(JSON.stringify(SEASON_RESPONSE), { status: 200 }),
+      ),
+    );
+
+    const gamification = await import("@/lib/data/demo/gamification");
+    const season = await gamification.getCurrentSeason();
+
+    expect(season?.id).toBe(SEASON_RESPONSE.season.id);
+    expect(season?.name).toBe("Season 3 — Null Pointer");
+    expect(fetch).toHaveBeenCalledWith(
+      "https://api.example.test/api/v1/seasons/current",
+      expect.objectContaining({ credentials: "include", cache: "no-store" }),
+    );
+  });
+
+  it("returns null season when the backend has no season", async () => {
+    vi.stubEnv("NEXT_PUBLIC_AUTH_MODE", "backend");
+    vi.stubEnv("ZAPSTERS_API_URL", "https://api.example.test");
+    vi.stubGlobal(
+      "fetch",
+      vi.fn().mockResolvedValue(
+        new Response(JSON.stringify({ status: "none", season: null }), { status: 200 }),
+      ),
+    );
+
+    const gamification = await import("@/lib/data/demo/gamification");
+    expect(await gamification.getCurrentSeason()).toBeNull();
+  });
+
+  it("reads the authoritative league standing in backend mode — no local rank math", async () => {
+    vi.stubEnv("NEXT_PUBLIC_AUTH_MODE", "backend");
+    vi.stubEnv("ZAPSTERS_API_URL", "https://api.example.test");
+    vi.stubGlobal(
+      "fetch",
+      vi.fn().mockResolvedValue(
+        new Response(JSON.stringify(LEAGUE_STANDING_RESPONSE), { status: 200 }),
+      ),
+    );
+
+    const gamification = await import("@/lib/data/demo/gamification");
+    const standing = await gamification.getLeagueStanding("ignored-in-backend-mode");
+
+    expect(standing?.league_tier).toBe("gold");
+    expect(standing?.xp_this_season).toBe(4710);
+    expect(fetch).toHaveBeenCalledWith(
+      "https://api.example.test/api/v1/me/league",
+      expect.objectContaining({ credentials: "include", cache: "no-store" }),
+    );
+  });
+
+  it("returns null standing when the backend has none", async () => {
+    vi.stubEnv("NEXT_PUBLIC_AUTH_MODE", "backend");
+    vi.stubEnv("ZAPSTERS_API_URL", "https://api.example.test");
+    vi.stubGlobal(
+      "fetch",
+      vi.fn().mockResolvedValue(new Response(JSON.stringify(null), { status: 200 })),
+    );
+
+    const gamification = await import("@/lib/data/demo/gamification");
+    expect(await gamification.getLeagueStanding("ignored")).toBeNull();
+  });
+
+  it("reads the server-derived tier board in backend mode — no local ordering", async () => {
+    vi.stubEnv("NEXT_PUBLIC_AUTH_MODE", "backend");
+    vi.stubEnv("ZAPSTERS_API_URL", "https://api.example.test");
+    vi.stubGlobal(
+      "fetch",
+      vi.fn().mockResolvedValue(
+        new Response(JSON.stringify(LEAGUE_BOARD_RESPONSE), { status: 200 }),
+      ),
+    );
+
+    const gamification = await import("@/lib/data/demo/gamification");
+    const board = await gamification.getMyLeagueBoard(0, 10, "ignored", "Ignored");
+
+    expect(board.entries).toEqual(LEAGUE_BOARD_RESPONSE.entries);
+    expect(board.tier).toBe("gold");
+    expect(fetch).toHaveBeenCalledWith(
+      "https://api.example.test/api/v1/me/league/leaderboard?offset=0&limit=10",
+      expect.objectContaining({ credentials: "include", cache: "no-store" }),
+    );
+  });
+});

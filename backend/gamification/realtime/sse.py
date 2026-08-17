@@ -48,6 +48,7 @@ logger = logging.getLogger(__name__)
 PROGRESS_UPDATED = "progress.updated"
 LEADERBOARD_UPDATED = "leaderboard.updated"
 BADGES_UPDATED = "badges.updated"
+LEAGUE_UPDATED = "league.updated"
 
 
 def leaderboard_channel() -> str:
@@ -237,6 +238,7 @@ def _event_type_for(payload: str) -> str:
         PROGRESS_UPDATED,
         LEADERBOARD_UPDATED,
         BADGES_UPDATED,
+        LEAGUE_UPDATED,
         "connected",
     ):
         return event_type
@@ -273,6 +275,18 @@ async def publish_badges_updated(redis: AsyncRedis, user_id: str) -> None:
         )
     except Exception:  # noqa: BLE001 - a notification must never fail the event pipeline
         logger.exception("sse publish badges.updated failed")
+
+
+async def publish_league_updated(redis: AsyncRedis) -> None:
+    """Broadcast "the league changed" (slice 09): a season member's XP moved, so the tier
+    board and the caller's standing both need an authoritative refetch. Payload carries NO
+    values — clients refetch GET /seasons/current, /me/league and /me/league/leaderboard."""
+    try:
+        await redis.publish(
+            leaderboard_channel(), _sse_payload(LEAGUE_UPDATED, data={"scope": "league"})
+        )
+    except Exception:  # noqa: BLE001 - a notification must never fail the event pipeline
+        logger.exception("sse publish league.updated failed")
 
 
 class SseTicketService:
