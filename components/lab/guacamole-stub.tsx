@@ -52,7 +52,7 @@ export function GuacamoleStub({ sessionId }: { sessionId: string }) {
             <Monitor className="size-10 text-emerald-700/80" />
           </motion.div>
           <div className="flex items-center gap-2 text-sm text-muted-foreground">
-            <span className="size-2 animate-pulse rounded-full bg-emerald-400" />
+            <span className="size-2 rounded-full bg-emerald-400" />
             Connecting via Guacamole…
           </div>
           <p className="font-mono text-[10px] text-muted-foreground/60">

@@ -5,7 +5,6 @@ import "./globals.css";
 import { QueryProvider } from "@/components/providers/query-provider";
 import { SessionProvider } from "@/components/providers/session-provider";
 import { ServiceWorkerProvider } from "@/components/providers/service-worker-provider";
-import { ThemeProvider } from "@/components/providers/theme-provider";
 import { MotionProvider } from "@/components/providers/motion-provider";
 import { LiveRegionProvider } from "@/components/providers/live-region-provider";
 import { DemoAnalyticsProvider } from "@/components/providers/demo-analytics-provider";
@@ -24,7 +23,7 @@ export const metadata: Metadata = {
   description:
     "Zapsters is a learning platform: Udemy-shaped courses, a HackerRank-shaped code judge, TryHackMe-shaped virtual labs, and a full gamification layer.",
   keywords: ["Zapsters", "cybersecurity courses", "coding judge", "virtual labs", "learning platform"],
-  robots: { index: false, follow: false },
+  robots: { index: true, follow: true },
   metadataBase: getSiteUrl(),
   openGraph: {
     type: "website",
@@ -86,21 +85,19 @@ export default function RootLayout({
       <body className="min-h-full">
         <LiveRegionProvider>
           <MotionProvider>
-            <ThemeProvider>
-              <QueryProvider>
-                <DemoPreferencesProvider>
-                  <DemoAnalyticsProvider>
-                    <SessionProvider>{children}</SessionProvider>
-                  </DemoAnalyticsProvider>
-                </DemoPreferencesProvider>
-              </QueryProvider>
-              <Toaster />
-              <CookieBanner />
-              <BackToTop />
-              <Suspense fallback={null}>
-                <UtmTracker />
-              </Suspense>
-            </ThemeProvider>
+            <QueryProvider>
+              <DemoPreferencesProvider>
+                <DemoAnalyticsProvider>
+                  <SessionProvider>{children}</SessionProvider>
+                </DemoAnalyticsProvider>
+              </DemoPreferencesProvider>
+            </QueryProvider>
+            <Toaster />
+            <CookieBanner />
+            <BackToTop />
+            <Suspense fallback={null}>
+              <UtmTracker />
+            </Suspense>
           </MotionProvider>
         </LiveRegionProvider>
         <ServiceWorkerProvider />

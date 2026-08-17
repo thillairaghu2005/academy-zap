@@ -197,7 +197,7 @@ function fallbackMove(
 function NextMoveSkeleton() {
   return (
     <Card className="mt-7 overflow-hidden rounded-3xl border-primary-border bg-primary-muted p-5 sm:p-7">
-      <div className="flex animate-pulse gap-4">
+      <div className="flex gap-4">
         <div className="size-11 shrink-0 rounded-2xl bg-primary/10" />
         <div className="min-w-0 flex-1 space-y-3">
           <div className="h-3 w-36 rounded bg-primary/10" />
@@ -291,7 +291,7 @@ export function NextMove() {
               <span className="text-xs">{move.expectation}</span>
             </div>
             <div className="mt-5 flex flex-wrap items-center gap-2">
-              <Button asChild sheen glow>
+              <Button asChild >
                 <Link href={move.href}>
                   {move.actionLabel}
                   <ArrowRight />

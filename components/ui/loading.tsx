@@ -29,7 +29,7 @@ export function PageLoading() {
   return (
     <div className="flex min-h-[50dvh] w-full flex-col items-center justify-center gap-4">
       <LoadingSpinner size="lg" className="text-primary" />
-      <p className="text-sm text-muted-foreground animate-pulse">Loading...</p>
+      <p className="text-sm text-muted-foreground">Loading...</p>
     </div>
   );
 }

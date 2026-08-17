@@ -359,13 +359,13 @@ function MyLearningSkeleton() {
     <div className="space-y-5">
       <div className="grid grid-cols-2 gap-px overflow-hidden rounded-2xl border border-border bg-border sm:grid-cols-4">
         {Array.from({ length: 4 }).map((_, i) => (
-          <div key={i} className="h-20 animate-pulse bg-card" />
+          <div key={i} className="h-20 bg-card" />
         ))}
       </div>
-      <Card className="h-[360px] animate-pulse bg-secondary/50 shadow-none" />
+      <Card className="h-[360px] bg-secondary/50 shadow-none" />
       <div className="grid gap-3 sm:grid-cols-2">
         {Array.from({ length: 2 }).map((_, i) => (
-          <Card key={i} className="h-[108px] animate-pulse bg-secondary/50 shadow-none" />
+          <Card key={i} className="h-[108px] bg-secondary/50 shadow-none" />
         ))}
       </div>
     </div>

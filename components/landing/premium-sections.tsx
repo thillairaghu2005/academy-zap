@@ -53,7 +53,6 @@ export function LiveLearningTicker() {
   return (
     <div className="mx-auto flex max-w-7xl items-center justify-center gap-2 border-x border-border bg-surface-1 px-4 py-3 text-xs text-muted-foreground sm:gap-4">
       <span className="flex items-center gap-2 font-medium text-foreground">
-        <span className="size-2 animate-pulse rounded-full bg-success" aria-hidden="true" />
         {learners.toLocaleString()} learners online now
       </span>
       <span className="hidden text-border-strong sm:inline">/</span>

@@ -10,9 +10,9 @@ const buttonVariants = cva(
     variants: {
       variant: {
         default:
-            "bg-primary text-primary-foreground shadow-[0_4px_12px_rgb(180_35_60_/_15%)] hover:bg-primary-hover hover:shadow-[0_4px_12px_rgb(180_35_60_/_18%)] active:bg-primary-active",
+            "bg-primary text-primary-foreground shadow-sm hover:bg-primary-hover active:bg-primary-active",
         gradient:
-           "bg-primary text-primary-foreground shadow-[0_4px_12px_rgb(180_35_60_/_15%)] hover:bg-primary-hover hover:shadow-[0_4px_12px_rgb(180_35_60_/_18%)] active:bg-primary-active",
+           "bg-primary text-primary-foreground shadow-sm hover:bg-primary-hover active:bg-primary-active",
         destructive:
           "bg-destructive text-destructive-foreground shadow-sm hover:bg-destructive/90 active:scale-[0.98]",
         outline:
@@ -28,14 +28,6 @@ const buttonVariants = cva(
         lg: "h-10 rounded-md px-6 has-[>svg]:px-4",
         icon: "size-9",
         "icon-sm": "size-8",
-      },
-      sheen: {
-        false: "",
-        true: "relative overflow-hidden [&>*]:relative",
-      },
-      glow: {
-        false: "",
-         true: "shadow-[0_4px_12px_rgb(180_35_60_/_15%)] hover:shadow-[0_4px_12px_rgb(180_35_60_/_20%)]",
       },
     },
     defaultVariants: {
@@ -64,7 +56,7 @@ function Button({
   return (
     <Comp
       data-slot="button"
-      className={cn(buttonVariants({ variant, size, sheen, glow, className }))}
+      className={cn(buttonVariants({ variant, size, className }))}
       {...props}
     />
   );

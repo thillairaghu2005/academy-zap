@@ -19,7 +19,7 @@ export function VerifiedProgression() {
           <p className="mt-4 max-w-md text-sm leading-7 text-muted-foreground">
             Completion XP records what you finish. Mastery XP records what you can do. The server resolves both into the rank ladder.
           </p>
-           <Button variant="default" className="mt-6" sheen asChild>
+           <Button variant="default" className="mt-6" asChild>
             <Link href="/rank">
               Inspect the ladder <ArrowRight />
             </Link>

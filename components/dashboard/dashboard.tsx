@@ -182,7 +182,7 @@ export function Dashboard() {
               One focused lesson today is enough to keep your skills moving forward. Your next step is waiting below.
             </p>
             <div className="mt-7 flex flex-wrap gap-3">
-              <Button variant="default" size="lg" sheen glow asChild>
+              <Button variant="default" size="lg" asChild>
                 <Link href="/courses">Find your next lesson <ArrowRight /></Link>
               </Button>
               <Button variant="outline" size="lg" asChild>
