@@ -5,6 +5,12 @@ import {
   MOCK_REVIEWERS,
 } from "@/lib/mocks/users";
 import { auditLedgerLinkFor } from "@/lib/mocks/gamification";
+import type {
+  BadgeStatus,
+  CredentialReview,
+  CredentialReviewDetail,
+  CredentialStatusHistory,
+} from "@/lib/contracts/gamification";
 
 /**
  * Admin/CMS fixtures (build.md F7).
@@ -56,6 +62,107 @@ export const MOCK_ADMIN_USERS: SessionUser[] = [
     org_id: null,
   },
 ];
+
+/* ------------------------------------------------------------------ */
+/*  B3 — credential review queue fixtures (§7.4)                       */
+/* ------------------------------------------------------------------ */
+
+const reviewHistory = (
+  steps: [BadgeStatus, BadgeStatus, string][],
+): CredentialStatusHistory[] =>
+  steps.map(([previous_status, new_status, reason], index) => ({
+    id: `hist-${index + 1}`,
+    previous_status,
+    new_status,
+    reviewer_id: MOCK_ADMIN.id,
+    org_id: null,
+    reason,
+    created_at: new Date(Date.now() - (index + 1) * 86_400_000).toISOString(),
+  }));
+
+/** The demo review queue — mirrors the admin API read model (B3). */
+export const MOCK_CREDENTIAL_REVIEWS: CredentialReview[] = [
+  {
+    id: "rev-2c9e-0000-0000-000000000001",
+    public_id: "b-flagged-2c9e",
+    user_id: MOCK_LEARNER.id,
+    badge_id: "bdg-bash-02",
+    credential_type: "badge",
+    status: "flagged",
+    issuer: "Zapsters",
+    source_event_id: "00000000-0000-4000-8000-000000000011",
+    issued_at: new Date(Date.now() - 12 * 86_400_000).toISOString(),
+  },
+  {
+    id: "rev-8d11-0000-0000-000000000002",
+    public_id: "b-revoked-8d11",
+    user_id: MOCK_LEARNER.id,
+    badge_id: "bdg-rev-03",
+    credential_type: "badge",
+    status: "revoked",
+    issuer: "Zapsters",
+    source_event_id: "00000000-0000-4000-8000-000000000012",
+    issued_at: new Date(Date.now() - 70 * 86_400_000).toISOString(),
+  },
+];
+
+const flaggedReview = MOCK_CREDENTIAL_REVIEWS[0] as CredentialReview;
+const revokedReview = MOCK_CREDENTIAL_REVIEWS[1] as CredentialReview;
+
+/** Append-only decision history per demo review (matches the real table). */
+export const MOCK_CREDENTIAL_REVIEW_DETAILS: Record<string, CredentialReviewDetail> = {
+  [flaggedReview.id]: {
+    ...flaggedReview,
+    history: reviewHistory([
+      ["verified", "flagged", "Flagged by integrity gate (suspicious answer timing)."],
+    ]),
+  },
+  [revokedReview.id]: {
+    ...revokedReview,
+    history: reviewHistory([
+      ["flagged", "verified", "Cleared after review — timing anomaly explained."],
+      ["verified", "revoked", "Reversed: underlying ledger entries corrected by admin."],
+    ]),
+  },
+};
+
+/**
+ * Apply a review decision in the demo: the credential's status updates and the decision
+ * is APPENDED to its immutable history (never rewritten, never deleted).
+ */
+export function applyDemoReviewTransition(
+  credentialId: string,
+  toStatus: BadgeStatus,
+  reason: string | null,
+): CredentialReviewDetail {
+  const existing = MOCK_CREDENTIAL_REVIEW_DETAILS[credentialId];
+  if (!existing) {
+    throw new Error("review_not_found");
+  }
+  const updated: CredentialReviewDetail = {
+    ...existing,
+    status: toStatus,
+    history: [
+      ...existing.history,
+      {
+        id: `hist-${existing.history.length + 1}`,
+        previous_status: existing.status,
+        new_status: toStatus,
+        reviewer_id: MOCK_ADMIN.id,
+        org_id: null,
+        reason,
+        created_at: new Date().toISOString(),
+      },
+    ],
+  };
+  MOCK_CREDENTIAL_REVIEW_DETAILS[credentialId] = updated;
+  const queueIndex = MOCK_CREDENTIAL_REVIEWS.findIndex((r) => r.id === credentialId);
+  if (queueIndex >= 0) {
+    const { history: _history, ...reviewOnly } = updated;
+    MOCK_CREDENTIAL_REVIEWS[queueIndex] = reviewOnly;
+  }
+  return updated;
+}
 
 export interface AuditEntry {
   id: string;

@@ -143,6 +143,99 @@ class UserBadge(Base):
     )
 
 
+class LeagueSeason(Base):
+    """A competitive season (slice 09 — gamification §5.3/§5.4 step 5).
+
+    Season boundaries are hard cutoffs: league standing pulls from the current season's
+    ledger slice only, and a completed season's result is frozen and archived (§5.4 step 5,
+    §8 table "Seasonal leagues"). Status is explicit and one-way forward:
+    scheduled -> active -> completed.
+    """
+
+    __tablename__ = "league_season"
+
+    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    name: Mapped[str] = mapped_column(String(120), nullable=False)
+    status: Mapped[str] = mapped_column(String(20), nullable=False, default="scheduled")
+    start_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
+    end_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
+    # Season config: promotion_slots / demotion_slots and any future knobs. Seeded defaults
+    # live in the season service — the config column only overrides them.
+    config: Mapped[dict[str, Any]] = mapped_column(JSONB, nullable=False, default=dict)
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now()
+    )
+
+
+class LeagueTier(Base):
+    """The league tier catalog (slice 09). The doc pins five tiers (bronze -> obsidian,
+    gamification §5.3 `LeagueTier`); a definition is distinct from any user's membership.
+    `display_order` is the promotion ladder (1 = bronze … 5 = obsidian)."""
+
+    __tablename__ = "league_tier"
+
+    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    tier_id: Mapped[str] = mapped_column(String(30), nullable=False, unique=True)
+    display_order: Mapped[int] = mapped_column(Integer, nullable=False, unique=True)
+    name: Mapped[str] = mapped_column(String(80), nullable=False)
+
+
+class SeasonMembership(Base):
+    """One user's membership in one season (slice 09). `xp_this_season` is a derived,
+    server-computed projection of the authoritative XP ledger (the ledger stays the only XP
+    authority — this is a time-boxed slice over it, never a second XP system).
+
+    Unique (user, season): a user has exactly one membership per season. The outcome
+    (promoted / demoted / retained) is written once at season finalization and frozen.
+    """
+
+    __tablename__ = "season_membership"
+
+    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    user_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), nullable=False, index=True)
+    season_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), nullable=False, index=True)
+    league_tier: Mapped[str] = mapped_column(String(30), nullable=False, index=True)
+    # Derived season XP — recomputed server-side from ledger entries within [start_at, end_at).
+    xp_this_season: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
+    rank_in_league: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    promotion_zone: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
+    relegation_zone: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
+    # active | promoted | demoted | retained — outcome set at finalization.
+    outcome: Mapped[str | None] = mapped_column(String(20), nullable=True)
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now()
+    )
+    __table_args__ = (
+        # One authoritative membership per (user, season).
+        UniqueConstraint("user_id", "season_id", name="uq_season_membership_user_season"),
+    )
+
+
+class CredentialStatusHistory(Base):
+    """Append-only review decision record (B3 — gamification §7.4).
+
+    Every credential status transition (flagged -> verified / revoked) writes one row here,
+    atomically with the status change itself. Rows are never updated or deleted — a reviewer's
+    decision is immutable history, the same recursive "audited about auditing" rule the
+    platform applies to `audit_log`.
+    """
+
+    __tablename__ = "credential_status_history"
+
+    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    credential_id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True), nullable=False, index=True
+    )
+    previous_status: Mapped[str] = mapped_column(String(20), nullable=False)
+    new_status: Mapped[str] = mapped_column(String(20), nullable=False)
+    reviewer_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), nullable=False, index=True)
+    org_id: Mapped[uuid.UUID | None] = mapped_column(UUID(as_uuid=True), nullable=True)
+    reason: Mapped[str | None] = mapped_column(String(500), nullable=True)
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now()
+    )
+
+
 class Credential(Base):
     """One signed verifiable credential per badge award (slice 08, Phase 7-9).
 

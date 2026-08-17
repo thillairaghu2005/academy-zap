@@ -232,14 +232,51 @@ const apiStreakStateSchema = z.object({
   status: z.enum(["active", "grace_period", "broken", "frozen"]),
 });
 
-const apiLeagueStandingSchema = z.object({
+const apiLeagueTierSchema = z.enum(["bronze", "silver", "gold", "platinum", "obsidian"]);
+
+export const apiLeagueStandingSchema = z.object({
   user_id: z.string().uuid(),
   season_id: z.string().uuid(),
-  league_tier: z.enum(["bronze", "silver", "gold", "platinum", "obsidian"]),
+  league_tier: apiLeagueTierSchema,
   rank_in_league: z.number(),
   xp_this_season: z.number(),
   promotion_zone: z.boolean(),
   relegation_zone: z.boolean(),
+});
+
+/** Slice 09 — season read models. The active season is public metadata (GET
+ * /seasons/current); the caller's standing is /me/league (null when unranked); the
+ * tier board is /me/league/leaderboard. All values are server-derived from the
+ * authoritative XP ledger — never client state. */
+export const apiSeasonSummarySchema = z.object({
+  id: z.string().uuid(),
+  name: z.string(),
+  status: z.enum(["scheduled", "active", "completed"]),
+  start_at: z.string(),
+  end_at: z.string(),
+});
+
+export const apiCurrentSeasonSchema = z.object({
+  status: z.enum(["active", "scheduled", "none"]),
+  season: apiSeasonSummarySchema.nullable(),
+});
+
+export const apiLeagueBoardEntrySchema = z.object({
+  rank: z.number(),
+  user_id: z.string().uuid(),
+  display_name: z.string(),
+  avatar_url: z.string().nullable(),
+  xp_this_season: z.number(),
+  is_me: z.boolean(),
+});
+
+export const apiLeagueBoardSchema = z.object({
+  season_id: z.string().uuid(),
+  tier: apiLeagueTierSchema,
+  offset: z.number(),
+  total: z.number(),
+  entries: z.array(apiLeagueBoardEntrySchema),
+  has_more: z.boolean(),
 });
 
 const apiGuildRollupSchema = z.object({
@@ -326,6 +363,46 @@ export const apiCredentialVerifySchema = z.object({
   signature: z.string(),
   status: z.enum(["verified", "flagged", "revoked"]),
   note: z.string(),
+});
+
+/* ------------------------------------------------------------------ */
+/*  B3 — admin credential review queue (GET/POST /admin/reviews/*)    */
+/* ------------------------------------------------------------------ */
+
+const apiCredentialStatusSchema = z.enum(["verified", "flagged", "revoked"]);
+
+export const apiCredentialStatusHistorySchema = z.object({
+  id: z.string().uuid(),
+  previous_status: apiCredentialStatusSchema,
+  new_status: apiCredentialStatusSchema,
+  reviewer_id: z.string().uuid(),
+  org_id: z.string().uuid().nullable(),
+  reason: z.string().nullable(),
+  created_at: z.string(),
+});
+
+export const apiCredentialReviewSchema = z.object({
+  id: z.string().uuid(),
+  public_id: z.string(),
+  user_id: z.string().uuid(),
+  badge_id: z.string(),
+  credential_type: z.string(),
+  status: apiCredentialStatusSchema,
+  issuer: z.string(),
+  source_event_id: z.string().uuid(),
+  issued_at: z.string(),
+});
+
+export const apiCredentialReviewDetailSchema = apiCredentialReviewSchema.extend({
+  history: z.array(apiCredentialStatusHistorySchema),
+});
+
+export const apiCredentialReviewListSchema = z.array(apiCredentialReviewSchema);
+
+export const apiCredentialTransitionResultSchema = z.object({
+  id: z.string().uuid(),
+  status: apiCredentialStatusSchema,
+  history: z.array(apiCredentialStatusHistorySchema),
 });
 
 export type ApiUser = z.infer<typeof apiUserSchema>;

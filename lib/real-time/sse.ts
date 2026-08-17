@@ -32,6 +32,7 @@ export type SseEventType =
   | "progress.updated"
   | "leaderboard.updated"
   | "badges.updated"
+  | "league.updated"
   | "update";
 
 const SSE_PATH = "/api/backend/events";
@@ -68,6 +69,8 @@ export function invalidationsFor(type: SseEventType): string[][] {
       return [["leaderboard"], ["my-standing"], ["public-leaderboard-preview"]];
     case "badges.updated":
       return [["badges"]];
+    case "league.updated":
+      return [["league"], ["my-league"], ["my-league-board"]];
     case "connected":
     case "update":
     default:
@@ -79,6 +82,9 @@ export function invalidationsFor(type: SseEventType): string[][] {
         ["my-standing"],
         ["public-leaderboard-preview"],
         ["badges"],
+        ["league"],
+        ["my-league"],
+        ["my-league-board"],
       ];
   }
 }
@@ -123,6 +129,7 @@ export function useRealtimeUpdates(enabled: boolean): { connected: boolean } {
           "progress.updated",
           "leaderboard.updated",
           "badges.updated",
+          "league.updated",
           "update",
         ];
         for (const type of TYPES) {

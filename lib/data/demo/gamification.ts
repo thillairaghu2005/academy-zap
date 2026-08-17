@@ -1,6 +1,9 @@
 import {
+  getCurrentSeasonFromApi,
   getLeaderboardFromApi,
   getMyBadgesFromApi,
+  getMyLeagueBoardFromApi,
+  getMyLeagueFromApi,
   getMyProgressFromApi,
   getMyStandingFromApi,
   verifyCredentialFromApi,
@@ -11,13 +14,17 @@ import type {
   LeaderboardEntry,
   LeaderboardPage,
   LeaderboardScope,
+  LeagueBoard,
   LeagueStanding,
   ProgressContext,
+  SeasonSummary,
   StreakState,
 } from "@/lib/contracts/gamification";
 import { AUTH_MODE } from "@/lib/config";
 import {
   getBadges as getDemoBadges,
+  getCurrentSeason as getDemoSeason,
+  getLeagueBoard as getDemoLeagueBoard,
   getLeaderboard as getDemoLeaderboard,
   getMyStanding as getDemoMyStanding,
   getProgressContext as getDemoProgressContext,
@@ -45,9 +52,38 @@ export async function getStreak(userId: string): Promise<StreakState> {
   return (await getProgressContext(userId)).streak;
 }
 
-/** §5.3 LeagueStanding — derived from the SAME ProgressContext (null when unplaced). */
+/** §5.3 LeagueStanding — backend mode reads the authoritative `GET /me/league` (season
+ * XP sliced from the XP ledger, rank from the Redis tier projection); demo mode derives it
+ * from the SAME ProgressContext (null when unplaced). The frontend never computes the
+ * standing in either mode. */
 export async function getLeagueStanding(userId: string): Promise<LeagueStanding | null> {
+  if (AUTH_MODE === "backend") return getMyLeagueFromApi();
   return (await getProgressContext(userId)).league;
+}
+
+/** Slice 09 — the active season's public metadata (`GET /seasons/current`), or null when no
+ * season exists. Demo mode returns the isolated demo season fixture. */
+export async function getCurrentSeason(): Promise<SeasonSummary | null> {
+  if (AUTH_MODE === "backend") {
+    const result = await getCurrentSeasonFromApi();
+    return result.season ? { ...result.season, status: result.status } : null;
+  }
+  return getDemoSeason();
+}
+
+/** Slice 09 — the caller's tier board (`GET /me/league/leaderboard`). Backend mode reads
+ * the Redis tier projection; demo mode reads the isolated demo board. */
+export async function getMyLeagueBoard(
+  offset: number,
+  limit: number,
+  userId: string,
+  displayName: string,
+): Promise<LeagueBoard> {
+  if (AUTH_MODE === "backend") {
+    const board = await getMyLeagueBoardFromApi(offset, limit);
+    return { ...board, tier: board.tier as LeagueBoard["tier"] };
+  }
+  return getDemoLeagueBoard(offset, limit, userId, displayName);
 }
 
 /** §5.5 Leaderboard page — backend mode reads the Redis sorted-set projection read API

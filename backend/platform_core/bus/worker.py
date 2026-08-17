@@ -100,6 +100,7 @@ async def poll_gamification_events(_ctx: dict[Any, Any], *_args: Any, **_kwargs:
 
             context = None
             awarded_badges: list[Any] = []
+            xp_delta: int | None = None
             if await repo.try_mark_processed(
                 idempotency_key=delivered.event.idempotency_key,
                 consumer_group=GAMIFICATION_CONSUMER_GROUP,
@@ -109,6 +110,7 @@ async def poll_gamification_events(_ctx: dict[Any, Any], *_args: Any, **_kwargs:
                 result = await processor.process(delivered.event)
                 context = result.context
                 awarded_badges = result.awarded_badges
+                xp_delta = result.xp_delta
                 processed += 1
             else:
                 # Redelivery path: ledger and context are already committed,
@@ -134,14 +136,28 @@ async def poll_gamification_events(_ctx: dict[Any, Any], *_args: Any, **_kwargs:
                 await projection.update_user(
                     context, display_name=user.display_name if user else "Learner"
                 )
+                league_touched = False
+                if xp_delta is not None:
+                    from gamification.services.seasons import SeasonService
+
+                    await SeasonService(session).apply_event_delta(
+                        user_id=context.user_id,
+                        xp_delta=xp_delta,
+                        occurred_at=delivered.event.occurred_at,
+                        redis=redis,
+                    )
+                    league_touched = True
                 from gamification.realtime.sse import (
                     publish_badges_updated,
                     publish_leaderboard_updated,
+                    publish_league_updated,
                     publish_progress_updated,
                 )
 
                 await publish_progress_updated(redis, str(context.user_id))
                 await publish_leaderboard_updated(redis)
+                if league_touched:
+                    await publish_league_updated(redis)
             if awarded_badges:
                 from gamification.realtime.sse import publish_badges_updated
 

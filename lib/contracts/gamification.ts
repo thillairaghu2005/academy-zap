@@ -102,6 +102,35 @@ export interface LeagueStanding {
   relegation_zone: boolean;
 }
 
+/** Slice 09 — one season's public metadata (GET /seasons/current). */
+export interface SeasonSummary {
+  id: string; // UUID
+  name: string;
+  status: "active" | "scheduled" | "none" | "completed";
+  start_at: string;
+  end_at: string;
+}
+
+/** Slice 09 — one row of the caller's tier board (league leaderboard). */
+export interface LeagueBoardEntry {
+  rank: number;
+  user_id: string; // UUID
+  display_name: string;
+  avatar_url: string | null;
+  xp_this_season: number;
+  is_me: boolean;
+}
+
+/** Slice 09 — the caller's tier board read model. */
+export interface LeagueBoard {
+  season_id: string; // UUID
+  tier: LeagueTier;
+  offset: number;
+  total: number;
+  entries: LeagueBoardEntry[];
+  has_more: boolean;
+}
+
 /** §5.3 GuildRollup. */
 export interface GuildRollup {
   guild_id: string; // UUID
@@ -259,6 +288,49 @@ export interface BadgeVerifyResult {
   status: BadgeStatus;
   /** Human-readable reason when not verified. */
   note: string;
+}
+
+/* ------------------------------------------------------------------ */
+/*  B3 — admin credential review queue (§7.4)                         */
+/* ------------------------------------------------------------------ */
+
+/** One immutable status-transition decision on a credential (B3). */
+export interface CredentialStatusHistory {
+  id: string;
+  previous_status: BadgeStatus;
+  new_status: BadgeStatus;
+  reviewer_id: string;
+  org_id: string | null;
+  reason: string | null;
+  created_at: string;
+}
+
+/** One flagged (or otherwise reviewable) credential in the admin queue. */
+export interface CredentialReview {
+  id: string;
+  public_id: string;
+  user_id: string;
+  badge_id: string;
+  credential_type: string;
+  status: BadgeStatus;
+  issuer: string;
+  source_event_id: string;
+  issued_at: string;
+}
+
+/** Review detail — the credential plus its full immutable history. */
+export interface CredentialReviewDetail extends CredentialReview {
+  history: CredentialStatusHistory[];
+}
+
+/** Allowed transition destination (server validates the table; client mirrors it). */
+export type CredentialTransitionDestination = "verified" | "revoked";
+
+/** The result of a review decision — current status + appended history. */
+export interface CredentialTransitionResult {
+  id: string;
+  status: BadgeStatus;
+  history: CredentialStatusHistory[];
 }
 
 /* ------------------------------------------------------------------ */

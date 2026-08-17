@@ -245,6 +245,22 @@ async def test_worker_publishes_sse_notifications_on_real_pipeline(
             "display_name",
         ):
             assert private not in board
+
+        # Slice 09: the league.updated public broadcast follows the same discipline —
+        # notification-only, no authoritative values (the client refetches /me/league).
+        league = json.loads(await asyncio.wait_for(queue_b.get(), timeout=3))
+        assert league["type"] == "league.updated"
+        assert league["scope"] == "league"
+        for private in (
+            "user_id",
+            "xp",
+            "score",
+            "tier",
+            "rank",
+            "season_id",
+            "display_name",
+        ):
+            assert private not in league
         await asyncio.sleep(0.2)
         assert queue_b.empty()  # no private progression leaked to the unrelated user
     finally:

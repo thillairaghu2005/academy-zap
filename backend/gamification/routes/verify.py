@@ -18,15 +18,25 @@ Verification semantics:
 from datetime import datetime
 from typing import Any
 
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
 from pydantic import BaseModel
 
 from gamification.integrity.credentials import verify_vc
 from gamification.repositories.badges import CredentialRepository
 from platform_core.core.deps import DbSession
 from platform_core.core.exceptions import ResourceNotFound
+from platform_core.core.rate_limiting import CompatibleRateLimiter
+from platform_core.core.rate_limits import PUBLIC_RATE_LIMIT
 
 router = APIRouter(tags=["gamification"])
+
+# The public verify URL is unauthenticated by design (SOP §8.1) — it gets the same public
+# rate limit as the other unauthenticated read endpoints (slice 08 security review, required
+# fix 1).
+_public_rate_limit = CompatibleRateLimiter(
+    times=PUBLIC_RATE_LIMIT.times,
+    seconds=PUBLIC_RATE_LIMIT.seconds,
+)
 
 
 class CredentialSubjectRead(BaseModel):
@@ -54,7 +64,11 @@ class CredentialVerifyRead(BaseModel):
     note: str
 
 
-@router.get("/verify/{credential_id}", response_model=CredentialVerifyRead)
+@router.get(
+    "/verify/{credential_id}",
+    response_model=CredentialVerifyRead,
+    dependencies=[Depends(_public_rate_limit)],
+)
 async def verify_credential(credential_id: str, session: DbSession) -> CredentialVerifyRead:
     credential = await CredentialRepository(session).get_by_public_id(credential_id)
     if credential is None:

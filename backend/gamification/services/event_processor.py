@@ -43,10 +43,14 @@ class EventProcessResult:
     `awarded_badges` lists the badge awards created by THIS processing call — empty for
     replayed events, unknown event types, or events that made no badge newly eligible. The
     event pipeline uses this to publish notification-only SSE freshness signals.
+    `xp_delta` is the authoritative ledger delta this event wrote (None when unhandled) —
+    the league projection consumes it to keep `xp_this_season` fresh without re-scanning
+    the ledger.
     """
 
     context: ProgressContext | None
     awarded_badges: list[UserBadge] = field(default_factory=list)
+    xp_delta: int | None = None
 
 
 def _suspicious_answer_count(answers: list[dict[str, Any]]) -> int | None:
@@ -96,6 +100,7 @@ class GamificationEventProcessor:
                 source_id=event.course_id,
                 event_timestamp=event.occurred_at,
             )
+            xp_delta: int | None = COURSE_COMPLETION_XP
         elif isinstance(event, AssessmentSubmittedEvent):
             gate = run_integrity_gate(
                 IntegritySignals(
@@ -138,7 +143,11 @@ class GamificationEventProcessor:
             return EventProcessResult(context=None)
 
         awarded = await self._badges.evaluate_and_award(event=event, context=context)
-        return EventProcessResult(context=context, awarded_badges=awarded)
+        return EventProcessResult(
+            context=context,
+            awarded_badges=awarded,
+            xp_delta=locals().get("xp_delta"),
+        )
 
     async def _append_and_resolve(
         self,

@@ -85,6 +85,7 @@ def postgres_test_db() -> Generator[str]:
         sync_engine = create_engine(sync_url)
         Base.metadata.create_all(sync_engine)
         _seed_test_badge_definitions(sync_engine)
+        _seed_test_league_tiers(sync_engine)
         sync_engine.dispose()
         yield TEST_DATABASE_URL
     finally:
@@ -172,6 +173,34 @@ def _seed_test_badge_definitions(sync_engine: Engine) -> None:
         for definition in BADGE_DEFINITIONS:
             connection.execute(
                 insert(BadgeDefinition).values(id=uuid.uuid4(), enabled=True, **definition)
+            )
+
+
+def _seed_test_league_tiers(sync_engine: Engine) -> None:
+    """The throwaway DB is built with `create_all`, not Alembic, so the league tier catalog
+    (normally seeded by the migration `da96596d5d83`) is inserted here — same rows the
+    migration seeds.
+    """
+    from sqlalchemy import insert
+
+    from gamification.models import LeagueTier
+
+    tiers = [
+        ("bronze", 1, "Bronze"),
+        ("silver", 2, "Silver"),
+        ("gold", 3, "Gold"),
+        ("platinum", 4, "Platinum"),
+        ("obsidian", 5, "Obsidian"),
+    ]
+    with sync_engine.begin() as connection:
+        for index, (tier_id, display_order, name) in enumerate(tiers, start=1):
+            connection.execute(
+                insert(LeagueTier).values(
+                    id=uuid.UUID(f"22222222-2222-4222-8222-00000000000{index}"),
+                    tier_id=tier_id,
+                    display_order=display_order,
+                    name=name,
+                )
             )
 
 

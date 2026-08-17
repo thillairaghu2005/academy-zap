@@ -29,6 +29,10 @@ const buttonVariants = cva(
         icon: "size-9",
         "icon-sm": "size-8",
       },
+      sheen: {
+        false: "",
+        true: "relative overflow-hidden [&>*]:relative",
+      },
     },
     defaultVariants: {
       variant: "default",
@@ -42,13 +46,11 @@ function Button({
   variant,
   size,
   sheen,
-  glow,
   asChild = false,
   ...props
 }: React.ComponentProps<"button"> &
   VariantProps<typeof buttonVariants> & {
     sheen?: boolean;
-    glow?: boolean;
     asChild?: boolean;
   }) {
   const Comp = asChild ? Slot : "button";
@@ -56,7 +58,7 @@ function Button({
   return (
     <Comp
       data-slot="button"
-      className={cn(buttonVariants({ variant, size, className }))}
+      className={cn(buttonVariants({ variant, size, sheen, className }))}
       {...props}
     />
   );

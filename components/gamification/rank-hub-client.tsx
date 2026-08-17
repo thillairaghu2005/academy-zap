@@ -23,6 +23,7 @@ import type {
   StreakState,
 } from "@/lib/contracts/gamification";
 import {
+  getLeagueStanding,
   getProgressContext,
   getRankLadder,
 } from "@/lib/data/demo/gamification";
@@ -74,6 +75,16 @@ export function RankHubClient() {
   const ladderQuery = useQuery({
     queryKey: ["rank-ladder"],
     queryFn: () => getRankLadder(),
+  });
+  // League standing (slice 09) is its OWN authoritative read: in backend mode GET
+  // /me/league (season XP sliced from the ledger + rank from the Redis tier projection);
+  // in demo mode the SAME ProgressContext-derived standing. It is NOT ctx.league — the
+  // backend ProgressContext deliberately leaves `league` null and serves /me/league
+  // instead, so the widget must query the league endpoint, not the context field.
+  const leagueQuery = useQuery({
+    queryKey: ["my-league"],
+    queryFn: () => getLeagueStanding(demoUser),
+    retry: false,
   });
 
   const ctx = ctxQuery.data;
@@ -234,8 +245,9 @@ export function RankHubClient() {
               </div>
             </motion.div>
 
-            {/* Right rail: streak + league + guild — all read the SAME authoritative
-                ProgressContext (`ctx.streak` / `ctx.league`), never separate projections. */}
+            {/* Right rail: streak + league + guild. Streak/guild read the SAME
+                authoritative ProgressContext; the league widget reads the slice-09
+                league endpoint (/me/league), never a client-derived number. */}
             <div className="flex flex-col gap-4">
               <StreakWidget
                 data={ctx.streak}
@@ -244,10 +256,10 @@ export function RankHubClient() {
                 onRetry={() => ctxQuery.refetch()}
               />
               <LeagueWidget
-                data={ctx.league}
-                isLoading={false}
-                isError={false}
-                onRetry={() => ctxQuery.refetch()}
+                data={leagueQuery.data}
+                isLoading={leagueQuery.isLoading}
+                isError={leagueQuery.isError}
+                onRetry={() => leagueQuery.refetch()}
               />
               <GuildWidget guild={ctx.guild} />
             </div>
