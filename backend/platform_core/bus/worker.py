@@ -64,8 +64,8 @@ async def poll_events(_ctx: dict[Any, Any], *_args: Any, **_kwargs: Any) -> int:
                 )
             else:
                 logger.info("event_redelivery_skipped", event_type=delivered.event_type)
-            await consumer.ack(delivered.message_id)
             await session.commit()
+            await consumer.ack(delivered.message_id)
 
     return processed
 
@@ -98,6 +98,7 @@ async def poll_gamification_events(_ctx: dict[Any, Any], *_args: Any, **_kwargs:
                 await consumer.ack(delivered.message_id)
                 continue
 
+            context = None
             if await repo.try_mark_processed(
                 idempotency_key=delivered.event.idempotency_key,
                 consumer_group=GAMIFICATION_CONSUMER_GROUP,
@@ -105,27 +106,73 @@ async def poll_gamification_events(_ctx: dict[Any, Any], *_args: Any, **_kwargs:
                 raw_event=json.loads(delivered.raw_data),
             ):
                 context = await processor.process(delivered.event)
-                # Feed the leaderboard projection from the authoritative context — the board
-                # is a rebuildable read model, never a source of truth (gamification §5.5).
-                if context is not None:
-                    user = await UserRepository(session).get_by_id(context.user_id)
-                    projection = LeaderboardProjection(redis)
-                    await projection.update_user(
-                        context, display_name=user.display_name if user else "Learner"
-                    )
-                    # Slice 07: notify the real-time transport that authoritative state changed.
-                    # SSE only says "something changed" — clients refetch the authoritative
-                    # APIs. Notifications are best-effort and never fail the pipeline.
-                    from gamification.realtime.sse import (
-                        publish_leaderboard_updated,
-                        publish_progress_updated,
-                    )
-
-                    await publish_progress_updated(redis, str(context.user_id))
-                    await publish_leaderboard_updated(redis)
                 processed += 1
-            await consumer.ack(delivered.message_id)
+            else:
+                # Redelivery path: ledger and context are already committed,
+                # but projection might have failed
+                from gamification.context.schema import ProgressContext
+                from gamification.repositories.context import ContextRepository
+                snapshot = await ContextRepository(session).get_latest(delivered.event.user_id)
+                if snapshot:
+                    context = ProgressContext(
+                        user_id=snapshot.user_id,
+                        context_version=snapshot.context_version,
+                        computed_at=snapshot.computed_at,
+                        rank=snapshot.rank,
+                        streak=snapshot.streak,
+                        league=snapshot.league,
+                        guild=snapshot.guild,
+                        unresolved_flags=snapshot.unresolved_flags,
+                        freeze_status=snapshot.freeze_status,
+                    )
+            if context is not None:
+                user = await UserRepository(session).get_by_id(context.user_id)
+                projection = LeaderboardProjection(redis)
+                await projection.update_user(
+                    context, display_name=user.display_name if user else "Learner"
+                )
+                from gamification.realtime.sse import (
+                    publish_leaderboard_updated,
+                    publish_progress_updated,
+                )
+
+                await publish_progress_updated(redis, str(context.user_id))
+                await publish_leaderboard_updated(redis)
             await session.commit()
+            await consumer.ack(delivered.message_id)
+    return processed
+
+
+async def poll_outbox_events(_ctx: dict[Any, Any], *_args: Any, **_kwargs: Any) -> int:
+    from datetime import UTC, datetime
+
+    from sqlalchemy import select
+
+    from platform_core.bus.producer import publish
+    from platform_core.events.models import OutboxEvent
+    from platform_core.events.schema import EVENT_TYPE_REGISTRY
+
+    redis = get_redis_client()
+    processed = 0
+    async with session_scope() as session:
+        result = await session.execute(
+            select(OutboxEvent)
+            .where(OutboxEvent.dispatched_at.is_(None))
+            .order_by(OutboxEvent.created_at)
+            .limit(50)
+            .with_for_update(skip_locked=True)
+        )
+        events = result.scalars().all()
+        for row in events:
+            event_cls = EVENT_TYPE_REGISTRY.get(row.event_type)
+            if event_cls:
+                event_obj = event_cls(**row.payload)
+                await publish(event_obj, redis)
+            
+            row.dispatched_at = datetime.now(UTC)
+            processed += 1
+            
+        await session.commit()
     return processed
 
 
@@ -137,4 +184,5 @@ class WorkerSettings:
     cron_jobs = [
         cron(poll_events, second=set(range(0, 60, 5))),  # type: ignore[arg-type]
         cron(poll_gamification_events, second=set(range(0, 60, 5))),  # type: ignore[arg-type]
+        cron(poll_outbox_events, second=set(range(0, 60, 5))),  # type: ignore[arg-type]
     ]

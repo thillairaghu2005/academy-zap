@@ -9,7 +9,6 @@ from content.repositories.course import CourseRepository
 from content.repositories.enrollment import EnrollmentRepository
 from content.repositories.progress import ProgressRepository
 from content.schemas.progress import CourseProgress, LessonProgressInput, MyLearningItem
-from platform_core.bus.producer import publish
 from platform_core.contracts.content import CourseSummary
 from platform_core.contracts.content import Enrollment as EnrollmentContract
 from platform_core.core.exceptions import ConflictError, ResourceNotFound, UnprocessableEntity
@@ -190,7 +189,7 @@ class ProgressService:
         enrollment.last_lesson_id = lesson_id
         enrollment.last_position_seconds = progress.last_position_seconds
         await self._session.flush()
-        await self._session.commit()
+        await self._session.flush()
 
         if enrollment.status == "completed" and not was_completed:
             event = CourseCompletedEvent(
@@ -200,7 +199,9 @@ class ProgressService:
                 session_fingerprint=f"auth:{user_id}",
                 course_id=course.id,
                 category=course.category,
-                time_spent_seconds=await self._progress.total_position_seconds(course.id, user_id),
+                time_spent_seconds=max(
+                    0, int((datetime.now(UTC) - enrollment.enrolled_at).total_seconds())
+                ),
                 completion_pct=100.0,
                 payload={
                     "content_duration_seconds": await self._progress.total_lesson_duration(
@@ -208,8 +209,15 @@ class ProgressService:
                     )
                 },
             )
-            if self._redis is None:
-                raise RuntimeError("Redis is required to publish course completion events")
-            await publish(event, self._redis)
+            from platform_core.events.models import OutboxEvent
+            self._session.add(
+                OutboxEvent(
+                    event_type=event.event_type,
+                    payload=event.model_dump(mode="json"),
+                    idempotency_key=event.idempotency_key,
+                )
+            )
+
+        await self._session.commit()
 
         return await self.get_progress(course.id, user_id, org_id)

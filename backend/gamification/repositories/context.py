@@ -23,5 +23,4 @@ class ContextRepository:
         """Never updates an existing row — a new version is always a new INSERT (§5.4 step 7)."""
         self._session.add(snapshot)
         await self._session.flush()
-        await self._session.commit()
         return snapshot

@@ -35,12 +35,12 @@ class IntegritySignals:
     question_count: int | None = None
     total_answer_time_ms: int | None = None
 
-    session_fingerprint_distinct_users: int | None = None
+    session_fingerprint_distinct_users: int | None = None  # UNIMPLEMENTED: wait for real signal
 
-    retry_attempt_count: int | None = None
-    retry_min_gap_seconds: int | None = None
+    retry_attempt_count: int | None = None  # UNIMPLEMENTED: wait for real signal
+    retry_min_gap_seconds: int | None = None  # UNIMPLEMENTED: wait for real signal
 
-    device_unrelated_account_count: int | None = None
+    device_unrelated_account_count: int | None = None  # UNIMPLEMENTED: wait for real signal
 
 
 @dataclass(frozen=True)
