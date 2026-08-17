@@ -25,7 +25,7 @@ export function useUtmTracker() {
     if (hasUtm) {
       try {
         sessionStorage.setItem("zapsters-utm", JSON.stringify(utmData));
-      } catch (e) {
+      } catch {
         // Ignore quota or privacy mode errors
       }
     }
