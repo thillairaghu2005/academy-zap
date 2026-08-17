@@ -57,13 +57,21 @@ class SeasonRepository:
         await self._session.flush()
         return season
 
-    async def set_status(self, season_id: uuid.UUID, status: str) -> bool:
-        """Guarded status transition — returns True only when the row actually moved. Used
-        for the irreversible scheduled -> active and active -> completed transitions, which
-        makes finalization idempotent under retries/concurrency."""
+    async def set_status(
+        self, season_id: uuid.UUID, status: str, *, expected_status: str
+    ) -> bool:
+        """Guarded compare-and-swap status transition — returns True only when the row
+        actually moved FROM `expected_status`. Used for the irreversible
+        scheduled -> active and active -> completed transitions: two concurrent
+        finalizers both attempt `active -> completed`, but the UPDATE matches only the
+        row still in `active`, so exactly one wins and the other sees no row (False).
+        This is what makes finalization idempotent under retries AND concurrency."""
         result = await self._session.execute(
             update(LeagueSeason)
-            .where(LeagueSeason.id == season_id)
+            .where(
+                LeagueSeason.id == season_id,
+                LeagueSeason.status == expected_status,
+            )
             .values(status=status)
             .returning(LeagueSeason.id)
         )
@@ -110,25 +118,40 @@ class MembershipRepository:
         league_tier: str,
         xp_this_season: int,
     ) -> SeasonMembership:
-        """Create-or-update one membership. Idempotent per (user, season) — the unique
-        constraint is the hard guarantee; a concurrent duplicate insert surfaces as a
-        conflict and the caller re-reads."""
-        existing = await self.get_for_user_season(user_id, season_id)
-        if existing is not None:
-            existing.league_tier = league_tier
-            existing.xp_this_season = xp_this_season
-            await self._session.flush()
-            return existing
-        membership = SeasonMembership(
-            id=uuid.uuid4(),
-            user_id=user_id,
-            season_id=season_id,
-            league_tier=league_tier,
-            xp_this_season=xp_this_season,
+        """Create-or-update one membership. Idempotent per (user, season): the UNIQUE
+        constraint is the hard guarantee, and the INSERT is `ON CONFLICT DO NOTHING` so
+        two simultaneous first events for the same user cannot raise — one inserts, the
+        other falls through to the existing row and re-applies the caller's values."""
+        from sqlalchemy.dialects.postgresql import insert as pg_insert
+
+        stmt = (
+            pg_insert(SeasonMembership)
+            .values(
+                id=uuid.uuid4(),
+                user_id=user_id,
+                season_id=season_id,
+                league_tier=league_tier,
+                xp_this_season=xp_this_season,
+            )
+            .on_conflict_do_nothing(
+                index_elements=[SeasonMembership.user_id, SeasonMembership.season_id]
+            )
+            .returning(SeasonMembership.id)
         )
-        self._session.add(membership)
+        inserted = await self._session.execute(stmt)
+        if inserted.scalar_one_or_none() is not None:
+            existing = await self.get_for_user_season(user_id, season_id)
+            assert existing is not None
+            return existing
+
+        # The row already existed (concurrent insert won, or an update path) — refresh it
+        # with the caller's authoritative values and return it.
+        existing = await self.get_for_user_season(user_id, season_id)
+        assert existing is not None
+        existing.league_tier = league_tier
+        existing.xp_this_season = xp_this_season
         await self._session.flush()
-        return membership
+        return existing
 
     async def list_for_season(self, season_id: uuid.UUID) -> list[SeasonMembership]:
         result = await self._session.execute(

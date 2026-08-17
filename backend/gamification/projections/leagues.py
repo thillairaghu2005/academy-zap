@@ -9,8 +9,9 @@ the current season's ledger slice only).
 
 Semantics (slice 09 decisions, all deterministic):
 - Score: `xp_this_season` — the server-derived time-boxed slice of the authoritative ledger.
-- Tie-break: equal scores order by member string ascending (same deterministic rule as the
-  global board).
+- Tie-break: equal scores order by member string DESCENDING — the order `ZREVRANGE` returns
+  (same read-path semantics as the global board, and the same rule `SeasonService` uses at
+  finalization, so the board's visible order and the promotion outcome always agree).
 - Rank numbering: 1-based dense ranks within the tier.
 - Frozen users: excluded, matching the global board's §7.4 freeze rule.
 """

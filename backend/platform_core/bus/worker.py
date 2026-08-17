@@ -192,10 +192,23 @@ async def poll_outbox_events(_ctx: dict[Any, Any], *_args: Any, **_kwargs: Any) 
             if event_cls:
                 event_obj = event_cls(**row.payload)
                 await publish(event_obj, redis)
-            
+            else:
+                # Unknown event types are never published — route them to the dead-letter
+                # stream (same contract the stream consumers apply to unknown types) instead
+                # of silently swallowing them, then mark dispatched so they are not retried
+                # forever.
+                await send_to_dlq(
+                    redis=redis,
+                    consumer_group="outbox",
+                    message_id=str(row.id),
+                    event_type=row.event_type,
+                    raw_data=json.dumps(row.payload, default=str),
+                    error="unknown event_type",
+                )
+
             row.dispatched_at = datetime.now(UTC)
             processed += 1
-            
+
         await session.commit()
     return processed
 
