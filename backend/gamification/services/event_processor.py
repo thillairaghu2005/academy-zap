@@ -10,6 +10,7 @@ from typing import Any
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from gamification.context.resolver import ProgressContextResolver
+from gamification.context.schema import ProgressContext
 from gamification.integrity.gate import IntegritySignals, run_integrity_gate
 from gamification.repositories.ledger import LedgerRepository
 from gamification.rules import (
@@ -40,7 +41,9 @@ class GamificationEventProcessor:
         self._ledger = LedgerRepository(session)
         self._resolver = ProgressContextResolver(session)
 
-    async def process(self, event: BaseEvent) -> None:
+    async def process(self, event: BaseEvent) -> ProgressContext | None:
+        """Append the authoritative XP entry and resolve the user's ProgressContext. Returns
+        the resolved context so the event pipeline can feed projections (slice 06)."""
         if isinstance(event, CourseCompletedEvent):
             content_duration = event.payload.get("content_duration_seconds")
             gate = run_integrity_gate(
@@ -51,14 +54,14 @@ class GamificationEventProcessor:
                     time_spent_seconds=event.time_spent_seconds,
                 )
             )
-            await self._append_and_resolve(
+            return await self._append_and_resolve(
                 event=event,
                 xp_type="completion",
                 xp_delta=COURSE_COMPLETION_XP,
                 reason_code="COURSE_COMPLETE",
                 integrity_status="flagged" if gate.flagged else "verified",
             )
-        elif isinstance(event, AssessmentSubmittedEvent):
+        if isinstance(event, AssessmentSubmittedEvent):
             gate = run_integrity_gate(
                 IntegritySignals(
                     question_count=len(event.question_level_answers),
@@ -67,7 +70,7 @@ class GamificationEventProcessor:
             )
             multiplier = SIDE_ASSESSMENT_MULTIPLIER if event.assessment_kind == "side" else 1.0
             xp_delta = round(ASSESSMENT_MAX_MASTERY_XP * event.score_pct / 100 * multiplier)
-            await self._append_and_resolve(
+            return await self._append_and_resolve(
                 event=event,
                 xp_type="mastery",
                 xp_delta=xp_delta,
@@ -79,6 +82,7 @@ class GamificationEventProcessor:
                 multiplier_applied=multiplier,
                 integrity_status="flagged" if gate.flagged else "verified",
             )
+        return None
 
     async def _append_and_resolve(
         self,
@@ -89,7 +93,7 @@ class GamificationEventProcessor:
         reason_code: str,
         integrity_status: str,
         multiplier_applied: float = 1.0,
-    ) -> None:
+    ) -> ProgressContext:
         await self._ledger.append(
             user_id=event.user_id,
             event_id=event.event_id,
@@ -99,4 +103,4 @@ class GamificationEventProcessor:
             multiplier_applied=multiplier_applied,
             integrity_status=integrity_status,
         )
-        await self._resolver.resolve(event.user_id)
+        return await self._resolver.resolve(event.user_id)

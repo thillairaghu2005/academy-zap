@@ -126,11 +126,13 @@ async def test_a_foundation_stub_route_returns_the_documented_501_shape(
 ) -> None:
     access_token = await register_and_login(client, "stub-route-user@example.com")
 
+    # The global leaderboard is now a real projection read; the still-stubbed non-global
+    # scope (guild) is the typed 501 surface that documents the deferred feature.
     response = await client.get(
-        "/api/v1/leaderboards/global", headers={"Authorization": f"Bearer {access_token}"}
+        "/api/v1/leaderboards/guild", headers={"Authorization": f"Bearer {access_token}"}
     )
 
     assert response.status_code == 501
     body = response.json()
-    assert body["subsystem"] == "gamification"
-    assert body["see"].startswith("ZAPSTERS_")
+    assert body["subsystem"] == "guild/org leaderboards"
+    assert body["see"].startswith("ZAPSTERS_GAMIFICATION_ENGINE.md")

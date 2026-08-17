@@ -262,5 +262,30 @@ export const apiProgressContextSchema = z.object({
   freeze_status: z.enum(["live", "frozen_pending_review"]),
 });
 
+/** §5.5 Leaderboard projection read (GET /leaderboards/{scope}) — one entry, ZRANGE-shaped. */
+export const apiLeaderboardEntrySchema = z.object({
+  rank: z.number(),
+  user_id: z.string().uuid(),
+  display_name: z.string(),
+  avatar_url: z.string().nullable(),
+  score: z.number(),
+  level: z.number(),
+  rank_name: z.string(),
+  prestige_tier: z.number(),
+  is_me: z.boolean(),
+});
+
+/** §5.5 Leaderboard page — bounded top-N slice with dense 1-based ranks. */
+export const apiLeaderboardPageSchema = z.object({
+  scope: z.string(),
+  offset: z.number(),
+  total: z.number(),
+  entries: z.array(apiLeaderboardEntrySchema),
+  has_more: z.boolean(),
+});
+
+/** §5.5 "My standing" read (GET /leaderboards/{scope}/me) — null when unranked. */
+export const apiMyStandingSchema = apiLeaderboardEntrySchema.nullable();
+
 export type ApiUser = z.infer<typeof apiUserSchema>;
 export type AuthSession = z.infer<typeof authSessionSchema>;

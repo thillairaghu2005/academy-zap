@@ -11,12 +11,14 @@ import structlog
 from arq import cron
 from arq.connections import RedisSettings
 
+from gamification.projections.leaderboard import LeaderboardProjection
 from gamification.services.event_processor import GamificationEventProcessor
 from platform_core.bus.consumer import EventConsumer
 from platform_core.bus.dlq import send_to_dlq
 from platform_core.core.config import settings
 from platform_core.core.db.session import session_scope
 from platform_core.core.redis import get_redis_client
+from platform_core.core.repositories.user import UserRepository
 from platform_core.events.idempotency import IdempotencyRepository
 
 logger = structlog.get_logger(__name__)
@@ -102,7 +104,25 @@ async def poll_gamification_events(_ctx: dict[Any, Any], *_args: Any, **_kwargs:
                 event_type=delivered.event_type,
                 raw_event=json.loads(delivered.raw_data),
             ):
-                await processor.process(delivered.event)
+                context = await processor.process(delivered.event)
+                # Feed the leaderboard projection from the authoritative context — the board
+                # is a rebuildable read model, never a source of truth (gamification §5.5).
+                if context is not None:
+                    user = await UserRepository(session).get_by_id(context.user_id)
+                    projection = LeaderboardProjection(redis)
+                    await projection.update_user(
+                        context, display_name=user.display_name if user else "Learner"
+                    )
+                    # Slice 07: notify the real-time transport that authoritative state changed.
+                    # SSE only says "something changed" — clients refetch the authoritative
+                    # APIs. Notifications are best-effort and never fail the pipeline.
+                    from gamification.realtime.sse import (
+                        publish_leaderboard_updated,
+                        publish_progress_updated,
+                    )
+
+                    await publish_progress_updated(redis, str(context.user_id))
+                    await publish_leaderboard_updated(redis)
                 processed += 1
             await consumer.ack(delivered.message_id)
             await session.commit()

@@ -23,10 +23,8 @@ import type {
   StreakState,
 } from "@/lib/contracts/gamification";
 import {
-  getLeagueStanding,
   getProgressContext,
   getRankLadder,
-  getStreak,
 } from "@/lib/data/demo/gamification";
 import { DEMO_MODE } from "@/lib/config";
 import { useSession } from "@/components/providers/session-provider";
@@ -76,16 +74,6 @@ export function RankHubClient() {
   const ladderQuery = useQuery({
     queryKey: ["rank-ladder"],
     queryFn: () => getRankLadder(),
-  });
-  const streakQuery = useQuery({
-    queryKey: ["streak", demoUser],
-    queryFn: () => getStreak(demoUser),
-    retry: false,
-  });
-  const leagueQuery = useQuery({
-    queryKey: ["league", demoUser],
-    queryFn: () => getLeagueStanding(demoUser),
-    retry: false,
   });
 
   const ctx = ctxQuery.data;
@@ -246,19 +234,20 @@ export function RankHubClient() {
               </div>
             </motion.div>
 
-            {/* Right rail: streak + league + guild */}
+            {/* Right rail: streak + league + guild — all read the SAME authoritative
+                ProgressContext (`ctx.streak` / `ctx.league`), never separate projections. */}
             <div className="flex flex-col gap-4">
               <StreakWidget
-                data={streakQuery.data}
-                isLoading={streakQuery.isLoading}
-                isError={streakQuery.isError}
-                onRetry={() => streakQuery.refetch()}
+                data={ctx.streak}
+                isLoading={false}
+                isError={false}
+                onRetry={() => ctxQuery.refetch()}
               />
               <LeagueWidget
-                data={leagueQuery.data}
-                isLoading={leagueQuery.isLoading}
-                isError={leagueQuery.isError}
-                onRetry={() => leagueQuery.refetch()}
+                data={ctx.league}
+                isLoading={false}
+                isError={false}
+                onRetry={() => ctxQuery.refetch()}
               />
               <GuildWidget guild={ctx.guild} />
             </div>

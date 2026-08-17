@@ -69,12 +69,19 @@ async def real_redis_client(
     # Unique prefix per test: the auth limiter (5 req/60s) counts against shared real Redis,
     # so a fixed prefix would throttle repeated test runs of the same route.
     await FastAPILimiter.init(real_redis, prefix=f"fastapi-limiter-{uuid.uuid4().hex}")
+    # The probe consumer asserts its own event is within its bounded batch; a stale backlog
+    # (e.g. from live E2E runs or the slice-06 suite's published events) would displace it.
+    # Start and end each test with a clean stream so suites can run in any order.
+    from platform_core.bus.producer import EVENTS_STREAM_KEY
+
+    await real_redis.delete(EVENTS_STREAM_KEY)
     try:
         async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as ac:
             yield ac, real_redis
     finally:
         await FastAPILimiter.close()
         app.dependency_overrides.clear()
+        await real_redis.delete(EVENTS_STREAM_KEY)
         await real_redis.close()
 
 
