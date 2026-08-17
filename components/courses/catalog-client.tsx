@@ -521,7 +521,7 @@ function CourseCard({
 
       {learning ? (
         <div className={`border-t border-border p-3 ${view === "list" ? "sm:w-full" : ""}`}>
-          <Button asChild size="sm" sheen className="w-full">
+          <Button asChild size="sm" className="w-full">
             <Link href={`/courses/${course.id}/learn`}>
               {learning.enrollment.progress_pct > 0 ? "Continue course" : "Start course"}
               <ArrowRight className="size-4" />

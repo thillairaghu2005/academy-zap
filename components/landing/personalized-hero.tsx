@@ -58,14 +58,13 @@ export function PersonalizedHero() {
 
   return (
     <section className="relative overflow-hidden border-b border-border bg-background text-foreground">
-      <div className="pointer-events-none absolute -right-32 -top-40 size-[30rem] rounded-full bg-primary/5 blur-3xl" aria-hidden="true" />
       <div className="relative mx-auto grid max-w-7xl gap-8 px-4 py-12 sm:px-6 sm:py-16 lg:grid-cols-[1fr_1.15fr] lg:items-center lg:gap-16 lg:px-8 lg:py-20">
         <div className="max-w-2xl motion-safe:animate-fade-up">
           <p className="font-mono text-xs font-medium uppercase tracking-widest text-primary">Welcome back, {user.display_name.split(" ")[0]}</p>
           <h1 className="mt-5 max-w-xl font-display text-hero text-foreground">Continue where<br /><span className="text-primary">you left off.</span></h1>
           <p className="mt-6 max-w-lg text-base leading-7 text-muted-foreground sm:text-lg">Keep the loop moving: finish the lesson, prove the skill, and turn the next verified effort into momentum.</p>
           <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-            <Button variant="default" size="lg" sheen glow asChild><Link href={resumeHref}>{resumeItem ? "Resume lesson" : "Browse courses"} <ArrowRight /></Link></Button>
+            <Button variant="default" size="lg" asChild><Link href={resumeHref}>{resumeItem ? "Resume lesson" : "Browse courses"} <ArrowRight /></Link></Button>
             <Button variant="outline" size="lg" asChild><Link href="/judge">Open the Judge</Link></Button>
           </div>
         </div>

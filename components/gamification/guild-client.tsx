@@ -22,7 +22,7 @@ const SkillTree = dynamic(
   () => import("@/components/gamification/skill-tree").then((module) => module.SkillTree),
   {
     ssr: false,
-    loading: () => <div className="h-[460px] animate-pulse rounded-xl border border-border bg-surface-1" aria-label="Loading skill tree" />,
+    loading: () => <div className="h-[460px] rounded-xl border border-border bg-surface-1" aria-label="Loading skill tree" />,
   },
 );
 

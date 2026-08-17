@@ -213,7 +213,7 @@ export function LabTerminal({
           role="status"
           className="pointer-events-none absolute inset-0 z-10 flex items-center justify-center gap-2 bg-zinc-950 text-sm text-muted-foreground"
         >
-          <span className="size-2 animate-pulse rounded-full bg-emerald-400" />
+          <span className="size-2 rounded-full bg-emerald-400" />
           Establishing encrypted session…
         </div>
       ) : null}

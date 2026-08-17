@@ -16,12 +16,7 @@ import { Magnetic } from "@/components/motion/magnetic";
 import { Spotlight } from "@/components/motion/spotlight";
 import { Button } from "@/components/ui/button";
 
-const glyphs = [
-  { value: "</>", className: "left-[8%] top-[21%] rotate-[-10deg]" },
-  { value: "01", className: "right-[10%] top-[18%] rotate-[8deg]" },
-  { value: "∑", className: "right-[5%] bottom-[24%] rotate-[-7deg]" },
-  { value: "{ }", className: "left-[4%] bottom-[18%] rotate-[9deg]" },
-] as const;
+
 
 function WorkspacePreview() {
   return (
@@ -29,7 +24,7 @@ function WorkspacePreview() {
       <div className="relative overflow-hidden rounded-2xl border border-border bg-white shadow-[0_16px_40px_rgb(23_23_23_/_9%)]">
         <div className="flex items-center justify-between border-b border-border px-4 py-3.5 sm:px-5">
           <div className="flex items-center gap-2.5">
-            <span className="grid size-8 place-items-center rounded-[10px] bg-primary/10 text-primary">
+            <span className="grid size-8 place-items-center text-primary">
               <Sparkles className="size-4" />
             </span>
             <div>
@@ -38,7 +33,7 @@ function WorkspacePreview() {
             </div>
           </div>
           <span className="inline-flex items-center gap-1.5 rounded-full border border-primary/15 bg-primary/5 px-2.5 py-1 text-[11px] font-medium text-primary">
-            <span className="size-1.5 rounded-full bg-primary" /> Preview
+            Preview
           </span>
         </div>
 
@@ -58,7 +53,7 @@ function WorkspacePreview() {
               A glimpse of the focused lessons waiting inside Zapsters.
             </p>
             <div className="mt-6 flex items-center gap-3 rounded-xl border border-primary/10 bg-primary/5 p-3">
-              <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-primary/10 text-primary">
+              <span className="grid size-10 shrink-0 place-items-center text-primary">
                 <CirclePlay className="size-4" />
               </span>
               <div>
@@ -101,11 +96,11 @@ function WorkspacePreview() {
               </div>
               <div className="mt-4 space-y-3">
                 <div className="flex items-center gap-2.5 text-xs">
-                  <span className="grid size-6 place-items-center rounded-full bg-primary/10 text-primary"><Check className="size-3.5" /></span>
+                  <span className="grid size-6 place-items-center text-primary"><Check className="size-3.5" /></span>
                   <span className="min-w-0 flex-1 truncate">Complete a focused lesson</span>
                 </div>
                 <div className="flex items-center gap-2.5 text-xs">
-                  <span className="grid size-6 place-items-center rounded-full bg-primary/10 text-primary"><CirclePlay className="size-3.5" /></span>
+                  <span className="grid size-6 place-items-center text-primary"><CirclePlay className="size-3.5" /></span>
                   <span className="min-w-0 flex-1 truncate">Practice in the Judge</span>
                 </div>
               </div>
@@ -129,17 +124,6 @@ export function HeroSection() {
   return (
     <section className="relative isolate overflow-hidden border-b border-border bg-background text-foreground">
       <div className="pointer-events-none absolute inset-0 bg-grid opacity-20 [mask-image:linear-gradient(to_bottom,black,transparent_82%)]" aria-hidden="true" />
-      <div className="pointer-events-none absolute left-1/2 top-[-18rem] size-[38rem] -translate-x-1/2 rounded-full bg-primary/5 blur-3xl" aria-hidden="true" />
-      {glyphs.map((glyph, index) => (
-        <span
-          key={glyph.value}
-          aria-hidden="true"
-          className={`pointer-events-none absolute hidden font-mono text-sm text-muted-foreground/25 motion-safe:animate-drift sm:block ${glyph.className}`}
-          style={{ animationDelay: `${index * -2.4}s` }}
-        >
-          {glyph.value}
-        </span>
-      ))}
 
       <div className="relative mx-auto grid max-w-7xl items-center gap-12 px-5 py-16 sm:px-8 sm:py-24 lg:grid-cols-[0.88fr_1.12fr] lg:gap-16 lg:px-10 lg:py-28">
         <motion.div
@@ -149,7 +133,7 @@ export function HeroSection() {
           className="relative z-10 max-w-2xl"
         >
           <div className="inline-flex items-center gap-2 rounded-full border border-primary/15 bg-primary/5 px-3 py-1.5 text-xs font-medium text-primary">
-            <span className="size-1.5 rounded-full bg-primary" /> A better place to get good at hard things
+            A better place to get good at hard things
           </div>
           <h1 className="mt-7 max-w-xl font-display text-[clamp(2.9rem,6vw,5.4rem)] font-semibold leading-[0.98] tracking-[-0.065em]">
             Learn with intent.
@@ -161,7 +145,7 @@ export function HeroSection() {
           </p>
           <div className="mt-8 flex flex-col gap-3 sm:flex-row">
             <Magnetic>
-              <Button size="lg" sheen glow asChild>
+              <Button size="lg" asChild>
                 <Link href="/courses">Start learning <ArrowRight /></Link>
               </Button>
             </Magnetic>
@@ -182,10 +166,9 @@ export function HeroSection() {
           transition={{ delay: reducedMotion ? 0 : 0.12, duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
           className="relative z-10 lg:pt-6"
         >
-           <div className="absolute -inset-6 rounded-[40px] bg-primary/4 blur-2xl" aria-hidden="true" />
           <WorkspacePreview />
           <div className="absolute -bottom-5 -left-5 hidden items-center gap-3 rounded-2xl border border-border bg-white px-3.5 py-3 shadow-[0_16px_35px_rgb(17_24_39_/_10%)] sm:flex">
-            <span className="grid size-8 place-items-center rounded-xl bg-primary text-primary-foreground"><Code2 className="size-4" /></span>
+            <span className="grid size-8 place-items-center text-primary"><Code2 className="size-4" /></span>
             <div><p className="text-xs font-semibold">Practice, not passive watching</p><p className="mt-0.5 text-[11px] text-muted-foreground">Apply the idea while it&apos;s fresh</p></div>
           </div>
         </motion.div>
