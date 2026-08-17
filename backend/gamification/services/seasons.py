@@ -75,6 +75,42 @@ class SeasonService:
             xp_this_season=xp,
         )
 
+    async def standing_zones(
+        self,
+        *,
+        season: LeagueSeason,
+        tier_id: str,
+        rank_in_league: int | None,
+        total_members: int,
+    ) -> tuple[bool, bool]:
+        """The caller's promotion/relegation zone, derived from the SAME configuration
+        `finalize_season` uses — never a hard-coded "top 3" / "bottom 3" (slice 09 rule:
+        promotion/demotion widths are season config, not embedded literals).
+
+        Unranked (no projection row yet) is neither zone. A tier at the top of the
+        ladder cannot be in the promotion zone and a tier at the bottom cannot be in the
+        relegation zone, mirroring the boundary rules of finalization.
+        """
+        if rank_in_league is None or rank_in_league <= 0:
+            return False, False
+        config = season.config or {}
+        promote_n = int(config.get("promotion_slots", DEFAULT_PROMOTION_SLOTS))
+        demote_n = int(config.get("demotion_slots", DEFAULT_DEMOTION_SLOTS))
+
+        tiers = {t.tier_id: t.display_order for t in await self._tiers.list_all()}
+        order = tiers.get(tier_id)
+        max_order = max(tiers.values(), default=0)
+        min_order = min(tiers.values(), default=0)
+
+        promotion_zone = order is not None and order < max_order and rank_in_league <= promote_n
+        relegation_zone = (
+            order is not None
+            and order > min_order
+            and total_members > demote_n
+            and rank_in_league > total_members - demote_n
+        )
+        return promotion_zone, relegation_zone
+
     # -- finalization -------------------------------------------------------------
 
     async def finalize_season(self, season_id: uuid.UUID) -> dict[str, int]:
@@ -92,7 +128,7 @@ class SeasonService:
             # Already finalized — replay returns zero new writes (idempotency).
             return {"promoted": 0, "demoted": 0, "retained": 0}
 
-        moved = await self._seasons.set_status(season_id, "completed")
+        moved = await self._seasons.set_status(season_id, "completed", expected_status="active")
         if not moved:
             # A concurrent finalization won the transition; this is a replay.
             return {"promoted": 0, "demoted": 0, "retained": 0}
@@ -118,11 +154,13 @@ class SeasonService:
             order = tiers.get(tier_id)
             if order is None:
                 continue
-            # Deterministic rank within the tier: xp desc, then user_id asc.
-            tier_members.sort(key=lambda m: (-m.xp_this_season, str(m.user_id)))
-            active_members = [
-                m for m in tier_members if str(m.user_id) not in frozen_user_ids
-            ]
+            # Deterministic rank within the tier: xp desc. Equal scores break by member
+            # id DESCENDING — the exact tie order the Redis ZSET projection returns on its
+            # ZREVRANGE read path (the global board has the same semantics), so the user
+            # the board shows above the other is the one finalization actually promotes.
+            tier_members.sort(key=lambda m: (m.xp_this_season, str(m.user_id)))
+            ordered = list(reversed(tier_members))
+            active_members = [m for m in ordered if str(m.user_id) not in frozen_user_ids]
             for index, member in enumerate(active_members):
                 if member.xp_this_season <= 0:
                     outcome = "retained"

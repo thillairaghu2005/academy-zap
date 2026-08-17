@@ -93,6 +93,19 @@ async def get_my_league(
         user_id=str(current_user.id),
     )
     rank = standing["rank"] if standing else None
+    total = int(
+        (
+            await LeagueProjection(redis).page(
+                season_id=str(season.id), tier_id=membership.league_tier, offset=0, limit=1
+            )
+        )["total"]
+    )
+    promotion_zone, relegation_zone = await SeasonService(session).standing_zones(
+        season=season,
+        tier_id=membership.league_tier,
+        rank_in_league=rank,
+        total_members=total,
+    )
     return LeagueStanding(
         user_id=current_user.id,
         season_id=season.id,
@@ -101,8 +114,8 @@ async def get_my_league(
         # frontend contract (rank_in_league is a plain int; the UI renders 0 as unranked).
         rank_in_league=rank if rank is not None else 0,
         xp_this_season=membership.xp_this_season,
-        promotion_zone=rank is not None and rank <= 3,
-        relegation_zone=standing is None,
+        promotion_zone=promotion_zone,
+        relegation_zone=relegation_zone,
     )
 
 

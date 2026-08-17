@@ -122,6 +122,64 @@ async def test_finalization_is_idempotent_on_replay(
 
 
 @pytest.mark.asyncio
+async def test_set_status_is_a_guarded_compare_and_swap(
+    db_session: AsyncSession,
+) -> None:
+    """The active -> completed transition only fires when the row is still active — a
+    stale attempt (already completed, or a different current status) is a no-op, which is
+    the DB-level guard that makes finalization concurrency-safe."""
+    season = _season(db_session, status="active")
+    await db_session.flush()
+    repo = SeasonRepository(db_session)
+
+    assert await repo.set_status(season.id, "completed", expected_status="active") is True
+    # A replayed transition sees the row in `completed`, not `active` -> no row moves.
+    assert (
+        await repo.set_status(season.id, "completed", expected_status="active") is False
+    )
+    # Wrong expectation (e.g. a stale `scheduled` guard) is also a no-op.
+    assert await repo.set_status(season.id, "active", expected_status="scheduled") is False
+
+
+@pytest.mark.asyncio
+async def test_concurrent_finalization_writes_outcomes_once(
+    db_session: AsyncSession,
+) -> None:
+    """Two interleaved finalization attempts (simulating concurrent workers) must produce
+    the same final state as one attempt, with no duplicated promotion/demotion outcomes.
+    The guarded status transition means the second attempt is a replay no-op."""
+    season = _season(db_session, config={"promotion_slots": 2, "demotion_slots": 1})
+    await db_session.flush()
+    users = [uuid.uuid4() for _ in range(4)]
+    for index, user in enumerate(users):
+        await _membership(db_session, season, user_id=user, tier="silver", xp=400 - index * 50)
+    await db_session.flush()
+
+    service = SeasonService(db_session)
+    await service.finalize_season(season.id)
+    await db_session.commit()
+
+    # Second attempt: re-read the row (now completed) and finalize again — the guarded
+    # transition refuses, so no membership outcome is rewritten.
+    second = await service.finalize_season(season.id)
+    await db_session.commit()
+    assert second == {"promoted": 0, "demoted": 0, "retained": 0}
+
+    members = await _memberships(db_session, season.id)
+    promoted = [m for m in members.values() if m.outcome == "promoted"]
+    demoted = [m for m in members.values() if m.outcome == "demoted"]
+    retained = [m for m in members.values() if m.outcome == "retained"]
+    # Top 2 promoted, bottom 1 demoted, 1 retained — exactly one outcome per member.
+    assert len(promoted) == 2
+    assert len(demoted) == 1
+    assert len(retained) == 1
+    # Re-running finalization did not append or duplicate anything.
+    assert len(members) == 4
+    assert {m.league_tier for m in promoted} == {"gold"}
+    assert {m.league_tier for m in demoted} == {"bronze"}
+
+
+@pytest.mark.asyncio
 async def test_inactive_members_are_retained_not_demoted(
     db_session: AsyncSession,
 ) -> None:

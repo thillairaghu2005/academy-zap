@@ -11,6 +11,7 @@ from datetime import datetime
 
 from fastapi import APIRouter
 from pydantic import BaseModel, Field
+from sqlalchemy.exc import IntegrityError
 
 from gamification.repositories.leagues import SeasonRepository
 from gamification.services.seasons import SeasonService
@@ -79,7 +80,13 @@ async def activate_season(
         raise ConflictError(f"Cannot activate a {season.status} season.")
     if await repo.get_active() is not None:
         raise ConflictError("An active season already exists.")
-    moved = await repo.set_status(season_id, "active")
+    try:
+        moved = await repo.set_status(season_id, "active", expected_status="scheduled")
+    except IntegrityError:
+        # The partial unique index (at most one ACTIVE season) rejected a concurrent
+        # activation — surface it as the same conflict, not a 500.
+        await session.rollback()
+        raise ConflictError("An active season already exists.") from None
     if not moved:
         raise ConflictError("Season state changed concurrently — reload and retry.")
     await session.commit()

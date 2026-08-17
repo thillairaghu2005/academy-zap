@@ -18,13 +18,17 @@ from typing import Any
 from sqlalchemy import (
     ARRAY,
     Boolean,
+    CheckConstraint,
     DateTime,
     Float,
+    ForeignKeyConstraint,
+    Index,
     Integer,
     String,
     Text,
     UniqueConstraint,
     func,
+    text,
 )
 from sqlalchemy.dialects.postgresql import JSONB, UUID
 from sqlalchemy.orm import Mapped, mapped_column
@@ -165,6 +169,23 @@ class LeagueSeason(Base):
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now()
     )
+    __table_args__ = (
+        # Season state is a closed set (scheduled -> active -> completed) and a season's
+        # time box must be well-formed. The partial unique index is the DB-level
+        # guarantee of at most one ACTIVE season (the service's activation guard is the
+        # app-level fast path; the index makes the invariant hold under concurrency).
+        CheckConstraint(
+            "status IN ('scheduled', 'active', 'completed')",
+            name="ck_league_season_status",
+        ),
+        CheckConstraint("end_at > start_at", name="ck_league_season_time_range"),
+        Index(
+            "uq_league_season_single_active",
+            "status",
+            unique=True,
+            postgresql_where=text("status = 'active'"),
+        ),
+    )
 
 
 class LeagueTier(Base):
@@ -208,6 +229,19 @@ class SeasonMembership(Base):
     __table_args__ = (
         # One authoritative membership per (user, season).
         UniqueConstraint("user_id", "season_id", name="uq_season_membership_user_season"),
+        # Referential integrity: a membership always points at a real season and a real
+        # tier, and the outcome (set once at finalization) is a closed set. The tier
+        # catalog lives in `league_tier`; memberships reference it by its stable tier_id.
+        ForeignKeyConstraint(
+            ["season_id"], ["league_season.id"], name="fk_season_membership_season"
+        ),
+        ForeignKeyConstraint(
+            ["league_tier"], ["league_tier.tier_id"], name="fk_season_membership_tier"
+        ),
+        CheckConstraint(
+            "outcome IS NULL OR outcome IN ('active', 'promoted', 'demoted', 'retained')",
+            name="ck_season_membership_outcome",
+        ),
     )
 
 
