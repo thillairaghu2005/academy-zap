@@ -4,7 +4,7 @@ import * as React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
-import { Menu } from "lucide-react";
+import { Menu, Search } from "lucide-react";
 
 import { cn, getInitials } from "@/lib/utils";
 import { sideNavGroups } from "@/lib/navigation";
@@ -142,8 +142,20 @@ export function MobileNav({ variant = "top" }: { variant?: "top" | "bottom" }) {
       <SheetContent side="left" className="w-72 gap-0 p-0">
         <SheetTitle className="sr-only">Navigation</SheetTitle>
         <div className="flex h-full flex-col overflow-y-auto px-4 pb-8 pt-5">
-          <div className="flex items-center justify-between pr-10">
+          <div className="flex items-center justify-between">
             <Logo />
+            <Button
+              variant="ghost"
+              size="icon"
+              className="text-muted-foreground"
+              onClick={() => {
+                setOpen(false);
+                setTimeout(() => window.dispatchEvent(new CustomEvent("zapsters:open-search")), 150);
+              }}
+              aria-label="Open search"
+            >
+              <Search className="size-5" />
+            </Button>
           </div>
 
           <div className="mt-5 rounded-xl border border-border bg-card p-3">

@@ -17,7 +17,7 @@ export default function AppError({
   }, [error]);
 
   return (
-    <PageContainer narrow>
+    <PageContainer narrow as="main" id="main-content">
       <ErrorState
         title="This surface is unavailable"
         message="Something interrupted the page. Retry to request the latest state."

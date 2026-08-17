@@ -112,6 +112,8 @@
   --animate-shimmer: shimmer 2.2s linear infinite;
   --animate-glow-pulse: glow-pulse 3s ease-in-out infinite;
   --animate-drift: drift 14s ease-in-out infinite;
+  --animate-accordion-down: accordion-down 0.2s ease-out;
+  --animate-accordion-up: accordion-up 0.2s ease-out;
 
   @keyframes fade-up {
     from {
@@ -177,6 +179,55 @@
     50% {
       transform: translate3d(0, -10px, 0) rotate(3deg);
     }
+  }
+  @keyframes accordion-down {
+    from {
+      height: 0;
+    }
+    to {
+      height: var(--radix-accordion-content-height);
+    }
+  }
+  @keyframes accordion-up {
+    from {
+      height: var(--radix-accordion-content-height);
+    }
+    to {
+      height: 0;
+    }
+  }
+}
+
+@layer base {
+  .dark {
+    /* Dark theme tokens */
+    --color-background: #09090b;
+    --color-foreground: #fafafa;
+    --color-card: #09090b;
+    --color-card-foreground: #fafafa;
+    --color-popover: #09090b;
+    --color-popover-foreground: #fafafa;
+    --color-muted: #27272a;
+    --color-muted-foreground: #a1a1aa;
+    --color-secondary: #27272a;
+    --color-secondary-foreground: #fafafa;
+    --color-accent: #27272a;
+    --color-accent-foreground: #fafafa;
+    --color-border: #27272a;
+    --color-border-strong: #3f3f46;
+    --color-input: #27272a;
+    --color-ring: #f43f5e;
+    --color-surface-1: #09090b;
+    --color-surface-2: #18181b;
+    --color-surface-3: #27272a;
+
+    /* Brand / action */
+    --color-primary-light: #4c0519;
+    --color-primary-muted: #2e0611;
+    --color-card-tint: #1a080c;
+    --color-primary-border: #881337;
+    --color-secondary-accent: #fb7185;
+    --color-destructive: #9f1239;
   }
 }
 
@@ -281,6 +332,23 @@
     border-radius: 999px;
     border: 2px solid transparent;
     background-clip: padding-box;
+  }
+
+  @media print {
+    body {
+      background: white !important;
+      color: black !important;
+    }
+    header, nav, footer, .no-print, [role="navigation"], [role="dialog"] {
+      display: none !important;
+    }
+    * {
+      box-shadow: none !important;
+      text-shadow: none !important;
+    }
+    a {
+      text-decoration: underline;
+    }
   }
 }
 

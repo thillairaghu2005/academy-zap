@@ -28,6 +28,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { DemoSettings } from "@/components/demo/demo-settings";
 import { useSession } from "@/components/providers/session-provider";
+import { ThemeToggle } from "@/components/shared/theme-toggle";
 import { getInitials } from "@/lib/utils";
 
 export function UserMenu() {
@@ -99,6 +100,13 @@ export function UserMenu() {
             Support
           </Link>
         </DropdownMenuItem>
+        <DropdownMenuSeparator />
+        <div className="flex items-center justify-between px-2 py-1.5 text-sm">
+          <span className="flex items-center gap-2">
+            Theme
+          </span>
+          <ThemeToggle />
+        </div>
         <DropdownMenuSeparator />
         {/* Close the menu before opening the settings dialog so the two
             portals never stack (demo settings is a full Dialog). */}

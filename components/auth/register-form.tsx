@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import { useForm, useWatch } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Check, Eye, EyeOff, GitBranch, Globe2, LoaderCircle } from "lucide-react";
+import { Check, GitBranch, Globe2, LoaderCircle } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -25,6 +25,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { PasswordInput } from "@/components/ui/password-input";
 import { Logo } from "@/src/components/Logo/Logo";
 import { useSession } from "@/components/providers/session-provider";
 
@@ -46,7 +47,6 @@ export function RegisterForm() {
   const router = useRouter();
   const { register, session, isLoading } = useSession();
   const [pending, setPending] = React.useState(false);
-  const [showPassword, setShowPassword] = React.useState(false);
 
   const form = useForm<RegisterValues>({
     resolver: zodResolver(registerSchema),
@@ -146,23 +146,12 @@ export function RegisterForm() {
                 <FormItem>
                   <FormLabel>Password</FormLabel>
                   <FormControl>
-                    <div className="relative">
-                      <Input
-                        type={showPassword ? "text" : "password"}
-                        placeholder="At least 8 characters"
-                        autoComplete="new-password"
-                        className="h-10 pr-10"
-                        {...field}
-                      />
-                      <button
-                        type="button"
-                        onClick={() => setShowPassword((v) => !v)}
-                        className="absolute right-2.5 top-1/2 -translate-y-1/2 rounded p-1 text-muted-foreground transition-colors hover:text-foreground"
-                        aria-label={showPassword ? "Hide password" : "Show password"}
-                      >
-                        {showPassword ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
-                      </button>
-                    </div>
+                    <PasswordInput
+                      placeholder="At least 8 characters"
+                      autoComplete="new-password"
+                      className="h-10"
+                      {...field}
+                    />
                   </FormControl>
                   <FormMessage />
                   {field.value ? <div className="mt-3" aria-live="polite"><div className="flex items-center justify-between text-[11px]"><span className="text-muted-foreground">Password strength</span><span className={strength >= 3 ? "font-semibold text-success-strong" : "font-semibold text-warning-strong"}>{strengthLabel}</span></div><div className="mt-1.5 grid grid-cols-4 gap-1" aria-hidden="true">{checks.map((check) => <span key={check.label} className={`h-1 rounded-full ${check.valid ? strength === 4 ? "bg-success" : "bg-warning" : "bg-border"}`} />)}</div><div className="mt-2 flex flex-wrap gap-1.5">{checks.map((check) => <span key={check.label} className={`inline-flex items-center gap-1 rounded-full border px-2 py-1 text-[10px] ${check.valid ? "border-success/20 bg-success/5 text-success-strong" : "border-border text-muted-foreground"}`}><Check className="size-3" />{check.label}</span>)}</div></div> : null}
