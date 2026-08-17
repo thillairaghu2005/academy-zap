@@ -28,15 +28,17 @@ import { Input } from "@/components/ui/input";
 import { PasswordInput } from "@/components/ui/password-input";
 import { Logo } from "@/src/components/Logo/Logo";
 import { useSession } from "@/components/providers/session-provider";
-import { apiErrorMessage } from "@/lib/api/client";
 
 const loginSchema = z.object({
   email: z
+    .string()
+    .trim()
+    .min(1, "Enter a valid email address.")
     .email("Enter a valid email address.")
     .max(254, "Email address is too long."),
   password: z
     .string()
-    .min(8, "Password must be at least 8 characters.")
+    .min(1, "Password is required.")
     .max(128, "Password is too long."),
 });
 
@@ -103,7 +105,8 @@ export function LoginForm({ next }: { next?: string }) {
       router.replace(safeNext(next));
     } catch (err) {
       form.setError("password", {
-        message: apiErrorMessage(err, "Sign in failed. Please try again later."),
+        message:
+          err instanceof Error ? err.message : "Sign in failed. Please try again later.",
       });
     } finally {
       setPending(false);

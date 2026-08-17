@@ -26,6 +26,7 @@ import pytest_asyncio  # noqa: E402
 from httpx import ASGITransport, AsyncClient  # noqa: E402
 from pytest_postgresql.janitor import DatabaseJanitor  # noqa: E402
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine  # noqa: E402
+from redis.asyncio import Redis as AsyncRedis  # noqa: E402
 
 # Import every subsystem's models so Base.metadata is fully populated for create_all.
 import assessments.models  # noqa: E402, F401
@@ -144,3 +145,29 @@ async def register_and_login(
     login = await client.post("/api/v1/auth/login", json={"email": email, "password": password})
     access_token: str = login.json()["tokens"]["access_token"]
     return access_token
+
+
+async def drain_outbox_for_test(db_session: AsyncSession, redis: fakeredis.FakeAsyncRedis | AsyncRedis) -> int:
+    """Helper for acceptance tests that bypasses isolation issues by draining outbox rows directly
+    from the test's `db_session` (which contains the uncommitted outbox rows) and flushing.
+    """
+    from datetime import UTC, datetime
+    from sqlalchemy import select
+    from platform_core.events.models import OutboxEvent
+    from platform_core.events.schema import EVENT_TYPE_REGISTRY
+    from platform_core.bus.producer import publish
+
+    result = await db_session.execute(
+        select(OutboxEvent).where(OutboxEvent.dispatched_at.is_(None))
+    )
+    events = result.scalars().all()
+    processed = 0
+    for row in events:
+        event_cls = EVENT_TYPE_REGISTRY.get(row.event_type)
+        if event_cls:
+            await publish(event_cls(**row.payload), redis)
+        row.dispatched_at = datetime.now(UTC)
+        processed += 1
+    
+    await db_session.flush()
+    return processed

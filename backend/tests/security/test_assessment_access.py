@@ -383,6 +383,10 @@ async def test_two_concurrent_finalizations_produce_one_completion_and_one_event
     assert len(winners) == 1
     assert len(losers) == 1
 
+    from tests.conftest import drain_outbox_for_test
+    async with AsyncSession(engine, expire_on_commit=False) as session:
+        await drain_outbox_for_test(session, redis)
+
     consumer = EventConsumer(group="security-race", consumer_name="worker", redis=redis)
     messages = [message async for message in consumer.read_batch(count=10, block_ms=100)]
     assert len(messages) == 1

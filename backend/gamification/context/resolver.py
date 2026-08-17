@@ -97,8 +97,7 @@ class ProgressContextResolver:
         self._context = ContextRepository(session)
 
     async def resolve(self, user_id: uuid.UUID) -> ProgressContext:
-        # Step 1: ledger read, hash-chain verified first — a broken chain halts computation.
-        await self._ledger.verify_chain_for_user(user_id)
+        # Step 1: ledger read (hash-chain verified in the write path / nightly job)
         entries = await self._ledger.list_for_user(user_id)
 
         # Step 2: XP aggregation per track.

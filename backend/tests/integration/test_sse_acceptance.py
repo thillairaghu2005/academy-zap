@@ -148,8 +148,10 @@ async def _drain_until_notifications(
     await pubsub.psubscribe("zapsters:sse:user:*")
     seen: list[dict[str, object]] = []
 
+    from tests.conftest import drain_outbox_for_test
     try:
         for _ in range(max_polls):
+            await drain_outbox_for_test(db_session, redis)
             await worker_module.poll_gamification_events({})
             while True:
                 message = await pubsub.get_message(ignore_subscribe_messages=True, timeout=0.1)

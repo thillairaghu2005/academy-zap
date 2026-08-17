@@ -38,7 +38,7 @@ The seeded demo account is:
 
 ```text
 Email:    demo@zapsters.dev
-Password: zapsters-demo
+Password: demo123
 User:     Raghunandhan
 ```
 

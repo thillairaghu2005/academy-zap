@@ -173,7 +173,7 @@ class AttemptService:
         else:
             last_timestamp = row.started_at
             
-        time_spent_ms = max(0, int((now - last_timestamp).total_seconds() * 1000))
+        time_spent_ms = data.time_spent_ms
 
         answer = {
             "question_id": str(question.id),

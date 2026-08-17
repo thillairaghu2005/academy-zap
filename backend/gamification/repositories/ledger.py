@@ -50,6 +50,7 @@ class LedgerRepository:
         org_id: uuid.UUID | None = None,
         source_type: str | None = None,
         source_id: uuid.UUID | None = None,
+        event_timestamp: datetime | None = None,
     ) -> LedgerEntry:
         """Appends one entry, computing its hash against the user's latest entry. This is the
         ONLY function in the codebase permitted to write to `xp_ledger` — every score-affecting
@@ -68,7 +69,7 @@ class LedgerRepository:
         existing = await self.list_for_user(user_id)
         prev_hash = existing[-1].entry_hash if existing else GENESIS_HASH
 
-        created_at = datetime.now(UTC)
+        created_at = event_timestamp if event_timestamp else datetime.now(UTC)
         if existing and created_at <= existing[-1].created_at:
             created_at = existing[-1].created_at + timedelta(microseconds=1)
         hashable = HashableEntry(

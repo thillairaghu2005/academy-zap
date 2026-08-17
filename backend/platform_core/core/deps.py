@@ -72,3 +72,4 @@ def require_role(*allowed: Role) -> Any:
 
 
 AdminUser = Annotated[User, require_role(Role.ORG_ADMIN, Role.PLATFORM_OPS)]
+PlatformOpsUser = Annotated[User, require_role(Role.PLATFORM_OPS)]
