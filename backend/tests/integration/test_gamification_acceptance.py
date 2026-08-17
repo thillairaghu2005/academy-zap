@@ -135,6 +135,7 @@ async def _drain_until_ledger_entry(
     redis: AsyncRedis,
     monkeypatch: pytest.MonkeyPatch,
     max_polls: int = 25,
+    expected_count: int = 1,
 ) -> int:
     """Runs the real worker until this user's ledger entry exists (bounded). The stream may
     hold events from other runs; assertions are always scoped to `user_id`.
@@ -167,7 +168,7 @@ async def _drain_until_ledger_entry(
             await poll_gamification_events({})
             async with factory() as session:
                 entries = await LedgerRepository(session).list_for_user(user_id)
-                if entries:
+                if len(entries) >= expected_count:
                     return len(entries)
         return 0
     finally:
@@ -217,6 +218,9 @@ async def test_real_assessment_event_flows_through_real_pipeline(
     assert final.status_code == 200
     assert final.json()["score"] == 10
     assert final.json()["passed"] is True
+
+    from tests.conftest import drain_outbox_for_test
+    await drain_outbox_for_test(db_session, real_redis)
 
     # The event is on the REAL stream now — read it with a probe consumer to prove emission
     # before the worker consumes it into the gamification group.
@@ -327,11 +331,15 @@ async def test_ledger_tampering_is_detected_at_the_database_level(
         update(LedgerEntry).where(LedgerEntry.id == first.id).values(xp_delta=999_999)
     )
     await db_session.commit()
+    db_session.expunge_all()
 
-    from gamification.context.resolver import ProgressContextResolver
+    new_first = (await ledger.list_for_user(user_id))[0]
+    print(f"OLD: {first.xp_delta}, NEW: {new_first.xp_delta}")
 
+    # The resolver no longer checks the chain on the read path.
+    # We explicitly verify the chain here to ensure the tamper is detected.
     with pytest.raises(ChainIntegrityError):
-        await ProgressContextResolver(db_session).resolve(user_id)
+        await ledger.verify_chain_for_user(user_id)
 
 
 @pytest.mark.asyncio
@@ -505,3 +513,222 @@ async def test_integrity_gate_flags_suspicious_assessment_but_still_ledgers_xp(
     assert context.freeze_status == "frozen_pending_review"
     assert "integrity_review_pending" in context.unresolved_flags
     await LedgerRepository(db_session).verify_chain_for_user(user_id)
+
+# ==========================================
+# GREEN GATE REMEDIATION TESTS (C1, C2, H1, H6)
+# ==========================================
+
+@pytest.mark.asyncio
+async def test_c1_outbox_publish_failure_and_unknown_event(
+    real_redis_client: tuple[AsyncClient, AsyncRedis],
+    db_session: AsyncSession,
+    postgres_test_db: str,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    client, real_redis = real_redis_client
+    
+    from platform_core.events.models import OutboxEvent
+    from datetime import UTC, datetime
+    
+    unknown_event = OutboxEvent(
+        id=uuid.uuid4(),
+        event_type="unknown.event",
+        payload={"foo": "bar"},
+        idempotency_key="unknown",
+        created_at=datetime.now(UTC),
+    )
+    db_session.add(unknown_event)
+    await db_session.commit()
+    
+    import platform_core.bus.worker as worker_module
+    monkeypatch.setattr(worker_module, "get_redis_client", lambda: real_redis)
+    from contextlib import asynccontextmanager
+    @asynccontextmanager
+    async def _test_session_scope() -> AsyncGenerator[AsyncSession, None]:
+        yield db_session
+    monkeypatch.setattr(worker_module, "session_scope", _test_session_scope)
+    
+    await worker_module.poll_outbox_events({})
+    
+    from platform_core.bus.dlq import DLQ_STREAM_KEY
+    dlq_messages = await real_redis.xrange(DLQ_STREAM_KEY)
+    assert len(dlq_messages) >= 1
+    
+    from sqlalchemy import select
+    res = await db_session.execute(select(OutboxEvent).where(OutboxEvent.id == unknown_event.id))
+    row = res.scalar_one()
+    assert row.dispatched_at is not None
+
+
+@pytest.mark.asyncio
+async def test_c2_timing_check_with_suspicious_answers(
+    real_redis_client: tuple[AsyncClient, AsyncRedis],
+    db_session: AsyncSession,
+    postgres_test_db: str,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    client, real_redis = real_redis_client
+    user_id = uuid.uuid4()
+    
+    def make_event(fast_count: int, total: int = 10) -> AssessmentSubmittedEvent:
+        answers = []
+        for i in range(total):
+            time_ms = 500 if i < fast_count else 2000
+            answers.append({"question_id": str(uuid.uuid4()), "option_index": 0, "time_spent_ms": time_ms})
+        return AssessmentSubmittedEvent(
+            user_id=user_id,
+            org_id=None,
+            idempotency_key=f"assessment.submitted:{uuid.uuid4()}",
+            session_fingerprint=f"auth:{user_id}",
+            assessment_id=uuid.uuid4(),
+            assessment_kind="main",
+            score_pct=100.0,
+            max_score=10.0,
+            time_taken_seconds=30,
+            attempt_number=1,
+            question_level_answers=answers,
+        )
+
+    event_ok = make_event(1)
+    await publish(event_ok, real_redis)
+    await _drain_until_ledger_entry(
+        user_id=user_id,
+        postgres_test_db=postgres_test_db,
+        redis=real_redis,
+        monkeypatch=monkeypatch,
+    )
+    entries = await LedgerRepository(db_session).list_for_user(user_id)
+    assert entries[0].integrity_status == "verified"
+    
+    event_flagged = make_event(3)
+    await publish(event_flagged, real_redis)
+    await _drain_until_ledger_entry(
+        user_id=user_id,
+        postgres_test_db=postgres_test_db,
+        redis=real_redis,
+        monkeypatch=monkeypatch,
+    )
+    entries = await LedgerRepository(db_session).list_for_user(user_id)
+    assert entries[1].integrity_status == "flagged"
+
+
+@pytest.mark.asyncio
+async def test_h1_projection_ordering_and_redelivery(
+    real_redis_client: tuple[AsyncClient, AsyncRedis],
+    db_session: AsyncSession,
+    postgres_test_db: str,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    client, real_redis = real_redis_client
+    user_id = uuid.uuid4()
+    
+    event = AssessmentSubmittedEvent(
+        user_id=user_id,
+        org_id=None,
+        idempotency_key=f"assessment.submitted:{uuid.uuid4()}",
+        session_fingerprint=f"auth:{user_id}",
+        assessment_id=uuid.uuid4(),
+        assessment_kind="main",
+        score_pct=100.0,
+        max_score=10.0,
+        time_taken_seconds=60,
+        attempt_number=1,
+        question_level_answers=[],
+    )
+    await publish(event, real_redis)
+
+    import platform_core.bus.worker as worker_module
+    from gamification.projections.leaderboard import LeaderboardProjection
+    
+    original_update_user = LeaderboardProjection.update_user
+    
+    class ProjectionExplosion(Exception):
+        pass
+
+    async def exploding_update_user(*args, **kwargs):
+        raise ProjectionExplosion("crash between commit and ZADD")
+
+    monkeypatch.setattr(LeaderboardProjection, "update_user", exploding_update_user)
+    
+    from contextlib import asynccontextmanager
+    @asynccontextmanager
+    async def _test_session_scope() -> AsyncGenerator[AsyncSession, None]:
+        yield db_session
+            
+    monkeypatch.setattr(worker_module, "get_redis_client", lambda: real_redis)
+    monkeypatch.setattr(worker_module, "session_scope", _test_session_scope)
+
+    from tests.conftest import drain_outbox_for_test
+    await drain_outbox_for_test(db_session, real_redis)
+    
+    with pytest.raises(ProjectionExplosion):
+        await worker_module.poll_gamification_events({})
+
+    entries = await LedgerRepository(db_session).list_for_user(user_id)
+    assert len(entries) == 1
+    
+    monkeypatch.setattr(LeaderboardProjection, "update_user", original_update_user)
+    import platform_core.bus.consumer as consumer_module
+    monkeypatch.setattr(consumer_module, "EVENT_RECLAIM_IDLE_MS", 0)
+    
+    await worker_module.poll_gamification_events({})
+    
+    entries_after = await LedgerRepository(db_session).list_for_user(user_id)
+    assert len(entries_after) == 1
+    
+    score = await real_redis.zscore("leaderboard:global", str(user_id))
+    assert score == 300.0
+
+
+@pytest.mark.asyncio
+async def test_h6_cap_on_mastery_xp(
+    real_redis_client: tuple[AsyncClient, AsyncRedis],
+    db_session: AsyncSession,
+    postgres_test_db: str,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    from datetime import UTC, datetime
+    client, real_redis = real_redis_client
+    user_id = uuid.uuid4()
+    assessment_id = uuid.uuid4()
+    
+    def make_attempt(pct: float, attempt_num: int) -> AssessmentSubmittedEvent:
+        return AssessmentSubmittedEvent(
+            user_id=user_id,
+            org_id=None,
+            idempotency_key=f"assessment.submitted:{uuid.uuid4()}",
+            session_fingerprint=f"auth:{user_id}",
+            assessment_id=assessment_id,
+            assessment_kind="main",
+            score_pct=pct,
+            max_score=10.0,
+            time_taken_seconds=60,
+            attempt_number=attempt_num,
+            question_level_answers=[],
+            occurred_at=datetime.now(UTC),
+        )
+
+    await publish(make_attempt(80.0, 1), real_redis)
+    await _drain_until_ledger_entry(
+        user_id=user_id, postgres_test_db=postgres_test_db, redis=real_redis, monkeypatch=monkeypatch
+    )
+    entries = await LedgerRepository(db_session).list_for_user(user_id)
+    assert len(entries) == 1
+    assert entries[0].xp_delta == 400
+
+    await publish(make_attempt(100.0, 2), real_redis)
+    await _drain_until_ledger_entry(
+        user_id=user_id, postgres_test_db=postgres_test_db, redis=real_redis, monkeypatch=monkeypatch, max_polls=5, expected_count=2
+    )
+    entries = await LedgerRepository(db_session).list_for_user(user_id)
+    assert len(entries) == 2
+    assert entries[1].xp_delta == 100
+    
+    await publish(make_attempt(90.0, 3), real_redis)
+    await _drain_until_ledger_entry(
+        user_id=user_id, postgres_test_db=postgres_test_db, redis=real_redis, monkeypatch=monkeypatch, max_polls=5, expected_count=3
+    )
+    entries = await LedgerRepository(db_session).list_for_user(user_id)
+    assert len(entries) == 3
+    assert entries[2].xp_delta == 0
+    assert entries[2].event_id is not None

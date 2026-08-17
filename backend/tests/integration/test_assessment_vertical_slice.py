@@ -132,6 +132,9 @@ async def test_mcq_assessment_is_server_graded_and_feeds_gamification(
     )
     assert repeated_final.status_code == 409
 
+    from tests.conftest import drain_outbox_for_test
+    await drain_outbox_for_test(db_session, redis)
+
     consumer = EventConsumer(group="assessment-test", consumer_name="worker", redis=redis)
     messages = [message async for message in consumer.read_batch(count=10, block_ms=100)]
     assert len(messages) == 1

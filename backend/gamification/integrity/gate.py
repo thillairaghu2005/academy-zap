@@ -33,7 +33,7 @@ class IntegritySignals:
     time_spent_seconds: int | None = None
 
     question_count: int | None = None
-    total_answer_time_ms: int | None = None
+    suspicious_answer_count: int | None = None
 
     session_fingerprint_distinct_users: int | None = None  # UNIMPLEMENTED: wait for real signal
 
@@ -63,12 +63,13 @@ def _velocity_check(signals: IntegritySignals) -> float | None:
 
 
 def _answer_timing_check(signals: IntegritySignals) -> float | None:
-    if signals.question_count is None or signals.total_answer_time_ms is None:
+    if signals.question_count is None or signals.suspicious_answer_count is None:
         return None
     if signals.question_count <= 0:
         return 1.0
-    avg_ms = signals.total_answer_time_ms / signals.question_count
-    return 0.0 if avg_ms < ANSWER_TIMING_MIN_MS_PER_QUESTION else 1.0
+    # Flag if >25% of questions are answered suspiciously fast
+    ratio = signals.suspicious_answer_count / signals.question_count
+    return 0.0 if ratio > 0.25 else 1.0
 
 
 def _session_fingerprint_check(signals: IntegritySignals) -> float | None:

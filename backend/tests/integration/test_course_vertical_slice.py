@@ -147,6 +147,9 @@ async def test_progress_is_server_derived_and_course_completion_emits_one_event(
     assert second.status_code == 200
     assert second.json()["enrollment"]["status"] == "completed"
 
+    from tests.conftest import drain_outbox_for_test
+    await drain_outbox_for_test(db_session, redis)
+
     consumer = EventConsumer(group="course-test", consumer_name="worker", redis=redis)
     messages = [message async for message in consumer.read_batch(count=10, block_ms=100)]
     assert len(messages) == 1
@@ -163,6 +166,7 @@ async def test_progress_is_server_derived_and_course_completion_emits_one_event(
         json={"position_seconds": 10},
     )
     assert repeated.status_code == 200
+    await drain_outbox_for_test(db_session, redis)
     messages_after_repeat = [
         message async for message in consumer.read_batch(count=10, block_ms=100)
     ]

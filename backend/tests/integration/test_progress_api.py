@@ -45,6 +45,10 @@ async def _seed_entry(
         integrity_status=integrity_status,
     )
     await db_session.commit()
+    
+    from gamification.context.resolver import ProgressContextResolver
+    await ProgressContextResolver(db_session).resolve(user_id)
+    await db_session.commit()
 
 
 @pytest.mark.asyncio
@@ -225,6 +229,10 @@ async def test_context_snapshots_are_append_only_and_immutable(
     await _seed_entry(db_session, user_id, xp_delta=400, reason_code="COURSE_COMPLETE")
 
     first = (await client.get(PROGRESS_URL, headers={"Authorization": f"Bearer {token}"})).json()
+
+    from gamification.context.resolver import ProgressContextResolver
+    await ProgressContextResolver(db_session).resolve(user_id)
+    await db_session.commit()
     second = (await client.get(PROGRESS_URL, headers={"Authorization": f"Bearer {token}"})).json()
 
     assert first["context_version"] == 1

@@ -154,10 +154,12 @@ async def _drain_until_leaderboard_members(
     monkeypatch.setattr(worker_module, "get_redis_client", lambda: redis)
     monkeypatch.setattr(worker_module, "session_scope", _test_session_scope)
 
-    projection = LeaderboardProjection(redis)
-    total = 0
+    from tests.conftest import drain_outbox_for_test
+
     for _ in range(max_polls):
-        await poll_gamification_events({})
+        await drain_outbox_for_test(db_session, redis)
+        await worker_module.poll_gamification_events({})
+        projection = LeaderboardProjection(redis)
         page = await projection.page(offset=0, limit=1)
         total = int(page["total"])
         if total >= expected:

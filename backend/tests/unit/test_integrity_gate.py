@@ -40,7 +40,7 @@ def test_implausibly_fast_answers_are_flagged() -> None:
     result = run_integrity_gate(
         IntegritySignals(
             question_count=10,
-            total_answer_time_ms=(ANSWER_TIMING_MIN_MS_PER_QUESTION - 1) * 10,
+            suspicious_answer_count=10,
         )
     )
     assert result.checks["answer_timing"] == 0.0

@@ -48,7 +48,7 @@ const SessionContext = React.createContext<SessionContextValue | null>(null);
 
 const DEFAULT_ACCOUNT: MockAccount = {
   user: MOCK_LEARNER,
-  password: "zapsters-demo",
+  password: "demo123",
 };
 
 function toSessionUser(user: ApiUser): SessionUser {
@@ -121,7 +121,7 @@ export function SessionProvider({ children }: { children: React.ReactNode }) {
         (candidate) => candidate.user.email === input.email.trim().toLowerCase(),
       );
       if (!account || account.password !== input.password) {
-        throw new Error("Email or password is incorrect.");
+        throw new Error("Invalid email or password.");
       }
       persistSession(account.user);
       setSession({ status: "authenticated", user: account.user });
