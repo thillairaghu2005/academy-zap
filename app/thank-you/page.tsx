@@ -16,7 +16,7 @@ export default function ThankYouPage() {
         <div className="mx-auto flex size-16 items-center justify-center rounded-full bg-primary/10 text-primary mb-6">
           <Sparkles className="size-8" />
         </div>
-        <h1 className="font-display text-4xl font-bold">You're all set!</h1>
+        <h1 className="font-display text-4xl font-bold">You&apos;re all set!</h1>
         <p className="mt-4 text-muted-foreground max-w-sm mx-auto">
           Thank you for signing up or completing your purchase. Your journey with Zapsters starts now.
         </p>

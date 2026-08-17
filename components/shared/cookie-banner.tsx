@@ -12,7 +12,7 @@ export function CookieBanner() {
   React.useEffect(() => {
     const consent = localStorage.getItem("zapsters-cookie-consent");
     if (!consent) {
-      setShow(true);
+      setTimeout(() => setShow(true), 0);
     }
   }, []);
 
