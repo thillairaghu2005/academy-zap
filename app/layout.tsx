@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import type { Metadata, Viewport } from "next";
 
 import "./globals.css";
@@ -11,6 +12,9 @@ import { DemoAnalyticsProvider } from "@/components/providers/demo-analytics-pro
 import { DemoPreferencesProvider } from "@/components/providers/demo-preferences-provider";
 import { Toaster } from "@/components/ui/sonner";
 import { getSiteUrl } from "@/lib/seo";
+import { CookieBanner } from "@/components/shared/cookie-banner";
+import { BackToTop } from "@/components/shared/back-to-top";
+import { UtmTracker } from "@/hooks/use-utm";
 
 export const metadata: Metadata = {
   title: {
@@ -65,12 +69,6 @@ export const viewport: Viewport = {
   themeColor: "#ffffff",
 };
 
-const themeScript = `
-(function () {
-  document.documentElement.classList.remove("dark");
-  document.documentElement.classList.add("light");
-})();
-`;
 
 export default function RootLayout({
   children,
@@ -80,13 +78,11 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className="h-full light"
+      className="h-full"
       data-scroll-behavior="smooth"
       suppressHydrationWarning
     >
-      <head>
-        <script dangerouslySetInnerHTML={{ __html: themeScript }} />
-      </head>
+      <head />
       <body className="min-h-full">
         <LiveRegionProvider>
           <MotionProvider>
@@ -99,6 +95,11 @@ export default function RootLayout({
                 </DemoPreferencesProvider>
               </QueryProvider>
               <Toaster />
+              <CookieBanner />
+              <BackToTop />
+              <Suspense fallback={null}>
+                <UtmTracker />
+              </Suspense>
             </ThemeProvider>
           </MotionProvider>
         </LiveRegionProvider>

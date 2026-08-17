@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Eye, EyeOff, LoaderCircle, Sparkles } from "lucide-react";
+import { LoaderCircle, Sparkles } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -25,6 +25,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { PasswordInput } from "@/components/ui/password-input";
 import { Logo } from "@/src/components/Logo/Logo";
 import { useSession } from "@/components/providers/session-provider";
 import { apiErrorMessage } from "@/lib/api/client";
@@ -79,7 +80,6 @@ export function LoginForm({ next }: { next?: string }) {
   const router = useRouter();
   const { login, session, isLoading } = useSession();
   const [pending, setPending] = React.useState(false);
-  const [showPassword, setShowPassword] = React.useState(false);
 
   const form = useForm<LoginValues>({
     resolver: zodResolver(loginSchema),
@@ -152,27 +152,16 @@ export function LoginForm({ next }: { next?: string }) {
                 <FormItem>
                   <FormLabel>Password</FormLabel>
                   <FormControl>
-                    <div className="relative">
-                      <Input
-                        type={showPassword ? "text" : "password"}
-                        placeholder="••••••••"
-                        autoComplete="current-password"
-                        className="h-10 pr-10"
-                        {...field}
-                        onChange={(event) => {
-                          field.onChange(event);
-                          form.clearErrors();
-                        }}
-                      />
-                      <button
-                        type="button"
-                        onClick={() => setShowPassword((v) => !v)}
-                        className="absolute right-2.5 top-1/2 -translate-y-1/2 rounded p-1 text-muted-foreground transition-colors hover:text-foreground"
-                        aria-label={showPassword ? "Hide password" : "Show password"}
-                      >
-                        {showPassword ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
-                      </button>
-                    </div>
+                    <PasswordInput
+                      placeholder="••••••••"
+                      autoComplete="current-password"
+                      className="h-10"
+                      {...field}
+                      onChange={(event) => {
+                        field.onChange(event);
+                        form.clearErrors();
+                      }}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
