@@ -60,6 +60,9 @@ class GamificationEventProcessor:
                 xp_delta=COURSE_COMPLETION_XP,
                 reason_code="COURSE_COMPLETE",
                 integrity_status="flagged" if gate.flagged else "verified",
+                org_id=event.org_id,
+                source_type="course",
+                source_id=event.course_id,
             )
         if isinstance(event, AssessmentSubmittedEvent):
             gate = run_integrity_gate(
@@ -81,6 +84,9 @@ class GamificationEventProcessor:
                 ),
                 multiplier_applied=multiplier,
                 integrity_status="flagged" if gate.flagged else "verified",
+                org_id=event.org_id,
+                source_type="assessment",
+                source_id=event.assessment_id,
             )
         return None
 
@@ -92,6 +98,9 @@ class GamificationEventProcessor:
         xp_delta: int,
         reason_code: str,
         integrity_status: str,
+        org_id: Any | None = None,
+        source_type: str | None = None,
+        source_id: Any | None = None,
         multiplier_applied: float = 1.0,
     ) -> ProgressContext:
         await self._ledger.append(
@@ -102,5 +111,8 @@ class GamificationEventProcessor:
             reason_code=reason_code,
             multiplier_applied=multiplier_applied,
             integrity_status=integrity_status,
+            org_id=org_id,
+            source_type=source_type,
+            source_id=source_id,
         )
         return await self._resolver.resolve(event.user_id)

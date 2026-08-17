@@ -15,7 +15,6 @@ from assessments.schemas.attempt import (
     TelemetryInput,
 )
 from assessments.services.access import get_accessible_assessment
-from platform_core.bus.producer import publish
 from platform_core.contracts.assessments import (
     AssessmentAttempt,
     AssessmentAttemptSummary,
@@ -166,13 +165,23 @@ class AttemptService:
             raise ConflictError("The selected option is invalid.")
         correct = str(data.option_index) in (question.accepted_answers or [])
         score = _points(question.difficulty) if correct else 0
+        now = datetime.now(UTC)
+        if row.question_level_answers:
+            last_timestamp = datetime.fromisoformat(
+                str(row.question_level_answers[-1]["submitted_at"])
+            )
+        else:
+            last_timestamp = row.started_at
+            
+        time_spent_ms = max(0, int((now - last_timestamp).total_seconds() * 1000))
+
         answer = {
             "question_id": str(question.id),
             "option_index": data.option_index,
-            "time_spent_ms": data.time_spent_ms,
+            "time_spent_ms": time_spent_ms,
             "correct": correct,
             "score": score,
-            "submitted_at": datetime.now(UTC).isoformat(),
+            "submitted_at": now.isoformat(),
         }
         row.question_level_answers = [*row.question_level_answers, answer]
         row.score = float(row.score) + score
@@ -222,25 +231,28 @@ class AttemptService:
             integrity_flags=row.integrity_flags,
             passed=score_pct >= float(assessment.passing_percent),
         )
-        await self._session.commit()
-        if self._redis is None:
-            raise RuntimeError("Redis is required to publish assessment events")
-        await publish(
-            AssessmentSubmittedEvent(
-                user_id=user_id,
-                org_id=org_id,  # slice 03 §9: the event envelope carries org identity
-                idempotency_key=f"assessment.submitted:{attempt_id}",
-                session_fingerprint=f"auth:{user_id}",
-                assessment_id=assessment.id,
-                assessment_kind="main",
-                score_pct=score_pct,
-                max_score=float(total_score),
-                time_taken_seconds=result.time_taken_seconds,
-                attempt_number=row.attempt_number,
-                question_level_answers=row.question_level_answers,
-            ),
-            self._redis,
+        event = AssessmentSubmittedEvent(
+            user_id=user_id,
+            org_id=org_id,  # slice 03 §9: the event envelope carries org identity
+            idempotency_key=f"assessment.submitted:{attempt_id}",
+            session_fingerprint=f"auth:{user_id}",
+            assessment_id=assessment.id,
+            assessment_kind="main",
+            score_pct=score_pct,
+            max_score=float(total_score),
+            time_taken_seconds=result.time_taken_seconds,
+            attempt_number=row.attempt_number,
+            question_level_answers=row.question_level_answers,
         )
+        from platform_core.events.models import OutboxEvent
+        self._session.add(
+            OutboxEvent(
+                event_type=event.event_type,
+                payload=event.model_dump(mode="json"),
+                idempotency_key=event.idempotency_key,
+            )
+        )
+        await self._session.commit()
         return result
 
     async def record_telemetry(

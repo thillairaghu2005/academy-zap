@@ -47,6 +47,9 @@ class LedgerRepository:
         reason_code: str,
         multiplier_applied: float = 1.0,
         integrity_status: str = "verified",
+        org_id: uuid.UUID | None = None,
+        source_type: str | None = None,
+        source_id: uuid.UUID | None = None,
     ) -> LedgerEntry:
         """Appends one entry, computing its hash against the user's latest entry. This is the
         ONLY function in the codebase permitted to write to `xp_ledger` — every score-affecting
@@ -85,6 +88,9 @@ class LedgerRepository:
             entry_hash=entry_hash,
             created_at=created_at,
             integrity_status=integrity_status,
+            org_id=org_id,
+            source_type=source_type,
+            source_id=source_id,
         )
         self._session.add(entry)
         await self._session.flush()
