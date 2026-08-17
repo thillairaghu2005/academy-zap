@@ -10,6 +10,18 @@ import { AuthGuard } from "@/components/providers/auth-guard";
 import { DemoModeBadge } from "@/components/layout/demo-mode-badge";
 import { AiTutor } from "@/components/ai/tutor";
 import { XpFlyout } from "@/components/gamification/xp-flyout";
+import { useSession } from "@/components/providers/session-provider";
+import { useRealtimeUpdates } from "@/lib/real-time/sse";
+
+/**
+ * Activates the real-time SSE freshness channel while a user is signed in (backend mode
+ * only — demo mode is a no-op). SSE only invalidates queries; the server stays authoritative.
+ */
+function RealtimeUpdates() {
+  const { user } = useSession();
+  useRealtimeUpdates(Boolean(user));
+  return null;
+}
 
 /**
  * Global app shell (build.md F0). Every authenticated surface renders inside
@@ -37,6 +49,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         <NavigationTour />
         <AiTutor />
         <XpFlyout />
+        <RealtimeUpdates />
       </div>
     </AuthGuard>
   );

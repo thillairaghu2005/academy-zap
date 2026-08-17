@@ -13,6 +13,8 @@ import {
   apiCourseSchema,
   apiGradeResultSchema,
   apiEnrollmentSchema,
+  apiLeaderboardPageSchema,
+  apiMyStandingSchema,
   apiProgressContextSchema,
   type ApiUser,
   apiUserSchema,
@@ -33,6 +35,8 @@ import type {
   CourseSummary,
   Enrollment,
   GradeResult,
+  LeaderboardEntry,
+  LeaderboardPage,
   MeilisearchCatalogResponse,
   ProgressContext,
 } from "@/lib/contracts/index";
@@ -324,6 +328,29 @@ export async function reportAssessmentTelemetryFromApi(
 
 export async function getMyProgressFromApi(): Promise<ProgressContext> {
   return apiRequest("/me/progress", apiProgressContextSchema);
+}
+
+export async function getSseTicketFromApi(): Promise<string> {
+  const result = await apiRequest(
+    "/events/ticket",
+    z.object({ ticket: z.string().min(16), expires_in: z.number() }),
+    { method: "POST" },
+  );
+  return result.ticket;
+}
+
+export async function getLeaderboardFromApi(
+  scope: string,
+  offset: number,
+  limit: number,
+): Promise<LeaderboardPage> {
+  const params = new URLSearchParams({ offset: String(offset), limit: String(limit) });
+  const page = await apiRequest(`/leaderboards/${scope}?${params.toString()}`, apiLeaderboardPageSchema);
+  return { ...page, scope: page.scope as LeaderboardPage["scope"] };
+}
+
+export async function getMyStandingFromApi(scope: string): Promise<LeaderboardEntry | null> {
+  return apiRequest(`/leaderboards/${scope}/me`, apiMyStandingSchema);
 }
 
 export async function getAssessmentComboFromApi(attemptId: string): Promise<ComboState> {

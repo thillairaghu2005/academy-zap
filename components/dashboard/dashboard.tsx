@@ -10,6 +10,7 @@ import {
   Gift,
   Layers,
   LoaderCircle,
+  ShieldAlert,
   Trophy,
 } from "lucide-react";
 
@@ -96,6 +97,12 @@ function MomentumPanel({ userId }: { userId: string }) {
         <LoaderCircle className="mt-5 size-5 animate-spin text-primary" aria-label="Loading momentum" />
       ) : data ? (
         <>
+          {data.freeze_status === "frozen_pending_review" ? (
+            <p className="mt-3 flex items-center gap-1.5 rounded-lg border border-amber-500/40 bg-amber-500/10 px-2.5 py-1.5 text-[11px] font-medium text-amber-700">
+              <ShieldAlert className="size-3.5 shrink-0" />
+              Progress frozen pending review
+            </p>
+          ) : null}
           <div className="mt-4 grid grid-cols-2 gap-3">
             <div>
               <p className="font-display text-xl font-semibold tracking-[-0.03em]">{data.rank.rank_name}</p>
