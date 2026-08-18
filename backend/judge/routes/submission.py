@@ -6,10 +6,13 @@ never grades would look like it works and then hang forever from the frontend's 
 import uuid
 
 from fastapi import APIRouter, Depends
+from sqlalchemy.ext.asyncio import AsyncSession
 
+from judge.services.problem import ProblemService
+from judge.services.submission import SubmissionService
 from platform_core.contracts.judge import CodeSubmission, JudgeResult, SubmissionAccepted
+from platform_core.core.db.session import get_session
 from platform_core.core.deps import CurrentUser
-from platform_core.core.exceptions import NotImplementedFoundationError
 from platform_core.core.rate_limiting import CompatibleRateLimiter
 from platform_core.core.rate_limits import JUDGE_SUBMIT_RATE_LIMIT
 
@@ -26,10 +29,27 @@ _judge_submit_rate_limit = CompatibleRateLimiter(
     status_code=202,
     dependencies=[Depends(_judge_submit_rate_limit)],
 )
-async def submit(submission: CodeSubmission, _current_user: CurrentUser) -> SubmissionAccepted:
-    raise NotImplementedFoundationError("judge", see="ZAPSTERS_PLATFORM_FULL_ARCHITECTURE.md §5")
+async def submit(
+    submission: CodeSubmission,
+    _current_user: CurrentUser,
+    session: AsyncSession = Depends(get_session)
+) -> SubmissionAccepted:
+    # Ensure user_id in the request matches the current user
+    if submission.user_id != _current_user.user_id:
+        raise ValueError("Cannot submit for another user")
+        
+    problem_service = ProblemService(session)
+    await problem_service.get_problem(submission.problem_id)
+    
+    svc = SubmissionService(session)
+    return await svc.submit(submission)
 
 
 @router.get("/submissions/{submission_id}", response_model=JudgeResult)
-async def get_result(submission_id: uuid.UUID, _current_user: CurrentUser) -> JudgeResult:
-    raise NotImplementedFoundationError("judge", see="ZAPSTERS_PLATFORM_FULL_ARCHITECTURE.md §5")
+async def get_result(
+    submission_id: uuid.UUID,
+    _current_user: CurrentUser,
+    session: AsyncSession = Depends(get_session)
+) -> JudgeResult:
+    svc = SubmissionService(session)
+    return await svc.get_result(submission_id)

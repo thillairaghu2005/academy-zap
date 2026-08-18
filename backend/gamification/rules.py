@@ -46,6 +46,7 @@ COMPLETION_XP_WEIGHT: Final = 0.4
 COURSE_COMPLETION_XP: Final = 400
 ASSESSMENT_MAX_MASTERY_XP: Final = 500
 SIDE_ASSESSMENT_MULTIPLIER: Final = 1.5
+JUDGE_PROBLEM_MASTERY_XP: Final = 250
 
 # Streak momentum multiplier: +0.05 per consecutive active day, capped at 2.0x.
 MOMENTUM_INCREMENT_PER_DAY: Final = 0.05

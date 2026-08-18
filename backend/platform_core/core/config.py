@@ -41,6 +41,22 @@ class Settings(BaseSettings):
     MEILISEARCH_URL: str = "http://localhost:7700"
     MEILISEARCH_API_KEY: SecretStr = SecretStr("zapsters-dev-master-key")
 
+    # Judge Engine
+    JUDGE_SANDBOX_TYPE: str = "gvisor"
+
+    @field_validator("JUDGE_SANDBOX_TYPE")
+    @classmethod
+    def _validate_judge_sandbox(cls, v: str) -> str:
+        if v not in ("gvisor", "docker"):
+            raise ValueError("JUDGE_SANDBOX_TYPE must be 'gvisor' or 'docker'")
+        return v
+        
+    @property
+    def is_production(self) -> bool:
+        if self.ENV == "production" and self.JUDGE_SANDBOX_TYPE == "docker":
+            raise ValueError("CRITICAL: DevelopmentOnlyDockerSandbox cannot be used in production. Must use gvisor.")
+        return self.ENV == "production"
+
     @field_validator("JWT_ACCESS_TOKEN_EXPIRE_SECONDS")
     @classmethod
     def _cap_access_ttl(cls, v: int) -> int:
@@ -55,9 +71,7 @@ class Settings(BaseSettings):
             raise ValueError("SECRET_KEY must be at least 32 characters")
         return v
 
-    @property
-    def is_production(self) -> bool:
-        return self.ENV == "production"
+
 
 
 @lru_cache

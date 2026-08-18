@@ -26,12 +26,14 @@ from gamification.rules import (
     ANSWER_TIMING_MIN_MS_PER_QUESTION,
     ASSESSMENT_MAX_MASTERY_XP,
     COURSE_COMPLETION_XP,
+    JUDGE_PROBLEM_MASTERY_XP,
     SIDE_ASSESSMENT_MULTIPLIER,
 )
 from platform_core.events.schema import (
     AssessmentSubmittedEvent,
     BaseEvent,
     CourseCompletedEvent,
+    JudgeSubmissionGradedEvent,
 )
 
 
@@ -145,6 +147,30 @@ class GamificationEventProcessor:
                 org_id=event.org_id,
                 source_type="assessment",
                 source_id=event.assessment_id,
+                event_timestamp=event.occurred_at,
+            )
+        elif isinstance(event, JudgeSubmissionGradedEvent):
+            if event.verdict != "accepted":
+                return EventProcessResult(context=None)
+                
+            entries = await self._ledger.list_for_user(event.user_id)
+            previous_mastery = sum(
+                e.xp_delta
+                for e in entries
+                if e.source_id == event.problem_id and e.xp_type == "mastery"
+            )
+            
+            xp_delta = max(0, JUDGE_PROBLEM_MASTERY_XP - previous_mastery)
+            
+            context = await self._append_and_resolve(
+                event=event,
+                xp_type="mastery",
+                xp_delta=xp_delta,
+                reason_code="JUDGE_PROBLEM_SOLVED",
+                integrity_status="verified", # Real implementation might route through integrity gate
+                org_id=event.org_id,
+                source_type="judge_problem",
+                source_id=event.problem_id,
                 event_timestamp=event.occurred_at,
             )
         else:
