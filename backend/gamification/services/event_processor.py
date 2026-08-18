@@ -152,22 +152,31 @@ class GamificationEventProcessor:
         elif isinstance(event, JudgeSubmissionGradedEvent):
             if event.verdict != "accepted":
                 return EventProcessResult(context=None)
-                
+
+            # F-15: judge XP flows through the SAME integrity gate as every other XP source —
+            # never a hardcoded "verified". The gate treats absent signals as trusted (its
+            # documented design, gate.py: "a caller that has nothing to say about a given
+            # dimension leaves it None and that check is skipped"), so a judge event with no
+            # wireable signal yet still enters the pipeline at the authoritative extension
+            # point; when judge-specific signals (e.g. solve velocity across attempts or
+            # device/fingerprint reuse) are wired in, they take effect here automatically.
+            gate = run_integrity_gate(IntegritySignals())
+
             entries = await self._ledger.list_for_user(event.user_id)
             previous_mastery = sum(
                 e.xp_delta
                 for e in entries
                 if e.source_id == event.problem_id and e.xp_type == "mastery"
             )
-            
+
             xp_delta = max(0, JUDGE_PROBLEM_MASTERY_XP - previous_mastery)
-            
+
             context = await self._append_and_resolve(
                 event=event,
                 xp_type="mastery",
                 xp_delta=xp_delta,
                 reason_code="JUDGE_PROBLEM_SOLVED",
-                integrity_status="verified", # Real implementation might route through integrity gate
+                integrity_status="flagged" if gate.flagged else "verified",
                 org_id=event.org_id,
                 source_type="judge_problem",
                 source_id=event.problem_id,

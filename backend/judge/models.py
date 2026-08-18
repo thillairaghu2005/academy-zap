@@ -27,6 +27,9 @@ class Problem(Base):
     time_limit_ms: Mapped[int] = mapped_column(Integer, nullable=False, default=2000)
     memory_limit_kb: Mapped[int] = mapped_column(Integer, nullable=False, default=262144)
     expected_solution: Mapped[str | None] = mapped_column(Text, nullable=True)
+    # Tenant anchor (platform §4.2): a plain UUID, never a FK into core.org (cross-subsystem
+    # rule). NULL = public problem usable by any org; a set org_id scopes it to that tenant.
+    org_id: Mapped[uuid.UUID | None] = mapped_column(UUID(as_uuid=True), nullable=True, index=True)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
 
     sample_cases: Mapped[list["SampleCase"]] = relationship(
@@ -72,7 +75,8 @@ class Submission(Base):
     problem_id: Mapped[uuid.UUID] = mapped_column(
         UUID(as_uuid=True), ForeignKey("problem.id", ondelete="CASCADE"), nullable=False
     )
-    user_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), nullable=False)
+    user_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), nullable=False, index=True)
+    org_id: Mapped[uuid.UUID | None] = mapped_column(UUID(as_uuid=True), nullable=True, index=True)
     language: Mapped[str] = mapped_column(String(20), nullable=False)
     source_code: Mapped[str] = mapped_column(Text, nullable=False)
     status: Mapped[str] = mapped_column(String(10), nullable=False, default="queued")
@@ -85,5 +89,9 @@ class Submission(Base):
     stderr: Mapped[str | None] = mapped_column(Text, nullable=True)
     compile_output: Mapped[str | None] = mapped_column(Text, nullable=True)
     cases: Mapped[list[dict[str, object]] | None] = mapped_column(JSONB, nullable=True)
+    error: Mapped[str | None] = mapped_column(Text, nullable=True)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now(), onupdate=func.now()
+    )
     graded_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)

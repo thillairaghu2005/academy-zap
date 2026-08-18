@@ -1,10 +1,18 @@
 import uuid
 
-from sqlalchemy import func, select
+from sqlalchemy import ColumnElement, and_, func, or_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
 from judge.models import Problem, TestCase
+
+
+def _visible_scope(org_id: uuid.UUID | None) -> ColumnElement[bool]:
+    """A problem is usable by a tenant when it is public (org_id NULL) or belongs to that
+    tenant. Callers without an org see public problems only (slice 10 remediation F-6)."""
+    if org_id is None:
+        return Problem.org_id.is_(None)
+    return or_(Problem.org_id.is_(None), Problem.org_id == org_id)
 
 
 class ProblemRepository:
@@ -18,9 +26,21 @@ class ProblemRepository:
         return list(result.scalars().all())
 
     async def get_by_id(self, problem_id: uuid.UUID) -> Problem | None:
+        """Unscoped read — worker path and public problem detail."""
         result = await self._session.execute(
             select(Problem)
             .where(Problem.id == problem_id)
+            .options(selectinload(Problem.sample_cases))
+        )
+        return result.scalar_one_or_none()
+
+    async def get_visible(
+        self, problem_id: uuid.UUID, *, org_id: uuid.UUID | None
+    ) -> Problem | None:
+        """Tenant-scoped read — a problem must be public or belong to the caller's org."""
+        result = await self._session.execute(
+            select(Problem)
+            .where(and_(Problem.id == problem_id, _visible_scope(org_id)))
             .options(selectinload(Problem.sample_cases))
         )
         return result.scalar_one_or_none()
