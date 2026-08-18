@@ -3,7 +3,15 @@
 **Source docs:** `ZAPSTERS_PLATFORM_FULL_ARCHITECTURE.md` (v1.0) + `ZAPSTERS_GAMIFICATION_ENGINE.md` (v1.0)
 
 **Status:** Frontend F0–F7 complete against the mock layer; F8 (cross-cutting) in progress.
-**Backend build starts now** — Part II below is the plan for it.
+**Backend:** B0–B4 implemented — Platform Core (auth/RBAC/tenant isolation, subsystem
+registry + feature flags, rate limiting, audit log), the event bus (outbox → Redis Streams →
+worker → DLQ with idempotency), the Content and Assessment vertical slices (MCQ grading live;
+short-answer and code grading deferred), the gamification trust core (Integrity Gate,
+hash-chained ledger, Progress Context, Ed25519 credentials + B3 admin review queue, Redis
+leaderboard projections, Slice 09 seasonal leagues), and the admin surface (audit, reviews,
+seasons, leaderboards). Judge execution (B5), Lab provisioning (B6), Commerce (B8), and
+Search/Notifications/Admin-analytics (B9) remain explicit typed 501 stubs.
+`backend/FOUNDATION_STATUS.md` is the live inventory.
 
 This document has two halves:
 
@@ -35,11 +43,11 @@ mock:
 
 Concretely:
 
-- [ ] Create `lib/contracts/` — hand-transcribe every schema you'll touch (`Course`,
+- [x] Create `lib/contracts/` — hand-transcribed TypeScript types/zod schemas (`Course`,
 `SignedManifest`, `CodeSubmission`, `JudgeResult`, `LabSession`, `ObjectiveResult`,
 `AssessmentSubmission`, `GradeResult`, `Cart`, `CheckoutSession`, `ProgressContext`,
-`RankState`, `StreakState`, `LeagueStanding`, `GuildRollup`, `LedgerEntry`) as TypeScript
-types/zod schemas, field-for-field matching the docs.
+`RankState`, `StreakState`, `LeagueStanding`, `GuildRollup`, `LedgerEntry`), field-for-field
+matching the docs.
 - [x] Create `lib/data/demo/` — one frontend demo service per subsystem (`content.ts`, `judge.ts`, `lab.ts`,
 `assessments.ts`, `payments.ts`, `gamification.ts`), each exporting functions with the **same
 signatures** as the backend `Protocol` classes (`getCourse`, `submit`, `getResult`,
@@ -47,7 +55,7 @@ signatures** as the backend `Protocol` classes (`getCourse`, `submit`, `getResul
 - [x] Every function in `lib/data/demo/` reads fixture data (from
 `lib/mocks/`) with an artificial delay; later it becomes a real `fetch`/TanStack Query call.
 **The component layer never knows the difference.**
-- [ ] Fixtures live in `lib/mocks/*.json` or `.ts`, one file per contract, realistic enough to
+- [x] Fixtures live in `lib/mocks/*.ts`, one file per contract, realistic enough to
 exercise every UI state (empty, loading, error, partial, full, edge-case like a `flagged` integrity status or a `revoked` credential).
 
 This is the same "consume the contract, not the side-effect" law the gamification doc calls
@@ -473,49 +481,51 @@ is how a rushed sandbox config ships.
 
 ### B0 — Platform Core (nothing ships until this does)
 
-- [ ] `docker-compose.yml`: Postgres 16 + TimescaleDB, Redis 7, MinIO, Meilisearch, Postal —
-identical stack per engineer, one command to bring up
-- [ ] FastAPI app skeleton per `fastapi-backend-sop.md` layering: routes → services → repositories,
+- [x] `docker-compose.yml`: Postgres 16 + TimescaleDB, Redis 7, MinIO, Meilisearch —
+identical stack per engineer, one command to bring up (Postal deferred)
+- [x] FastAPI app skeleton per `fastapi-backend-sop.md` layering: routes → services → repositories,
 `Annotated[T, Depends(...)]` everywhere, no business logic in a route body
-- [ ] Auth: PyJWT access/refresh, argon2 via `pwdlib`, `jti` denylist on logout/revocation —
-this replaces the frontend's mock session provider (build §4)
-- [ ] RBAC + multi-tenancy: `user`, `instructor`, `org_admin`, `platform_ops`; `org_id` scoping
+- [x] Auth: PyJWT access/refresh, argon2 via `pwdlib`, Redis denylist on logout/revocation —
+this replaces the frontend's mock session provider behind `AUTH_MODE=backend` (build §4)
+- [x] RBAC + multi-tenancy: `user`, `instructor`, `org_admin`, `platform_ops`; `org_id` scoping
 threaded through every query, enforced at the repository layer, not per-route
-- [ ] `platform/contracts/` — the `Protocol` classes from platform §4.1, verbatim, as the single
-source of truth every subsystem imports
-- [ ] Subsystem registry + feature-flag gate: "for each subsystem, validate against its contract,
+- [x] Contract schemas — shared shapes live in `lib/contracts/` (TS) mirrored by per-subsystem
+Pydantic response models; the verbatim `Protocol` ABC layer from platform §4.1 is folded into
+those schemas rather than duplicated
+- [x] Subsystem registry + feature-flag gate: "for each subsystem, validate against its contract,
 register, expose via flag" written **once**, never edited when a new subsystem is added
-- [ ] Alembic with per-subsystem version namespaces wired before the first migration exists
-- [ ] Rate limiting (fastapi-limiter) with per-route budgets; the Judge submit route gets the
+- [x] Alembic with per-subsystem version namespaces wired before the first migration exists
+- [x] Rate limiting (fastapi-limiter) with per-route budgets; the Judge submit route gets the
 tightest one on the platform
-- [ ] structlog with request/trace IDs, Prometheus metrics endpoint, Loki shipping
-- [ ] Append-only audit-log primitive, shared: every admin/moderation/review action writes here
+- [x] structlog with request/trace IDs; Prometheus/Loki shipping pending
+- [x] Append-only audit-log primitive, shared: every admin/moderation/review action writes here
 - **Exit gate:** a synthetic user registers, logs in, hits a flagged-off stub subsystem and gets a
-clean contract-shaped 404/403 rather than a stack trace.
+clean contract-shaped 404/403 rather than a stack trace. **✅ met** (covered by the security/integration tiers).
 
 ### B1 — Event bus & event contract
 
-- [ ] `platform/events/`: `BaseEvent` exactly as gamification §4 — `event_id`, `event_type`,
-`schema_version`, `user_id`, `org_id`, `occurred_at`, `idempotency_key`, `session_fingerprint`,
-`payload`
-- [ ] Typed subclasses, literal values matching the frontend's transcription byte-for-byte:
+- [x] `platform_core/events/schema.py`: `BaseEvent` exactly as gamification §4 — `event_id`,
+`event_type`, `schema_version`, `user_id`, `org_id`, `occurred_at`, `idempotency_key`,
+`session_fingerprint`, `payload`
+- [x] Typed subclasses, literal values matching the frontend's transcription byte-for-byte:
 `course.completed`, `assessment.submitted`, `side_assessment.submitted`, `login.recorded`,
 `judge.submission_graded`, `lab.session_completed`, `payment.succeeded`
-- [ ] Redis Streams producer + consumer-group wrapper: at-least-once delivery, consumer-group per
+- [x] Redis Streams producer + consumer-group wrapper: at-least-once delivery, consumer-group per
 subsystem, dead-letter stream, replay-from-offset tooling
-- [ ] **Idempotency table** keyed on `idempotency_key` — redelivery is a no-op. Test it by
+- [x] **Idempotency table** keyed on `idempotency_key` — redelivery is a no-op. Tested by
 delivering the same event twice and asserting one ledger entry.
-- [ ] `raw_submission_ref` blob storage: `question_level_answers` and any raw payload stored
+- [x] Raw-payload retention: `question_level_answers` and any raw payload stored
 verbatim **before** any scoring runs — same "never discard raw" law as OX1's `ai_analysis_logs`
 - [ ] Schema-version registry + a CI check that fails a PR changing an event schema without
 bumping the version and touching every consumer
 - **Exit gate:** a hand-emitted event flows producer → stream → consumer → idempotency check, and
-a replay of the same event changes nothing.
+a replay of the same event changes nothing. **✅ met** (outbox → worker → ledger replay tests green).
 
 ### B2 — Content Engine
 
-- [ ] Tables: `courses`, `lessons`, `modules`, `enrollments`, `lesson_progress`, video metadata
-- [ ] `ContentProvider.get_course` and `get_playback_manifest` implemented against `platform/contracts/`
+- [x] Tables: `courses`, `lessons`, `modules`, `enrollments`, `lesson_progress`, video metadata
+- [x] `ContentProvider.get_course` (catalog/detail) implemented; `get_playback_manifest` remains a
+typed 501 until the signed-manifest pipeline exists
 - [ ] Upload → Arq transcode job → FFmpeg multi-bitrate ladder → Shaka Packager → MinIO renditions
 - [ ] Signed, short-TTL, per-session HLS URLs + user-ID watermark burn-in at serve time; expired
 URL returns 403 (this is an explicit test tier, platform §8.2)
@@ -524,48 +534,52 @@ URL returns 403 (this is an explicit test tier, platform §8.2)
 to the version they enrolled against unless they opt into an update
 - [ ] **Two-person publish enforced in code** — the `published` state transition requires a
 `reviewer_id` distinct from the author, audit-logged. The F7 UI already mirrors this flow.
-- [ ] Enrollment + progress tracking; emits `course.completed` at 100% only (never partial)
+- [x] Enrollment + progress tracking; emits `course.completed` at 100% only (never partial)
 - [ ] Content moderation hook: PaddleOCR + deterministic keyword rules on uploaded materials
 - **Exit gate:** a course is authored, reviewed by a second account, published, enrolled in,
 played end-to-end via signed manifest, completed, and a `course.completed` event lands on the bus.
+(**partial** — everything up to signed-manifest playback is green).
 
 ### B3 — Ledger & Integrity (most senior pod, the trust boundary)
 
-- [ ] `xp_ledger` as a TimescaleDB hypertable, append-only, partitioned by time; `LedgerEntry`
+- [x] `xp_ledger` as a TimescaleDB hypertable, append-only, partitioned by time; `LedgerEntry`
 exactly as gamification §5.3 including `prev_hash`, `entry_hash`, `integrity_status`
-- [ ] `integrity/ledger_hash.py`: `compute_entry_hash` per gamification §7.2, plus full-chain and
+- [x] `integrity/ledger_hash.py`: `compute_entry_hash` per gamification §7.2, plus full-chain and
 checkpoint-segment verification. **A broken link halts computation and pages on-call** — it never
 logs a warning and continues.
-- [ ] `integrity/gate.py` — heuristic v1, no ML: velocity check, answer-timing distribution,
+- [x] `integrity/gate.py` — heuristic v1, no ML: velocity check, answer-timing distribution,
 session-fingerprint reuse, retry-pattern anomaly, device/network graph signal, each contributing
 to a `confidence_score`
-- [ ] Gate outcome semantics, exactly as specified: below threshold **still writes to the ledger**
+- [x] Gate outcome semantics, exactly as specified: below threshold **still writes to the ledger**
 with `integrity_status = flagged`, freezing public visibility only. **Flagging never deletes XP.**
-- [ ] Review queue: RBAC-gated to `org_admin`/`platform_ops`, showing raw event + flag reasons +
+- [x] Review queue: RBAC-gated to `org_admin`/`platform_ops`, showing raw event + flag reasons +
 confidence breakdown + recent ledger history; actions are **clear / reverse / escalate**, where
 `reverse` writes a compensating `adjustment` entry and never deletes the original
-- [ ] Every reviewer action is itself audited and timestamped
+- [x] Every reviewer action is itself audited and timestamped (immutable credential status
+history, per the B3 admin review queue)
 - [ ] Nightly Arq job: re-verify a random sample of chains as continuous reconciliation
-- [ ] All thresholds in `rules.py`, named and versioned — no inline magic numbers anywhere
+- [x] All thresholds in `gamification/rules.py`, named and versioned — no inline magic numbers
+anywhere
 - **Exit gate:** `verify_ledger_chain(tampered_middle_entry=True)` raises `ChainIntegrityError`;
-a flagged event still accrues private XP while public visibility freezes.
+a flagged event still accrues private XP while public visibility freezes. **✅ met**.
 
 ### B4 — Progress Context Engine & projections
 
-- [ ] `context/schema.py` — `ProgressContext`, `RankState`, `StreakState`, `LeagueStanding`,
+- [x] `context/schema.py` — `ProgressContext`, `RankState`, `StreakState`, `LeagueStanding`,
 `GuildRollup`, frozen once computed, `context_version` increments and old versions are never
 overwritten
-- [ ] `context/rank.py` — dual-track resolution: Completion XP and Mastery XP summed
+- [x] `context/rank.py` — dual-track resolution: Completion XP and Mastery XP summed
 independently, weighted into a level. **Never one blended input number.** Zero ML imports,
 import-linter enforced. Prestige resolves separately and only on deliberate user opt-in.
-- [ ] `context/streaks.py` — freeze-token consumption, momentum multiplier, grace period, decay
+- [x] `context/streaks.py` — freeze-token consumption, momentum multiplier, grace period, decay
 constants named in `rules.py`
-- [ ] `context/leagues.py` — season-sliced standings, promotion/relegation zones, guild rollup
-- [ ] `context/resolver.py` — orchestrates gamification §5.4 steps 1–7 in order, hash-chain
+- [x] `context/leagues.py` — Slice 09: season-sliced standings, promotion/relegation zones, guild
+rollup (guild rollup deferred; seasons/leagues live)
+- [x] `context/resolver.py` — orchestrates gamification §5.4 steps 1–7 in order, hash-chain
 verification **first**, integrity freeze check at step 6
-- [ ] `projections/leaderboard.py` — Redis sorted sets (`ZADD`/`ZRANGE`), global + guild +
+- [x] `projections/leaderboard.py` — Redis sorted sets (`ZADD`/`ZRANGE`), global + guild +
 org-scoped key namespaces. This is the most-hit read path in the product; budget is sub-100ms p99.
-- [ ] `projections/badges.py` + `integrity/credentials.py` — W3C-VC-shaped JSON, Ed25519-signed,
+- [x] `projections/badges.py` + `integrity/credentials.py` — W3C-VC-shaped JSON, Ed25519-signed,
 stored in MinIO, exposed at a permanent public `/verify/{credential_id}` that re-verifies the
 signature live and flips to `revoked` when underlying entries are reversed
 - [ ] `projections/share_cards.py` — server-rendered canonical PNG with `credential_id` embedded
@@ -574,15 +588,18 @@ as visible text **and** a QR code; the frontend's `html-to-image` preview stays 
 `quests.py`, `season_pass.py`, `duels.py`, `cosmetics.py`
 - [ ] Arq schedulers: season open/close, nightly recompute, rank-decay display dimming (dims a
 display flag, **never deletes XP**), badge issuance
-- [ ] SSE endpoints for combo meter and leaderboard ticks; the server recomputes and the server
-value wins on any conflict with the client preview
-- [ ] Frozen acceptance fixtures in `gamification/tests/acceptance/`: known ledger in, known
+- [x] SSE endpoints for leaderboard/league ticks (`league.updated`, notification-only); the server
+recomputes and the server value wins on any conflict with the client preview
+- [x] Frozen acceptance fixtures in `gamification/tests/acceptance/`: known ledger in, known
 `ProgressContext` out, including the mandatory regression table in gamification §8.3
 - **Exit gate:** the regression table passes exactly — `resolve_rank(0, 0) → Initiate`,
 `resolve_rank(36000, 36000) → Deus`, both `apply_streak_decay` cases, both `credential_verify`
-cases, and the chain-tamper case.
+cases, and the chain-tamper case. **✅ met**.
 
 ### B5 — Judge Engine (highest security bar — no shortcuts, no "temporarily")
+
+**Status:** `problems`/`submissions`/`test_cases` tables + typed 501 submit/poll routes only; no
+execution path exists yet. The fuzz suite, grader, and gVisor orchestration are all ahead.
 
 - [ ] Tables: `problems`, `submissions`, `test_cases` (hidden); ephemeral pod state stays in K8s,
 never in Postgres
@@ -612,6 +629,9 @@ the squad.
 
 ### B6 — Lab Engine (highest blast radius)
 
+**Status:** `labs`/`lab_sessions`/`lab_objectives` tables + typed 501 routes (the terminal bridge
+closes with WS 4501); no session is ever provisioned.
+
 - [ ] Tables: `labs`, `lab_sessions`, `lab_objectives`
 - [ ] Declarative YAML manifest per lab — base images, network topology, objective/flag
 definitions, hint ladder. **A lab is a plug-in**; the orchestrator never hard-codes one.
@@ -637,25 +657,32 @@ console, and zero successful cross-session reach.
 
 ### B7 — Assessment Engine
 
-- [ ] Tables: `assessments`, `questions`, `assessment_submissions`; question bank versioned,
+**Status:** tables + the MCQ vertical slice (attempts, deterministic server grading, final
+results, telemetry ingestion, `assessment.submitted`/`side_assessment.submitted`) are live;
+short-answer and code grading, certificates, and retry-with-decay are deferred.
+
+- [x] Tables: `assessments`, `questions`, `assessment_submissions`; question bank versioned,
 namespaced per course, **difficulty as a static versioned field** (feeds the Clutch bonus) — never
 model-inferred at score time
-- [ ] `assessment/grading.py`: deterministic exact/fuzzy match for MCQ and short answer. Never AI.
+- [x] `assessment/grading.py`: deterministic exact/fuzzy match for MCQ. Never AI.
 - [ ] Code questions **delegate to the Judge Engine** — an assessment code question *is* a judge
-submission with assessment context attached. One grading truth, not two.
-- [ ] Anti-cheat telemetry ingestion: tab-visibility, paste events, timing — feeds **the existing**
+submission with assessment context attached. One grading truth, not two. (Judge is B5; blocked)
+- [x] Anti-cheat telemetry ingestion: tab-visibility, paste events, timing — feeds **the existing**
 `gamification/integrity/gate.py`, not a second gate. The frontend hooks are already stubbed and
 emitting; this gives them a real endpoint.
 - [ ] Attempt tracking + retry-with-decay enforced **at ledger-write time**, not at display time
 - [ ] Certificates: WeasyPrint or the org's Puppeteer `pdf-service`, server-rendered, hash-stamped,
 same verify-URL pattern as badges
-- [ ] Emits `assessment.submitted` / `side_assessment.submitted` with `question_level_answers`
+- [x] Emits `assessment.submitted` / `side_assessment.submitted` with `question_level_answers`
 stored raw before scoring
 - **Exit gate:** an assessment containing MCQ, short-answer, and code questions grades end-to-end,
 the code question's verdict comes from the Judge Engine, and the resulting XP appears on the ledger
-with the side-assessment multiplier recorded in `multiplier_applied`.
+with the side-assessment multiplier recorded in `multiplier_applied`. (**partial** — MCQ-only path green)
 
 ### B8 — Commerce
+
+**Status:** `orders`/`subscriptions`/`invoices`/`entitlements` tables + typed 501 cart/checkout/
+webhook routes; no payment flow exists.
 
 - [ ] Tables: `orders`, `subscriptions`, `invoices`, `entitlements` — tightest RBAC on the platform
 - [ ] `PaymentProvider` implemented twice: Razorpay (primary, India) and Stripe (international),
@@ -674,6 +701,10 @@ double-fulfillment; a real sandbox purchase → entitlement → content access l
 
 ### B9 — Supporting subsystems
 
+**Status:** search and notifications routes are typed 501s; the admin/CMS surface is partially
+live — append-only audit read API, the B3 credential review queue, season lifecycle, and
+leaderboard read models — with analytics read models still 501.
+
 - [ ] **Search:** Meilisearch indexing pipeline consuming Content/Judge/Lab publish events; unified
 query API behind the shape `lib/data/demo/search.ts` already mocks. Freshness SLA under a minute,
 sub-50ms p95 query.
@@ -682,7 +713,8 @@ Push via VAPID; in-app notification feed backing the F0 notification-center shel
 fixtures per type already defined by the frontend
 - [ ] **Admin/CMS backend:** authoring APIs, moderation actions, the append-only audit log read
 API, and analytics read models (DAU/WAU, completion funnel, checkout conversion, revenue) — built
-as **read models over events**, never as ad-hoc cross-subsystem joins
+as **read models over events**, never as ad-hoc cross-subsystem joins. (**partial** — audit read
+API + review queue + season lifecycle + leaderboard read models live; analytics read models 501)
 - [ ] **Public API + outbound webhooks (F8):** signed outbound events (`enrollment`, `completion`,
 `credential.issued`) with delivery retry and a dead-letter view, plus a documented public read API.
 This is what makes chapter-level/partner-community completion data verifiable externally.
@@ -691,42 +723,54 @@ This is what makes chapter-level/partner-community completion data verifiable ex
 
 ## 9. Endpoint surface (first pass — contract-shaped, not exhaustive)
 
+**Live today** (behind `NEXT_PUBLIC_AUTH_MODE=backend`): auth, course catalog/detail/enroll/
+progress, MCQ assessment attempts/grading/results, `/me/progress`, leaderboards, `/me/league`,
+`/verify/{credential_id}`, and the admin audit/review/season endpoints. **Typed 501 still:**
+judge submit/poll, lab sessions/objectives/terminal, cart/checkout/webhooks, search,
+notifications, admin analytics.
+
 | Method | Route | Contract | Frontend consumer |
 | --- | --- | --- | --- |
-| POST | `/auth/register`, `/auth/login`, `/auth/refresh` | — | mock session provider (F0) |
-| GET | `/courses`, `/courses/{id}` | `Course` | `lib/data/demo/content.ts` |
-| GET | `/lessons/{id}/manifest` | `SignedManifest` | course player (F1) |
-| POST | `/courses/{id}/enroll`, `/lessons/{id}/progress` | — | F1 |
-| POST | `/judge/submit` → 202 | `SubmissionAccepted` | `lib/data/demo/judge.ts` |
-| GET | `/judge/submissions/{id}` · SSE `/judge/submissions/{id}/stream` | `JudgeResult` | F2 |
-| POST | `/labs/{id}/sessions` · DELETE `/labs/sessions/{id}` | `LabSession` | `lib/data/demo/lab.ts` |
-| POST | `/labs/sessions/{id}/objectives/{objective_id}/check` | `ObjectiveResult` | F3 |
-| WS | `/labs/sessions/{id}/terminal` | ttyd bridge | xterm.js (F3) |
-| POST | `/assessments/{id}/attempts`, `/attempts/{id}/submit` | `GradeResult` | `lib/data/demo/assessment.ts` |
-| GET | `/me/progress` | `ProgressContext` | `lib/data/demo/gamification.ts` |
-| GET | `/leaderboards/{scope}` · SSE `/leaderboards/{scope}/stream` | `LeagueStanding[]` | F5 |
-| GET | `/verify/{credential_id}` (public, unauthenticated) | credential status | F5 verify page |
-| POST | `/cart`, `/checkout` · POST `/webhooks/{provider}` | `Cart`, `CheckoutSession` | F6 |
-| GET | `/search?q=` | unified search | F0 command palette |
-| GET | `/admin/audit`, `/admin/analytics/*` | — | F7 |
+| POST | `/auth/register`, `/auth/login`, `/auth/refresh` | — | mock session provider (F0) — **live in backend mode** |
+| GET | `/courses`, `/courses/{id}` | `Course` | `lib/data/demo/content.ts` — **live** |
+| GET | `/lessons/{id}/manifest` | `SignedManifest` | course player (F1) — 501 |
+| POST | `/courses/{id}/enroll`, `/lessons/{id}/progress` | — | F1 — **live** |
+| POST | `/judge/submit` → 202 | `SubmissionAccepted` | `lib/data/demo/judge.ts` — 501 |
+| GET | `/judge/submissions/{id}` · SSE `/judge/submissions/{id}/stream` | `JudgeResult` | F2 — 501 |
+| POST | `/labs/{id}/sessions` · DELETE `/labs/sessions/{id}` | `LabSession` | `lib/data/demo/lab.ts` — 501 |
+| POST | `/labs/sessions/{id}/objectives/{objective_id}/check` | `ObjectiveResult` | F3 — 501 |
+| WS | `/labs/sessions/{id}/terminal` | ttyd bridge | xterm.js (F3) — WS 4501 |
+| POST | `/assessments/{id}/attempts`, `/attempts/{id}/submit` | `GradeResult` | `lib/data/demo/assessment.ts` — **live (MCQ)** |
+| GET | `/me/progress` | `ProgressContext` | `lib/data/demo/gamification.ts` — **live** |
+| GET | `/leaderboards/{scope}` · SSE `/leaderboards/{scope}/stream` | `LeagueStanding[]` | F5 — **live** |
+| GET | `/verify/{credential_id}` (public, unauthenticated) | credential status | F5 verify page — **live** |
+| GET | `/seasons/current` · `/me/league` · `/me/league/leaderboard` | `LeagueStanding` | LeagueWidget (F5) — **live** |
+| POST | `/cart`, `/checkout` · POST `/webhooks/{provider}` | `Cart`, `CheckoutSession` | F6 — 501 |
+| GET | `/search?q=` | unified search | F0 command palette — 501 |
+| GET | `/admin/audit`, `/admin/reviews`, `/admin/seasons` | — | F7 — **live** |
+| GET | `/admin/analytics/*` | — | F7 — 501 |
 
 ---
 
 ## 10. Frontend integration — the swap, module by module
 
 Part I's §4 checklist is now live work, not a future note. The swap is one module at a time,
-behind a per-module env flag so mock and real can coexist during cutover:
+behind a per-module env flag so mock and real can coexist during cutover. **Done so far** (all
+behind `NEXT_PUBLIC_AUTH_MODE=backend`): auth, content catalog/detail/enroll/progress, MCQ
+assessments, gamification progress/leaderboard/league/verify, and the admin review/season/
+audit surfaces. Everything else below is still demo-fixture only.
 
-| Frontend module | Becomes | Notes |
+| Frontend module | Becomes | Status |
 | --- | --- | --- |
-| `lib/data/demo/content.ts` | Future B2 endpoints | Signed manifest URLs are future integration behavior |
-| `lib/data/demo/judge.ts` | Future B5 endpoints | Mock interval polling → real SSE |
-| `lib/data/demo/lab.ts` | Future B6 endpoints | Scripted terminal transcript → real authenticated WebSocket |
-| `lib/data/demo/assessment.ts` | Future B7 endpoints | Anti-cheat hooks can later connect to a service |
-| `lib/data/demo/gamification.ts` | Future B4 endpoints | Combo meter can later become a live stream |
-| `lib/data/demo/commerce.ts` | Future B8 endpoints | The current hosted checkout is a local demo |
-| `lib/data/demo/search.ts` | Future B9 Meilisearch | Fixture results → real index |
-| mock session provider | B0 auth | Real JWT, refresh rotation, `jti` denylist |
+| `lib/data/demo/content.ts` | B2 endpoints | **Live**: catalog/detail, enroll, progress; signed manifest URLs remain future |
+| `lib/data/demo/judge.ts` | B5 endpoints | 501 — mock interval polling stays until the grader exists |
+| `lib/data/demo/lab.ts` | B6 endpoints | 501 — scripted terminal transcript stays until the bridge exists |
+| `lib/data/demo/assessment.ts` | B7 endpoints | **Live (MCQ)**: attempts, grading, results, telemetry; code questions blocked on B5 |
+| `lib/data/demo/gamification.ts` | B4 endpoints | **Live**: `/me/progress`, leaderboards, `/me/league`, badges + verify |
+| `lib/data/demo/admin.ts` | B3/B9 admin | **Live**: credential review queue, season lifecycle, audit log, leaderboard read models |
+| `lib/data/demo/commerce.ts` | B8 endpoints | 501 — hosted-checkout demo stays |
+| `lib/data/demo/search.ts` | B9 Meilisearch | 501 — fixture results stay until the index pipeline exists |
+| mock session provider | B0 auth | **Live in backend mode**: real JWT/refresh cookies, RBAC, Redis denylist |
 | `html-to-image` share card | B4 canonical render | Client preview stays; the shared artifact becomes server-rendered |
 
 Then, per Part I §4: diff every hand-transcribed enum against the real Pydantic models

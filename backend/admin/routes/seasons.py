@@ -9,6 +9,7 @@ duplicate request never produces duplicate outcomes or rewards.
 import uuid
 from datetime import datetime
 
+import structlog
 from fastapi import APIRouter
 from pydantic import BaseModel, Field
 from sqlalchemy.exc import IntegrityError
@@ -17,6 +18,8 @@ from gamification.repositories.leagues import SeasonRepository
 from gamification.services.seasons import SeasonService
 from platform_core.core.deps import AdminUser, DbSession, RedisClient
 from platform_core.core.exceptions import ConflictError, ResourceNotFound
+
+logger = structlog.get_logger(__name__)
 
 router = APIRouter(prefix="/admin/seasons", tags=["admin", "gamification"])
 
@@ -101,11 +104,28 @@ async def finalize_season(
     redis: RedisClient,
 ) -> dict[str, object]:
     """active -> completed with promotion/demotion. Idempotent: replaying this call after
-    a successful finalization returns zero new outcomes instead of duplicating them."""
+    a successful finalization returns zero new outcomes instead of duplicating them, and
+    the response's `already_finalized` flag is deterministic (False first, True on every
+    replay).
+
+    Redis is refreshed AFTER the authoritative PostgreSQL writes are committed, so the
+    tier boards always reflect durable DB state. A Redis outage never fails finalization:
+    the DB stays authoritative and the projection is rebuildable from it."""
     service = SeasonService(session)
     season = await SeasonRepository(session).get_by_id(season_id)
     if season is None:
         raise ResourceNotFound("Season was not found.")
     outcome = await service.finalize_season(season_id)
     await session.commit()
+    # Post-commit projection refresh (slice 09 remediation): promote/demote outcomes are
+    # durable, so move the promoted/demoted users between tier ZSETs. If Redis is down,
+    # finalization already succeeded — log and leave the projection rebuildable.
+    try:
+        await service.refresh_league_projection(redis=redis, season_id=season_id)
+    except Exception:
+        logger.warning(
+            "league_projection_refresh_failed_after_finalization",
+            season_id=str(season_id),
+            exc_info=True,
+        )
     return {"season_id": str(season_id), "status": "completed", **outcome}

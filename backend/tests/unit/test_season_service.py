@@ -14,7 +14,7 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from gamification.models import LeagueSeason, LedgerEntry, SeasonMembership
-from gamification.repositories.leagues import SeasonRepository
+from gamification.repositories.leagues import MembershipRepository, SeasonRepository
 from gamification.services.seasons import SeasonService
 
 NOW = datetime.now(UTC)
@@ -76,7 +76,12 @@ async def test_finalization_promotes_top_and_demotes_bottom(
     await db_session.flush()
 
     outcome = await SeasonService(db_session).finalize_season(season.id)
-    assert outcome == {"promoted": 2, "demoted": 2, "retained": 1}
+    assert outcome == {
+        "promoted": 2,
+        "demoted": 2,
+        "retained": 1,
+        "already_finalized": False,
+    }
     await db_session.flush()
 
     members = await _memberships(db_session, season.id)
@@ -114,7 +119,15 @@ async def test_finalization_is_idempotent_on_replay(
     second = await SeasonService(db_session).finalize_season(season.id)
     await db_session.commit()
     assert first["promoted"] > 0
-    assert second == {"promoted": 0, "demoted": 0, "retained": 0}
+    assert first["already_finalized"] is False
+    # Deterministic replay flag: the second call reports already_finalized=True and
+    # writes nothing.
+    assert second == {
+        "promoted": 0,
+        "demoted": 0,
+        "retained": 0,
+        "already_finalized": True,
+    }
 
     rows = (await _memberships(db_session, season.id)).values()
     assert len(list(rows)) == 4
@@ -134,9 +147,7 @@ async def test_set_status_is_a_guarded_compare_and_swap(
 
     assert await repo.set_status(season.id, "completed", expected_status="active") is True
     # A replayed transition sees the row in `completed`, not `active` -> no row moves.
-    assert (
-        await repo.set_status(season.id, "completed", expected_status="active") is False
-    )
+    assert await repo.set_status(season.id, "completed", expected_status="active") is False
     # Wrong expectation (e.g. a stale `scheduled` guard) is also a no-op.
     assert await repo.set_status(season.id, "active", expected_status="scheduled") is False
 
@@ -163,7 +174,12 @@ async def test_concurrent_finalization_writes_outcomes_once(
     # transition refuses, so no membership outcome is rewritten.
     second = await service.finalize_season(season.id)
     await db_session.commit()
-    assert second == {"promoted": 0, "demoted": 0, "retained": 0}
+    assert second == {
+        "promoted": 0,
+        "demoted": 0,
+        "retained": 0,
+        "already_finalized": True,
+    }
 
     members = await _memberships(db_session, season.id)
     promoted = [m for m in members.values() if m.outcome == "promoted"]
@@ -197,7 +213,12 @@ async def test_inactive_members_are_retained_not_demoted(
 
     outcome = await SeasonService(db_session).finalize_season(season.id)
     await db_session.flush()
-    assert outcome == {"promoted": 1, "demoted": 0, "retained": 2}
+    assert outcome == {
+        "promoted": 1,
+        "demoted": 0,
+        "retained": 2,
+        "already_finalized": False,
+    }
     members = await _memberships(db_session, season.id)
     assert members[inactive_bottom].outcome == "retained"
     assert members[inactive_bottom].league_tier == "silver"
@@ -231,7 +252,12 @@ async def test_flagged_users_are_excluded_from_promotion(
 
     outcome = await SeasonService(db_session).finalize_season(season.id)
     await db_session.flush()
-    assert outcome == {"promoted": 1, "demoted": 0, "retained": 1}
+    assert outcome == {
+        "promoted": 1,
+        "demoted": 0,
+        "retained": 1,
+        "already_finalized": False,
+    }
 
 
 @pytest.mark.asyncio
@@ -256,12 +282,88 @@ async def test_top_tier_does_not_promote_and_bottom_tier_does_not_demote(
     await db_session.flush()
     # obsidian_top retained (cap), obsidian_low demoted, bronze_high promoted, bronze_bottom
     # retained (floor).
-    assert outcome == {"promoted": 1, "demoted": 1, "retained": 2}
+    assert outcome == {
+        "promoted": 1,
+        "demoted": 1,
+        "retained": 2,
+        "already_finalized": False,
+    }
     members = await _memberships(db_session, season.id)
     assert members[obsidian_top].outcome == "retained"
     assert members[obsidian_top].league_tier == "obsidian"
     assert members[bronze_bottom].outcome == "retained"
     assert members[bronze_bottom].league_tier == "bronze"
+
+
+@pytest.mark.asyncio
+async def test_negative_xp_member_is_retained_never_demoted_or_promoted(
+    db_session: AsyncSession,
+) -> None:
+    """Slice 09 remediation (FIX-6): the inactivity rule is `xp_this_season <= 0`. Negative
+    season XP is only reachable through admin reversal adjustments (B3) — a user cannot
+    self-inflict it — so the retained posture is safe: the negative member sits at the
+    bottom but is never demoted, and the top member is still promoted normally."""
+    season = _season(db_session, config={"promotion_slots": 1, "demotion_slots": 1})
+    await db_session.flush()
+    # 3 silver members: top promotes, a negative-XP member (reversal adjustment) sits at
+    # the bottom and must be RETAINED (not demoted), and the middle member is retained.
+    top = uuid.uuid4()
+    mid = uuid.uuid4()
+    negative = uuid.uuid4()
+    await _membership(db_session, season, user_id=top, tier="silver", xp=300)
+    await _membership(db_session, season, user_id=mid, tier="silver", xp=200)
+    await _membership(db_session, season, user_id=negative, tier="silver", xp=-500)
+    await db_session.flush()
+
+    outcome = await SeasonService(db_session).finalize_season(season.id)
+    await db_session.flush()
+    assert outcome == {
+        "promoted": 1,
+        "demoted": 0,
+        "retained": 2,
+        "already_finalized": False,
+    }
+    members = await _memberships(db_session, season.id)
+    assert members[top].outcome == "promoted"
+    assert members[top].league_tier == "gold"
+    assert members[negative].outcome == "retained"
+    assert members[negative].league_tier == "silver"
+    assert members[mid].outcome == "retained"
+
+
+@pytest.mark.asyncio
+async def test_set_outcome_is_write_once_for_completed_season(
+    db_session: AsyncSession,
+) -> None:
+    """Slice 09 remediation (FIX-7): `set_outcome` only matches rows whose outcome is still
+    NULL — a completed season's frozen outcomes can never be casually overwritten by a
+    stray or replayed call (defense-in-depth on top of the guarded status transition)."""
+    season = _season(db_session)
+    await db_session.flush()
+    user = uuid.uuid4()
+    await _membership(db_session, season, user_id=user, tier="bronze", xp=500)
+    await db_session.flush()
+
+    repo = MembershipRepository(db_session)
+    # First write wins.
+    assert (
+        await repo.set_outcome(
+            user_id=user, season_id=season.id, outcome="promoted", league_tier="silver"
+        )
+        is True
+    )
+    # A replayed/stray write with different values is a no-op.
+    assert (
+        await repo.set_outcome(
+            user_id=user, season_id=season.id, outcome="demoted", league_tier="bronze"
+        )
+        is False
+    )
+    await db_session.flush()
+
+    rows = await _memberships(db_session, season.id)
+    assert rows[user].outcome == "promoted"
+    assert rows[user].league_tier == "silver"
 
 
 @pytest.mark.asyncio

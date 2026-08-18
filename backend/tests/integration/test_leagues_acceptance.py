@@ -378,7 +378,12 @@ async def test_promotion_demotion_across_tiers(
     await db_session.commit()
 
     outcome = await service.finalize_season(season_id)
-    assert outcome == {"promoted": 1, "demoted": 1, "retained": 3}
+    assert outcome == {
+        "promoted": 1,
+        "demoted": 1,
+        "retained": 3,
+        "already_finalized": False,
+    }
 
     rows = {
         str(m.user_id): m

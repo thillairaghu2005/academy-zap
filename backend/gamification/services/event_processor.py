@@ -89,10 +89,22 @@ class GamificationEventProcessor:
                     time_spent_seconds=event.time_spent_seconds,
                 )
             )
+            # Completion XP is capped per course (slice 09 remediation): replaying a
+            # completion for the same course awards at most `COURSE_COMPLETION_XP` total.
+            # The pattern mirrors the assessment mastery cap — same-course replays never
+            # farm XP, while a first completion and different courses stay fully eligible.
+            entries = await self._ledger.list_for_user(event.user_id)
+            previous_completion = sum(
+                e.xp_delta
+                for e in entries
+                if e.source_id == event.course_id and e.xp_type == "completion"
+            )
+            xp_delta = max(0, COURSE_COMPLETION_XP - previous_completion)
+
             context = await self._append_and_resolve(
                 event=event,
                 xp_type="completion",
-                xp_delta=COURSE_COMPLETION_XP,
+                xp_delta=xp_delta,
                 reason_code="COURSE_COMPLETE",
                 integrity_status="flagged" if gate.flagged else "verified",
                 org_id=event.org_id,
@@ -100,7 +112,6 @@ class GamificationEventProcessor:
                 source_id=event.course_id,
                 event_timestamp=event.occurred_at,
             )
-            xp_delta: int | None = COURSE_COMPLETION_XP
         elif isinstance(event, AssessmentSubmittedEvent):
             gate = run_integrity_gate(
                 IntegritySignals(
