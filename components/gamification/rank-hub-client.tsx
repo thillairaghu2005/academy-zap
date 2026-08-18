@@ -78,9 +78,10 @@ export function RankHubClient() {
   });
   // League standing (slice 09) is its OWN authoritative read: in backend mode GET
   // /me/league (season XP sliced from the ledger + rank from the Redis tier projection);
-  // in demo mode the SAME ProgressContext-derived standing. It is NOT ctx.league — the
-  // backend ProgressContext deliberately leaves `league` null and serves /me/league
-  // instead, so the widget must query the league endpoint, not the context field.
+  // in demo mode the SAME ProgressContext-derived standing. The backend ProgressContext
+  // also carries `league` (populated from the authoritative SeasonMembership), but the
+  // widget queries the league endpoint directly — the endpoint is the freshest live
+  // standing (rank comes from the Redis tier projection, not the last snapshot).
   const leagueQuery = useQuery({
     queryKey: ["my-league"],
     queryFn: () => getLeagueStanding(demoUser),

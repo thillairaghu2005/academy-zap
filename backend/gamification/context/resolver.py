@@ -1,23 +1,27 @@
-"""The Progress Context Engine's resolver — orchestrates gamification §5.4 steps 1-4, 6, 7.
+"""The Progress Context Engine's resolver — orchestrates gamification §5.4 steps 1-7.
 
-Step 5 (league/guild rollup) is explicitly out of scope this round: `league` and `guild` are
-always `None` on the returned `ProgressContext`. All of `gamification/projections/*`
-(leaderboard, badges, share cards, skill tree, quests, season pass, credentials) is likewise out
-of scope — this resolver is the read path behind `GET /me/progress` only.
+Step 5 (league/guild rollup): `league` IS populated — from the authoritative
+`SeasonMembership` row of the active season (indexed lookup; never a ledger scan, never
+N+1). `guild` stays None (no guild model exists yet). All of `gamification/projections/*`
+(leaderboard, badges, share cards, skill tree, quests, season pass, credentials) is likewise
+out of scope — this resolver is the read path behind `GET /me/progress` only.
 """
 
 import uuid
 from datetime import UTC, date, datetime, timedelta
 
+from sqlalchemy import and_, func, or_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from gamification.context.rank import rank_progress_pct, resolve_rank
-from gamification.context.schema import ProgressContext, RankState, StreakState
+from gamification.context.schema import LeagueStanding, ProgressContext, RankState, StreakState
 from gamification.context.streaks import momentum_multiplier
 from gamification.models import LedgerEntry as LedgerEntryRow
-from gamification.models import ProgressContextSnapshot
+from gamification.models import ProgressContextSnapshot, SeasonMembership
 from gamification.repositories.context import ContextRepository
+from gamification.repositories.leagues import MembershipRepository, SeasonRepository
 from gamification.repositories.ledger import LedgerRepository
+from gamification.services.seasons import SeasonService
 
 # Foundation-scope simplification (assumption register): the §5.3 schema tracks xp_type as one
 # of completion/mastery/bonus/adjustment but doesn't specify how bonus/adjustment feed the two
@@ -96,6 +100,65 @@ class ProgressContextResolver:
         self._ledger = LedgerRepository(session)
         self._context = ContextRepository(session)
 
+    async def _resolve_league(self, user_id: uuid.UUID) -> LeagueStanding | None:
+        """§5.4 step 5 — the user's standing in the ACTIVE season, read from the
+        authoritative SeasonMembership row (indexed lookup; never a ledger scan).
+
+        None when there is no active season or no membership — a completed season is
+        deliberately not exposed here (no stale active-season state leaks through). Rank
+        and zones are derived from the same membership rows and the same tie-break
+        (xp desc, user_id desc) that `finalize_season` and the Redis ZSET projection use,
+        so the context standing and the board standing agree.
+        """
+        season = await SeasonRepository(self._session).get_active()
+        if season is None:
+            return None
+        membership = await MembershipRepository(self._session).get_for_user_season(
+            user_id, season.id
+        )
+        if membership is None:
+            return None
+        # Rank within the tier: 1-based; one indexed aggregate, no N+1, no ledger scan.
+        ahead = await self._session.execute(
+            select(func.count())
+            .select_from(SeasonMembership)
+            .where(
+                SeasonMembership.season_id == season.id,
+                SeasonMembership.league_tier == membership.league_tier,
+                or_(
+                    SeasonMembership.xp_this_season > membership.xp_this_season,
+                    and_(
+                        SeasonMembership.xp_this_season == membership.xp_this_season,
+                        SeasonMembership.user_id > membership.user_id,
+                    ),
+                ),
+            )
+        )
+        rank_in_league = int(ahead.scalar_one()) + 1
+        total_result = await self._session.execute(
+            select(func.count())
+            .select_from(SeasonMembership)
+            .where(
+                SeasonMembership.season_id == season.id,
+                SeasonMembership.league_tier == membership.league_tier,
+            )
+        )
+        promotion_zone, relegation_zone = await SeasonService(self._session).standing_zones(
+            season=season,
+            tier_id=membership.league_tier,
+            rank_in_league=rank_in_league,
+            total_members=int(total_result.scalar_one()),
+        )
+        return LeagueStanding(
+            user_id=user_id,
+            season_id=season.id,
+            league_tier=membership.league_tier,
+            rank_in_league=rank_in_league,
+            xp_this_season=membership.xp_this_season,
+            promotion_zone=promotion_zone,
+            relegation_zone=relegation_zone,
+        )
+
     async def resolve(self, user_id: uuid.UUID) -> ProgressContext:
         # Step 1: ledger read (hash-chain verified in the write path / nightly job)
         entries = await self._ledger.list_for_user(user_id)
@@ -109,6 +172,9 @@ class ProgressContextResolver:
 
         # Step 4: streak resolution.
         streak = _resolve_streak(entries, user_id=user_id, today=datetime.now(UTC).date())
+
+        # Step 5: league rollup — authoritative SeasonMembership of the active season.
+        league = await self._resolve_league(user_id)
 
         # Step 6: integrity flag check — any flagged entry freezes public visibility, not accrual.
         has_flagged = any(e.integrity_status == "flagged" for e in entries)
@@ -139,7 +205,7 @@ class ProgressContextResolver:
             computed_at=computed_at,
             rank=rank_state,
             streak=streak,
-            league=None,  # step 5 explicitly out of scope this round
+            league=league,
             guild=None,
             unresolved_flags=unresolved_flags,
             freeze_status=freeze_status,
@@ -153,7 +219,7 @@ class ProgressContextResolver:
                 computed_at=computed_at,
                 rank=rank_state.model_dump(mode="json"),
                 streak=streak.model_dump(mode="json"),
-                league=None,
+                league=league.model_dump(mode="json") if league else None,
                 guild=None,
                 unresolved_flags=unresolved_flags,
                 freeze_status=freeze_status,

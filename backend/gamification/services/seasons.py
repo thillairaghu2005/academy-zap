@@ -14,7 +14,10 @@ time-boxing but not promotion counts, so these are explicit slice-09 decisions):
   -> gold -> platinum -> obsidian). Obsidian's top slots stay (no tier above).
 - Demotion: bottom `demotion_slots` members of every tier move down one tier. Bronze's
   bottom slots stay (no tier below).
-- Inactive members (xp_this_season == 0) are never promoted or demoted — they are retained.
+- Inactive members (xp_this_season <= 0) are never promoted or demoted — they are retained.
+  Zero is the natural inactive state; negative season XP is only reachable through admin
+  reversal adjustments (B3), which are frozen-user territory anyway, so the same retained
+  posture applies (slice-09 invariant, pinned in tests).
 - Frozen users (§7.4) are excluded from the public league board and from promotion.
 - Retry/concurrency: `set_status(active -> completed)` returns False on a stale attempt, so
   running finalization twice produces byte-identical state and no duplicate outcomes.
@@ -113,25 +116,26 @@ class SeasonService:
 
     # -- finalization -------------------------------------------------------------
 
-    async def finalize_season(self, season_id: uuid.UUID) -> dict[str, int]:
+    async def finalize_season(self, season_id: uuid.UUID) -> dict[str, int | bool]:
         """Close an active season: compute ranks, apply promotion/demotion, freeze outcomes.
 
         Idempotent: the active -> completed guard means a second call (retry, concurrent
         cron, replayed job) sees no active row and returns the already-frozen outcome
-        counts without rewriting anything. Returns {promoted, demoted, retained} for the
-        first (winning) finalization.
+        counts without rewriting anything. Returns {promoted, demoted, retained,
+        already_finalized} — `already_finalized` is deterministic: False on the winning
+        finalization, True on every replay, and no replay ever duplicates an outcome.
         """
         season = await self._seasons.get_by_id(season_id)
         if season is None:
             raise ValueError(f"Unknown season: {season_id}")
         if season.status == "completed":
             # Already finalized — replay returns zero new writes (idempotency).
-            return {"promoted": 0, "demoted": 0, "retained": 0}
+            return {"promoted": 0, "demoted": 0, "retained": 0, "already_finalized": True}
 
         moved = await self._seasons.set_status(season_id, "completed", expected_status="active")
         if not moved:
             # A concurrent finalization won the transition; this is a replay.
-            return {"promoted": 0, "demoted": 0, "retained": 0}
+            return {"promoted": 0, "demoted": 0, "retained": 0, "already_finalized": True}
 
         tiers = {t.tier_id: t.display_order for t in await self._tiers.list_all()}
         max_order = max(tiers.values(), default=0)
@@ -162,6 +166,11 @@ class SeasonService:
             ordered = list(reversed(tier_members))
             active_members = [m for m in ordered if str(m.user_id) not in frozen_user_ids]
             for index, member in enumerate(active_members):
+                # Inactive rule (slice 09, pinned in tests): xp_this_season <= 0 is retained,
+                # never promoted or demoted. Zero XP is the natural inactive state; negative
+                # XP is only reachable via admin reversal adjustments (B3) — already frozen
+                # user territory, so the same retained posture applies and there is no way
+                # for a learner to self-inflict it to dodge demotion.
                 if member.xp_this_season <= 0:
                     outcome = "retained"
                 elif index < promote_n and order < max_order:
@@ -204,7 +213,12 @@ class SeasonService:
                     retained += 1
 
         await self._session.flush()
-        return {"promoted": promoted, "demoted": demoted, "retained": retained}
+        return {
+            "promoted": promoted,
+            "demoted": demoted,
+            "retained": retained,
+            "already_finalized": False,
+        }
 
     async def _frozen_user_ids(self, season_id: uuid.UUID) -> set[str]:
         """Users whose public league visibility is frozen (§7.4) — excluded from the board
@@ -240,9 +254,22 @@ class SeasonService:
             return
         membership = await self._members.get_for_user_season(user_id, season.id)
         if membership is None:
-            membership = await self.upsert_membership(
-                user_id=user_id, season=season, tier_id=STARTING_TIER
+            # No membership yet. The ledger append that produced this delta is visible in
+            # this session, so the authoritative season slice computed here already includes
+            # it — the fresh INSERT carries the post-delta value. If a concurrent writer
+            # (GET /me/league, or another worker) beat us to the INSERT, the conflict path
+            # returns their row UNMODIFIED, and since their row does NOT include OUR delta,
+            # we must apply it explicitly. apply_event_delta is the ONLY authoritative
+            # incremental XP updater — a stale reader can never clobber it.
+            membership, inserted = await self._members.insert_if_absent(
+                user_id=user_id,
+                season_id=season.id,
+                league_tier=STARTING_TIER,
+                xp_this_season=await self.compute_season_xp(user_id, season),
             )
+            if not inserted:
+                membership.xp_this_season += xp_delta
+                await self._session.flush()
         else:
             membership.xp_this_season += xp_delta
             await self._session.flush()
@@ -255,12 +282,24 @@ class SeasonService:
             display_name=user.display_name if user else "Learner",
         )
 
-    async def refresh_league_projection(self, redis: Any) -> None:
-        """Rebuild every active season tier's board from authoritative membership rows —
-        the projection is always reconstructible from the ledger (slice 09, Phase 24)."""
-        season = await self._seasons.get_active()
+    async def refresh_league_projection(
+        self, redis: Any, *, season_id: uuid.UUID | None = None
+    ) -> int | None:
+        """Rebuild EVERY tier's league board for a season from authoritative membership
+        rows (the active season when `season_id` is None). The projection is always
+        reconstructible from PostgreSQL — Redis is a disposable read model, never a
+        source of truth (slice 09, Phase 24).
+
+        Rebuilding every catalog tier matters after finalization: members moved tiers, and
+        a tier that lost ALL its members (e.g. everyone promoted out) must have its stale
+        ZSET deleted, not silently left behind. Returns the total members placed, or None
+        when the season does not exist."""
+        if season_id is None:
+            season = await self._seasons.get_active()
+        else:
+            season = await self._seasons.get_by_id(season_id)
         if season is None:
-            return
+            return None
         members = await self._members.list_for_season(season.id)
         users = await self._users.get_by_ids({m.user_id for m in members})
         display_names = {str(u.id): u.display_name for u in users}
@@ -268,7 +307,10 @@ class SeasonService:
         by_tier: dict[str, list[SeasonMembership]] = {}
         for member in members:
             by_tier.setdefault(member.league_tier, []).append(member)
-        for tier_id, tier_members in by_tier.items():
+        tiers = await self._tiers.list_all()
+        total = 0
+        for tier in tiers:
+            tier_members = by_tier.get(tier.tier_id, [])
             rows = [
                 (
                     str(m.user_id),
@@ -277,9 +319,10 @@ class SeasonService:
                 )
                 for m in tier_members
             ]
-            await projection.rebuild_from_memberships(
-                season_id=str(season.id), tier_id=tier_id, members=rows
+            total += await projection.rebuild_from_memberships(
+                season_id=str(season.id), tier_id=tier.tier_id, members=rows
             )
+        return total
 
 
 def now_utc() -> datetime:
