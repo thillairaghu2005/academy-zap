@@ -7,7 +7,7 @@ import { useRouter } from "next/navigation";
 import { History, MessageCircle, ShieldQuestion, WandSparkles } from "lucide-react";
 
 import type { JudgeLanguage, Problem, Verdict } from "@/lib/contracts/judge";
-import { getProblem, getResult, listSubmissions, submit } from "@/lib/data/demo/judge";
+import { getProblem, getResult, listSubmissions, submit, subscribeToJudgeResult } from "@/lib/data/judge-facade";
 import { JUDGE_LANGUAGE_CONFIG, isJudgeLanguage } from "@/lib/judge-language-config";
 import { DEMO_MODE } from "@/lib/config";
 import { useSession } from "@/components/providers/session-provider";
@@ -118,8 +118,19 @@ export function ProblemDetailClient({
       setElapsed(seconds);
       if (seconds >= QUEUE_TIMEOUT_S) { setTimedOut(true); window.clearInterval(timer); }
     }, 1000);
-    return () => window.clearInterval(timer);
-  }, [submissionId, resultQuery.data, resultQuery.isError, timedOut]);
+    
+    let unsubscribeSse: (() => void) | undefined;
+    if (!DEMO_MODE) {
+      unsubscribeSse = subscribeToJudgeResult(submissionId, () => {
+        void queryClient.invalidateQueries({ queryKey: ["judge-result", submissionId] });
+      });
+    }
+    
+    return () => {
+      window.clearInterval(timer);
+      if (unsubscribeSse) unsubscribeSse();
+    };
+  }, [submissionId, resultQuery.data, resultQuery.isError, timedOut, queryClient]);
 
   React.useEffect(() => {
     if (resultQuery.data) void queryClient.invalidateQueries({ queryKey: ["judge-history", problemId] });

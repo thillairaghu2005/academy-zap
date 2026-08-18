@@ -13,6 +13,7 @@ from arq.connections import RedisSettings
 
 from gamification.projections.leaderboard import LeaderboardProjection
 from gamification.services.event_processor import GamificationEventProcessor
+from judge.worker.queue import poll_judge_queue
 from platform_core.bus.consumer import EventConsumer
 from platform_core.bus.dlq import send_to_dlq
 from platform_core.core.config import settings
@@ -222,4 +223,5 @@ class WorkerSettings:
         cron(poll_events, second=set(range(0, 60, 5))),  # type: ignore[arg-type]
         cron(poll_gamification_events, second=set(range(0, 60, 5))),  # type: ignore[arg-type]
         cron(poll_outbox_events, second=set(range(0, 60, 5))),  # type: ignore[arg-type]
+        cron(poll_judge_queue, second=set(range(0, 60, 5))),  # type: ignore[arg-type]
     ]
