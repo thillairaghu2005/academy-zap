@@ -168,7 +168,7 @@ async def poll_gamification_events(_ctx: dict[Any, Any], *_args: Any, **_kwargs:
     return processed
 
 
-async def poll_outbox_events(_ctx: dict[Any, Any], *_args: Any, **_kwargs: Any) -> int:
+async def poll_outbox_events(ctx: dict[Any, Any], *args: Any, **kwargs: Any) -> int:
     from datetime import UTC, datetime
 
     from sqlalchemy import select
@@ -222,6 +222,6 @@ class WorkerSettings:
     cron_jobs = [
         cron(poll_events, second=set(range(0, 60, 5))),  # type: ignore[arg-type]
         cron(poll_gamification_events, second=set(range(0, 60, 5))),  # type: ignore[arg-type]
-        cron(poll_outbox_events, second=set(range(0, 60, 5))),  # type: ignore[arg-type]
-        cron(poll_judge_queue, second=set(range(0, 60, 5))),  # type: ignore[arg-type]
+        cron(poll_outbox_events, second=set(range(0, 60, 5))),
+        cron(poll_judge_queue, second=set(range(0, 60, 5))),
     ]

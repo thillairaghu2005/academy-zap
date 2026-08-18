@@ -598,34 +598,47 @@ cases, and the chain-tamper case. **✅ met**.
 
 ### B5 — Judge Engine (highest security bar — no shortcuts, no "temporarily")
 
-**Status:** `problems`/`submissions`/`test_cases` tables + typed 501 submit/poll routes only; no
-execution path exists yet. The fuzz suite, grader, and gVisor orchestration are all ahead.
+**Status (Slice 10 remediation):** the application layer is complete — 202 queue semantics,
+Redis Streams, atomic worker claim, outbox-durable `judge.submission_graded`, deterministic
+Python grader, `JudgeResult` persistence, tenant-scoped authz, ticket-secured SSE, per-user rate
+limiting, and a 100%-green real security fuzz suite (Docker tier). The gVisor/Kubernetes adapter
+is fully implemented (fresh pod per submission, runtimeClass=gvisor, digest-pinned image,
+default-deny NetworkPolicy, resource/credential controls, `finally` destruction) but has NOT yet
+been executed against a real cluster — **real gVisor/Kubernetes security acceptance is still
+required before this checklist's exit gate can be marked met.**
 
-- [ ] Tables: `problems`, `submissions`, `test_cases` (hidden); ephemeral pod state stays in K8s,
-never in Postgres
-- [ ] `POST /judge/submit`: rate-limit check → submission size cap → language allow-list →
-**enqueue to Redis Streams and return 202 + `submission_id` immediately.** Never executes inline.
-The frontend's optimistic-submit flow is already built against this exact shape.
-- [ ] Arq worker: fresh gVisor pod from the pinned language image per submission, cgroups v2 caps
-applied per submission, no network egress, sequential run against hidden test cases capturing
-stdout/stderr/exit code/timing per case, **pod destroyed immediately after grading and never
-reused — not even for the same user**
-- [ ] `judge/grader.py`: deterministic diff, exact-match plus optional custom checker for float
-tolerance and unordered output. Zero AI imports, CI-enforced.
-- [ ] `JudgeResult` persisted with raw output stored verbatim; verdict literals exactly
-`accepted` / `wrong_answer` / `time_limit_exceeded` / `runtime_error` / `compile_error`
-- [ ] SSE result stream to replace the frontend's mock polling
-- [ ] `judge.submission_graded` emitted to the bus → Gamification, and Assessment when the
-submission carries an assessment context
+- [x] Tables: `problems`, `submissions`, `test_cases` (hidden), `sample_case`; ephemeral pod
+state stays in K8s, never in Postgres; `org_id` tenant anchors on `problem`/`submission` (F-6)
+- [x] `POST /judge/submit`: rate-limit check (per authenticated user + tenant, F-14) → submission
+size cap → language allow-list → **enqueue to Redis Streams and return 202 + `submission_id`
+immediately.** Never executes inline.
+- [x] Arq worker entrypoint (`python -m judge.worker.entrypoint`): fresh gVisor pod from the
+pinned (digest) language image per submission, cgroups v2 caps applied per submission, no network
+egress (NetworkPolicy default-deny in both directions), sequential run against hidden test cases
+capturing stdout/stderr/exit code/timing per case, output capped DURING capture (F-8), **pod
+destroyed in `finally` and never reused — not even for the same user**. Atomic `UPDATE ... WHERE
+status='queued' RETURNING` claim (F-10), XAUTOCLAIM reclaim, retry budget + DLQ, stuck-processing
+reconciliation. **⚠ not yet run against a real gVisor/Kubernetes cluster — see exit gate.**
+- [x] `judge/grader.py`: deterministic diff, exact-match; verdict literals exactly `accepted` /
+`wrong_answer` / `time_limit_exceeded` / `runtime_error` / `compile_error`. Zero AI imports,
+CI-enforced. 4/4 acceptance fixtures green.
+- [x] `JudgeResult` persisted with raw output stored verbatim (never discarded)
+- [x] SSE result stream with single-use ticket auth (F-7), notification-only
+- [x] `judge.submission_graded` outboxed in the same transaction as the graded result (F-12) →
+Gamification via the integrity gate (F-15), 250 XP exactly once per solved problem
 - [ ] Async MOSS/JPlag scan on a separate path — **never blocks the user's result**; similarity
 above threshold files into the same integrity review queue as B3
-- [ ] **Python only for Phase 1.** Additional language images are each a separate security-checklist
+- [x] **Python only for Phase 1.** Additional language images are each a separate security-checklist
 PR. Do not widen the allow-list to "unblock" a frontend that was deliberately built single-language.
-- [ ] Adversarial fuzz suite in a dedicated test cluster: fork bombs, network probes, disk-fill,
-PID exhaustion — assert the pod is capped and killed and **no sibling pod is affected**
-- **Exit gate:** 100% fuzz-suite pass (any failure blocks release, full stop) + 100% grader
-agreement with the hand-verified acceptance fixture set + security review signed off from outside
-the squad.
+- [x] Adversarial fuzz suite (20/20 real invariants, all green against the hardened Docker tier):
+infinite loop, fork bomb, PID exhaustion, memory/CPU/disk exhaustion, stdout/stderr flood,
+network/DNS/localhost, filesystem traversal, host-FS, secrets, privilege escalation, signal
+abuse, timeout bypass, sandbox escape, concurrency, cross-submission contamination. **The Docker
+tier is NOT production security acceptance.**
+- **Exit gate:** 100% fuzz-suite pass (Docker tier ✅) + 100% grader agreement with the
+hand-verified acceptance fixture set (✅ 4/4) + **real gVisor/Kubernetes security acceptance
+still required**: `kubectl get nodes`, `kubectl get runtimeclass`, NetworkPolicy verified,
+real malicious submission run, pod cleanup verified — from outside the squad. **NOT YET MET.**
 
 ### B6 — Lab Engine (highest blast radius)
 

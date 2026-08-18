@@ -120,13 +120,20 @@ export function ProblemDetailClient({
     }, 1000);
     
     let unsubscribeSse: (() => void) | undefined;
+    let cancelled = false;
     if (!DEMO_MODE) {
-      unsubscribeSse = subscribeToJudgeResult(submissionId, () => {
+      // F-7: ticket exchange (async) before the EventSource opens; polling stays
+      // authoritative, SSE is freshness only.
+      void subscribeToJudgeResult(submissionId, () => {
         void queryClient.invalidateQueries({ queryKey: ["judge-result", submissionId] });
+      }).then((cleanup) => {
+        if (cancelled) { cleanup(); return; }
+        unsubscribeSse = cleanup;
       });
     }
     
     return () => {
+      cancelled = true;
       window.clearInterval(timer);
       if (unsubscribeSse) unsubscribeSse();
     };

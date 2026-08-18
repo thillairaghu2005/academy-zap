@@ -16,7 +16,7 @@ export async function listProblems(): Promise<Problem[]> {
   return await apiRequest<Problem[]>("/judge/problems", z.any(), { method: "GET" });
 }
 
-export async function listSolvedProblemIds(userId: string): Promise<string[]> {
+export async function listSolvedProblemIds(_userId: string): Promise<string[]> {
   return [];
 }
 
@@ -35,13 +35,18 @@ export async function submit(
 
 export async function getResult(
   submissionId: string,
-  userId?: string,
+  _userId?: string,
 ): Promise<JudgeResult | null> {
   try {
     const data = await apiRequest<JudgeResult>(`/judge/submissions/${submissionId}`, z.any(), { method: "GET" });
     return data;
-  } catch (err: any) {
-    if (err.status === 404) {
+  } catch (err: unknown) {
+    if (
+      typeof err === "object" &&
+      err !== null &&
+      "status" in err &&
+      (err as { status?: unknown }).status === 404
+    ) {
       return null;
     }
     throw err;
@@ -49,30 +54,41 @@ export async function getResult(
 }
 
 export async function listSubmissions(
-  problemId: string,
-  userId: string,
+  _problemId: string,
+  _userId: string,
 ): Promise<JudgeResult[]> {
   // The backend might not have this endpoint implemented yet. We'll return an empty array for now.
   return [];
 }
 
-// Subscribe to SSE
-export function subscribeToJudgeResult(
+// Subscribe to SSE (F-7): EventSource cannot set an Authorization header, so the
+// authenticated API client first exchanges the access token for a short-lived SINGLE-USE
+// ticket bound to the submission owner, then opens the stream with the ticket in the URL.
+// The ticket is consumed on first use, never reused, and never the access token itself.
+export async function subscribeToJudgeResult(
   submissionId: string,
   onResult: () => void,
-): () => void {
-  const url = `${API_PREFIX}/judge/submissions/${submissionId}/stream`;
-  const es = new EventSource(url, { withCredentials: true });
-  
+): Promise<() => void> {
+  const ticketResponse = await apiRequest<{ ticket: string }>(
+    `/judge/submissions/${submissionId}/ticket`,
+    z.any(),
+    { method: "POST" },
+  );
+
+  const url = `${API_PREFIX}/judge/submissions/${submissionId}/stream?ticket=${encodeURIComponent(ticketResponse.ticket)}`;
+  const es = new EventSource(url);
+
   es.addEventListener("result_ready", () => {
     onResult();
     es.close();
   });
-  
+
   es.addEventListener("error", () => {
-    es.close(); // Stop on error
+    // Auth failures (replayed/expired ticket) surface here — the caller's TanStack Query
+    // polling remains authoritative and simply continues.
+    es.close();
   });
-  
+
   return () => {
     es.close();
   };
