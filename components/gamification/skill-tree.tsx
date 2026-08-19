@@ -102,13 +102,15 @@ export function SkillTree() {
       .append("circle")
       .attr("r", RADIUS)
       .attr("fill", (d) => {
-        // Colors resolved from Tailwind utilities' palette (always defined).
-        if (!d.parent) return "#FFF8F8"; // foreground-ish
+        // Resolved from design tokens so the tree follows the theme.
+        if (!d.parent) return "var(--color-card-tint)";
         const p = d.data.progress ?? 0;
-        return p >= 0.85 ? "#B4233C" : p >= 0.5 ? "#B7791F" : "#941B31";
+        // Completion green ≥85%, warning amber ≥50%, error red below —
+        // lightness + hue differ at every step (colorblind-safe).
+        return p >= 0.85 ? "var(--color-success)" : p >= 0.5 ? "var(--color-warning)" : "var(--color-danger)";
       })
       .attr("fill-opacity", 0.85)
-      .attr("stroke", "#18181B")
+      .attr("stroke", "var(--color-foreground)")
       .attr("stroke-width", 1.5);
 
     nodes
@@ -117,7 +119,7 @@ export function SkillTree() {
       .attr("text-anchor", "middle")
       .style("font-size", (d) => (d.depth === 0 ? "11px" : d.depth === 1 ? "10px" : "9px"))
       .style("font-weight", (d) => (d.depth <= 1 ? 600 : 400))
-      .style("fill", "#FDF0F2")
+      .style("fill", "var(--color-foreground)")
       .text((d) => {
         if (d.depth === 0) return d.data.name;
         const pct = d.data.progress !== undefined ? Math.round(d.data.progress * 100) : 0;

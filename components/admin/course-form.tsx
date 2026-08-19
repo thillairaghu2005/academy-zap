@@ -330,10 +330,10 @@ export function CourseForm({ courseId }: { courseId?: string }) {
           {status === "in_review" ? (
             <>
               <CourseReviewDiffCard courseId={course.id} />
-              <Card className="border-emerald-500/25">
+              <Card className="border-success/25">
                 <CardHeader className="p-4 pb-2">
                   <CardTitle className="flex items-center gap-2 font-display text-small">
-                    <CheckCircle2 className="size-4 text-emerald-700" />
+                    <CheckCircle2 className="size-4 text-success-strong" />
                     Second-reviewer approval
                   </CardTitle>
                 </CardHeader>

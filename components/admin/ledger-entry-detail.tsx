@@ -15,8 +15,8 @@ import { ErrorState } from "@/components/shared/error-state";
 import { cn } from "@/lib/utils";
 
 const INTEGRITY_STYLES: Record<IntegrityStatus, string> = {
-  verified: "border-emerald-500/40 bg-emerald-500/10 text-emerald-700",
-  flagged: "border-amber-500/40 bg-amber-500/10 text-amber-700",
+  verified: "border-success/40 bg-success/10 text-success-strong",
+  flagged: "border-warning/40 bg-warning/10 text-warning-strong",
   reversed: "border-primary-border bg-primary-light text-primary",
 };
 
@@ -58,14 +58,14 @@ export function LedgerEntryDetail({ ledgerEntryId }: { ledgerEntryId: string }) 
       <div className="flex flex-wrap items-center gap-x-6 gap-y-2">
         <div className="flex items-center gap-2">
           {positive ? (
-            <ArrowUpRight className="size-4 text-emerald-700" />
+            <ArrowUpRight className="size-4 text-success-strong" />
           ) : (
             <ArrowDownRight className="size-4 text-primary" />
           )}
           <span
             className={cn(
               "font-display text-h3",
-              positive ? "text-emerald-700" : "text-primary",
+              positive ? "text-success-strong" : "text-primary",
             )}
           >
             {positive ? "+" : ""}

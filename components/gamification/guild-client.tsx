@@ -234,7 +234,7 @@ function VsRow({
             <span
               className={cn(
                 "flex items-center gap-0.5 text-caption",
-                delta >= 0 ? "text-primary" : "text-emerald-700",
+                delta >= 0 ? "text-primary" : "text-success-strong",
               )}
             >
               <ArrowUpRight

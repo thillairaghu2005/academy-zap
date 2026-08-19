@@ -30,11 +30,11 @@ import { cn } from "@/lib/utils";
 
 const STATUS_STYLE: Record<string, { badge: string; icon: React.ReactNode }> = {
   verified: {
-    badge: "border-emerald-500/40 bg-emerald-500/10 text-emerald-700",
+    badge: "border-success/40 bg-success/10 text-success-strong",
     icon: <BadgeCheck className="size-3.5" />,
   },
   flagged: {
-    badge: "border-amber-500/40 bg-amber-500/10 text-amber-700",
+    badge: "border-warning/40 bg-warning/10 text-warning-strong",
     icon: <ShieldQuestion className="size-3.5" />,
   },
   revoked: {
@@ -104,8 +104,8 @@ export function BadgeWall() {
                   b.status === "revoked"
                         ? "border-primary-border opacity-75"
                     : b.status === "flagged"
-                      ? "border-amber-500/25"
-                      : "border-border hover:border-emerald-500/30",
+                      ? "border-warning/25"
+                      : "border-border hover:border-success/30",
                 )}
               >
                 <div className="flex items-start justify-between">
@@ -115,8 +115,8 @@ export function BadgeWall() {
                       b.status === "revoked"
                         ? "bg-primary-light text-primary"
                         : b.status === "flagged"
-                          ? "bg-amber-500/10 text-amber-700"
-                          : "bg-emerald-500/10 text-emerald-700",
+                          ? "bg-warning/10 text-warning-strong"
+                          : "bg-success/10 text-success-strong",
                     )}
                   >
                     {b.status === "revoked" ? (

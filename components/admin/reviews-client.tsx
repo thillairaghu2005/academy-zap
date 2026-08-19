@@ -28,8 +28,8 @@ import { apiErrorMessage } from "@/lib/api/client";
 
 function StatusPill({ status }: { status: CredentialReview["status"] }) {
   const styles: Record<string, string> = {
-    verified: "border-emerald-500/40 bg-emerald-500/10 text-emerald-700",
-    flagged: "border-amber-500/40 bg-amber-500/10 text-amber-700",
+    verified: "border-success/40 bg-success/10 text-success-strong",
+    flagged: "border-warning/40 bg-warning/10 text-warning-strong",
     revoked: "border-primary-border bg-primary-light text-primary",
   };
   return (
@@ -183,7 +183,7 @@ export function AdminReviewsClient() {
         <section className="min-w-0 rounded-xl border border-border bg-card">
           <div className="border-b border-border px-4 py-3">
             <h2 className="flex items-center gap-2 text-sm font-semibold text-foreground">
-              <ShieldAlert className="size-4 text-amber-600" />
+              <ShieldAlert className="size-4 text-warning-strong" />
               Flagged queue
               <span className="ml-auto rounded-full bg-secondary px-2 py-0.5 text-caption font-medium text-muted-foreground">
                 {queueQuery.data?.length ?? 0}

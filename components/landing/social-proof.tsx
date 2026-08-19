@@ -107,7 +107,7 @@ export function SocialProof() {
                   >
                     <span className="grid size-8 shrink-0 place-items-center rounded-full bg-secondary font-mono text-xs font-semibold text-muted-foreground">
                       {entry.rank === 1 ? (
-                        <Crown className="size-4 text-amber-700" />
+                        <Crown className="size-4 text-warning-strong" />
                       ) : (
                         entry.rank
                       )}

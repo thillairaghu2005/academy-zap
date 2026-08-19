@@ -5,6 +5,7 @@ import { X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
 import { Button } from "@/components/ui/button";
+import { motionSprings } from "@/components/motion/motion-tokens";
 
 export function CookieBanner() {
   const [show, setShow] = React.useState(false);
@@ -34,6 +35,7 @@ export function CookieBanner() {
         initial={{ y: 100, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         exit={{ y: 100, opacity: 0 }}
+        transition={motionSprings.default}
         className="fixed bottom-0 left-0 right-0 z-50 p-4 sm:p-6 pointer-events-none"
       >
         <div className="mx-auto max-w-4xl rounded-2xl border border-border bg-card p-4 shadow-2xl pointer-events-auto sm:flex sm:items-center sm:justify-between sm:p-5">

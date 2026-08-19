@@ -37,7 +37,7 @@ export function InstructorCard({ instructorId, initialInstructor }: { instructor
         <div className="flex flex-wrap gap-1.5">{instructor.skill_tags.map((tag) => <Badge key={tag} variant="outline" className="text-caption">{tag}</Badge>)}</div>
         <div className="grid grid-cols-2 gap-3 text-xs text-muted-foreground">
           <span className="flex items-center gap-1.5"><Users className="size-3.5" /> {instructor.students_taught.toLocaleString()} students</span>
-          <span className="flex items-center gap-1.5"><Star className="size-3.5 fill-amber-400 text-amber-700" /> {instructor.average_rating.toFixed(1)} average</span>
+          <span className="flex items-center gap-1.5"><Star className="size-3.5 fill-amber-400 text-warning-strong" /> {instructor.average_rating.toFixed(1)} average</span>
           <span className="flex items-center gap-1.5"><Languages className="size-3.5" /> {instructor.languages.join(", ")}</span>
           <span className="flex items-center gap-1.5"><Clock3 className="size-3.5" /> {instructor.response_time}</span>
         </div>

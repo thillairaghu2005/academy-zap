@@ -118,11 +118,11 @@ export function AttemptsTracker({
                 <div className="flex shrink-0 items-center gap-2.5 font-mono text-[11px] text-muted-foreground">
                   {attempt.status === "submitted" ? (
                     <>
-                      <span className="text-emerald-700">
+                      <span className="text-success-strong">
                         {attempt.score} pts · {attempt.correct_count}/
                         {attempt.question_count} correct
                         {attempt.max_combo > 1 ? (
-                          <span className="ml-2 text-amber-700">
+                          <span className="ml-2 text-warning-strong">
                             best {attempt.max_combo}-combo
                           </span>
                         ) : null}
@@ -130,7 +130,7 @@ export function AttemptsTracker({
                       <Button variant="ghost" size="sm" className="h-7 px-2 text-[11px]" onClick={() => setReviewAttemptId(attempt.attempt_id)}>Review</Button>
                     </>
                   ) : attempt.status === "expired" ? (
-                    <span className="flex items-center gap-1 text-amber-700">
+                    <span className="flex items-center gap-1 text-warning-strong">
                       <TimerReset className="size-3" />
                       timed out
                     </span>
@@ -152,7 +152,7 @@ export function AttemptsTracker({
                  Attempts used up — further attempts are blocked by the server.
               </p>
             ) : lastPassed ? (
-              <p className="flex items-center gap-1.5 font-medium text-emerald-700">
+              <p className="flex items-center gap-1.5 font-medium text-success-strong">
                 <CheckCircle2 className="size-3.5" />
                 You passed a previous attempt — retakes still allowed.
               </p>

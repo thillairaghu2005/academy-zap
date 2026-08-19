@@ -85,10 +85,10 @@ function DropdownMenuSubContent({
   return (
     <DropdownMenuPrimitive.SubContent
       data-slot="dropdown-menu-sub-content"
-      className={cn(
-        "z-50 min-w-32 overflow-hidden rounded-md border border-border bg-popover p-1 text-popover-foreground shadow-lg data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95",
-        className,
-      )}
+        className={cn(
+          "z-50 min-w-32 overflow-hidden rounded-md border border-border bg-background/80 p-1 text-popover-foreground shadow-lg [animation-timing-function:var(--ease-spring)] data-[state=open]:animate-materialize data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95",
+          className,
+        )}
       {...props}
     />
   );
@@ -105,7 +105,7 @@ function DropdownMenuContent({
         data-slot="dropdown-menu-content"
         sideOffset={sideOffset}
         className={cn(
-          "z-50 min-w-44 overflow-hidden rounded-xl border border-border bg-popover p-1 text-popover-foreground shadow-[0_14px_35px_rgb(23_23_23_/_12%)] data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95",
+          "z-50 min-w-44 overflow-hidden rounded-xl border border-border bg-background/80 p-1 text-popover-foreground shadow-[0_14px_35px_rgb(23_23_23_/_12%)] [animation-timing-function:var(--ease-spring)] data-[state=open]:animate-materialize data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95",
           className,
         )}
         {...props}

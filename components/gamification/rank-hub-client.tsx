@@ -52,12 +52,14 @@ const DEMO_USERS = [
   { id: "missing-user", label: "Empty" },
 ] as const;
 
+/* League tiers — colorblind-safe: distinct lightness AND hue per tier
+   (bronze/amber → gold/light-gold → platinum/cool → obsidian/black). */
 const LEAGUE_TIER_STYLE: Record<string, string> = {
-  bronze: "border-orange-700/40 bg-orange-700/10 text-orange-700",
-  silver: "border-slate-400/40 bg-slate-400/10 text-slate-500",
-  gold: "border-amber-500/40 bg-amber-500/10 text-amber-700",
-  platinum: "border-primary-border bg-primary-light text-primary",
-  obsidian: "border-primary-deep/40 bg-primary-deep/10 text-primary-deep",
+  bronze: "border-tier-bronze/40 bg-tier-bronze/10 text-tier-bronze",
+  silver: "border-tier-silver/40 bg-tier-silver/10 text-tier-silver",
+  gold: "border-tier-gold/40 bg-tier-gold/10 text-tier-gold",
+  platinum: "border-tier-platinum/40 bg-tier-platinum/10 text-tier-platinum",
+  obsidian: "border-tier-obsidian/40 bg-tier-obsidian/10 text-tier-obsidian",
 };
 
 export function RankHubClient() {
@@ -153,11 +155,12 @@ export function RankHubClient() {
             <motion.div
               initial={{ opacity: 0, y: -8 }}
               animate={{ opacity: 1, y: 0 }}
-              className="mb-6 flex items-start gap-3 rounded-xl border border-amber-500/40 bg-amber-500/10 p-4"
+              transition={{ duration: 0.3, ease: "easeOut" }}
+              className="mb-6 flex items-start gap-3 rounded-xl border border-warning/40 bg-warning/10 p-4"
             >
-              <ShieldAlert className="mt-0.5 size-5 shrink-0 text-amber-700" />
+              <ShieldAlert className="mt-0.5 size-5 shrink-0 text-warning-strong" />
               <div>
-                <p className="font-display text-small font-semibold text-amber-700">
+                <p className="font-display text-small font-semibold text-warning-strong">
                   Progress frozen pending review
                 </p>
                 <p className="mt-0.5 text-xs leading-relaxed text-muted-foreground">
@@ -331,6 +334,8 @@ function DualXpTracks({
   mastery: number;
 }) {
   // Bars are visual only; the weighted rank comes from the demo service.
+  // Completion (crimson) and mastery (violet + stripes) are colorblind-safe:
+  // they differ by hue, lightness, saturation, AND pattern — never blended.
   const total = completion + mastery || 1;
   const cPct = (completion / total) * 100;
   const mPct = (mastery / total) * 100;
@@ -354,20 +359,20 @@ function DualXpTracks({
         />
       </div>
       <div className="flex items-center justify-between text-xs">
-        <span className="flex items-center gap-1.5 font-medium text-secondary-accent">
+        <span className="flex items-center gap-1.5 font-medium text-xp-mastery">
           <Sparkles className="size-3.5" /> Mastery XP
         </span>
         <span className="font-mono text-muted-foreground">
           {mastery.toLocaleString()} · {mPct.toFixed(0)}%
         </span>
       </div>
-      <div className="h-2 overflow-hidden rounded-full bg-primary-muted">
+      <div className="h-2 overflow-hidden rounded-full bg-xp-mastery/15">
         <motion.div
           initial={{ scaleX: 0 }}
           animate={{ scaleX: 1 }}
           transition={{ duration: 0.8, ease: "easeOut", delay: 0.1 }}
           style={{ width: `${mPct}%`, originX: 0 }}
-          className="h-full rounded-full bg-secondary-accent"
+          className="pattern-stripes h-full rounded-full bg-xp-mastery"
         />
       </div>
       <p className="text-caption text-muted-foreground">
@@ -412,7 +417,7 @@ function StreakWidget({
     <div className="rounded-xl border border-border bg-card p-4">
       <div className="flex items-center justify-between">
         <p className="flex items-center gap-2 font-display text-small font-semibold">
-          <Flame className="size-4 text-orange-700" />
+          <Flame className="size-4 text-warning-strong" />
           Streak
         </p>
         {!isLoading && !isError && streak ? (
@@ -457,7 +462,7 @@ function StreakWidget({
             </span>
           </div>
           <div className="mt-3 flex flex-wrap gap-2 text-caption">
-            <span className="rounded-md bg-orange-500/10 px-2 py-1 font-medium text-orange-700">
+            <span className="rounded-md bg-warning/10 px-2 py-1 font-medium text-warning-strong">
               ×{streak.momentum_multiplier.toFixed(2)} momentum
             </span>
             <span className="rounded-md bg-secondary px-2 py-1 font-medium text-muted-foreground">
@@ -525,7 +530,7 @@ function LeagueWidget({
           </div>
           <div className="mt-3 flex flex-wrap gap-2 text-caption">
             {league.promotion_zone ? (
-              <span className="flex items-center gap-1 rounded-md bg-emerald-500/10 px-2 py-1 font-medium text-emerald-700">
+              <span className="flex items-center gap-1 rounded-md bg-success/10 px-2 py-1 font-medium text-success-strong">
                 <TrendingUp className="size-3" /> Promotion zone
               </span>
             ) : null}

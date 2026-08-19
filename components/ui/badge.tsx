@@ -24,9 +24,9 @@ const badgeVariants = cva(
         "time-limit-exceeded":
           "border-transparent bg-verdict-time-limit-exceeded/10 text-warning-strong",
         "runtime-error":
-          "border-transparent bg-verdict-runtime-error/10 text-warning-strong",
+          "border-transparent bg-verdict-runtime-error/10 text-danger-strong",
         "compile-error":
-          "border-transparent bg-verdict-compile-error/10 text-warning-strong",
+          "border-transparent bg-verdict-compile-error/10 text-muted-foreground",
       },
     },
     defaultVariants: {

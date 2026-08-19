@@ -48,7 +48,7 @@ function TopNavBreadcrumbs({ pathname }: { pathname: string }) {
   return (
     <nav
       aria-label="Breadcrumb"
-      className="flex min-w-0 items-center gap-1.5 overflow-hidden text-xs text-muted-foreground"
+      className="on-glass flex min-w-0 items-center gap-1.5 overflow-hidden text-xs text-muted-foreground"
     >
       {segments.map((segment, index) => {
         const href = `/${segments.slice(0, index + 1).join("/")}`;
@@ -88,7 +88,7 @@ export function TopNav() {
     : "Dashboard";
 
   return (
-    <header className="sticky top-0 z-40 border-b border-border bg-white/95 px-3 py-2 backdrop-blur sm:px-5 lg:px-6">
+    <header className="frosted chrome-edge-bottom sticky top-0 z-40 px-3 py-2 sm:px-5 lg:px-6">
       <div className="mx-auto flex h-14 max-w-[1440px] items-center gap-2 px-0 sm:px-1">
         <MobileNav />
 
@@ -108,7 +108,7 @@ export function TopNav() {
             >
               Continue <ArrowRight className="size-3.5" />
             </Link>
-            <GlobalSearch className="w-full justify-start rounded-xl bg-surface-1/70" />
+            <GlobalSearch className="w-full justify-start rounded-xl bg-surface-1" />
          </div>
 
         <div className="ml-auto flex items-center gap-3">

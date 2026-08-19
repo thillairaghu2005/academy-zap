@@ -98,7 +98,7 @@ export function SeasonPassCard() {
                     reached
                       ? "border-xp-mastery bg-xp-mastery text-white"
                       : m.premium
-                        ? "border-amber-500/60 text-amber-700"
+                        ? "border-tier-gold/60 text-tier-gold"
                         : "border-secondary text-muted-foreground",
                   )}
                 >

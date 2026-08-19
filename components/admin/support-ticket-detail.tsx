@@ -48,9 +48,9 @@ const ALL_STATUSES: TicketStatus[] = ["open", "pending", "resolved", "closed"];
 function InternalNote({ message }: { message: TicketMessage }) {
   return (
     <div className="flex justify-start">
-      <div className="max-w-[85%] rounded-2xl border border-amber-500/40 bg-amber-500/10 px-4 py-3 text-sm sm:max-w-[70%]">
+      <div className="max-w-[85%] rounded-2xl border border-warning/40 bg-warning/10 px-4 py-3 text-sm sm:max-w-[70%]">
         <div className="flex flex-wrap items-center gap-2">
-          <span className="inline-flex items-center gap-1 rounded-full border border-amber-500/40 bg-amber-500/15 px-2 py-0.5 text-caption font-bold uppercase tracking-wide text-amber-700">
+          <span className="inline-flex items-center gap-1 rounded-full border border-warning/40 bg-warning/15 px-2 py-0.5 text-caption font-bold uppercase tracking-wide text-warning-strong">
             <Lock className="size-3" />
             Internal note
           </span>
@@ -332,7 +332,7 @@ export function AdminSupportTicketDetail({ ticketId }: { ticketId: string }) {
               className={cn(
                 "inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-medium transition-colors outline-none focus-visible:ring-2 focus-visible:ring-ring",
                 internalNote
-                  ? "border-amber-500/50 bg-amber-500/10 text-amber-700"
+                  ? "border-warning/50 bg-warning/10 text-warning-strong"
                   : "border-border bg-card text-muted-foreground hover:text-foreground",
               )}
             >
