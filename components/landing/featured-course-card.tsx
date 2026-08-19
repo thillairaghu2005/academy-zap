@@ -8,6 +8,8 @@ import type { CourseSummary } from "@/lib/contracts/content";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { Spotlight } from "@/components/motion/spotlight";
+import { TiltCard } from "@/components/motion/tilt-card";
 import { isCourseBookmarked, toggleCourseBookmark } from "@/lib/demo/course-notes";
 import { toast } from "sonner";
 
@@ -22,18 +24,19 @@ export function FeaturedCourseCard({ course, visualClass, index }: FeaturedCours
   const price = course.price_cents === 0 ? "Free" : `$${(course.price_cents / 100).toFixed(0)}`;
 
   return (
-    <article className="group overflow-hidden rounded-3xl border border-border bg-card shadow-[0_8px_24px_rgb(17_24_39_/_5%)] transition-[border-color,box-shadow,transform] duration-300 hover:-translate-y-1 hover:border-primary/25 hover:shadow-[0_18px_44px_rgb(17_24_39_/_10%)]">
-      <Link href={`/courses/${course.id}`} className="block outline-none focus-visible:ring-2 focus-visible:ring-ring">
-        <div className={cn("relative flex aspect-[1.8] items-end overflow-hidden p-5", visualClass)}>
-          <div className="absolute inset-0 aurora opacity-75 transition-transform duration-700 group-hover:scale-105" aria-hidden="true" />
-          <div className="absolute inset-0 bg-grid opacity-60" aria-hidden="true" />
-          <span className="absolute right-5 top-5 font-mono text-xs text-muted-foreground">{String(index + 1).padStart(2, "0")}</span>
-          <div className="relative">
-            <Badge variant="outline" className="border-primary/20 bg-white/80 text-primary backdrop-blur-sm">{course.category}</Badge>
-            <h3 className="mt-3 max-w-md font-display text-h3 font-semibold text-foreground">{course.title}</h3>
-          </div>
-        </div>
-      </Link>
+    <TiltCard className="h-full rounded-3xl">
+      <article className="group h-full overflow-hidden rounded-3xl border border-border bg-card shadow-[0_8px_24px_rgb(17_24_39_/_5%)] transition-[border-color,box-shadow] duration-300 hover:border-primary/25 hover:shadow-[0_18px_44px_rgb(17_24_39_/_10%)]">
+        <Link href={`/courses/${course.id}`} className="block outline-none focus-visible:ring-2 focus-visible:ring-ring">
+          <Spotlight className={cn("flex aspect-[1.8] items-end overflow-hidden p-5", visualClass)}>
+            <div className="absolute inset-0 aurora opacity-75 transition-transform duration-700 group-hover:scale-105" aria-hidden="true" />
+            <div className="absolute inset-0 bg-grid opacity-60" aria-hidden="true" />
+            <span className="absolute right-5 top-5 font-mono text-xs text-muted-foreground">{String(index + 1).padStart(2, "0")}</span>
+            <div className="relative">
+              <Badge variant="outline" className="border-primary/20 bg-white/80 text-primary backdrop-blur-sm">{course.category}</Badge>
+              <h3 className="mt-3 max-w-md font-display text-h3 font-semibold text-foreground">{course.title}</h3>
+            </div>
+          </Spotlight>
+        </Link>
 
       <div className="p-5">
         <p className="line-clamp-2 min-h-10 text-sm leading-relaxed text-muted-foreground">{course.subtitle}</p>
@@ -54,5 +57,6 @@ export function FeaturedCourseCard({ course, visualClass, index }: FeaturedCours
         </div>
       </div>
     </article>
+    </TiltCard>
   );
 }

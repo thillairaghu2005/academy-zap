@@ -20,6 +20,7 @@ import { FeaturedCourseCard } from "@/components/landing/featured-course-card";
 import { FilterTabs } from "@/components/landing/filter-tabs";
 import { HeroSection } from "@/components/landing/hero-section";
 import { LearningLoop } from "@/components/landing/learning-loop";
+import { TerminalMock } from "@/components/landing/live-demo";
 import { MarketingFooter } from "@/components/landing/marketing-footer";
 import { MarketingNav } from "@/components/landing/marketing-nav";
 import { PersonalizedHero } from "@/components/landing/personalized-hero";
@@ -27,6 +28,8 @@ import { useSession } from "@/components/providers/session-provider";
 import { SectionTitle } from "@/components/landing/section-title";
 import { SocialProof } from "@/components/landing/social-proof";
 import { SkillCard } from "@/components/landing/skill-card";
+import { StaggerGroup } from "@/components/motion/stagger-group";
+import { Marquee } from "@/components/motion/marquee";
 import { VerifiedProgression } from "@/components/landing/verified-progression";
 import { TrustHighlights } from "@/components/landing/trust-highlights";
 import { ErrorState } from "@/components/shared/error-state";
@@ -120,6 +123,22 @@ function LandingSections({ courses, catalogUnavailable = false }: LandingPagePro
         </div>
       </section>
 
+      <section aria-label="Learning topics" className="border-y border-border bg-surface-1">
+        <h2 className="sr-only">Learning topics</h2>
+        <div className="py-4">
+          <Marquee speed={28} className="[mask-image:linear-gradient(to_right,transparent,black_12%,black_88%,transparent)]">
+            <span aria-hidden="true" className="flex">
+              {skillCards.map((skill) => (
+                <span key={skill.name} className="mx-3 inline-flex shrink-0 items-center gap-2 rounded-full border border-border bg-card px-4 py-2 text-xs font-medium text-muted-foreground">
+                  <skill.icon className="size-3.5 text-primary" />
+                  {skill.name}
+                </span>
+              ))}
+            </span>
+          </Marquee>
+        </div>
+      </section>
+
       <section id="featured-courses" className="scroll-mt-24 bg-muted/40">
         <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 sm:py-20 lg:px-8">
           <SectionTitle
@@ -160,11 +179,11 @@ function LandingSections({ courses, catalogUnavailable = false }: LandingPagePro
             title="Topics you can submit, shell into, and climb with"
             description="Python, detection, web security, cloud controls, and the systems underneath them are all connected to a working surface."
           />
-          <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          <StaggerGroup className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3" childClassName="h-full">
             {skillCards.map((skill) => (
               <SkillCard key={skill.name} {...skill} />
             ))}
-          </div>
+          </StaggerGroup>
         </div>
       </section>
 
@@ -191,6 +210,16 @@ export function LandingPage({ courses, catalogUnavailable = false }: LandingPage
       <main id="main-content">
         <HomeHero />
         <LearningLoop />
+        <section className="bg-background">
+          <div className="mx-auto grid max-w-7xl items-center gap-8 px-4 py-16 sm:px-6 lg:grid-cols-2 lg:gap-14 lg:px-8">
+            <div>
+              <p className="font-mono text-xs uppercase tracking-widest text-muted-foreground">Live by default</p>
+              <h2 className="mt-3 font-display font-thin text-h1 tracking-[-0.03em]">Skill work that runs in a real environment.</h2>
+              <p className="mt-4 max-w-lg text-sm leading-6 text-muted-foreground">Every lab session spins up an isolated environment. Watch a verified objective complete, then keep the proof in your rank record.</p>
+            </div>
+            <TerminalMock />
+          </div>
+        </section>
         <LandingSections courses={courses} catalogUnavailable={catalogUnavailable} />
         <PricingSection />
         <TestimonialWall />

@@ -6,6 +6,8 @@ import { m as motion, useReducedMotion, type Variants } from "framer-motion";
 import { Check } from "lucide-react";
 
 import { Magnetic } from "@/components/motion/magnetic";
+import { Parallax } from "@/components/motion/parallax";
+import { TextReveal } from "@/components/motion/text-reveal";
 import { Button } from "@/components/ui/button";
 import heroImage from "@/src/assets/images/hero.png";
 
@@ -46,12 +48,9 @@ export function HeroSection() {
           </motion.div>
           <motion.h1
             variants={itemVariants}
-            className="mt-7 max-w-xl leading-[0.98]"
-            style={{ fontFamily: "'Geist Variable', sans-serif", fontWeight: 100, fontSize: "clamp(2.9rem,6vw,5.4rem)", letterSpacing: "-0.05em" }}
+            className="mt-7 max-w-xl font-display font-thin leading-[0.98] tracking-[-0.05em] text-[clamp(2.9rem,6vw,5.4rem)]"
           >
-            Learn with intent.
-            <br />
-            <span>Build with confidence.</span>
+            <TextReveal text={"Learn with intent.\nBuild with confidence."} mode="lines" delay={0.1} />
           </motion.h1>
           <motion.p variants={itemVariants} className="mt-7 max-w-lg text-base leading-7 text-muted-foreground sm:text-lg sm:leading-8">
             A focused learning workspace for people who want practical skills, useful feedback, and visible progress that compounds over time.
@@ -83,14 +82,16 @@ export function HeroSection() {
           }
           className="relative z-10 flex items-end justify-center lg:justify-end"
         >
-          <Image
-            src={heroImage}
-            alt="A student sitting on a beanbag, working on a laptop with books, coffee, and a backpack nearby"
-            priority
-            quality={90}
-            className="w-full max-w-[420px] object-contain sm:max-w-[500px] lg:max-w-full"
-            style={{ maxHeight: "520px" }}
-          />
+          <Parallax from={18} to={-18} className="w-full">
+            <Image
+              src={heroImage}
+              alt="A student sitting on a beanbag, working on a laptop with books, coffee, and a backpack nearby"
+              priority
+              quality={90}
+              className="mx-auto w-full max-w-[420px] object-contain sm:max-w-[500px] lg:max-w-full"
+              style={{ maxHeight: "520px" }}
+            />
+          </Parallax>
         </motion.div>
       </div>
     </section>
