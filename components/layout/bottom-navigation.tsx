@@ -21,7 +21,7 @@ export function BottomNavigation() {
       <div className="mx-auto grid max-w-md grid-cols-6 gap-1">
         {items.map(({ href, label, icon: Icon }) => {
           const active = pathname === href || pathname.startsWith(`${href}/`);
-          return <Link key={href} href={href} aria-current={active ? "page" : undefined} className={cn("flex min-h-14 flex-col items-center justify-center gap-1 rounded-lg text-caption outline-none transition-colors focus-visible:ring-2 focus-visible:ring-ring", active ? "text-primary" : "text-muted-foreground hover:bg-accent hover:text-foreground")}><Icon className={cn("size-5", active && "stroke-[2.25]")} /><span>{label}</span></Link>;
+          return <Link key={href} href={href} aria-current={active ? "page" : undefined} className={cn("relative flex min-h-14 flex-col items-center justify-center gap-1 rounded-lg text-caption outline-none transition-colors focus-visible:ring-2 focus-visible:ring-ring", active ? "text-primary" : "text-muted-foreground hover:bg-accent hover:text-foreground")}><Icon className={cn("size-5", active && "stroke-[2.25]")} /><span>{label}</span>{active ? <span className="absolute left-1/2 top-1 size-1 -translate-x-1/2 rounded-full bg-primary" aria-hidden="true" /> : null}</Link>;
         })}
         <button type="button" onClick={() => window.dispatchEvent(new CustomEvent("zapsters:open-search"))} className="flex min-h-14 flex-col items-center justify-center gap-1 rounded-lg text-caption text-muted-foreground outline-none transition-colors hover:bg-accent hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring" aria-label="Search Zapsters">
           <Search className="size-5" />

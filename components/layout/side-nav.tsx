@@ -4,7 +4,7 @@ import * as React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
-import { Menu, Search } from "lucide-react";
+import { Menu, Search, X } from "lucide-react";
 
 import { cn, getInitials } from "@/lib/utils";
 import { sideNavGroups } from "@/lib/navigation";
@@ -18,6 +18,7 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
+import { GestureSheet } from "@/components/motion/gesture-sheet";
 import { Skeleton } from "@/components/ui/skeleton";
 
 function NavLink({
@@ -111,33 +112,71 @@ export function MobileNav({ variant = "top" }: { variant?: "top" | "bottom" }) {
     "/profile",
   ].some((href) => pathname === href || pathname.startsWith(`${href}/`));
 
+  if (variant === "bottom") {
+    return (
+      <>
+        <Button
+          variant="ghost"
+          size="sm"
+          className={cn(
+            "relative min-h-14 w-full flex-col gap-1 rounded-lg px-1 text-caption",
+            moreActive ? "text-primary" : "text-muted-foreground",
+          )}
+          aria-label="Open more navigation"
+          aria-expanded={open}
+          aria-controls="mobile-more-sheet"
+          onClick={() => setOpen(true)}
+        >
+          <Menu className={cn("size-5", moreActive && "stroke-[2.25]")} />
+          <span>More</span>
+          {moreActive ? (
+            <span
+              className="absolute left-1/2 top-1 size-1 -translate-x-1/2 rounded-full bg-primary"
+              aria-hidden="true"
+            />
+          ) : null}
+        </Button>
+        <GestureSheet
+          open={open}
+          onOpenChange={setOpen}
+          labelledBy="mobile-more-title"
+        >
+          <div className="flex items-center justify-between px-4 pb-2 pt-3">
+            <h2
+              id="mobile-more-title"
+              className="font-display text-base font-semibold"
+            >
+              More
+            </h2>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="text-muted-foreground"
+              onClick={() => setOpen(false)}
+              aria-label="Close more menu"
+            >
+              <X className="size-4" />
+            </Button>
+          </div>
+          <div className="px-4 pb-6">
+            <NavLinks onNavigate={() => setOpen(false)} />
+          </div>
+        </GestureSheet>
+      </>
+    );
+  }
+
   return (
     <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger asChild>
-        {variant === "bottom" ? (
-          <Button
-            variant="ghost"
-            size="sm"
-            className={cn(
-              "min-h-14 w-full flex-col gap-1 rounded-lg px-1 text-caption",
-              moreActive ? "text-primary" : "text-muted-foreground",
-            )}
-            aria-label="Open more navigation"
-            aria-current={moreActive ? "page" : undefined}
-          >
-            <Menu className={cn("size-5", moreActive && "stroke-[2.25]")} />
-            <span>More</span>
-          </Button>
-        ) : (
-          <Button
-            variant="ghost"
-            size="icon"
-            className="lg:hidden"
-            aria-label="Open navigation menu"
-          >
-            <Menu />
-          </Button>
-        )}
+        <Button
+          variant="ghost"
+          size="icon"
+          className="lg:hidden"
+          aria-label="Open navigation menu"
+        >
+          <Menu />
+        </Button>
       </SheetTrigger>
       <SheetContent side="left" className="w-72 gap-0 p-0">
         <SheetTitle className="sr-only">Navigation</SheetTitle>

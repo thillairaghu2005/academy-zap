@@ -3,6 +3,7 @@
 import * as React from "react";
 import Link from "next/link";
 import { useInfiniteQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { m as motion } from "framer-motion";
 import {
   Award,
   Bell,
@@ -28,6 +29,7 @@ import { Button } from "@/components/ui/button";
 import { EmptyState } from "@/components/shared/empty-state";
 import { cn } from "@/lib/utils";
 import { formatNotificationTime } from "@/lib/format";
+import { useGestureSheet } from "@/components/motion/use-gesture-sheet";
 
 const NOTIFICATION_ICON: Record<NotificationType, React.ComponentType<{ className?: string }>> = {
   course_available: BookOpen,
@@ -119,6 +121,7 @@ export function NotificationCenter() {
   const loadMoreRef = React.useRef<HTMLDivElement>(null);
   const categoryRefs = React.useRef<Array<HTMLButtonElement | null>>([]);
   const queryClient = useQueryClient();
+  const sheet = useGestureSheet({ open, onDismiss: () => setOpen(false) });
   const notifications = useInfiniteQuery({
     queryKey: ["notifications"],
     queryFn: ({ pageParam }) => getNotifications(pageParam),
@@ -200,72 +203,95 @@ export function NotificationCenter() {
         {unreadCount ? <span className="absolute -right-1 -top-1 grid h-4 min-w-4 place-items-center rounded-full bg-primary px-1 text-[10px] font-bold leading-4 text-primary-foreground ring-2 ring-background">{unreadCount > 9 ? "9+" : unreadCount}</span> : null}
       </Button>
 
-      {open ? <dialog open
-        id="notification-panel"
-        aria-labelledby="notification-panel-title"
-         className="frosted-heavy m-0 border-border/70 p-0 absolute right-0 top-[calc(100%+0.75rem)] z-50 flex max-h-[min(640px,calc(100dvh-5rem))] w-[min(360px,calc(100vw-1rem))] flex-col overflow-hidden rounded-2xl border text-foreground shadow-[0_14px_36px_rgb(23_23_23_/_11%)] animate-notification-panel"
-      >
-        <div className="border-b border-border px-4 pb-3 pt-4">
-          <div className="flex items-center justify-between gap-3">
-            <div>
-              <h2 id="notification-panel-title" className="font-display text-base font-semibold">Notifications</h2>
-              <p className="mt-0.5 text-xs text-muted-foreground">Updates from your learning journey.</p>
-            </div>
-            {unreadCount ? <Button variant="ghost" size="sm" className="h-8 shrink-0 px-2 text-xs" onClick={() => markAllRead.mutate()} disabled={markAllRead.isPending}><Check /> Mark all as read</Button> : null}
-          </div>
-        </div>
-
-        <div className="flex gap-1 overflow-x-auto border-b border-border px-4 py-2" role="tablist" aria-label="Notification categories" aria-orientation="horizontal">
-          {CATEGORY_VALUES.map((value, index) => (
-            <button
-              key={value}
-              ref={(element) => { categoryRefs.current[index] = element; }}
-              type="button"
-              id={`notification-tab-${value}`}
-              role="tab"
-              aria-selected={category === value}
-              aria-controls="notification-panel-list"
-              tabIndex={category === value ? 0 : -1}
-              onClick={() => setCategory(value)}
-              onKeyDown={(event) => {
-                if (event.key === "ArrowRight") {
-                  event.preventDefault();
-                  moveCategory(index, "next");
-                } else if (event.key === "ArrowLeft") {
-                  event.preventDefault();
-                  moveCategory(index, "previous");
-                } else if (event.key === "Home") {
-                  event.preventDefault();
-                  moveCategory(index, "first");
-                } else if (event.key === "End") {
-                  event.preventDefault();
-                  moveCategory(index, "last");
-                }
-              }}
-               className={cn("min-h-9 shrink-0 rounded-md px-3 text-xs font-medium outline-none transition-colors focus-visible:ring-2 focus-visible:ring-ring", category === value ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:bg-accent hover:text-foreground")}
+      {open ? (
+        <motion.div
+          // eslint-disable-next-line react-hooks/refs
+          ref={sheet.ref}
+          // eslint-disable-next-line react-hooks/refs
+          style={{ y: sheet.y }}
+          className="absolute right-0 top-[calc(100%+0.75rem)] z-50"
+        >
+          <div
+            id="notification-panel"
+            aria-labelledby="notification-panel-title"
+            role="dialog"
+            aria-modal="true"
+            className="frosted-heavy flex max-h-[min(640px,calc(100dvh-5rem))] w-[min(360px,calc(100vw-1rem))] flex-col overflow-hidden rounded-2xl border border-border/70 text-foreground shadow-[0_14px_36px_rgb(23_23_23_/_11%)]"
+          >
+            <div
+              // eslint-disable-next-line react-hooks/refs
+              ref={sheet.handleRef}
+              // eslint-disable-next-line react-hooks/refs
+              {...sheet.handleProps}
+              className="shrink-0 touch-none"
             >
-              {CATEGORY_LABELS[value]}
-            </button>
-          ))}
-        </div>
+              <span
+                aria-hidden="true"
+                className="mx-auto mt-2 block h-1.5 w-9 rounded-full bg-foreground/15"
+              />
+              <div className="border-b border-border px-4 pb-3 pt-2.5">
+                <div className="flex items-center justify-between gap-3">
+                  <div>
+                    <h2 id="notification-panel-title" className="font-display text-base font-semibold">Notifications</h2>
+                    <p className="mt-0.5 text-xs text-muted-foreground">Updates from your learning journey.</p>
+                  </div>
+                  {unreadCount ? <Button variant="ghost" size="sm" className="h-8 shrink-0 px-2 text-xs" onClick={() => markAllRead.mutate()} disabled={markAllRead.isPending}><Check /> Mark all as read</Button> : null}
+                </div>
+              </div>
+            </div>
+            <div className="flex gap-1 overflow-x-auto border-b border-border px-4 py-2" role="tablist" aria-label="Notification categories" aria-orientation="horizontal">
+                {CATEGORY_VALUES.map((value, index) => (
+                  <button
+                    key={value}
+                    ref={(element) => { categoryRefs.current[index] = element; }}
+                    type="button"
+                    id={`notification-tab-${value}`}
+                    role="tab"
+                    aria-selected={category === value}
+                    aria-controls="notification-panel-list"
+                    tabIndex={category === value ? 0 : -1}
+                    onClick={() => setCategory(value)}
+                    onKeyDown={(event) => {
+                      if (event.key === "ArrowRight") {
+                        event.preventDefault();
+                        moveCategory(index, "next");
+                      } else if (event.key === "ArrowLeft") {
+                        event.preventDefault();
+                        moveCategory(index, "previous");
+                      } else if (event.key === "Home") {
+                        event.preventDefault();
+                        moveCategory(index, "first");
+                      } else if (event.key === "End") {
+                        event.preventDefault();
+                        moveCategory(index, "last");
+                      }
+                    }}
+                    className={cn("min-h-9 shrink-0 rounded-md px-3 text-xs font-medium outline-none transition-colors focus-visible:ring-2 focus-visible:ring-ring", category === value ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:bg-accent hover:text-foreground")}
+                  >
+                    {CATEGORY_LABELS[value]}
+                  </button>
+                ))}
+              </div>
 
-        <section id="notification-panel-list" aria-labelledby={`notification-tab-${category}`} tabIndex={0} className="min-h-0 flex-1 overflow-y-auto p-2 outline-none">
-          {notifications.isLoading ? (
-            <div role="status" className="flex items-center justify-center gap-2 px-3 py-12 text-sm text-muted-foreground"><LoaderCircle className="size-4 animate-spin" /> Loading notifications...</div>
-          ) : notifications.isError ? (
-            <EmptyState icon={Bell} title="Notifications unavailable" description="We could not load your notification feed." primaryAction={<Button variant="outline" size="sm" onClick={() => void notifications.refetch()}>Try again</Button>} />
-          ) : visibleNotifications.length ? (
-             <ul className="m-0 space-y-1 p-0" aria-label={`${CATEGORY_LABELS[category]} notifications`}>
-              {visibleNotifications.map((notification) => <NotificationRow key={notification.id} notification={notification} onRead={(id) => markRead.mutate(id)} onClose={() => setOpen(false)} />)}
-               <div ref={loadMoreRef} className="flex min-h-8 items-center justify-center text-xs text-muted-foreground" aria-live="polite">
-                 {notifications.isFetchingNextPage ? <><LoaderCircle className="mr-2 size-3.5 animate-spin" /> Loading more</> : notifications.hasNextPage ? "" : "All caught up"}
-               </div>
-             </ul>
-          ) : (
-            <EmptyState icon={Bell} title="No notifications" description="You are all caught up. New learning and achievement updates will appear here." primaryAction={<Button variant="outline" size="sm" asChild><Link href="/dashboard" onClick={() => setOpen(false)}>Go to dashboard</Link></Button>} />
-          )}
-        </section>
-      </dialog> : null}
+            <section id="notification-panel-list" aria-labelledby={`notification-tab-${category}`} tabIndex={0} className="min-h-0 flex-1 overflow-y-auto p-2 outline-none">
+              {notifications.isLoading ? (
+                <div role="status" className="flex items-center justify-center gap-2 px-3 py-12 text-sm text-muted-foreground"><LoaderCircle className="size-4 animate-spin" /> Loading notifications...</div>
+              ) : notifications.isError ? (
+                <EmptyState icon={Bell} title="Notifications unavailable" description="We could not load your notification feed." primaryAction={<Button variant="outline" size="sm" onClick={() => void notifications.refetch()}>Try again</Button>} />
+              ) : visibleNotifications.length ? (
+                <ul className="m-0 space-y-1 p-0" aria-label={`${CATEGORY_LABELS[category]} notifications`}>
+                  {visibleNotifications.map((notification) => <NotificationRow key={notification.id} notification={notification} onRead={(id) => markRead.mutate(id)} onClose={() => setOpen(false)} />)}
+                  <div ref={loadMoreRef} className="flex min-h-8 items-center justify-center text-xs text-muted-foreground" aria-live="polite">
+                    {notifications.isFetchingNextPage ? <><LoaderCircle className="mr-2 size-3.5 animate-spin" /> Loading more</> : notifications.hasNextPage ? "" : "All caught up"}
+                  </div>
+                </ul>
+              ) : (
+                <EmptyState icon={Bell} title="No notifications" description="You are all caught up. New learning and achievement updates will appear here." primaryAction={<Button variant="outline" size="sm" asChild><Link href="/dashboard" onClick={() => setOpen(false)}>Go to dashboard</Link></Button>} />
+              )}
+            </section>
+          </div>
+        </motion.div>
+      ) : null}
     </div>
   );
 }

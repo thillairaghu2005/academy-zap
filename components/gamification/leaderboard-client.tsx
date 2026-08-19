@@ -22,6 +22,7 @@ import { EmptyState } from "@/components/shared/empty-state";
 import { ErrorState } from "@/components/shared/error-state";
 import { PageContainer } from "@/components/shared/page-container";
 import { SkeletonLeaderboardRows } from "@/components/shared/skeletons";
+import { AnimatedNumber } from "@/components/motion/animated-number";
 import { cn } from "@/lib/utils";
 
 const PAGE_SIZE = 10;
@@ -134,7 +135,7 @@ export function LeaderboardClient() {
                 </p>
               </div>
               <span className="shrink-0 font-mono text-sm font-semibold tabular-nums">
-                {me.score.toLocaleString()}
+                <AnimatedNumber value={me.score} countUpOnMount />
               </span>
             </div>
           ) : null}
@@ -178,7 +179,7 @@ export function LeaderboardClient() {
                     </p>
                   </div>
                   <span className="shrink-0 font-mono text-sm font-semibold tabular-nums">
-                    {e.score.toLocaleString()}
+                    <AnimatedNumber value={e.score} />
                   </span>
                 </motion.div>
               );
