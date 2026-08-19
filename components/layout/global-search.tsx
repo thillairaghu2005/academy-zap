@@ -187,6 +187,11 @@ export function GlobalSearch({ className }: { className?: string }) {
             </CommandEmpty>
           )}
         </CommandList>
+        <span className="sr-only" role="status" aria-live="polite">
+          {search.data
+            ? `${search.data.hits.length} result${search.data.hits.length === 1 ? "" : "s"}`
+            : ""}
+        </span>
         <CommandSeparator />
         <div className="flex items-center justify-between bg-surface-2 px-5 py-3 text-caption text-muted-foreground">
           <span>Search across courses, problems, labs, assessments, and mentors</span>

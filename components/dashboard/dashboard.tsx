@@ -32,6 +32,7 @@ import { OnboardingDialog } from "@/components/dashboard/onboarding-dialog";
 import { Progress } from "@/components/ui/progress";
 import { ProgressPulse } from "@/components/dashboard/progress-pulse";
 import { NextMove } from "@/components/learning/next-move";
+import { AnimatedNumber } from "@/components/motion/animated-number";
 
 function SurfaceCard({ surface }: { surface: SurfaceMeta }) {
   const Icon = surface.icon;
@@ -111,7 +112,9 @@ function MomentumPanel({ userId }: { userId: string }) {
             <div className="border-l border-border pl-3">
               <div className="flex items-center gap-1.5">
                 <Flame className="size-3.5 text-warning-strong" />
-                <p className="font-display text-xl font-semibold tabular-nums">{data.streak.current_streak_days}</p>
+                <p className="font-display text-xl font-semibold tabular-nums">
+                  <AnimatedNumber value={data.streak.current_streak_days} countUpOnMount />
+                </p>
               </div>
               <p className="mt-1 text-[11px] text-muted-foreground">Day streak</p>
             </div>

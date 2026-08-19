@@ -6,6 +6,13 @@ import dynamic from "next/dynamic";
 import Link from "next/link";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
+import {
+  m as motion,
+  useReducedMotion,
+  useScroll,
+  useSpring,
+  useTransform,
+} from "framer-motion";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import rehypeSanitize from "rehype-sanitize";
@@ -65,6 +72,8 @@ import {
 } from "@/lib/demo/course-notes";
 import { CertificateDialog } from "@/components/courses/certificate-dialog";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { motionSprings } from "@/components/motion/motion-tokens";
+import { feedback } from "@/lib/feedback";
 
 // video.js is not SSR-safe — load the wrapper only on the client.
 const VideoPlayer = dynamic(
@@ -85,6 +94,36 @@ function PlayerSkeleton() {
     <div className="flex aspect-video w-full items-center justify-center rounded-lg border border-border bg-secondary/40">
       <LoaderCircle className="size-6 animate-spin text-muted-foreground" />
     </div>
+  );
+}
+
+/** Hairline reading progress along the top of the player (SKILL §8). */
+function ReadingProgress({
+  targetRef,
+}: {
+  targetRef: React.RefObject<HTMLElement | null>;
+}) {
+  const { scrollYProgress } = useScroll({
+    target: targetRef,
+    offset: ["start 72px", "end 100%"],
+  });
+  const spring = useSpring(scrollYProgress, {
+    stiffness: 130,
+    damping: 26,
+    mass: 0.8,
+  });
+  // Fade out at the very top and very bottom — it is a scroll edge, not chrome.
+  const opacity = useTransform(
+    scrollYProgress,
+    [0, 0.015, 0.985, 1],
+    [0, 1, 1, 0],
+  );
+  return (
+    <motion.div
+      aria-hidden="true"
+      className="fixed inset-x-0 top-0 z-30 h-0.5 origin-left bg-primary"
+      style={{ scaleX: spring, opacity }}
+    />
   );
 }
 
@@ -150,6 +189,8 @@ export function PlayerClient({ course }: { course: Course }) {
   const [lessonSearch, setLessonSearch] = React.useState("");
   const [certificateOpen, setCertificateOpen] = React.useState(false);
   const [explainOpen, setExplainOpen] = React.useState(false);
+  const articleRef = React.useRef<HTMLDivElement | null>(null);
+  const reducedMotion = useReducedMotion() ?? false;
 
   React.useEffect(() => {
     let cancelled = false;
@@ -269,6 +310,7 @@ export function PlayerClient({ course }: { course: Course }) {
         queryKey: ["course-progress", course.id, userId],
       });
       if (input.completed) {
+        feedback.success();
         toast.success("Lesson marked complete ⚡", { position: "top-center" });
       }
     },
@@ -340,6 +382,11 @@ export function PlayerClient({ course }: { course: Course }) {
 
   return (
     <div className="flex min-h-[calc(100vh-1rem)] flex-col bg-surface-1">
+      {/* Reading progress — only meaningful for article lessons. */}
+      {!isVideo && activeLesson ? (
+        <ReadingProgress targetRef={articleRef} />
+      ) : null}
+
       {/* Player top bar */}
       <div className="frosted chrome-edge-bottom sticky top-0 z-20 flex flex-wrap items-center gap-3 px-4 py-3 shadow-[0_4px_18px_rgb(17_24_39_/_4%)] sm:px-6">
         <Button variant="ghost" size="sm" asChild>
@@ -399,12 +446,31 @@ export function PlayerClient({ course }: { course: Course }) {
             Certificate
           </Button>
         ) : null}
-        <div className="min-w-0 flex-1">
-          <p className="truncate text-sm font-medium">{course.title}</p>
-          <p className="truncate text-xs text-muted-foreground">
-            {activeLesson?.title ?? "Select a lesson"}
-          </p>
-        </div>
+        <nav aria-label="Breadcrumb" className="min-w-0 flex-1">
+          <ol className="flex items-center gap-1.5 overflow-hidden text-xs text-muted-foreground">
+            <li>
+              <Link href="/dashboard" className="shrink-0 hover:text-foreground">
+                Dashboard
+              </Link>
+            </li>
+            <li aria-hidden="true" className="shrink-0">›</li>
+            <li>
+              <Link
+                href={`/courses/${course.id}`}
+                className="truncate hover:text-foreground"
+              >
+                {course.title}
+              </Link>
+            </li>
+            <li aria-hidden="true" className="shrink-0">›</li>
+            <li
+              aria-current="page"
+              className="truncate font-medium text-foreground"
+            >
+              {activeLesson?.title ?? "Select a lesson"}
+            </li>
+          </ol>
+        </nav>
         {enrollment ? (
           <div className="flex w-full items-center gap-2 sm:w-auto">
             <Progress
@@ -420,7 +486,7 @@ export function PlayerClient({ course }: { course: Course }) {
 
       <div className="flex flex-1 flex-col lg:flex-row">
         {/* Player / article main column */}
-        <div className="flex-1 p-4 sm:p-8 lg:p-10">
+        <div ref={articleRef} className="flex-1 p-4 sm:p-8 lg:p-10">
           <CertificateDialog
             open={certificateOpen}
             onOpenChange={setCertificateOpen}
@@ -668,14 +734,22 @@ export function PlayerClient({ course }: { course: Course }) {
                             setSpeed(1);
                           }}
                           className={cn(
-                            "flex w-full items-center gap-2.5 rounded-md px-2.5 py-2 text-left text-xs transition-colors",
+                            "relative flex w-full items-center gap-2.5 rounded-md px-2.5 py-2 text-left text-xs transition-colors",
                             lesson.id === activeLesson?.id
-                              ? "bg-primary/10 text-primary"
+                              ? "text-primary"
                               : "text-muted-foreground hover:bg-accent/60 hover:text-foreground",
                           )}
                         >
-                          <PlayCircle className="size-4 shrink-0" />
-                          <span className="min-w-0 flex-1 truncate">
+                          {lesson.id === activeLesson?.id && !reducedMotion ? (
+                            <motion.span
+                              layoutId="active-lesson-pill"
+                              transition={motionSprings.default}
+                              className="absolute inset-0 rounded-md bg-primary/10"
+                              aria-hidden="true"
+                            />
+                          ) : null}
+                          <PlayCircle className="relative size-4 shrink-0" />
+                          <span className="relative min-w-0 flex-1 truncate">
                             {lesson.title}
                           </span>
                         </button>
@@ -734,15 +808,23 @@ export function PlayerClient({ course }: { course: Course }) {
                             setSpeed(1);
                           }}
                           className={cn(
-                            "flex w-full items-center gap-2.5 rounded-md px-2.5 py-2 text-left text-xs transition-colors",
+                            "relative flex w-full items-center gap-2.5 rounded-md px-2.5 py-2 text-left text-xs transition-colors",
                             active
-                              ? "bg-primary/10 text-primary"
+                              ? "text-primary"
                               : "text-muted-foreground hover:bg-accent/60 hover:text-foreground",
                           )}
                         >
+                          {active && !reducedMotion ? (
+                            <motion.span
+                              layoutId="active-lesson-pill"
+                              transition={motionSprings.default}
+                              className="absolute inset-0 rounded-md bg-primary/10"
+                              aria-hidden="true"
+                            />
+                          ) : null}
                           <span
                             className={cn(
-                              "grid size-5 shrink-0 place-items-center rounded-full border text-caption font-medium",
+                              "relative grid size-5 shrink-0 place-items-center rounded-full border text-caption font-medium",
                               done
                                 ? "border-transparent bg-success/15 text-success-strong"
                                 : active
@@ -756,10 +838,10 @@ export function PlayerClient({ course }: { course: Course }) {
                               i + 1
                             )}
                           </span>
-                          <span className="min-w-0 flex-1 truncate">
+                          <span className="relative min-w-0 flex-1 truncate">
                             {lesson.title}
                           </span>
-                          <span className="flex shrink-0 items-center gap-1 text-caption text-muted-foreground">
+                          <span className="relative flex shrink-0 items-center gap-1 text-caption text-muted-foreground">
                             {lesson.kind === "article" ? (
                               <FileText className="size-3" />
                             ) : (

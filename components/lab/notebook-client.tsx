@@ -40,6 +40,7 @@ import { PageContainer } from "@/components/shared/page-container";
 import { EmptyState } from "@/components/shared/empty-state";
 import { ErrorState } from "@/components/shared/error-state";
 import { SkeletonLines } from "@/components/shared/skeletons";
+import { feedback } from "@/lib/feedback";
 import { cn } from "@/lib/utils";
 
 /* ------------------------------------------------------------------ */
@@ -290,6 +291,26 @@ export function NotebookClient({
   ).length;
   const allSucceeded = codeCells.length > 0 && succeededCount === codeCells.length;
   const anyRunning = codeCells.some((cell) => isRunning(progress?.outputs[cell.id]));
+
+  // Multimodal feedback on cell results — fires once per transition, on the
+  // same frame the visual lands (SKILL §13). Never fires on first load.
+  const prevOutputs = React.useRef<Record<string, { status?: CellExecutionState["status"] }> | null>(null);
+  React.useEffect(() => {
+    const outputs = progress?.outputs;
+    if (!outputs) return;
+    const prev = prevOutputs.current;
+    if (prev) {
+      for (const [cellId, output] of Object.entries(outputs)) {
+        if (!output) continue;
+        const prevStatus = prev[cellId]?.status;
+        if (prevStatus !== output.status) {
+          if (output.status === "succeeded") feedback.success();
+          else if (output.status === "failed" || output.status === "error") feedback.error();
+        }
+      }
+    }
+    prevOutputs.current = outputs;
+  }, [progress?.outputs]);
 
   /* ---------- Sign-in gate ---------- */
   if (!user) {

@@ -37,6 +37,7 @@ import { SkeletonLines } from "@/components/shared/skeletons";
 import { ShareCardModal } from "@/components/gamification/share-card-modal";
 import { SeasonPassCard } from "@/components/gamification/season-pass-card";
 import { LedgerViewer } from "@/components/gamification/ledger-viewer";
+import { AnimatedNumber } from "@/components/motion/animated-number";
 import { cn } from "@/lib/utils";
 
 /* ------------------------------------------------------------------ */
@@ -346,7 +347,7 @@ function DualXpTracks({
           <BookOpen className="size-3.5" /> Completion XP
         </span>
         <span className="font-mono text-muted-foreground">
-          {completion.toLocaleString()} · {cPct.toFixed(0)}%
+          <AnimatedNumber value={completion} countUpOnMount /> · {cPct.toFixed(0)}%
         </span>
       </div>
       <div className="h-2 overflow-hidden rounded-full bg-primary-light">
@@ -363,7 +364,7 @@ function DualXpTracks({
           <Sparkles className="size-3.5" /> Mastery XP
         </span>
         <span className="font-mono text-muted-foreground">
-          {mastery.toLocaleString()} · {mPct.toFixed(0)}%
+          <AnimatedNumber value={mastery} countUpOnMount /> · {mPct.toFixed(0)}%
         </span>
       </div>
       <div className="h-2 overflow-hidden rounded-full bg-xp-mastery/15">
@@ -455,7 +456,7 @@ function StreakWidget({
               animate={{ scale: 1, opacity: 1 }}
               className="font-display text-h2"
             >
-              {streak.current_streak_days}
+              <AnimatedNumber value={streak.current_streak_days} />
             </motion.span>
             <span className="pb-0.5 text-xs text-muted-foreground">
               days · best {streak.longest_streak_days}
@@ -525,7 +526,7 @@ function LeagueWidget({
               {league.league_tier}
             </Badge>
             <span className="font-mono text-xs text-muted-foreground">
-              #{league.rank_in_league} · {league.xp_this_season.toLocaleString()} XP
+              #{league.rank_in_league} · <AnimatedNumber value={league.xp_this_season} /> XP
             </span>
           </div>
           <div className="mt-3 flex flex-wrap gap-2 text-caption">
@@ -567,7 +568,7 @@ function GuildWidget({ guild }: { guild: { guild_id: string; member_count: numbe
         <>
           <p className="mt-3 text-xs text-muted-foreground">
             {guild.member_count} members ·{" "}
-            {guild.combined_xp_this_week.toLocaleString()} XP this week
+            <AnimatedNumber value={guild.combined_xp_this_week} /> XP this week
           </p>
           <div className="mt-2 inline-flex items-center gap-1.5 rounded-md bg-primary-light px-2 py-1 text-caption font-medium text-primary">
             <Trophy className="size-3" /> Global rank #{guild.guild_rank_global}

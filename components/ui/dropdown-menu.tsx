@@ -86,7 +86,7 @@ function DropdownMenuSubContent({
     <DropdownMenuPrimitive.SubContent
       data-slot="dropdown-menu-sub-content"
         className={cn(
-          "z-50 min-w-32 overflow-hidden rounded-md border border-border bg-background/80 p-1 text-popover-foreground shadow-lg [animation-timing-function:var(--ease-spring)] data-[state=open]:animate-materialize data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95",
+          "z-50 min-w-32 overflow-hidden rounded-md border border-border bg-background/80 p-1 text-popover-foreground shadow-lg [animation-timing-function:var(--ease-spring)] data-[side=bottom]:data-[align=start]:origin-top-left data-[side=bottom]:data-[align=center]:origin-top data-[side=bottom]:data-[align=end]:origin-top-right data-[side=top]:data-[align=start]:origin-bottom-left data-[side=top]:data-[align=center]:origin-bottom data-[side=top]:data-[align=end]:origin-bottom-right data-[side=left]:origin-right data-[side=right]:origin-left data-[state=open]:animate-materialize data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95",
           className,
         )}
       {...props}
@@ -105,7 +105,7 @@ function DropdownMenuContent({
         data-slot="dropdown-menu-content"
         sideOffset={sideOffset}
         className={cn(
-          "z-50 min-w-44 overflow-hidden rounded-xl border border-border bg-background/80 p-1 text-popover-foreground shadow-[0_14px_35px_rgb(23_23_23_/_12%)] [animation-timing-function:var(--ease-spring)] data-[state=open]:animate-materialize data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95",
+          "z-50 min-w-44 overflow-hidden rounded-xl border border-border bg-background/80 p-1 text-popover-foreground shadow-[0_14px_35px_rgb(23_23_23_/_12%)] [animation-timing-function:var(--ease-spring)] data-[side=bottom]:data-[align=start]:origin-top-left data-[side=bottom]:data-[align=center]:origin-top data-[side=bottom]:data-[align=end]:origin-top-right data-[side=top]:data-[align=start]:origin-bottom-left data-[side=top]:data-[align=center]:origin-bottom data-[side=top]:data-[align=end]:origin-bottom-right data-[side=left]:origin-right data-[side=right]:origin-left data-[state=open]:animate-materialize data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95",
           className,
         )}
         {...props}
