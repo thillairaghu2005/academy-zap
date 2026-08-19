@@ -57,11 +57,11 @@ const DIFFICULTY_STYLES: Record<
 > = {
   beginner: {
     label: "Beginner",
-    className: "border-emerald-500/40 bg-emerald-500/10 text-emerald-700",
+    className: "border-success/40 bg-success/10 text-success-strong",
   },
   intermediate: {
     label: "Intermediate",
-    className: "border-amber-500/40 bg-amber-500/10 text-amber-700",
+    className: "border-warning/40 bg-warning/10 text-warning-strong",
   },
   advanced: {
     label: "Advanced",
@@ -188,7 +188,7 @@ export function LabDetailClient({
         <div className="flex flex-col gap-6">
           <div>
             <div className="flex flex-wrap items-center gap-2">
-              <span className="text-xs font-medium uppercase tracking-wide text-emerald-700">
+              <span className="text-xs font-medium uppercase tracking-wide text-success-strong">
                 {lab.category}
               </span>
               <span
@@ -319,7 +319,7 @@ export function LabDetailClient({
           <Card className="flex flex-col gap-4 p-5">
             <div className="flex items-center justify-between">
               <span className="text-sm font-semibold">Start the lab</span>
-              <ShieldCheck className="size-4 text-emerald-700" />
+              <ShieldCheck className="size-4 text-success-strong" />
             </div>
             <p className="text-xs leading-relaxed text-muted-foreground">
               A dedicated sandbox is provisioned on a session-private network.
@@ -327,15 +327,15 @@ export function LabDetailClient({
             </p>
             <ul className="flex flex-col gap-1.5 text-xs text-muted-foreground">
               <li className="flex items-center gap-1.5">
-                <CheckCircle2 className="size-3.5 text-emerald-700" />
+                <CheckCircle2 className="size-3.5 text-success-strong" />
                 Isolated microVM — no internet egress
               </li>
               <li className="flex items-center gap-1.5">
-                <CheckCircle2 className="size-3.5 text-emerald-700" />
+                <CheckCircle2 className="size-3.5 text-success-strong" />
                 Objectives verified by the demo service
               </li>
               <li className="flex items-center gap-1.5">
-                <CheckCircle2 className="size-3.5 text-emerald-700" />
+                <CheckCircle2 className="size-3.5 text-success-strong" />
                 Hints tracked ({lab.hard_timeout_minutes} min hard stop)
               </li>
             </ul>
@@ -406,14 +406,14 @@ export function LabDetailClient({
                 className="flex flex-col gap-2 rounded-lg border border-border bg-muted/40 p-3"
               >
                 <div className="flex items-center gap-2 text-xs">
-                  <LoaderCircle className="size-3.5 animate-spin text-emerald-700" />
+                  <LoaderCircle className="size-3.5 animate-spin text-success-strong" />
                   <span className="font-medium">Spinning up sandbox…</span>
                 </div>
                 <div className="flex h-1 w-full gap-0.5 overflow-hidden">
                   {Array.from({ length: 6 }).map((_, i) => (
                     <motion.span
                       key={i}
-                      className="h-full flex-1 rounded-full bg-emerald-500/70"
+                      className="h-full flex-1 rounded-full bg-success/70"
                       animate={{ opacity: [0.2, 1, 0.2] }}
                       transition={{
                         duration: 1,

@@ -47,7 +47,7 @@ export function MarketingNav() {
   return (
     <header
       className={cn(
-        "sticky top-0 z-40 border-b border-border bg-white px-3 py-3 transition-all duration-200 motion-reduce:transition-none sm:px-5",
+        "frosted chrome-edge-bottom sticky top-0 z-40 px-3 py-3 transition-shadow duration-200 motion-reduce:transition-none sm:px-5",
         scrolled && "shadow-[0_4px_16px_rgb(23_23_23_/_5%)]",
       )}
     >
@@ -116,10 +116,10 @@ export function MarketingNav() {
                key={link.href}
                href={link.href}
                aria-current={pathname === link.href || pathname.startsWith(`${link.href}/`) ? "page" : undefined}
-               className={cn(
-                   "relative rounded-lg px-3 py-2 text-sm font-medium outline-none transition-colors hover:bg-secondary hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring",
-                 pathname === link.href || pathname.startsWith(`${link.href}/`) ? "text-foreground after:absolute after:inset-x-3 after:-bottom-1 after:h-0.5 after:rounded-full after:bg-primary" : "text-muted-foreground",
-               )}
+                className={cn(
+                    "on-glass relative rounded-lg px-3 py-2 text-sm font-medium outline-none transition-colors hover:bg-secondary hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring",
+                  pathname === link.href || pathname.startsWith(`${link.href}/`) ? "text-foreground after:absolute after:inset-x-3 after:-bottom-1 after:h-0.5 after:rounded-full after:bg-primary" : "text-muted-foreground",
+                )}
              >
                {link.label}
              </Link>

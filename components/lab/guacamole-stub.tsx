@@ -34,7 +34,7 @@ export function GuacamoleStub({ sessionId }: { sessionId: string }) {
       {/* Connection bar */}
       <div className="flex items-center justify-between border-b border-white/5 bg-zinc-900 px-3 py-1.5 text-caption text-muted-foreground">
         <span className="flex items-center gap-1.5">
-          <Signal className="size-3 text-emerald-700" />
+          <Signal className="size-3 text-success-on-dark" />
           guacamole · rdp-over-ws
         </span>
         <span className="flex items-center gap-1.5 font-mono">
@@ -49,7 +49,7 @@ export function GuacamoleStub({ sessionId }: { sessionId: string }) {
             animate={{ scale: [1, 1.08, 1] }}
             transition={{ duration: 1.4, repeat: Infinity }}
           >
-            <Monitor className="size-10 text-emerald-700/80" />
+            <Monitor className="size-10 text-success-on-dark/80" />
           </motion.div>
           <div className="flex items-center gap-2 text-sm text-muted-foreground">
             <span className="size-2 rounded-full bg-emerald-400" />
@@ -66,11 +66,11 @@ export function GuacamoleStub({ sessionId }: { sessionId: string }) {
             {/* Taskbar */}
             <div className="flex items-center gap-2 border-b border-white/5 bg-zinc-900 px-3 py-1.5">
               <span className="flex items-center gap-1.5 text-caption text-foreground/80">
-                <Cpu className="size-3.5 text-emerald-700" />
+                <Cpu className="size-3.5 text-success-on-dark" />
                 Blue Team Console
               </span>
               <span className="ml-auto flex items-center gap-1 text-caption text-muted-foreground">
-                <Wifi className="size-3 text-emerald-700/70" />
+                <Wifi className="size-3 text-success-on-dark/70" />
                 session-private net
               </span>
             </div>
@@ -88,8 +88,8 @@ export function GuacamoleStub({ sessionId }: { sessionId: string }) {
               <div className="grid flex-1 grid-cols-2 gap-2">
                 {[
                     { label: "Auth failures", value: "1,204", tone: "text-primary" },
-                  { label: "Egress attempts", value: "37", tone: "text-amber-700" },
-                  { label: "Active sessions", value: "12", tone: "text-emerald-700" },
+                  { label: "Egress attempts", value: "37", tone: "text-warning-on-dark" },
+                  { label: "Active sessions", value: "12", tone: "text-success-on-dark" },
                     { label: "Flagged hosts", value: "2", tone: "text-primary" },
                 ].map((s) => (
                   <div

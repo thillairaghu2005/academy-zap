@@ -80,12 +80,12 @@ export function LedgerViewer({
               className={cn(
                 "flex items-start gap-3 rounded-xl border p-4",
                 data.chain.valid
-                  ? "border-emerald-500/30 bg-emerald-500/5"
+                  ? "border-success/30 bg-success/5"
                   : "border-primary-border bg-primary-light",
               )}
             >
               {data.chain.valid ? (
-                <CheckCircle2 className="mt-0.5 size-5 shrink-0 text-emerald-700" />
+                <CheckCircle2 className="mt-0.5 size-5 shrink-0 text-success-strong" />
               ) : (
                 <TriangleAlert className="mt-0.5 size-5 shrink-0 text-primary" />
               )}
@@ -94,7 +94,7 @@ export function LedgerViewer({
                   className={cn(
                     "font-display text-small font-semibold",
                     data.chain.valid
-                      ? "text-emerald-700"
+                      ? "text-success-strong"
                       : "text-primary",
                   )}
                 >
@@ -146,7 +146,7 @@ export function LedgerViewer({
 
             <div className="mt-3 flex items-center justify-between">
               <p className="flex items-center gap-1.5 text-caption text-muted-foreground">
-                <ShieldCheck className="size-3.5 text-emerald-700" />
+                <ShieldCheck className="size-3.5 text-success-strong" />
                 Append-only — nothing is ever mutated or deleted
               </p>
               <Button variant="outline" size="sm" onClick={() => onOpenChange(false)}>
@@ -167,13 +167,13 @@ export function LedgerViewer({
 const XP_TYPE_STYLE: Record<string, string> = {
   completion: "border-primary-border bg-primary-light text-primary",
   mastery: "border-primary-border bg-primary-muted text-primary",
-  bonus: "border-emerald-500/40 bg-emerald-500/10 text-emerald-700",
+  bonus: "border-success/40 bg-success/10 text-success-strong",
   adjustment: "border-primary-border bg-primary-light text-primary",
 };
 
 const INTEGRITY_STYLE: Record<string, string> = {
-  verified: "text-emerald-700",
-  flagged: "text-amber-700",
+  verified: "text-success-strong",
+  flagged: "text-warning-strong",
   reversed: "text-primary",
 };
 
@@ -199,7 +199,7 @@ function LedgerEntriesTable({ entries }: { entries: LedgerAuditView["entries"] }
             className={cn(
               "align-top",
                 e.integrity_status === "reversed" && "bg-primary-muted",
-              e.integrity_status === "flagged" && "bg-amber-500/5",
+              e.integrity_status === "flagged" && "bg-warning/5",
             )}
           >
             <td className="whitespace-nowrap px-3 py-2 font-mono text-muted-foreground">
@@ -221,7 +221,7 @@ function LedgerEntriesTable({ entries }: { entries: LedgerAuditView["entries"] }
             <td
               className={cn(
                 "whitespace-nowrap px-3 py-2 font-mono font-semibold tabular-nums",
-                  e.xp_delta < 0 ? "text-primary" : "text-emerald-700",
+                  e.xp_delta < 0 ? "text-primary" : "text-success-strong",
               )}
             >
               {e.xp_delta > 0 ? "+" : ""}
@@ -246,7 +246,7 @@ function LedgerEntriesTable({ entries }: { entries: LedgerAuditView["entries"] }
             </td>
             <td className="px-3 py-2">
               <div className="font-mono text-[9px] text-muted-foreground">
-                <p className="truncate text-emerald-700/70" title={e.prev_hash}>
+                <p className="truncate text-success-strong/70" title={e.prev_hash}>
                   prev {e.prev_hash.slice(0, 8)}…
                 </p>
                 <p className="truncate" title={e.entry_hash}>

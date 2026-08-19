@@ -98,7 +98,7 @@ function MomentumPanel({ userId }: { userId: string }) {
       ) : data ? (
         <>
           {data.freeze_status === "frozen_pending_review" ? (
-            <p className="mt-3 flex items-center gap-1.5 rounded-lg border border-amber-500/40 bg-amber-500/10 px-2.5 py-1.5 text-[11px] font-medium text-amber-700">
+            <p className="mt-3 flex items-center gap-1.5 rounded-lg border border-warning/40 bg-warning/10 px-2.5 py-1.5 text-[11px] font-medium text-warning-strong">
               <ShieldAlert className="size-3.5 shrink-0" />
               Progress frozen pending review
             </p>

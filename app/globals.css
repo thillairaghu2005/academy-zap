@@ -7,96 +7,144 @@
 
 /* ------------------------------------------------------------------ */
 /* Zapsters design system: semantic tokens shared by every surface.    */
-/* Light is the only product theme in this pass. */
+/*                                                                     */
+/* All colors are perceptual OKLCH, not hex. RGB mixes crimson toward  */
+/* orange/muddy midtones; OKLCH keeps hues on-track so hover steps,    */
+/* dark-mode, and gradients interpolate evenly.                        */
+/*                                                                     */
+/* Light is the only product theme in this pass — tokens are written   */
+/* OKLCH so a future dark theme interpolates cleanly (item A1).        */
 /* ------------------------------------------------------------------ */
 
 @theme {
-  /* Light theme tokens */
-  --color-background: #ffffff;
-   --color-foreground: #18181b;
-  --color-card: #ffffff;
-   --color-card-foreground: #18181b;
-  --color-popover: #ffffff;
-   --color-popover-foreground: #18181b;
-   --color-muted: #fafafa;
-   --color-muted-foreground: #667085;
-  --color-secondary: #fafafa;
-   --color-secondary-foreground: #344054;
-   --color-accent: #fafafa;
-   --color-accent-foreground: #18181b;
-   --color-border: #e5e7eb;
-   --color-border-strong: #d0d5dd;
-   --color-input: #d0d5dd;
-   --color-ring: #b4233c;
-  --color-surface-1: #ffffff;
-  --color-surface-2: #fafafa;
-   --color-surface-3: #f9fafb;
+  /* ------------------------------------------------------------ */
+  /* Surfaces (3-step elevation). AA for small text verified on   */
+  /* every surface: muted-foreground = 4.98:1 on white, 4.77:1 on */
+  /* surface-2, 4.76:1 on surface-3.                              */
+  /* ------------------------------------------------------------ */
+  --color-background: oklch(1 0 0);
+  --color-surface-1: oklch(1 0 0);
+  --color-surface-2: oklch(0.985 0.002 250); /* #fafafa */
+  --color-surface-3: oklch(0.982 0.002 250); /* #f9fafb */
+  --color-card: oklch(1 0 0);
+  --color-popover: oklch(1 0 0);
+  --color-muted: oklch(0.985 0.002 250);
+  --color-secondary: oklch(0.985 0.002 250);
+  --color-accent: oklch(0.985 0.002 250);
 
-  /* Brand / action */
-   --color-primary: #b4233c;
-   --color-primary-deep: #6b1224;
-   --color-primary-glow: #b4233c;
-   --color-primary-hover: #941b31;
-   --color-primary-active: #7f172a;
-   --color-primary-light: #fdf0f2;
-   --color-primary-muted: #fff5f6;
-   --color-card-tint: #fff8f8;
-   --color-primary-border: #f3c7ce;
-   --color-secondary-accent: #9f1d35;
-  --color-primary-foreground: #ffffff;
-   --color-destructive: #b4233c;
-  --color-destructive-foreground: #ffffff;
+  /* ------------------------------------------------------------ */
+  /* Text tiers — three explicit levels, verified WCAG AA.        */
+  /*   1. foreground            ~16:1  primary text               */
+  /*   2. secondary-foreground  7.2:1 secondary text              */
+  /*   3. muted-foreground      4.98:1 tertiary / small text      */
+  /* muted-foreground no longer overlaps secondary-foreground.    */
+  /* ------------------------------------------------------------ */
+  --color-foreground: oklch(0.205 0.006 286);
+  --color-foreground-secondary: oklch(0.37 0.012 286);
+  --color-foreground-muted: oklch(0.544 0.035 265);
+  --color-card-foreground: var(--color-foreground);
+  --color-popover-foreground: var(--color-foreground);
+  --color-secondary-foreground: var(--color-foreground-secondary);
+  --color-muted-foreground: var(--color-foreground-muted);
+  --color-accent-foreground: var(--color-foreground);
 
-  /* Semantic status (shared across surfaces) */
-   --color-success: #15803d;
-  --color-warning: #b7791f;
-   --color-danger: #b4233c;
-   --color-info: #b4233c;
+  /* Hairlines & focus */
+  --color-border: oklch(0.928 0.006 264);
+  --color-border-strong: oklch(0.872 0.012 260);
+  --color-input: oklch(0.872 0.012 260);
+  /* Luminance-independent neutral focus ring (WCAG 2.4.11): no hue,
+     ≥3:1 on every light surface; the white gap in :focus-visible keeps
+     it visible even on colored buttons. */
+  --color-ring: oklch(0.3 0.02 286);
 
-  /* Status TEXT shades — the palette tones above are for fills/icons;
-     small text on white needs the darker -700 step to hold WCAG AA
-     (e.g. #16a34a text is only 3.3:1 on white, #15803d is 4.9:1). */
-   --color-success-strong: #15803d;
-  --color-warning-strong: #b7791f;
-   --color-danger-strong: #b4233c;
-   --color-info-strong: #9f1d35;
+  /* ------------------------------------------------------------ */
+  /* Brand / action — hover/active derived perceptually from the  */
+  /* base with one consistent OKLCH lightness step (ΔL = 0.05).   */
+  /* ------------------------------------------------------------ */
+  --color-primary: oklch(0.505 0.179 18);      /* base */
+  --color-primary-hover: oklch(0.455 0.179 18); /* base − 0.05 L */
+  --color-primary-active: oklch(0.405 0.179 18); /* base − 0.10 L */
+  --color-primary-deep: oklch(0.348 0.121 16);
+  --color-primary-glow: oklch(0.505 0.179 18);
+  --color-primary-light: oklch(0.966 0.014 7);
+  --color-primary-muted: oklch(0.978 0.011 10);
+  --color-card-tint: oklch(0.985 0.007 17);
+  --color-primary-border: oklch(0.87 0.051 7);
+  --color-secondary-accent: oklch(0.46 0.164 17);
+  --color-primary-foreground: oklch(1 0 0);
 
-  /* Readable status text on dark surfaces; literals above remain locked. */
-  --color-success-on-dark: #4ade80;
-  --color-warning-on-dark: #fbbf24;
-  --color-danger-on-dark: #f87171;
-  --color-info-on-dark: #fb7185;
+  --color-destructive: oklch(0.505 0.179 18);
+  --color-destructive-hover: oklch(0.455 0.179 18);
+  --color-destructive-active: oklch(0.405 0.179 18);
+  --color-destructive-foreground: oklch(1 0 0);
 
-  /* Dual XP tracks — NEVER blended (gamification §5.2) */
-   --color-xp-completion: #b4233c;
-   --color-xp-mastery: #941b31;
+  /* ------------------------------------------------------------ */
+  /* Feedback colors — the four kinds (item D21):                 */
+  /*   status    → info   (cool, so "information" ≠ "error")      */
+  /*   completion→ success                                        */
+  /*   warning   → warning                                        */
+  /*   error     → danger                                         */
+  /* Lightness/saturation spread so meaning never relies on hue   */
+  /* alone (item A4): success .527 / warning .600 / danger .505 / */
+  /* info .546.                                                   */
+  /* ------------------------------------------------------------ */
+  --color-success: oklch(0.527 0.137 150);
+  --color-warning: oklch(0.6 0.12 72);
+  --color-danger: oklch(0.505 0.179 18);
+  /* info is a cool blue — decoupled from the brand/danger red. */
+  --color-info: oklch(0.546 0.215 263);
+
+  /* Text shades — small text on white needs the darker -strong step. */
+  --color-success-strong: oklch(0.527 0.137 150); /* 4.9:1 on white */
+  --color-warning-strong: oklch(0.52 0.12 70);    /* ~5:1  on white */
+  --color-danger-strong: oklch(0.46 0.164 17);    /* ~6:1  on white */
+  --color-info-strong: oklch(0.488 0.217 264);    /* 7.3:1 on white */
+
+  /* Readable status text on dark surfaces */
+  --color-success-on-dark: oklch(0.8 0.182 152);
+  --color-warning-on-dark: oklch(0.837 0.164 84);
+  --color-danger-on-dark: oklch(0.711 0.166 22);
+  --color-info-on-dark: oklch(0.78 0.13 250);
+
+  /* ------------------------------------------------------------ */
+  /* Dual XP tracks — NEVER blended (gamification §5.2).           */
+  /* Colorblind-safe: completion is crimson, mastery is violet —   */
+  /* separated by hue AND lightness (.505 vs .541) AND saturation  */
+  /* (.179 vs .247), plus a stripe pattern channel on mastery.     */
+  /* ------------------------------------------------------------ */
+  --color-xp-completion: oklch(0.505 0.179 18);
+  --color-xp-mastery: oklch(0.541 0.247 293);
 
   /* Verdict literals — F2 Judge Engine (platform §4.3, verbatim) */
-   --color-verdict-accepted: #15803d;
-   --color-verdict-wrong-answer: #b4233c;
-  --color-verdict-time-limit-exceeded: #b7791f;
-   --color-verdict-runtime-error: #b4233c;
-   --color-verdict-compile-error: #667085;
+  --color-verdict-accepted: oklch(0.527 0.137 150);
+  --color-verdict-wrong-answer: oklch(0.505 0.179 18);
+  --color-verdict-time-limit-exceeded: oklch(0.6 0.12 72);
+  --color-verdict-runtime-error: oklch(0.505 0.179 18);
+  --color-verdict-compile-error: oklch(0.551 0.023 264);
 
-  /* League tiers — F5 (gamification §5.3, verbatim) */
-  --color-tier-bronze: #b45309;
-  --color-tier-silver: #64748b;
-  --color-tier-gold: #ca8a04;
-   --color-tier-platinum: #b4233c;
-   --color-tier-obsidian: #6b1224;
+  /* ------------------------------------------------------------ */
+  /* League tiers — F5 (gamification §5.3, verbatim). L/S spread  */
+  /* so bronze→gold→platinum→obsidian read by lightness too.      */
+  /* Warning amber (.600 L) vs gold (.740 L) are clearly apart.   */
+  /* ------------------------------------------------------------ */
+  --color-tier-bronze: oklch(0.555 0.146 49);
+  --color-tier-silver: oklch(0.554 0.041 257);
+  --color-tier-gold: oklch(0.74 0.16 90);
+  --color-tier-platinum: oklch(0.7 0.11 210);
+  --color-tier-obsidian: oklch(0.3 0.03 260);
 
   /* Ledger integrity statuses — F5 (gamification §5.3, verbatim) */
-  --color-status-verified: #16a34a;
-  --color-status-flagged: #d97706;
-   --color-status-reversed: #b4233c;
-   --color-status-revoked: #b4233c;
+  --color-status-verified: oklch(0.627 0.17 149);
+  --color-status-flagged: oklch(0.666 0.157 58);
+  --color-status-reversed: oklch(0.505 0.179 18);
+  --color-status-revoked: oklch(0.46 0.164 17);
 
   /* Radius scale */
   --radius-sm: 0.375rem;
   --radius-md: 0.625rem;
   --radius-lg: 0.75rem;
   --radius-xl: 1rem;
-   --radius-2xl: 1rem;
+  --radius-2xl: 1rem;
 
   /* Motion tokens */
   --duration-fast: 160ms;
@@ -105,6 +153,51 @@
   --duration-cinematic: 1100ms;
   --ease-zap-out: cubic-bezier(0.22, 1, 0.36, 1);
   --ease-zap-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  /* Spring-like house easing: critically damped (no overshoot),
+     used for sheets/dialogs/menus; bounce is reserved for
+     momentum gestures only (SKILL §3–4). */
+  --ease-spring: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-spring-momentum: cubic-bezier(0.34, 1.56, 0.64, 1);
+
+  /* Enter/exit keyframes */
+  --animate-materialize: materialize 0.32s var(--ease-spring) both;
+  --animate-fade-up: fade-up 0.6s var(--ease-zap-out) both;
+  --animate-notification-panel: notification-panel 0.24s var(--ease-zap-out) both;
+
+  @keyframes materialize {
+    from {
+      opacity: 0;
+      transform: scale(0.96);
+      -webkit-backdrop-filter: blur(0px) saturate(100%);
+      backdrop-filter: blur(0px) saturate(100%);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+      -webkit-backdrop-filter: blur(20px) saturate(180%);
+      backdrop-filter: blur(20px) saturate(180%);
+    }
+  }
+  @keyframes fade-up {
+    from {
+      opacity: 0;
+      transform: translateY(12px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  @keyframes notification-panel {
+    from {
+      opacity: 0;
+      transform: translateY(-6px) scale(0.98);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+  }
   @keyframes accordion-up {
     from {
       height: var(--radix-accordion-content-height);
@@ -115,7 +208,97 @@
   }
 }
 
+/* ------------------------------------------------------------------ */
+/* Translucent materials (SKILL §12). Material weight encodes         */
+/* hierarchy: heavier for structural rails, lighter for chips.        */
+/* Never stack two light translucents — apply frosted to one layer.   */
+/* ------------------------------------------------------------------ */
 
+@utility frosted {
+  background: color-mix(in oklab, var(--color-background) 78%, transparent);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  backdrop-filter: blur(20px) saturate(180%);
+}
+
+@utility frosted-heavy {
+  background: color-mix(in oklab, var(--color-background) 88%, transparent);
+  -webkit-backdrop-filter: blur(32px) saturate(180%);
+  backdrop-filter: blur(32px) saturate(180%);
+}
+
+@utility frosted-light {
+  background: color-mix(in oklab, var(--color-background) 62%, transparent);
+  -webkit-backdrop-filter: blur(12px) saturate(160%);
+  backdrop-filter: blur(12px) saturate(160%);
+}
+
+/* Vibrancy on glass (SKILL §12): heavier weight + a small
+   letter-spacing bump instead of flat gray over frosted surfaces. */
+@utility on-glass {
+  font-weight: 500;
+  letter-spacing: 0.01em;
+}
+
+/* Themed decorative layers — recolored via color-mix so they hold up
+   in dark mode and honor prefers-reduced-transparency / data-reduce-data. */
+@utility aurora {
+  background-image:
+    radial-gradient(60% 60% at 15% 20%, color-mix(in oklab, var(--color-primary-glow) 20%, transparent), transparent 70%),
+    radial-gradient(50% 50% at 85% 15%, color-mix(in oklab, var(--color-info) 14%, transparent), transparent 70%),
+    radial-gradient(55% 55% at 60% 85%, color-mix(in oklab, var(--color-primary-glow) 12%, transparent), transparent 70%);
+}
+
+/* Stripe channel for the mastery XP track — meaning never relies on
+   hue alone (item A4). */
+@utility pattern-stripes {
+  background-image: repeating-linear-gradient(
+    45deg,
+    color-mix(in oklab, oklch(1 0 0) 24%, transparent) 0 6px,
+    transparent 6px 12px
+  );
+}
+
+@utility glass {
+  background: color-mix(in oklab, var(--color-card) 72%, transparent);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  backdrop-filter: blur(20px) saturate(180%);
+  border: 1px solid color-mix(in oklab, var(--color-border) 70%, transparent);
+  box-shadow: 0 8px 24px rgb(23 23 23 / 8%);
+}
+
+@utility hairline {
+  border: 1px solid var(--color-border);
+}
+
+@utility bg-grid-dark {
+  background-image:
+    linear-gradient(to right, color-mix(in oklab, oklch(1 0 0) 10%, transparent) 1px, transparent 1px),
+    linear-gradient(to bottom, color-mix(in oklab, oklch(1 0 0) 10%, transparent) 1px, transparent 1px);
+  background-size: 44px 44px;
+}
+
+@utility bg-grid {
+  background-image:
+    linear-gradient(
+      to right,
+      color-mix(in oklab, var(--color-border) 45%, transparent) 1px,
+      transparent 1px
+    ),
+    linear-gradient(
+      to bottom,
+      color-mix(in oklab, var(--color-border) 45%, transparent) 1px,
+      transparent 1px
+    );
+  background-size: 44px 44px;
+}
+
+@utility bg-noise {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120' viewBox='0 0 120 120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E");
+}
+
+@utility text-gradient-zap {
+  color: var(--color-primary);
+}
 
 @layer base {
   * {
@@ -130,12 +313,16 @@
   body {
     @apply bg-background font-sans text-foreground antialiased;
     text-rendering: optimizeLegibility;
-     background: var(--color-background);
+    background: var(--color-background);
+    font-optical-sizing: auto;
   }
 
+  /* Luminance-independent focus ring (WCAG 2.2 2.4.11, 3:1 non-text).
+     Dark neutral outline + a white "gap" so it reads on any surface. */
   :focus-visible {
     outline: 2px solid var(--color-ring);
     outline-offset: 3px;
+    box-shadow: 0 0 0 5px color-mix(in oklab, var(--color-background) 92%, transparent);
   }
 
   @media (prefers-reduced-motion: reduce) {
@@ -149,15 +336,31 @@
     }
   }
 
+  /* Global pointer-down press feedback (SKILL §1) — instant, on every
+     interactive control, not just destructive. Disabled under reduced
+     motion. */
+  @media (prefers-reduced-motion: no-preference) {
+    button:not(:disabled):active,
+    [role="button"]:active,
+    [data-slot="button"]:active {
+      transform: scale(0.97);
+    }
+  }
+
+  /* Ease the theme flip (SKILL §14): when html[data-theme] changes the
+     shell adds .theme-flip for ~400ms so colors cross-fade instead of
+     jumping. */
+  html.theme-flip,
+  html.theme-flip *,
+  html.theme-flip *::before,
+  html.theme-flip *::after {
+    transition-property: background-color, background, border-color, color, fill, stroke, box-shadow;
+    transition-duration: 320ms !important;
+    transition-timing-function: var(--ease-zap-in-out);
+  }
+
   /* ------------------------------------------------------------ */
   /* Demo display preferences (persisted, see DemoPreferences)    */
-  /*                                                              */
-  /* `data-density="compact"` tightens the spacing/radius rhythm  */
-  /* used by the spacing utilities, giving the whole app a denser */
-  /* layout without touching component classes.                   */
-  /* `data-reduce-data="true"` turns off decorative background    */
-  /* layers and expensive effects for low-power / data-conscious  */
-  /* viewing — the app stays fully functional, just lighter.      */
   /* ------------------------------------------------------------ */
 
   html[data-density="compact"] {
@@ -188,14 +391,15 @@
     display: none !important;
   }
 
-  html[data-reduce-data="true"] *, html[data-reduce-data="true"] *::before,
+  html[data-reduce-data="true"] *,
+  html[data-reduce-data="true"] *::before,
   html[data-reduce-data="true"] *::after {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
   }
 
   ::selection {
-     background: rgb(180 35 60 / 14%);
+    background: color-mix(in oklab, var(--color-primary) 14%, transparent);
     color: var(--color-primary-deep);
   }
 
@@ -238,42 +442,106 @@
   }
 }
 
-@utility text-gradient-zap {
-  color: var(--color-primary);
-}
+/* ------------------------------------------------------------------ */
+/* Scroll-edge effects over hard dividers (SKILL §12).                 */
+/* A soft fade at the bottom of sticky chrome instead of a 1px border  */
+/* where floating UI actually overlaps content.                        */
+/* ------------------------------------------------------------------ */
 
-@utility glass {
-  background: var(--color-card);
-  border: 1px solid var(--color-border);
-  box-shadow: 0 8px 24px rgb(23 23 23 / 5%);
-}
-
-@utility hairline {
-  border: 1px solid var(--color-border);
-}
-
-@utility bg-grid-dark {
-  background-image:
-    linear-gradient(to right, rgb(255 255 255 / 5%) 1px, transparent 1px),
-    linear-gradient(to bottom, rgb(255 255 255 / 5%) 1px, transparent 1px);
-  background-size: 44px 44px;
-}
-
-@utility bg-grid {
-  background-image:
-    linear-gradient(
-      to right,
-      color-mix(in oklab, var(--color-border) 45%, transparent) 1px,
-      transparent 1px
-    ),
-    linear-gradient(
+@layer components {
+  /* Anchors to the sticky/persistent chrome element itself (sticky is a
+     positioned ancestor, so no position override needed here). */
+  .chrome-edge-bottom::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -6px;
+    height: 6px;
+    pointer-events: none;
+    background: linear-gradient(
       to bottom,
-      color-mix(in oklab, var(--color-border) 45%, transparent) 1px,
-      transparent 1px
+      color-mix(in oklab, var(--color-background) 45%, transparent),
+      transparent
     );
-  background-size: 44px 44px;
+  }
+
+  /* Materialize glass on enter/exit (SKILL §12): blur + scale together
+     so translucency reads as arriving material, not a plain fade.
+     Bigger surfaces read as thicker material (heavier blur). */
+  [data-slot="sheet-content"],
+  [data-slot="dialog-content"],
+  [data-slot="dropdown-menu-content"],
+  [data-slot="dropdown-menu-sub-content"],
+  [data-slot="select-content"] {
+    transition:
+      backdrop-filter var(--duration-slow) var(--ease-spring),
+      background-color var(--duration-base) ease;
+  }
+  [data-slot="sheet-content"][data-state="open"],
+  [data-slot="dialog-content"][data-state="open"] {
+    -webkit-backdrop-filter: blur(28px) saturate(180%);
+    backdrop-filter: blur(28px) saturate(180%);
+  }
+  [data-slot="dropdown-menu-content"][data-state="open"],
+  [data-slot="dropdown-menu-sub-content"][data-state="open"],
+  [data-slot="select-content"][data-state="open"] {
+    -webkit-backdrop-filter: blur(20px) saturate(160%);
+    backdrop-filter: blur(20px) saturate(160%);
+  }
 }
 
-@utility bg-noise {
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120' viewBox='0 0 120 120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E");
+/* ------------------------------------------------------------------ */
+/* Accessibility overrides (item C13 / SKILL §14).                     */
+/* ------------------------------------------------------------------ */
+
+@media (prefers-reduced-transparency: reduce) {
+  .frosted,
+  .frosted-heavy,
+  .frosted-light,
+  .glass,
+  [data-slot="sheet-content"],
+  [data-slot="dialog-content"],
+  [data-slot="dropdown-menu-content"],
+  [data-slot="dropdown-menu-sub-content"],
+  [data-slot="select-content"] {
+    background: var(--color-popover) !important;
+    -webkit-backdrop-filter: none !important;
+    backdrop-filter: none !important;
+    box-shadow: 0 8px 24px rgb(23 23 23 / 10%) !important;
+  }
+  .chrome-edge-bottom::after,
+  .aurora,
+  .bg-noise {
+    display: none !important;
+  }
+}
+
+@media (prefers-contrast: more) {
+  :root {
+    --color-muted-foreground: oklch(0.46 0.03 265);
+    --color-secondary-foreground: oklch(0.32 0.012 286);
+    --color-foreground: oklch(0.18 0.006 286);
+    --color-border: oklch(0.82 0.01 260);
+    --color-border-strong: oklch(0.72 0.014 260);
+  }
+  /* Near-solid backgrounds with a defined, contrasting border. */
+  .frosted,
+  .frosted-heavy,
+  .frosted-light,
+  .glass,
+  [data-slot="sheet-content"],
+  [data-slot="dialog-content"],
+  [data-slot="dropdown-menu-content"],
+  [data-slot="dropdown-menu-sub-content"],
+  [data-slot="select-content"] {
+    background: var(--color-popover);
+    -webkit-backdrop-filter: none !important;
+    backdrop-filter: none !important;
+    border: 1px solid var(--color-border-strong) !important;
+  }
+  [data-slot="dialog-overlay"],
+  [data-slot="sheet-overlay"] {
+    background: rgb(23 23 23 / 45%) !important;
+  }
 }

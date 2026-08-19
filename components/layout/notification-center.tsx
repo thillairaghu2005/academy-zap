@@ -203,7 +203,7 @@ export function NotificationCenter() {
       {open ? <dialog open
         id="notification-panel"
         aria-labelledby="notification-panel-title"
-         className="m-0 border-0 p-0 absolute right-0 top-[calc(100%+0.75rem)] z-50 flex max-h-[min(640px,calc(100dvh-5rem))] w-[min(360px,calc(100vw-1rem))] flex-col overflow-hidden rounded-2xl border border-border bg-white text-foreground shadow-[0_14px_36px_rgb(23_23_23_/_11%)] animate-notification-panel"
+         className="frosted-heavy m-0 border-border/70 p-0 absolute right-0 top-[calc(100%+0.75rem)] z-50 flex max-h-[min(640px,calc(100dvh-5rem))] w-[min(360px,calc(100vw-1rem))] flex-col overflow-hidden rounded-2xl border text-foreground shadow-[0_14px_36px_rgb(23_23_23_/_11%)] animate-notification-panel"
       >
         <div className="border-b border-border px-4 pb-3 pt-4">
           <div className="flex items-center justify-between gap-3">

@@ -20,6 +20,8 @@
   --fw-emphasis: 600;
   --fw-bold: 700;
 
+  /* Leading tracks size inversely: tight on large display, looser on
+     body copy (SKILL §15). */
   --lh-hero: 1.1;
   --lh-h1: 1.15;
   --lh-h2: 1.2;
@@ -28,9 +30,13 @@
   --lh-small: 1.5;
   --lh-caption: 1.4;
 
+  /* Tracking is size-specific, never one value: negative on display
+     type, near 0 on body, slightly positive on small/caption. */
   --ls-heading: -0.02em;
   --ls-heading-soft: -0.01em;
-  --ls-body: normal;
+  --ls-body: 0em;
+  --ls-small: 0.01em;
+  --ls-caption: 0.02em;
 }
 
 @theme inline {
@@ -64,9 +70,17 @@
 
   --text-small: var(--fs-small);
   --text-small--line-height: var(--lh-small);
+  --text-small--letter-spacing: var(--ls-small);
 
   --text-caption: var(--fs-caption);
   --text-caption--line-height: var(--lh-caption);
+  --text-caption--letter-spacing: var(--ls-caption);
+}
+
+/* Inter/Geist variables ship optical sizing tables; enable them. */
+body,
+.font-sans {
+  font-optical-sizing: auto;
 }
 
 @layer utilities {

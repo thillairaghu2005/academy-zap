@@ -6,6 +6,7 @@ import { QueryProvider } from "@/components/providers/query-provider";
 import { SessionProvider } from "@/components/providers/session-provider";
 import { ServiceWorkerProvider } from "@/components/providers/service-worker-provider";
 import { MotionProvider } from "@/components/providers/motion-provider";
+import { ThemeManager } from "@/components/providers/theme-manager";
 import { LiveRegionProvider } from "@/components/providers/live-region-provider";
 import { DemoAnalyticsProvider } from "@/components/providers/demo-analytics-provider";
 import { DemoPreferencesProvider } from "@/components/providers/demo-preferences-provider";
@@ -83,6 +84,7 @@ export default function RootLayout({
     >
       <head />
       <body className="min-h-full">
+        <ThemeManager />
         <LiveRegionProvider>
           <MotionProvider>
             <QueryProvider>

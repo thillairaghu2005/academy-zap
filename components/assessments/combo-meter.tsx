@@ -21,7 +21,7 @@ export function ComboMeter({ combo }: { combo: ComboState }) {
   const active = combo.count > 0;
 
   return (
-    <div className="flex items-center gap-3 rounded-xl border border-amber-500/25 bg-amber-500/5 px-4 py-2.5">
+    <div className="flex items-center gap-3 rounded-xl border border-warning/25 bg-warning/5 px-4 py-2.5">
       {/* Flame pulse */}
       <motion.div
         key={combo.count}
@@ -31,7 +31,7 @@ export function ComboMeter({ combo }: { combo: ComboState }) {
         className={cn(
           "grid size-8 shrink-0 place-items-center rounded-lg",
           active
-            ? "bg-amber-500/20 text-amber-700"
+            ? "bg-warning/20 text-warning-strong"
             : "bg-muted text-muted-foreground",
         )}
       >
@@ -56,7 +56,7 @@ export function ComboMeter({ combo }: { combo: ComboState }) {
           <span className="font-display text-small font-semibold">
             {active ? `${combo.count}× combo` : "Combo"}
           </span>
-          <span className="font-mono text-[11px] text-amber-700">
+          <span className="font-mono text-[11px] text-warning-strong">
             ×{combo.multiplier.toFixed(2)}
           </span>
         </div>

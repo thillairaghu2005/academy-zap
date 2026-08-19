@@ -188,7 +188,7 @@ export function GlobalSearch({ className }: { className?: string }) {
           )}
         </CommandList>
         <CommandSeparator />
-        <div className="flex items-center justify-between bg-muted/40 px-5 py-3 text-caption text-muted-foreground">
+        <div className="flex items-center justify-between bg-surface-2 px-5 py-3 text-caption text-muted-foreground">
           <span>Search across courses, problems, labs, assessments, and mentors</span>
           <span className="font-mono">
             {search.data?.estimatedTotalHits ?? 0} results

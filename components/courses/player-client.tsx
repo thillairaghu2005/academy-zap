@@ -341,7 +341,7 @@ export function PlayerClient({ course }: { course: Course }) {
   return (
     <div className="flex min-h-[calc(100vh-1rem)] flex-col bg-surface-1">
       {/* Player top bar */}
-      <div className="sticky top-0 z-20 flex flex-wrap items-center gap-3 border-b border-border bg-white/90 px-4 py-3 shadow-[0_4px_18px_rgb(17_24_39_/_4%)] backdrop-blur-xl sm:px-6">
+      <div className="frosted chrome-edge-bottom sticky top-0 z-20 flex flex-wrap items-center gap-3 px-4 py-3 shadow-[0_4px_18px_rgb(17_24_39_/_4%)] sm:px-6">
         <Button variant="ghost" size="sm" asChild>
           <Link href={`/courses/${course.id}`}>
             <ArrowLeft />

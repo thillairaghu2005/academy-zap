@@ -113,7 +113,7 @@ function ObjectivesPanel({
           variant={allDone ? "secondary" : "outline"}
           className={cn(
             "text-caption",
-            allDone && "border-emerald-500/40 bg-emerald-500/10 text-emerald-700",
+            allDone && "border-success/40 bg-success/10 text-success-strong",
           )}
         >
           {session.objectives_completed.length}/{lab.objectives.length}
@@ -129,12 +129,12 @@ function ObjectivesPanel({
               className={cn(
                 "flex items-start gap-2.5 rounded-lg border px-3 py-2.5 transition-colors",
                 completed
-                  ? "border-emerald-500/30 bg-emerald-500/5"
+                  ? "border-success/30 bg-success/5"
                   : "border-border bg-card",
               )}
             >
               {completed ? (
-                <CheckCircle2 className="mt-0.5 size-4 shrink-0 text-emerald-700" />
+                <CheckCircle2 className="mt-0.5 size-4 shrink-0 text-success-strong" />
               ) : (
                 <Circle className="mt-0.5 size-4 shrink-0 text-muted-foreground/50" />
               )}
@@ -142,7 +142,7 @@ function ObjectivesPanel({
                 <p
                   className={cn(
                     "text-sm font-medium",
-                    completed && "text-emerald-700",
+                    completed && "text-success-strong",
                   )}
                 >
                   {objective.title}
@@ -202,9 +202,9 @@ function SessionEnded({
         className={cn(
           "grid size-16 place-items-center rounded-2xl border",
           isCompleted
-            ? "border-emerald-500/40 bg-emerald-500/10 text-emerald-700"
+            ? "border-success/40 bg-success/10 text-success-strong"
             : kind === "timed_out"
-              ? "border-amber-500/40 bg-amber-500/10 text-amber-700"
+              ? "border-warning/40 bg-warning/10 text-warning-strong"
               : "border-muted-foreground/30 bg-secondary text-muted-foreground",
         )}
       >
@@ -499,7 +499,7 @@ export function LabSessionClient({
               {session.status === "provisioning" ? (
                 <LoaderCircle className="size-3 animate-spin" />
               ) : (
-                <span className="size-1.5 rounded-full bg-emerald-500" />
+                <span className="size-1.5 rounded-full bg-success" />
               )}
               {session.status}
             </Badge>
@@ -514,7 +514,7 @@ export function LabSessionClient({
               className={cn(
                 "flex items-center gap-1.5 rounded-full border px-3 py-1 font-mono text-sm font-semibold tabular-nums",
                 low
-                  ? "border-amber-500/40 bg-amber-500/10 text-amber-700"
+                  ? "border-warning/40 bg-warning/10 text-warning-strong"
                   : "border-border bg-muted/50",
               )}
               title="Hard timeout countdown"
@@ -558,14 +558,14 @@ export function LabSessionClient({
               <div className="flex items-center justify-between border-b border-white/5 bg-zinc-900 px-3.5 py-2">
                 <span className="flex items-center gap-2 text-xs font-medium text-muted-foreground">
                   {lab?.requires_gui ? (
-                    <Monitor className="size-3.5 text-emerald-700" />
+                    <Monitor className="size-3.5 text-success-on-dark" />
                   ) : (
-                    <Terminal className="size-3.5 text-emerald-700" />
+                    <Terminal className="size-3.5 text-success-on-dark" />
                   )}
                   {lab?.requires_gui ? "Guacamole GUI viewer" : "shell — ttyd over WebSocket"}
                 </span>
                 <div className="flex items-center gap-2">
-                  <span className="flex items-center gap-1 text-caption text-emerald-700/80">
+                  <span className="flex items-center gap-1 text-caption text-success-on-dark/80">
                     <Lock className="size-3" />
                     encrypted
                   </span>
@@ -612,7 +612,7 @@ export function LabSessionClient({
             ) : null}
 
             {hintMutation.data ? (
-              <div className="animate-fade-up rounded-lg border border-amber-500/25 bg-amber-500/5 px-3.5 py-2.5 text-xs text-amber-700">
+              <div className="animate-fade-up rounded-lg border border-warning/25 bg-warning/5 px-3.5 py-2.5 text-xs text-warning-strong">
                 <span className="font-semibold">Hint:</span> {hintMutation.data}
               </div>
             ) : null}
@@ -637,7 +637,7 @@ export function LabSessionClient({
                     className={cn(
                       "animate-fade-up rounded-lg border px-3.5 py-2.5 text-xs",
                       result.completed
-                        ? "border-emerald-500/25 bg-emerald-500/5 text-emerald-700"
+                        ? "border-success/25 bg-success/5 text-success-strong"
                         : "border-border bg-muted/30 text-muted-foreground",
                     )}
                   >

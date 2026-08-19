@@ -10,15 +10,15 @@ import type {
 
 const STATUS_STYLES: Record<TicketStatus, string> = {
   open: "border-primary-border bg-primary-light text-primary",
-  pending: "border-amber-500/40 bg-amber-500/10 text-amber-700",
-  resolved: "border-emerald-500/40 bg-emerald-500/10 text-emerald-700",
+  pending: "border-warning/40 bg-warning/10 text-warning-strong",
+  resolved: "border-success/40 bg-success/10 text-success-strong",
   closed: "border-slate-400/40 bg-slate-500/10 text-slate-500",
 };
 
 const PRIORITY_STYLES: Record<TicketPriority, string> = {
   low: "border-border bg-secondary text-muted-foreground",
   medium: "border-primary-border bg-primary-light text-primary",
-  high: "border-amber-500/40 bg-amber-500/10 text-amber-700",
+  high: "border-warning/40 bg-warning/10 text-warning-strong",
   urgent: "border-primary-border bg-primary-light text-primary",
 };
 

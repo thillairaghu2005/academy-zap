@@ -59,10 +59,10 @@ export function CourseReviewDiffCard({ courseId }: { courseId: string }) {
   const diff = diffQuery.data;
 
   return (
-    <Card className="border-amber-500/25">
+    <Card className="border-warning/25">
       <CardHeader className="p-4 pb-2">
                 <CardTitle className="flex items-center gap-2 font-display text-small">
-          <FileDiff className="size-4 text-amber-700" />
+          <FileDiff className="size-4 text-warning-strong" />
           Changes since last published version
         </CardTitle>
       </CardHeader>
@@ -104,7 +104,7 @@ export function CourseReviewDiffCard({ courseId }: { courseId: string }) {
                     <td className="px-3 py-2.5">
                       <Badge
                         variant="outline"
-                        className="border-emerald-500/40 bg-emerald-500/10 text-emerald-700"
+                        className="border-success/40 bg-success/10 text-success-strong"
                       >
                         {formatValue(item.field, item.after)}
                       </Badge>
