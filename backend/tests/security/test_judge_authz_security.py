@@ -415,10 +415,10 @@ async def test_production_can_never_select_docker_sandbox() -> None:
         JUDGE_SANDBOX_MEMORY_LIMIT_MB = 256
         JUDGE_SANDBOX_WALL_GRACE_SECONDS = 5
 
-    original_settings = sandbox_module.settings
-    sandbox_module.settings = _PoisonedSettings()  # type: ignore[assignment]
+    original_settings = sandbox_module.settings  # type: ignore[attr-defined]
+    sandbox_module.settings = _PoisonedSettings()  # type: ignore[assignment, attr-defined]
     try:
         with pytest.raises(SandboxInfrastructureError):
             get_sandbox()
     finally:
-        sandbox_module.settings = original_settings
+        sandbox_module.settings = original_settings  # type: ignore[attr-defined]

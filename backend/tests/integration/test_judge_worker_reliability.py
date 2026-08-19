@@ -27,7 +27,7 @@ from platform_core.events.schema import JudgeSubmissionGradedEvent
 pytestmark = pytest.mark.asyncio
 
 
-def _problem(**overrides) -> Problem:
+def _problem(**overrides: object) -> Problem:
     base = dict(
         id=uuid.uuid4(),
         slug=f"p-{uuid.uuid4().hex[:8]}",
@@ -47,7 +47,7 @@ def _problem(**overrides) -> Problem:
 
 
 async def _seed_submission(
-    db_session: AsyncSession, *, org_id=None
+    db_session: AsyncSession, *, org_id: uuid.UUID | None = None
 ) -> tuple[uuid.UUID, Problem, Submission]:
     problem = _problem(org_id=org_id)
     db_session.add(problem)
@@ -72,11 +72,19 @@ async def _seed_submission(
 
 
 class DummySandbox:
-    async def run(self, *args, **kwargs):
-        return {"stdout": "out", "stderr": "", "exit_code": 0, "runtime_ms": 10, "memory_kb": 1024}
+    async def run(self, *args: object, **kwargs: object) -> dict[str, object]:
+        return {
+            "stdout": "out",
+            "stderr": "",
+            "exit_code": 0,
+            "runtime_ms": 10,
+            "memory_kb": 1024,
+        }
 
 
-async def test_atomic_claim_only_one_worker_wins(db_session: AsyncSession):
+async def test_atomic_claim_only_one_worker_wins(
+    db_session: AsyncSession,
+) -> None:
     submission_id, _problem, _submission = await _seed_submission(db_session)
     repo = SubmissionRepository(db_session)
 
@@ -92,7 +100,9 @@ async def test_atomic_claim_only_one_worker_wins(db_session: AsyncSession):
     assert fresh.status == "processing"
 
 
-async def test_grade_submission_writes_result_and_outbox_in_same_tx(db_session: AsyncSession):
+async def test_grade_submission_writes_result_and_outbox_in_same_tx(
+    db_session: AsyncSession,
+) -> None:
     submission_id, _problem, _submission = await _seed_submission(db_session)
 
     with patch("judge.worker.executor.get_sandbox", return_value=DummySandbox()):
@@ -123,7 +133,9 @@ async def test_grade_submission_writes_result_and_outbox_in_same_tx(db_session: 
     assert payload["idempotency_key"] == f"judge:{submission_id}"
 
 
-async def test_duplicate_delivery_is_a_noop_no_second_result_or_event(db_session: AsyncSession):
+async def test_duplicate_delivery_is_a_noop_no_second_result_or_event(
+    db_session: AsyncSession,
+) -> None:
     submission_id, _problem, _submission = await _seed_submission(db_session)
 
     with patch("judge.worker.executor.get_sandbox", return_value=DummySandbox()):
@@ -144,7 +156,9 @@ async def test_duplicate_delivery_is_a_noop_no_second_result_or_event(db_session
     assert len(rows) == 1  # no duplicate event for this submission
 
 
-async def test_stuck_processing_reclaim_resets_and_regrades(db_session: AsyncSession):
+async def test_stuck_processing_reclaim_resets_and_regrades(
+    db_session: AsyncSession,
+) -> None:
     submission_id, _problem, _submission = await _seed_submission(db_session)
     repo = SubmissionRepository(db_session)
     await repo.claim_processing(submission_id)
@@ -159,11 +173,13 @@ async def test_stuck_processing_reclaim_resets_and_regrades(db_session: AsyncSes
     assert fresh.status == "graded"
 
 
-async def test_worker_failure_resets_to_queued_and_raises(db_session: AsyncSession):
+async def test_worker_failure_resets_to_queued_and_raises(
+    db_session: AsyncSession,
+) -> None:
     submission_id, _problem, _submission = await _seed_submission(db_session)
 
     class ExplodingSandbox:
-        async def run(self, *args, **kwargs):
+        async def run(self, *args: object, **kwargs: object) -> dict[str, object]:
             raise RuntimeError("kubectl: connection refused")
 
     with patch("judge.worker.executor.get_sandbox", return_value=ExplodingSandbox()):
@@ -185,7 +201,9 @@ async def test_worker_failure_resets_to_queued_and_raises(db_session: AsyncSessi
     assert len(rows) == 0  # never outboxed a failed submission as success
 
 
-async def test_judge_xp_exactly_once_per_problem(db_session: AsyncSession):
+async def test_judge_xp_exactly_once_per_problem(
+    db_session: AsyncSession,
+) -> None:
     """Accepted submissions award JUDGE_PROBLEM_MASTERY_XP (250) once per problem; a second
     accepted submission for the same problem awards 0 (cap). Wrong answers award nothing."""
     from gamification.rules import JUDGE_PROBLEM_MASTERY_XP
@@ -253,7 +271,9 @@ async def test_judge_xp_exactly_once_per_problem(db_session: AsyncSession):
     assert problem_xp == JUDGE_PROBLEM_MASTERY_XP
 
 
-async def test_outbox_event_survives_publisher_unavailable(db_session: AsyncSession):
+async def test_outbox_event_survives_publisher_unavailable(
+    db_session: AsyncSession,
+) -> None:
     """F-12 crash-safety: the outbox row is committed with the graded result; if the
     publisher (Redis) is down afterwards, the row stays pending and is dispatched later."""
     submission_id, _problem, _submission = await _seed_submission(db_session)

@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
 import { LabDetailClient } from "@/components/lab/lab-detail-client";
-import { getLab } from "@/lib/data/demo/lab";
+import { getLab } from "@/lib/data/lab-facade";
 import { MockDataError } from "@/lib/data/demo/errors";
 import { buildMetadata } from "@/lib/seo";
 import { Breadcrumbs } from "@/components/seo/breadcrumbs";

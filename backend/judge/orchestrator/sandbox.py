@@ -172,7 +172,8 @@ class DevelopmentOnlyDockerSandbox:
                 stdout=asyncio.subprocess.PIPE,
                 stderr=asyncio.subprocess.PIPE,
             )
-            assert proc.stdout is not None and proc.stderr is not None
+            if proc.stdout is None or proc.stderr is None:
+                raise SandboxInfrastructureError("docker run did not expose output pipes")
             stdout_task = asyncio.create_task(_read_bounded(proc.stdout, max_output))
             stderr_task = asyncio.create_task(_read_bounded(proc.stderr, max_output))
 
@@ -387,7 +388,9 @@ class GVisorKubernetesSandbox:
             },
         }
 
-    def _configmap_manifest(self, pod_name: str, source_code: str, input_data: str) -> dict[str, object]:
+    def _configmap_manifest(
+        self, pod_name: str, source_code: str, input_data: str
+    ) -> dict[str, object]:
         return {
             "apiVersion": "v1",
             "kind": "ConfigMap",
@@ -530,7 +533,8 @@ class GVisorKubernetesSandbox:
             raise SandboxInfrastructureError(
                 "kubectl not found. Required Kubernetes infrastructure unavailable."
             ) from exc
-        assert proc.stdout is not None
+        if proc.stdout is None:
+            raise SandboxInfrastructureError("kubectl logs did not expose an output pipe")
         try:
             return await asyncio.wait_for(
                 _read_bounded(proc.stdout, self._max_output), timeout=10.0

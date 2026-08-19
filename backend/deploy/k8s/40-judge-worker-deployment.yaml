@@ -1,0 +1,94 @@
+# Judge worker Deployment.
+#
+# The worker container image MUST ship:
+#   1. the Zapsters backend (so `python -m judge.worker.entrypoint` is importable),
+#   2. the `kubectl` binary (GVisorKubernetesSandbox shells out to it), and
+#   3. a kubeconfig with a judge-worker token for the context used here.
+# The kubeconfig is injected as a Secret at runtime; never bake credentials into the image.
+#
+# Environment values are examples. Wire them from a Secret/ConfigMap in the real
+# platform namespace; SECRET_KEY and the kubeconfig token are secrets and must come
+# from a Secret, never from this file.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: judge-worker
+  namespace: judge-sandboxes
+  labels:
+    zapsters.io/purpose: judge-worker
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      zapsters.io/purpose: judge-worker
+  template:
+    metadata:
+      labels:
+        zapsters.io/purpose: judge-worker
+    spec:
+      serviceAccountName: judge-worker
+      terminationGracePeriodSeconds: 30
+      containers:
+        - name: judge-worker
+          image: registry.example.com/zapsters/backend:judge-worker  # MUST ship kubectl
+          command: ["python", "-m", "judge.worker.entrypoint"]
+          args: ["--health-port", "9099"]
+          ports:
+            - name: healthz
+              containerPort: 9099
+          env:
+            - name: ENV
+              value: "production"
+            - name: JUDGE_SANDBOX_TYPE
+              value: "gvisor"  # fail-closed guard rejects any docker override in production
+            - name: JUDGE_SANDBOX_NAMESPACE
+              value: "judge-sandboxes"
+            - name: JUDGE_SANDBOX_RUNTIME_CLASS
+              value: "gvisor"
+            - name: JUDGE_SANDBOX_IMAGE
+              value: "python:3.12-alpine@sha256:d09d15e60962ca365d1cd544a48773bac9d33f2fb1b00f2aa0deec78ade7dc31"
+            - name: KUBECONFIG
+              value: /etc/judge/kubeconfig
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: judge-worker-secrets
+                  key: DATABASE_URL
+            - name: REDIS_URL
+              valueFrom:
+                secretKeyRef:
+                  name: judge-worker-secrets
+                  key: REDIS_URL
+            - name: SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: judge-worker-secrets
+                  key: SECRET_KEY
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: healthz
+            initialDelaySeconds: 15
+            periodSeconds: 20
+          readinessProbe:
+            httpGet:
+              path: /healthz
+              port: healthz
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              cpu: "1"
+              memory: 512Mi
+          volumeMounts:
+            - name: judge-kubeconfig
+              mountPath: /etc/judge
+              readOnly: true
+      volumes:
+        - name: judge-kubeconfig
+          secret:
+            secretName: judge-worker-kubeconfig
+            optional: false

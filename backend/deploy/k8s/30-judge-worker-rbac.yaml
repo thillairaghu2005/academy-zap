@@ -1,0 +1,48 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: judge-worker
+  namespace: judge-sandboxes
+  labels:
+    zapsters.io/purpose: judge-worker
+---
+# Least privilege for the judge worker inside its own tenant namespace: it creates,
+# observes, and destroys the ephemeral per-submission Pod / ConfigMap / NetworkPolicy
+# that GVisorKubernetesSandbox manages, and it reads pod metrics for the memory cap.
+# It cannot touch pods outside judge-sandboxes, cannot list secrets, and has no
+# cluster-wide API access other than reading the metrics API for its own namespace.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: judge-sandbox-lifecycle
+  namespace: judge-sandboxes
+rules:
+  - apiGroups: [""]
+    resources: ["pods"]
+    verbs: ["get", "list", "create", "delete"]
+  - apiGroups: [""]
+    resources: ["pods/log"]
+    verbs: ["get"]
+  - apiGroups: [""]
+    resources: ["configmaps"]
+    verbs: ["get", "list", "create", "delete"]
+  - apiGroups: ["networking.k8s.io"]
+    resources: ["networkpolicies"]
+    verbs: ["get", "list", "create", "delete"]
+  - apiGroups: ["metrics.k8s.io"]
+    resources: ["pods"]
+    verbs: ["get", "list"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: judge-worker-lifecycle
+  namespace: judge-sandboxes
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: judge-sandbox-lifecycle
+subjects:
+  - kind: ServiceAccount
+    name: judge-worker
+    namespace: judge-sandboxes
