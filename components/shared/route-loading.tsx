@@ -1,5 +1,6 @@
 import { Card } from "@/components/ui/card";
 import { PageContainer } from "@/components/shared/page-container";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   CodeEditorSkeleton,
   SkeletonGrid,
@@ -16,6 +17,34 @@ export function AppRouteLoading() {
       <SkeletonPageHeader />
       <div className="mt-8">
         <SkeletonGrid count={6} />
+      </div>
+    </PageContainer>
+  );
+}
+
+export function PublicPageLoading() {
+  return (
+    <PageContainer role="status" aria-busy="true" aria-label="Loading page">
+      <SkeletonPageHeader />
+      <div className="mt-8">
+        <SkeletonGrid count={6} />
+      </div>
+    </PageContainer>
+  );
+}
+
+export function AuthPageLoading() {
+  return (
+    <PageContainer role="status" aria-busy="true" aria-label="Loading">
+      <div className="mx-auto max-w-sm space-y-6 py-16 text-center">
+        <Skeleton className="mx-auto size-12 rounded-2xl" />
+        <Skeleton className="mx-auto h-6 w-2/3" />
+        <Skeleton className="mx-auto h-4 w-1/2" />
+        <div className="mt-8 space-y-3">
+          <Skeleton className="h-11 w-full" />
+          <Skeleton className="h-11 w-full" />
+          <Skeleton className="h-11 w-full" />
+        </div>
       </div>
     </PageContainer>
   );

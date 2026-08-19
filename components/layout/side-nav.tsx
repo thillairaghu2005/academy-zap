@@ -9,7 +9,7 @@ import { Menu, Search, X } from "lucide-react";
 import { cn, getInitials } from "@/lib/utils";
 import { sideNavGroups } from "@/lib/navigation";
 import { useSession } from "@/components/providers/session-provider";
-import { Logo } from "@/src/components/Logo/Logo";
+import { Logo } from "@/components/layout/logo";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {

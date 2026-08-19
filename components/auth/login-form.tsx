@@ -26,7 +26,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { PasswordInput } from "@/components/ui/password-input";
-import { Logo } from "@/src/components/Logo/Logo";
+import { Logo } from "@/components/layout/logo";
 import { useSession } from "@/components/providers/session-provider";
 
 const loginSchema = z.object({

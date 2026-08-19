@@ -31,8 +31,7 @@ import { LearningInsights } from "@/components/dashboard/learning-insights";
 import { EvidenceTrail } from "@/components/learning/evidence-trail";
 
 function coverGradient(hue: number): string {
-  void hue;
-  return "linear-gradient(135deg, var(--color-primary-light), var(--color-surface-3))";
+  return `linear-gradient(135deg, oklch(0.94 0.045 ${hue}), oklch(0.985 0.012 ${hue}))`;
 }
 
 function lessonCount(item: MyLearningItem): number {
