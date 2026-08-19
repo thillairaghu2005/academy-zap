@@ -113,8 +113,9 @@ async def judge_submission_stream(
             try:
                 await pubsub.unsubscribe(channel)
                 await pubsub.aclose()  # type: ignore[attr-defined]
-            except Exception:  # noqa: BLE001
-                pass
+            except Exception:  # noqa: BLE001, B110 - best-effort stream teardown; a failed
+                # unsubscribe must never prevent the response generator from finishing.
+                logger.debug("sse pubsub teardown failed", exc_info=True)
 
     return StreamingResponse(
         event_generator(),

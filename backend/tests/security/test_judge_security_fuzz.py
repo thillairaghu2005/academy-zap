@@ -22,7 +22,7 @@ import subprocess
 
 import pytest
 
-from judge.orchestrator.sandbox import DevelopmentOnlyDockerSandbox
+from judge.orchestrator.sandbox import DevelopmentOnlyDockerSandbox, SandboxResult
 from platform_core.core.config import settings
 
 pytestmark = pytest.mark.asyncio
@@ -45,19 +45,19 @@ pytestmark = pytest.mark.skipif(
 
 
 @pytest.fixture
-def sandbox():
+def sandbox() -> DevelopmentOnlyDockerSandbox:
     return DevelopmentOnlyDockerSandbox()
 
 
 # Attack 1: Infinite Loop — the wall-clock timeout must fire, never hang the worker.
-async def test_infinite_loop(sandbox):
+async def test_infinite_loop(sandbox: DevelopmentOnlyDockerSandbox) -> None:
     result = await sandbox.run("while True: pass", "python", "", 1000, 16384)
     assert result["exit_code"] != 0
     assert "TimeoutExpired" in result["stderr"]
 
 
 # Attack 2: Fork Bomb — the PID cgroup cap must contain it; the host must survive.
-async def test_fork_bomb(sandbox):
+async def test_fork_bomb(sandbox: DevelopmentOnlyDockerSandbox) -> None:
     code = (
         "import os\n"
         "while True:\n"
@@ -74,7 +74,7 @@ async def test_fork_bomb(sandbox):
 
 
 # Attack 3: PID Exhaustion — the printed process count must never exceed the cgroup cap.
-async def test_pid_exhaustion(sandbox):
+async def test_pid_exhaustion(sandbox: DevelopmentOnlyDockerSandbox) -> None:
     code = (
         "import subprocess\n"
         "procs = []\n"
@@ -97,7 +97,7 @@ async def test_pid_exhaustion(sandbox):
 
 
 # Attack 4: Memory Exhaustion — the memory cgroup must contain the allocation.
-async def test_memory_exhaustion(sandbox):
+async def test_memory_exhaustion(sandbox: DevelopmentOnlyDockerSandbox) -> None:
     code = "a = 'x' * (1024 * 1024 * 1024)"  # 1GB allocation against a 16MB limit
     result = await sandbox.run(code, "python", "", 1000, 16384)
     assert result["exit_code"] != 0
@@ -109,7 +109,7 @@ async def test_memory_exhaustion(sandbox):
 
 
 # Attack 5: CPU Exhaustion — busy loop must be cut off by the wall clock.
-async def test_cpu_exhaustion(sandbox):
+async def test_cpu_exhaustion(sandbox: DevelopmentOnlyDockerSandbox) -> None:
     code = "a = 0\nfor i in range(10**10): a += i"
     result = await sandbox.run(code, "python", "", 500, 16384)
     assert result["exit_code"] != 0
@@ -118,7 +118,7 @@ async def test_cpu_exhaustion(sandbox):
 
 # Attack 6: Disk Exhaustion — the writable scratch is a size-capped tmpfs; filling it must
 # fail with ENOSPC, never touch the host disk.
-async def test_disk_exhaustion(sandbox):
+async def test_disk_exhaustion(sandbox: DevelopmentOnlyDockerSandbox) -> None:
     code = (
         "with open('/tmp/big.txt', 'wb') as f:\n"
         "    for _ in range(200):\n"  # 1MB at a time -> 200MB into a 64MB tmpfs
@@ -131,7 +131,7 @@ async def test_disk_exhaustion(sandbox):
 
 # Attack 7: Stdout Flood — output is capped DURING capture; the run must terminate bounded
 # and the retained stream must stay at the cap (plus the truncation marker).
-async def test_stdout_flood(sandbox):
+async def test_stdout_flood(sandbox: DevelopmentOnlyDockerSandbox) -> None:
     code = "import sys\nwhile True: sys.stdout.write('A' * 1024)"
     result = await sandbox.run(code, "python", "", 1000, 16384)
     assert len(result["stdout"]) <= MAX_OUTPUT + len(TRUNCATION_SUFFIX)
@@ -140,7 +140,7 @@ async def test_stdout_flood(sandbox):
 
 
 # Attack 8: Stderr Flood — same bounded-capture guarantee for stderr.
-async def test_stderr_flood(sandbox):
+async def test_stderr_flood(sandbox: DevelopmentOnlyDockerSandbox) -> None:
     code = "import sys\nwhile True: sys.stderr.write('B' * 1024)"
     result = await sandbox.run(code, "python", "", 1000, 16384)
     assert len(result["stderr"]) <= len("TimeoutExpired\n") + MAX_OUTPUT + len(
@@ -150,7 +150,7 @@ async def test_stderr_flood(sandbox):
 
 
 # Attack 9: Network Access — no egress: an outbound HTTP attempt must fail.
-async def test_network_access(sandbox):
+async def test_network_access(sandbox: DevelopmentOnlyDockerSandbox) -> None:
     code = (
         "import urllib.request\n"
         "try:\n"
@@ -164,7 +164,7 @@ async def test_network_access(sandbox):
 
 
 # Attack 10: DNS Access — name resolution must fail (no DNS, no egress).
-async def test_dns_access(sandbox):
+async def test_dns_access(sandbox: DevelopmentOnlyDockerSandbox) -> None:
     code = (
         "import socket\n"
         "try:\n"
@@ -178,7 +178,7 @@ async def test_dns_access(sandbox):
 
 
 # Attack 11: Localhost Probing — no loopback interface exists inside the sandbox.
-async def test_localhost_probing(sandbox):
+async def test_localhost_probing(sandbox: DevelopmentOnlyDockerSandbox) -> None:
     code = (
         "import socket\n"
         "s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)\n"
@@ -190,7 +190,7 @@ async def test_localhost_probing(sandbox):
 
 # Attack 12: Filesystem Traversal — the container root is visible but READ-ONLY: writing
 # anywhere outside /tmp must fail.
-async def test_filesystem_traversal(sandbox):
+async def test_filesystem_traversal(sandbox: DevelopmentOnlyDockerSandbox) -> None:
     code = (
         "import os\n"
         "print('/' in os.listdir('/'))\n"
@@ -208,7 +208,7 @@ async def test_filesystem_traversal(sandbox):
 
 # Attack 13: Host Filesystem Access — privileged paths are unmounted/read-only inside the
 # sandbox; a write to /etc must fail rather than reach a host file.
-async def test_host_filesystem_access(sandbox):
+async def test_host_filesystem_access(sandbox: DevelopmentOnlyDockerSandbox) -> None:
     code = (
         "try:\n"
         "    with open('/etc/passwd', 'a') as f:\n"
@@ -223,7 +223,7 @@ async def test_host_filesystem_access(sandbox):
 
 
 # Attack 14: Environment/Secret Access — no host environment leaks into the sandbox.
-async def test_environment_secret_access(sandbox):
+async def test_environment_secret_access(sandbox: DevelopmentOnlyDockerSandbox) -> None:
     code = (
         "import os\n"
         "leaked = [k for k in ('SECRET_KEY', 'DATABASE_URL', 'REDIS_URL', 'AWS_ACCESS_KEY_ID')"
@@ -236,7 +236,7 @@ async def test_environment_secret_access(sandbox):
 
 # Attack 15: Privilege Escalation — execution is non-root (uid 65534 / nobody) with all
 # capabilities dropped.
-async def test_privilege_escalation(sandbox):
+async def test_privilege_escalation(sandbox: DevelopmentOnlyDockerSandbox) -> None:
     code = "import os\nprint(os.getuid())\nprint(os.geteuid())\n"
     result = await sandbox.run(code, "python", "", 2000, 16384)
     lines = result["stdout"].strip().splitlines()
@@ -248,7 +248,7 @@ async def test_privilege_escalation(sandbox):
 # processes (tiny PIDs like [1, 7]), so host PIDs are invisible and therefore unsignallable.
 # Killing PID 1 hits only the container's own init (tini, same uid as the sandbox user) —
 # never a host process.
-async def test_signal_abuse(sandbox):
+async def test_signal_abuse(sandbox: DevelopmentOnlyDockerSandbox) -> None:
     code = (
         "import os, signal\n"
         "pids = sorted(int(p) for p in os.listdir('/proc') if p.isdigit())\n"
@@ -276,7 +276,7 @@ async def test_signal_abuse(sandbox):
 
 # Attack 17: Timeout Bypass — a SIGTERM handler cannot escape the wall clock (docker kill
 # escalates to SIGKILL after the timeout).
-async def test_timeout_bypass(sandbox):
+async def test_timeout_bypass(sandbox: DevelopmentOnlyDockerSandbox) -> None:
     code = (
         "import signal\n"
         "def handler(signum, frame): pass\n"
@@ -290,7 +290,7 @@ async def test_timeout_bypass(sandbox):
 
 # Attack 18: Sandbox Escape — the container runtime is a normal unprivileged container: no
 # privileged mounts, no host devices, and the rootfs is read-only.
-async def test_sandbox_escape(sandbox):
+async def test_sandbox_escape(sandbox: DevelopmentOnlyDockerSandbox) -> None:
     code = (
         "import os\n"
         "# /sys and /proc host knobs are read-only or absent — a real escape would need\n"
@@ -309,8 +309,8 @@ async def test_sandbox_escape(sandbox):
 
 # Attack 19: Concurrent Malicious Submissions — parallel infinite loops are each isolated and
 # each hits its own wall clock; one must never stall the others.
-async def test_concurrent_malicious(sandbox):
-    async def _one():
+async def test_concurrent_malicious(sandbox: DevelopmentOnlyDockerSandbox) -> None:
+    async def _one() -> SandboxResult:
         return await sandbox.run("while True: pass", "python", "", 1000, 16384)
 
     results = await asyncio.gather(*[_one() for _ in range(5)])
@@ -321,7 +321,9 @@ async def test_concurrent_malicious(sandbox):
 
 # Attack 20: Cross-Submission Contamination — every run is a FRESH container with fresh tmpfs;
 # a file written by one submission must not exist in the next.
-async def test_cross_submission_contamination(sandbox):
+async def test_cross_submission_contamination(
+    sandbox: DevelopmentOnlyDockerSandbox,
+) -> None:
     writer = "with open('/tmp/shared.txt', 'w') as f:\n    f.write('hacked')"
     reader = "import os\nprint(os.path.exists('/tmp/shared.txt'))"
 

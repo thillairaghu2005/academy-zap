@@ -27,6 +27,7 @@ from gamification.rules import (
     ASSESSMENT_MAX_MASTERY_XP,
     COURSE_COMPLETION_XP,
     JUDGE_PROBLEM_MASTERY_XP,
+    LAB_COMPLETION_XP,
     SIDE_ASSESSMENT_MULTIPLIER,
 )
 from platform_core.events.schema import (
@@ -34,6 +35,7 @@ from platform_core.events.schema import (
     BaseEvent,
     CourseCompletedEvent,
     JudgeSubmissionGradedEvent,
+    LabSessionCompletedEvent,
 )
 
 
@@ -180,6 +182,31 @@ class GamificationEventProcessor:
                 org_id=event.org_id,
                 source_type="judge_problem",
                 source_id=event.problem_id,
+                event_timestamp=event.occurred_at,
+            )
+        elif isinstance(event, LabSessionCompletedEvent):
+            # Lab completion XP is capped per lab (mirrors the course completion cap): a
+            # replayed/duplicate completion for the same lab awards at most LAB_COMPLETION_XP
+            # total — first completion and different labs stay fully eligible.
+            gate = run_integrity_gate(IntegritySignals())
+
+            entries = await self._ledger.list_for_user(event.user_id)
+            previous_completion = sum(
+                e.xp_delta
+                for e in entries
+                if e.source_id == event.lab_id and e.xp_type == "completion"
+            )
+            xp_delta = max(0, LAB_COMPLETION_XP - previous_completion)
+
+            context = await self._append_and_resolve(
+                event=event,
+                xp_type="completion",
+                xp_delta=xp_delta,
+                reason_code="LAB_COMPLETE",
+                integrity_status="flagged" if gate.flagged else "verified",
+                org_id=event.org_id,
+                source_type="lab",
+                source_id=event.lab_id,
                 event_timestamp=event.occurred_at,
             )
         else:

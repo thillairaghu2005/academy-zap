@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: judge-sandboxes
+  labels:
+    zapsters.io/purpose: judge-sandbox-tenant
+    # Sandbox pods live in their own namespace so the per-submission default-deny
+    # NetworkPolicy can never leak into platform traffic, and so a full-namespace
+    # wipe (e.g. incident response) cannot touch the API/data plane.

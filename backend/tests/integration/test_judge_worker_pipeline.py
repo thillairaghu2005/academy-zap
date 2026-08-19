@@ -13,7 +13,7 @@ acceptance tier does.
 """
 
 import uuid
-from collections.abc import AsyncGenerator
+from collections.abc import AsyncGenerator, Callable
 from typing import TYPE_CHECKING
 
 import pytest
@@ -133,7 +133,7 @@ async def _run_worker_once(
     postgres_test_db: str,
     redis: AsyncRedis,
     monkeypatch: pytest.MonkeyPatch,
-    sandbox_factory=None,
+    sandbox_factory: Callable[[], object] | None = None,
 ) -> int:
     """Run the real `poll_judge_queue` against the test DB + test Redis.
 
@@ -214,7 +214,9 @@ async def test_submit_to_stream_to_worker_to_judge_result(
             await engine.dispose()
 
         # The message was ACKed (removed from the pending list) — no reprocessing.
-        pel = await real_redis.xpending(JUDGE_QUEUE_STREAM, "judge_worker_group")
+        pel = await real_redis.xpending(  # type: ignore[no-untyped-call]
+            JUDGE_QUEUE_STREAM, "judge_worker_group"
+        )
         assert pel["pending"] == 0
     finally:
         await _cleanup_rows(postgres_test_db, submission_id=submission_id, problem_id=problem_id)
@@ -243,10 +245,12 @@ async def test_permanent_failure_dlqs_and_marks_error(
         # Force a permanent sandbox failure and a zero retry budget so the FIRST poll DLQs it.
         import judge.worker.queue as queue_module
 
-        monkeypatch.setattr(queue_module.settings, "JUDGE_MAX_RETRIES", 0)
+        monkeypatch.setattr(
+            queue_module.settings, "JUDGE_MAX_RETRIES", 0  # type: ignore[attr-defined]
+        )
 
         class _ExplodingSandbox:
-            async def run(self, *args, **kwargs):
+            async def run(self, *args: object, **kwargs: object) -> dict[str, object]:
                 raise RuntimeError("kubectl: pod network not ready")
 
         await _run_worker_once(

@@ -70,6 +70,13 @@ class Settings(BaseSettings):
     JUDGE_MAX_RETRIES: int = 3
     JUDGE_WORKER_CONSUMER_NAME: str = "judge-worker"
 
+    # Labs Engine (B6): notebook cell execution reuses the shared judge sandbox pipeline —
+    # never inline. Time budget per cell; memory reuses JUDGE_SANDBOX_MEMORY_LIMIT_MB.
+    LAB_CELL_TIME_LIMIT_MS: int = 5_000
+    LABS_RECLAIM_IDLE_MS: int = 60_000
+    LABS_MAX_RETRIES: int = 3
+    LABS_WORKER_CONSUMER_NAME: str = "labs-worker"
+
     @field_validator("JUDGE_SANDBOX_TYPE")
     @classmethod
     def _validate_judge_sandbox(cls, v: str) -> str:

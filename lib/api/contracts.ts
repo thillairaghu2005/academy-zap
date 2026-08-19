@@ -405,5 +405,106 @@ export const apiCredentialTransitionResultSchema = z.object({
   history: z.array(apiCredentialStatusHistorySchema),
 });
 
+/* ------------------------------------------------------------------ */
+/*  B6 — lab engine + notebook (catalog, progress, execution, complete) */
+/* ------------------------------------------------------------------ */
+
+export const apiLabObjectiveSchema = z.object({
+  id: z.string(),
+  title: z.string(),
+  description: z.string(),
+  hints: z.array(z.string()),
+  requires_terminal: z.boolean(),
+});
+
+export const apiLabSchema = z.object({
+  id: z.string().uuid(),
+  slug: z.string(),
+  title: z.string(),
+  category: z.string(),
+  difficulty: z.enum(["beginner", "intermediate", "advanced"]),
+  description: z.string(),
+  estimated_minutes: z.number(),
+  success_rate_pct: z.number(),
+  requires_gui: z.boolean(),
+  hard_timeout_minutes: z.number(),
+  objectives: z.array(apiLabObjectiveSchema),
+});
+
+export const apiLabCellSchema = z.object({
+  id: z.string().uuid(),
+  cell_type: z.enum(["markdown", "code"]),
+  content: z.string(),
+  position: z.number(),
+});
+
+export const apiLabSectionSchema = z.object({
+  id: z.string().uuid(),
+  title: z.string(),
+  position: z.number(),
+  cells: z.array(apiLabCellSchema),
+});
+
+export const apiLabVersionSchema = z.object({
+  version: z.number(),
+  sections: z.array(apiLabSectionSchema),
+});
+
+export const apiLabDetailSchema = apiLabSchema.extend({
+  notebook: apiLabVersionSchema.nullable(),
+});
+
+export const apiCellExecutionStateSchema = z.object({
+  execution_id: z.string().uuid().nullable(),
+  status: z.enum(["not_run", "queued", "processing", "succeeded", "failed", "error"]),
+  stdout: z.string().nullable(),
+  stderr: z.string().nullable(),
+  exit_code: z.number().nullable(),
+  runtime_ms: z.number().nullable(),
+  memory_kb: z.number().nullable(),
+  error: z.string().nullable(),
+  executed_at: z.string().nullable(),
+  updated_at: z.string().nullable(),
+});
+
+export const apiLabProgressSchema = z.object({
+  progress_id: z.string().uuid(),
+  lab_id: z.string().uuid(),
+  version: z.number(),
+  user_id: z.string().uuid(),
+  status: z.enum(["in_progress", "completed"]),
+  code: z.record(z.string(), z.string()),
+  outputs: z.record(z.string(), apiCellExecutionStateSchema),
+  hints_used: z.number(),
+  started_at: z.string(),
+  updated_at: z.string(),
+  completed_at: z.string().nullable(),
+});
+
+export const apiCellExecutionAcceptedSchema = z.object({
+  execution_id: z.string().uuid(),
+  cell_id: z.string().uuid(),
+  status: z.literal("queued"),
+  received_at: z.string(),
+});
+
+export const apiLabProgressSaveResultSchema = z.object({
+  progress_id: z.string().uuid(),
+  updated_at: z.string(),
+});
+
+export const apiCheckpointResultSchema = z.object({
+  checkpoint_id: z.string().uuid(),
+  created_at: z.string(),
+});
+
+export const apiLabCompleteResultSchema = z.object({
+  lab_id: z.string().uuid(),
+  session_id: z.string().uuid(),
+  objectives_completed: z.array(z.string()),
+  time_taken_seconds: z.number(),
+  hints_used: z.number(),
+});
+
 export type ApiUser = z.infer<typeof apiUserSchema>;
 export type AuthSession = z.infer<typeof authSessionSchema>;

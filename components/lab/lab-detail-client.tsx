@@ -22,7 +22,12 @@ import {
 } from "lucide-react";
 
 import type { Lab } from "@/lib/contracts/lab";
-import { getLab, provisionPreviewSession, provisionSession } from "@/lib/data/demo/lab";
+import type { LabDetail } from "@/lib/contracts/lab-notebook";
+import {
+  getLab,
+  provisionPreviewSession,
+  provisionSession,
+} from "@/lib/data/lab-facade";
 import { DEMO_MODE } from "@/lib/config";
 import { getCatalogProduct, hasEntitlement } from "@/lib/data/demo/commerce";
 import { AddToCartButton } from "@/components/commerce/add-to-cart-button";
@@ -172,6 +177,9 @@ export function LabDetailClient({
 
   const lab = labQuery.data;
   const diff = DIFFICULTY_STYLES[lab.difficulty];
+  const hasNotebook = Boolean(
+    (labQuery.data as LabDetail).notebook,
+  );
 
   return (
     <PageContainer>
@@ -230,7 +238,7 @@ export function LabDetailClient({
             </span>
           </div>
 
-          {!user ? (
+          {!user && !hasNotebook ? (
             <div>
               <div className="mb-3 flex items-center justify-between gap-3">
                 <div>
@@ -252,6 +260,17 @@ export function LabDetailClient({
                   </p>
                 )}
               </Card>
+            </div>
+          ) : !user ? (
+            <div className="rounded-xl border border-border/70 bg-muted/30 p-4">
+              <h2 className="flex items-center gap-2 font-display text-h2">
+                <Terminal className="size-4 text-muted-foreground" />
+                Browser notebook
+              </h2>
+              <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
+                This lab runs as a notebook in your browser — cells execute in an
+                isolated sandbox. Sign in to autosave your code and track progress.
+              </p>
             </div>
           ) : null}
 
@@ -343,6 +362,13 @@ export function LabDetailClient({
                 <Link href={`/login?next=/labs/${labId}`}>
                   <Lock className="size-4" />
                   Sign in to save progress
+                </Link>
+              </Button>
+            ) : hasNotebook ? (
+              <Button className="w-full gap-2" asChild>
+                <Link href={`/labs/${labId}/notebook`}>
+                  <Terminal className="size-4" />
+                  Open notebook
                 </Link>
               </Button>
             ) : (

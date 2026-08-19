@@ -17,3 +17,7 @@ PUBLIC_RATE_LIMIT = RateLimit(times=60, seconds=60)
 
 # The single most abusable route on the platform (platform §2.2) once B5 lands.
 JUDGE_SUBMIT_RATE_LIMIT = RateLimit(times=10, seconds=60)
+
+# Notebook cell execution (B6): sandbox spin-ups are expensive, so the execute route is
+# rate-limited per authenticated user, mirroring judge's submit route.
+LABS_EXECUTE_RATE_LIMIT = RateLimit(times=20, seconds=60)

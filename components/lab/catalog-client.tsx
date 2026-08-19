@@ -19,7 +19,7 @@ import {
 
 import type { Lab, LabDifficulty } from "@/lib/contracts/lab";
 import type { CatalogProduct } from "@/lib/contracts/commerce";
-import { searchLabs } from "@/lib/data/demo/lab";
+import { searchLabs } from "@/lib/data/lab-facade";
 import { listCatalogProducts } from "@/lib/data/demo/commerce";
 import { DEMO_MODE } from "@/lib/config";
 import { AddToCartButton } from "@/components/commerce/add-to-cart-button";

@@ -71,6 +71,106 @@ class LabPreviewSession(BaseModel):
     read_only: Literal[True] = True
 
 
+# --- Notebook engine (B6) ----------------------------------------------------------------------
+
+
+class LabCellView(BaseModel):
+    id: UUID
+    cell_type: Literal["markdown", "code"]
+    content: str
+    position: int
+
+
+class LabSectionView(BaseModel):
+    id: UUID
+    title: str
+    position: int
+    cells: list[LabCellView]
+
+
+class LabVersionView(BaseModel):
+    version: int
+    sections: list[LabSectionView]
+
+
+class LabDetail(Lab):
+    """A lab's catalog card plus its published notebook manifest, if one exists."""
+
+    notebook: LabVersionView | None = None
+
+
+class CellExecutionState(BaseModel):
+    """Latest execution state for one cell in a learner's session. `not_run` is the
+    implicit state for cells with no execution row yet."""
+
+    execution_id: UUID | None = None
+    status: Literal["not_run", "queued", "processing", "succeeded", "failed", "error"]
+    stdout: str | None = None
+    stderr: str | None = None
+    exit_code: int | None = None
+    runtime_ms: int | None = None
+    memory_kb: int | None = None
+    error: str | None = None
+    executed_at: datetime | None = None
+    updated_at: datetime | None = None
+
+
+class LabProgress(BaseModel):
+    progress_id: UUID
+    lab_id: UUID
+    version: int
+    user_id: UUID
+    status: Literal["in_progress", "completed"]
+    code: dict[str, str]
+    outputs: dict[str, CellExecutionState]
+    hints_used: int
+    started_at: datetime
+    updated_at: datetime
+    completed_at: datetime | None
+
+
+class ExecuteCellRequest(BaseModel):
+    cell_id: UUID
+    # Optional snapshot to run; when omitted the server runs the autosaved code for the cell
+    # (or the cell's starter content if the learner has not touched it).
+    code: str | None = None
+
+
+class CellExecutionAccepted(BaseModel):
+    execution_id: UUID
+    cell_id: UUID
+    status: Literal["queued"] = "queued"
+    received_at: datetime
+
+
+class SaveProgressRequest(BaseModel):
+    """Debounced autosave of the learner's cell sources."""
+
+    code: dict[str, str]
+
+
+class LabProgressSaveResult(BaseModel):
+    progress_id: UUID
+    updated_at: datetime
+
+
+class CheckpointRequest(BaseModel):
+    label: str = ""
+
+
+class CheckpointResult(BaseModel):
+    checkpoint_id: UUID
+    created_at: datetime
+
+
+class LabCompleteResult(BaseModel):
+    lab_id: UUID
+    session_id: UUID
+    objectives_completed: list[str]
+    time_taken_seconds: int
+    hints_used: int
+
+
 class LabEngine(Protocol):
     """Platform §4.1 — locked verbatim."""
 

@@ -1,9 +1,7 @@
-import uuid
-
 from fastapi import APIRouter, Query
 
 from labs.services.lab import LabService
-from platform_core.contracts.labs import Lab
+from platform_core.contracts.labs import Lab, LabDetail
 from platform_core.core.deps import DbSession
 
 router = APIRouter(prefix="/labs", tags=["labs"])
@@ -16,6 +14,8 @@ async def list_labs(
     return await LabService(session).list_labs(limit=limit, offset=offset)
 
 
-@router.get("/{lab_id}", response_model=Lab)
-async def get_lab(lab_id: uuid.UUID, session: DbSession) -> Lab:
-    return await LabService(session).get_lab(lab_id)
+@router.get("/{identifier}", response_model=LabDetail)
+async def get_lab(identifier: str, session: DbSession) -> LabDetail:
+    """Resolve slug-first with UUID fallback, so the B6 slug contract and the foundation
+    UUID contract (`test_labs_catalog.py`) both work on one route."""
+    return await LabService(session).get_lab(identifier)

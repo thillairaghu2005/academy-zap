@@ -29,6 +29,9 @@ from platform_core.core.redis import AsyncRedis, get_redis
 
 router = APIRouter(prefix="/judge", tags=["judge"])
 
+DbSession = Annotated[AsyncSession, Depends(get_session)]
+DbRedis = Annotated[AsyncRedis, Depends(get_redis)]
+
 _judge_submit_rate_limit = AuthenticatedRateLimiter(
     times=JUDGE_SUBMIT_RATE_LIMIT.times,
     seconds=JUDGE_SUBMIT_RATE_LIMIT.seconds,
@@ -54,8 +57,8 @@ async def submit(
     submission: CodeSubmission,
     _current_user: CurrentUser,
     _rate_limited: Annotated[None, Depends(_judge_submit_rate_limited)],
-    session: AsyncSession = Depends(get_session),
-    redis: AsyncRedis = Depends(get_redis),
+    session: DbSession,
+    redis: DbRedis,
 ) -> SubmissionAccepted:
     return await SubmissionService(session, redis).submit(submission, user=_current_user)
 
@@ -64,7 +67,7 @@ async def submit(
 async def get_result(
     submission_id: uuid.UUID,
     _current_user: CurrentUser,
-    session: AsyncSession = Depends(get_session),
+    session: DbSession,
 ) -> JudgeResult:
     return await SubmissionService(session).get_result(submission_id, user=_current_user)
 
@@ -73,8 +76,8 @@ async def get_result(
 async def create_submission_sse_ticket(
     submission_id: uuid.UUID,
     _current_user: CurrentUser,
-    session: AsyncSession = Depends(get_session),
-    redis: AsyncRedis = Depends(get_redis),
+    session: DbSession,
+    redis: DbRedis,
 ) -> dict[str, object]:
     """Single-use SSE ticket for this submission's stream (F-7).
 

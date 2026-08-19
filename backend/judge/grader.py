@@ -1,7 +1,7 @@
 from typing import Any, TypedDict
 
 from judge.models import Problem, TestCase
-from judge.orchestrator.sandbox import SandboxOrchestrator
+from judge.orchestrator.sandbox import SandboxOrchestrator, SandboxResult
 from platform_core.contracts.judge import Verdict
 
 
@@ -23,7 +23,12 @@ class Grader:
     Contains ZERO AI imports (CI-enforced).
     """
 
-    def __init__(self, sandbox: SandboxOrchestrator, problem: Problem, test_cases: list[TestCase]) -> None:
+    def __init__(
+        self,
+        sandbox: SandboxOrchestrator,
+        problem: Problem,
+        test_cases: list[TestCase],
+    ) -> None:
         self._sandbox = sandbox
         self._problem = problem
         self._test_cases = test_cases
@@ -59,7 +64,9 @@ class Grader:
             if result["stderr"]:
                 stderr_acc.append(result["stderr"])
                 
-            case_verdict = self._evaluate_case(result, case.expected_output, self._problem.time_limit_ms)
+            case_verdict = self._evaluate_case(
+                result, case.expected_output, self._problem.time_limit_ms
+            )
             
             if case_verdict == "accepted":
                 test_cases_passed += 1
@@ -90,7 +97,12 @@ class Grader:
             cases=cases_details,
         )
 
-    def _evaluate_case(self, sandbox_result: dict[str, Any], expected_output: str, time_limit_ms: int) -> Verdict:
+    def _evaluate_case(
+        self,
+        sandbox_result: SandboxResult,
+        expected_output: str,
+        time_limit_ms: int,
+    ) -> Verdict:
         # Check for timeout explicitly from sandbox result
         if sandbox_result["exit_code"] == -1 and "TimeoutExpired" in sandbox_result["stderr"]:
             return "time_limit_exceeded"
@@ -100,7 +112,10 @@ class Grader:
 
         if sandbox_result["exit_code"] != 0:
             # Python compile errors (SyntaxError) exit with non-zero and appear in stderr
-            if "SyntaxError" in sandbox_result["stderr"] or "IndentationError" in sandbox_result["stderr"]:
+            if (
+                "SyntaxError" in sandbox_result["stderr"]
+                or "IndentationError" in sandbox_result["stderr"]
+            ):
                 return "compile_error"
             return "runtime_error"
 
