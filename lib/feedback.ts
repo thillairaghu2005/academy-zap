@@ -86,6 +86,22 @@ export const feedback = {
     playHaptics(8);
     playTone({ freq: 520, duration: 0.024, type: "sine", gain: 0.03 });
   },
+  /** XP awarded — fires the global flyout and the success haptic. */
+  xp(amount: number) {
+    if (typeof window === "undefined") return;
+    window.dispatchEvent(
+      new CustomEvent("zapsters:xp-earned", { detail: { amount } }),
+    );
+    playHaptics(12);
+    playTone({ freq: 660, duration: 0.06, type: "sine", gain: 0.04 });
+  },
+  /** Rank/level milestone — fires the level-up celebration (UI §6.1). */
+  levelUp(payload: { level: number; rank?: string; xp?: number }) {
+    if (typeof window === "undefined") return;
+    window.dispatchEvent(new CustomEvent("zapsters:level-up", { detail: payload }));
+    playHaptics([20, 60, 20]);
+    playTone({ freq: 520, duration: 0.1, type: "sine", gain: 0.04 });
+  },
   /** User preference toggles (persisted in localStorage). */
   setSound(enabled: boolean) {
     if (typeof window === "undefined") return;

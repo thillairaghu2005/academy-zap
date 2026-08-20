@@ -15,7 +15,8 @@ import { useSession } from "@/components/providers/session-provider";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Progress } from "@/components/ui/progress";
+import { RingProgress } from "@/components/viz/ring-progress";
+import { AreaChart } from "@/components/viz/area-chart";
 
 function startOfWeek(date: Date): Date {
   const result = new Date(date);
@@ -74,10 +75,22 @@ function WeeklyGoal({ activity }: { activity: DemoActivity[] }) {
       </CardHeader>
       <CardContent>
         <div className="flex items-end justify-between gap-3">
-          <p className="font-display text-3xl font-semibold tabular-nums">{(minutes / 60).toFixed(1)}<span className="ml-1 text-sm font-medium text-muted-foreground">/ {goalHours}h</span></p>
+          <RingProgress
+            value={progress}
+            size={88}
+            stroke={8}
+            tone="mastery"
+            label={`${(minutes / 60).toFixed(1)} / ${goalHours}h`}
+            sublabel={`${progress}% of weekly goal`}
+          />
           <Badge variant="secondary">{progress}%</Badge>
         </div>
-        <Progress value={progress} className="mt-4 h-2" />
+        <div className="mt-5 rounded-xl border border-border bg-surface-1 p-3">
+          <p className="mb-2 text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">
+            This week
+          </p>
+          <AreaChart data={days.length ? days : [0, 0, 0, 0, 0, 0, 0]} width={280} height={72} className="w-full" />
+        </div>
         <div className="mt-5 grid grid-cols-7 gap-1.5" aria-label="Activity this week">
           {days.map((count, index) => (
              <div key={`${WEEKDAY_LABELS[index]}-${index}`} className="text-center">

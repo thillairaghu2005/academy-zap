@@ -11,22 +11,53 @@ const SHORTCUTS = [
   ["?", "Open keyboard shortcuts"],
   ["Esc", "Close dialogs and menus"],
   ["Arrow keys", "Move through command results"],
+  ["g d", "Go to dashboard"],
+  ["g j", "Go to Judge"],
+  ["g l", "Go to Labs"],
+  ["Space", "Play / pause a lesson video"],
 ] as const;
 
 export function KeyboardShortcuts() {
   const [open, setOpen] = React.useState(false);
 
   React.useEffect(() => {
+    let lastKey = "";
+    const timer = window.setTimeout(() => {}, 0);
     const onKeyDown = (event: KeyboardEvent) => {
       const target = event.target as HTMLElement | null;
       if (target?.matches("input, textarea, select, [contenteditable='true']")) return;
       if (event.key === "?") {
         event.preventDefault();
         setOpen(true);
+        return;
+      }
+      // "g then <key>" navigation (dashboard/judge/labs).
+      if (event.key.toLowerCase() === "g") {
+        lastKey = "g";
+        window.setTimeout(() => (lastKey = ""), 800);
+        return;
+      }
+      if (lastKey === "g") {
+        const destination =
+          event.key.toLowerCase() === "d"
+            ? "/dashboard"
+            : event.key.toLowerCase() === "j"
+              ? "/judge"
+              : event.key.toLowerCase() === "l"
+                ? "/labs"
+                : null;
+        if (destination) {
+          event.preventDefault();
+          lastKey = "";
+          window.location.assign(destination);
+        }
       }
     };
     window.addEventListener("keydown", onKeyDown);
-    return () => window.removeEventListener("keydown", onKeyDown);
+    return () => {
+      window.clearTimeout(timer);
+      window.removeEventListener("keydown", onKeyDown);
+    };
   }, []);
 
   return (

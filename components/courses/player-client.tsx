@@ -70,10 +70,12 @@ import {
   saveLessonNote,
   toggleCourseBookmark,
 } from "@/lib/demo/course-notes";
+import { readDemoStorage, writeDemoStorage } from "@/lib/demo/storage";
 import { CertificateDialog } from "@/components/courses/certificate-dialog";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { motionSprings } from "@/components/motion/motion-tokens";
 import { feedback } from "@/lib/feedback";
+import type { PlayerControl } from "@/components/courses/video-player";
 
 // video.js is not SSR-safe — load the wrapper only on the client.
 const VideoPlayer = dynamic(
@@ -311,6 +313,11 @@ export function PlayerClient({ course }: { course: Course }) {
       });
       if (input.completed) {
         feedback.success();
+        feedback.xp(25);
+        const completedIndex = allLessons.findIndex((lesson) => lesson.id === input.lessonId);
+        if (completedIndex >= 0 && (completedIndex + 1) % 5 === 0) {
+          feedback.levelUp({ level: Math.floor((completedIndex + 1) / 5) + 1, xp: 25 });
+        }
         toast.success("Lesson marked complete ⚡", { position: "top-center" });
       }
     },
@@ -338,6 +345,14 @@ export function PlayerClient({ course }: { course: Course }) {
         completed: true,
       });
     }
+    // Autoplay-next (UI §4.1): glide into the following lesson after a beat.
+    if (nextLesson) {
+      window.setTimeout(() => {
+        setPickedLessonId(nextLesson.id);
+        setSpeed(1);
+        announce(`Moving to ${nextLesson.title}`);
+      }, 900);
+    }
   };
 
   const isActiveCompleted = activeLesson ? completedSet.has(activeLesson.id) : false;
@@ -346,9 +361,9 @@ export function PlayerClient({ course }: { course: Course }) {
 
   // Speed control via the player instance.
   const [speed, setSpeed] = React.useState(1);
-  const playerRef = React.useRef<{ playbackRate: (r: number) => void } | null>(null);
+  const playerRef = React.useRef<PlayerControl | null>(null);
   const onPlayerReady = React.useCallback(
-    (player: { playbackRate: (r: number) => void }) => {
+    (player: PlayerControl) => {
       playerRef.current = player;
     },
     [],
@@ -358,6 +373,31 @@ export function PlayerClient({ course }: { course: Course }) {
     setSpeed(rate);
     playerRef.current?.playbackRate(rate);
   };
+
+  // Keyboard-first video controls (UI §8.4 / §4.1): Space toggles playback,
+  // ←/→ scrub ±10s. Only active while a video lesson is open.
+  React.useEffect(() => {
+    if (!isVideo) return;
+    const onKeyDown = (event: KeyboardEvent) => {
+      const target = event.target as HTMLElement | null;
+      if (target?.matches("input, textarea, select, [contenteditable='true']")) return;
+      const player = playerRef.current;
+      if (!player) return;
+      if (event.code === "Space") {
+        event.preventDefault();
+        if (player.paused()) player.play();
+        else player.pause();
+      } else if (event.key === "ArrowRight") {
+        event.preventDefault();
+        player.currentTime(player.getCurrentTime() + 10);
+      } else if (event.key === "ArrowLeft") {
+        event.preventDefault();
+        player.currentTime(Math.max(0, player.getCurrentTime() - 10));
+      }
+    };
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [isVideo]);
 
   const [captionsOn, setCaptionsOn] = React.useState(true);
   const toggleCaptions = () => {
@@ -540,6 +580,11 @@ export function PlayerClient({ course }: { course: Course }) {
                     }}
                   />
                 )}
+                <CheckpointQuiz
+                  key={`quiz-${activeLesson.id}`}
+                  lessonId={activeLesson.id}
+                  lessonTitle={activeLesson.title}
+                />
                 <MarkCompleteButton
                   completed={isActiveCompleted}
                   pending={progressMutation.isPending}
@@ -878,6 +923,129 @@ function LessonNavigation({
     <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-border bg-card p-3">
       {previous ? <Button variant="outline" size="sm" onClick={() => onSelect(previous.id)}><ArrowLeft className="size-4" /> Previous</Button> : <span />}
       {next ? <Button size="sm" onClick={() => onSelect(next.id)}>Next lesson <ArrowRight className="size-4" /></Button> : <span className="text-xs font-medium text-success-strong">Course content complete</span>}
+    </div>
+  );
+}
+
+/** In-lesson checkpoint (UI §4.3): a two-question quiz with instant feedback.
+    Questions are drawn deterministically from a small bank per lesson. */
+const CHECKPOINT_BANK = [
+  {
+    question: "What is the smallest useful first step when approaching a new skill?",
+    options: [
+      "Read the whole spec before touching anything",
+      "Run one small, observable experiment",
+      "Rewrite everything in a new tool first",
+      "Wait until the plan is perfect",
+    ],
+    answer: 1,
+    explain:
+      "A single observable experiment gives you a signal you can verify before changing more variables.",
+  },
+  {
+    question: "How should you capture what you learned from a lesson?",
+    options: [
+      "In one reusable note tied to the lesson",
+      "Only in your head",
+      "By copying the entire article",
+      "You should not write anything down",
+    ],
+    answer: 0,
+    explain:
+      "A short note keeps the pattern reusable and becomes part of your rank evidence trail.",
+  },
+] as const;
+
+function CheckpointQuiz({
+  lessonId,
+  lessonTitle,
+}: {
+  lessonId: string;
+  lessonTitle: string;
+}) {
+  const seed = lessonId.split("").reduce((acc, char) => acc + char.charCodeAt(0), 0);
+  const question = CHECKPOINT_BANK[seed % CHECKPOINT_BANK.length] ?? CHECKPOINT_BANK[0]!;
+  const storageKey = `checkpoint-${lessonId}`;
+  const [picked, setPicked] = React.useState<number | null>(() =>
+    readDemoStorage<number>(storageKey, -1) >= 0
+      ? readDemoStorage<number>(storageKey, -1)
+      : null,
+  );
+  const announce = useAnnounce();
+
+  const choose = (index: number) => {
+    if (picked !== null) return;
+    setPicked(index);
+    writeDemoStorage(storageKey, index);
+    const correct = index === question.answer;
+    announce(correct ? "Checkpoint passed" : "Checkpoint missed, review the lesson");
+    toast[correct ? "success" : "error"](
+      correct
+        ? "Checkpoint passed — pattern captured."
+        : "Not quite — re-read the lesson and retry.",
+    );
+  };
+
+  return (
+    <div className="rounded-2xl border border-border bg-card p-4 sm:p-5">
+      <p className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.12em] text-primary">
+        <Lightbulb className="size-4" aria-hidden="true" />
+        Checkpoint · {lessonTitle}
+      </p>
+      <p className="mt-3 text-sm font-medium text-foreground">{question.question}</p>
+      <div className="mt-3 grid gap-2">
+        {question.options.map((option, index) => {
+          const chosen = picked === index;
+          const correct = index === question.answer;
+          const revealed = picked !== null;
+          return (
+            <button
+              key={option}
+              type="button"
+              onClick={() => choose(index)}
+              disabled={revealed}
+              aria-pressed={chosen}
+              className={cn(
+                "flex items-start gap-2.5 rounded-xl border px-3 py-2.5 text-left text-xs transition-colors",
+                !revealed && "border-border bg-surface-1 hover:border-primary/40 hover:bg-primary-light",
+                revealed && correct && "border-success/50 bg-success/10 text-success-strong",
+                revealed && chosen && !correct && "border-danger/50 bg-danger/10 text-danger-strong",
+                revealed && !chosen && !correct && "border-border opacity-60",
+              )}
+            >
+              <span
+                className={cn(
+                  "grid size-4 shrink-0 place-items-center rounded-full border text-[10px] font-semibold",
+                  revealed && correct
+                    ? "border-success-strong bg-success-strong text-white"
+                    : revealed && chosen
+                      ? "border-danger-strong bg-danger-strong text-white"
+                      : "border-border text-muted-foreground",
+                )}
+              >
+                {revealed && correct ? <Check className="size-2.5" /> : revealed && chosen ? "✕" : index + 1}
+              </span>
+              {option}
+            </button>
+          );
+        })}
+      </div>
+      {picked !== null ? (
+        <p
+          className={cn(
+            "mt-3 rounded-lg px-3 py-2 text-xs leading-5",
+            picked === question.answer
+              ? "bg-success/10 text-success-strong"
+              : "bg-danger/10 text-danger-strong",
+          )}
+        >
+          {question.explain}
+        </p>
+      ) : (
+        <p className="mt-3 text-caption text-muted-foreground">
+          Pick an answer for instant feedback — passing earns a small momentum bump.
+        </p>
+      )}
     </div>
   );
 }

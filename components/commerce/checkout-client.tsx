@@ -550,6 +550,25 @@ export function CheckoutClient({ checkoutId }: { checkoutId: string }) {
 
       <HostedEmbed session={session} onPaid={refreshSession} />
 
+      {/* Delivery expectation timeline (UI §7.1) */}
+      <ol className="mt-4 grid gap-2 rounded-xl border border-border bg-card p-4 sm:grid-cols-3 sm:gap-0 sm:p-0">
+        {[
+          { title: "Pay securely", body: "Provider-hosted form, PCI-DSS out of your hands." },
+          { title: "Instant entitlement", body: "payment.succeeded unlocks your item immediately." },
+          { title: "Download proof", body: "Receipt and credential available in your profile." },
+        ].map((step, index) => (
+          <li key={step.title} className="flex gap-3 sm:flex-1 sm:flex-col sm:gap-0 sm:px-5 sm:py-3">
+            <span className="grid size-5 shrink-0 place-items-center rounded-full bg-primary-muted font-mono text-[10px] font-bold text-primary sm:mb-2">
+              {index + 1}
+            </span>
+            <div className="sm:pl-0">
+              <p className="text-xs font-semibold">{step.title}</p>
+              <p className="mt-0.5 text-[11px] leading-relaxed text-muted-foreground">{step.body}</p>
+            </div>
+          </li>
+        ))}
+      </ol>
+
       {/* Demo strip + mock note — demo scaffolding, gated in production. */}
       {DEMO_MODE ? (
         <>

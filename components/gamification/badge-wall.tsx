@@ -54,6 +54,9 @@ export function BadgeWall() {
   });
 
   const badges = data ?? [];
+  const newestVerified = badges
+    .filter((b) => b.status === "verified")
+    .sort((a, b) => new Date(b.earned_at).getTime() - new Date(a.earned_at).getTime())[0];
 
   return (
     <PageContainer>
@@ -93,14 +96,16 @@ export function BadgeWall() {
         <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
           {badges.map((b, i) => {
             const style = STATUS_STYLE[b.status] ?? STATUS_STYLE.verified!;
+            const isNewest = b.badge_id === newestVerified?.badge_id;
             return (
               <motion.div
                 key={b.badge_id}
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
+                layout
+                initial={{ opacity: 0, y: 10, scale: 0.96 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
                 transition={{ delay: i * 0.05 }}
                 className={cn(
-                  "flex flex-col rounded-xl border bg-card p-5 transition-colors",
+                  "relative flex flex-col rounded-xl border bg-card p-5 transition-colors",
                   b.status === "revoked"
                         ? "border-primary-border opacity-75"
                     : b.status === "flagged"
@@ -108,6 +113,20 @@ export function BadgeWall() {
                       : "border-border hover:border-success/30",
                 )}
               >
+                {isNewest ? (
+                  <>
+                    <motion.span
+                      aria-hidden="true"
+                      className="pointer-events-none absolute inset-0 rounded-xl ring-2 ring-success/40"
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: [0, 1, 0.6] }}
+                      transition={{ duration: 2.2, times: [0, 0.4, 1] }}
+                    />
+                    <span className="absolute -top-2 right-3 rounded-full bg-success px-2 py-0.5 text-[9px] font-bold uppercase tracking-widest text-white shadow-sm">
+                      Newest
+                    </span>
+                  </>
+                ) : null}
                 <div className="flex items-start justify-between">
                   <span
                     className={cn(

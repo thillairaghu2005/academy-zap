@@ -3,6 +3,7 @@
 import * as React from "react";
 import Link from "next/link";
 import { useQuery } from "@tanstack/react-query";
+import { m as motion } from "framer-motion";
 import {
   ArrowRight,
   BookOpen,
@@ -40,6 +41,7 @@ interface Move {
   actionLabel: string;
   icon: MoveIcon;
   iconClassName: string;
+  progressPct?: number;
 }
 
 function formatMinutes(seconds: number): string {
@@ -116,6 +118,7 @@ function moveForCourse(
     actionLabel: isResume ? "Continue lesson" : "Start lesson",
     icon: BookOpen,
     iconClassName: "bg-primary/10 text-primary",
+    progressPct: item.enrollment.progress_pct,
   };
 }
 
@@ -313,6 +316,34 @@ export function NextMove() {
             Zapsters keeps one action in view so learning can move from a concept
             to a verified result without another planning screen.
           </p>
+          {typeof move.progressPct === "number" ? (
+            <div className="mt-4">
+              <div className="flex items-center justify-between text-[11px] text-muted-foreground">
+                <span>Course progress</span>
+                <span className="font-medium tabular-nums text-foreground">{move.progressPct}%</span>
+              </div>
+              <div
+                className="mt-2 h-1.5 overflow-hidden rounded-full bg-primary/10"
+                role="progressbar"
+                aria-valuenow={move.progressPct}
+                aria-valuemin={0}
+                aria-valuemax={100}
+                aria-label="Course progress"
+              >
+                <motion.div
+                  className="h-full rounded-full bg-primary"
+                  initial={false}
+                  animate={{ width: `${move.progressPct}%` }}
+                  transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+                />
+              </div>
+              <p className="mt-2 text-[11px] text-muted-foreground">
+                {move.progressPct >= 100
+                  ? "Course complete — pick the next surface."
+                  : `${100 - move.progressPct}% to course complete.`}
+              </p>
+            </div>
+          ) : null}
           <div className="mt-4 flex items-center gap-2 border-t border-primary/10 pt-3 text-xs text-muted-foreground">
             <span className="size-2 rounded-full bg-success" aria-hidden="true" />
             {courseQuery.isLoading || problemQuery.isLoading ? "Preparing your context..." : "Context is ready"}
