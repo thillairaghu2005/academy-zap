@@ -2,7 +2,8 @@
 
 import * as React from "react";
 import { formatLongEnglishDate } from "@/lib/format";
-import { Award, BadgeCheck, Download } from "lucide-react";
+import { m as motion, useReducedMotion } from "framer-motion";
+import { Award, BadgeCheck, Download, Share2 } from "lucide-react";
 
 import type { Course } from "@/lib/contracts/content";
 import { useAnnounce } from "@/components/providers/live-region-provider";
@@ -15,6 +16,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
+import { toast } from "sonner";
 
 /**
  * Course completion certificate simulation (Task 4). Rendered as a download-
@@ -33,9 +35,21 @@ export function CertificateDialog({
   learnerName: string;
 }) {
   const announce = useAnnounce();
+  const reducedMotion = useReducedMotion() ?? false;
   const certificateRef = React.useRef<HTMLDivElement>(null);
   const completedAt = formatLongEnglishDate(new Date());
   const credentialId = `cred-${course.id.slice(0, 8).toLowerCase()}-${course.id.length}`;
+
+  const shareCertificate = () => {
+    announce("Certificate share copied");
+    const shareText = `I completed "${course.title}" on Zapsters — ${credentialId}`;
+    if (typeof navigator !== "undefined" && navigator.share) {
+      void navigator.share({ title: "Zapsters certificate", text: shareText });
+    } else {
+      void navigator.clipboard.writeText(shareText);
+      toast.success("Share text copied to clipboard");
+    }
+  };
 
   const downloadCertificate = () => {
     announce("Certificate downloaded");
@@ -95,6 +109,40 @@ export function CertificateDialog({
             <div className="mx-auto grid size-12 place-items-center rounded-full border border-primary/25 bg-primary/10 text-primary">
               <BadgeCheck className="size-6" />
             </div>
+            {/* Animated seal — the ring + check line-draw on open (UI §4.5). */}
+            <svg
+              viewBox="0 0 96 96"
+              className="pointer-events-none absolute -right-3 -top-3 size-24 text-primary"
+              aria-hidden="true"
+            >
+              <motion.circle
+                cx="48"
+                cy="48"
+                r="44"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeDasharray="60 14"
+                initial={reducedMotion ? undefined : { pathLength: 0 }}
+                animate={{ pathLength: 1 }}
+                transition={
+                  reducedMotion ? undefined : { duration: 1.2, ease: "easeOut", delay: 0.2 }
+                }
+              />
+              <motion.path
+                d="M30 48 L43 61 L68 34"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="3"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                initial={reducedMotion ? undefined : { pathLength: 0 }}
+                animate={{ pathLength: 1 }}
+                transition={
+                  reducedMotion ? undefined : { duration: 0.6, ease: "easeOut", delay: 0.7 }
+                }
+              />
+            </svg>
             <p className="mt-4 text-[11px] font-semibold uppercase tracking-[0.22em] text-primary">
               Zapsters · Certificate of Completion
             </p>
@@ -121,6 +169,10 @@ export function CertificateDialog({
         <div className="flex flex-wrap items-center justify-end gap-2">
           <Button variant="outline" size="sm" onClick={() => onOpenChange(false)}>
             Close
+          </Button>
+          <Button variant="outline" size="sm" onClick={shareCertificate}>
+            <Share2 className="size-3.5" />
+            Share
           </Button>
           <Button variant="gradient" size="sm" onClick={downloadCertificate}>
             <Download className="size-3.5" />

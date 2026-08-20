@@ -5,6 +5,16 @@ import videojs from "video.js";
 import "video.js/dist/video-js.css";
 import type Player from "video.js/dist/types/player";
 
+/** Narrow control surface the shell uses (keyboard shortcuts, speed, CC). */
+export interface PlayerControl {
+  playbackRate: (rate: number) => void;
+  play: () => void;
+  pause: () => void;
+  currentTime: (seconds: number) => void;
+  getCurrentTime: () => number;
+  paused: () => boolean;
+}
+
 type PlayerOptions = {
   autoplay?: boolean;
   controls?: boolean;
@@ -24,7 +34,7 @@ interface VideoPlayerProps {
   resumeSeconds: number;
   onTimeUpdate?: (seconds: number) => void;
   onEnded?: () => void;
-  onReady?: (player: Player) => void;
+  onReady?: (player: PlayerControl) => void;
 }
 
 /**
@@ -87,7 +97,14 @@ export function VideoPlayer({
         onTimeUpdate?.(Math.floor(player.currentTime() ?? 0));
       });
       player.on("ended", () => onEnded?.());
-      onReady?.(player);
+      onReady?.({
+        playbackRate: (rate: number) => player.playbackRate(rate),
+        play: () => void player.play(),
+        pause: () => player.pause(),
+        currentTime: (seconds: number) => player.currentTime(seconds),
+        getCurrentTime: () => player.currentTime() ?? 0,
+        paused: () => player.paused(),
+      });
     });
 
     playerRef.current = player;

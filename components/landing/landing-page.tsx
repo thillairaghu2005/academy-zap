@@ -30,8 +30,15 @@ import { SocialProof } from "@/components/landing/social-proof";
 import { SkillCard } from "@/components/landing/skill-card";
 import { StaggerGroup } from "@/components/motion/stagger-group";
 import { Marquee } from "@/components/motion/marquee";
+import { AmbientSection } from "@/components/ui/ambient-section";
 import { VerifiedProgression } from "@/components/landing/verified-progression";
 import { TrustHighlights } from "@/components/landing/trust-highlights";
+import {
+  CaseStudySection,
+  ComparisonSection,
+  StatsBand,
+  TrustBar,
+} from "@/components/landing/conversion-sections";
 import { ErrorState } from "@/components/shared/error-state";
 import {
   FaqSection,
@@ -101,27 +108,29 @@ function LandingSections({ courses, catalogUnavailable = false }: LandingPagePro
 
   return (
     <>
-      <section className="mx-auto max-w-7xl px-4 py-16 sm:px-6 sm:py-20 lg:px-8">
-        <SectionTitle
-          title="Course catalog / choose your base"
-          description="Start with the subject you want to use in a submission, a lab session, or your next rank climb."
-        />
-        <div className="mt-8 flex gap-4 overflow-x-auto pb-3 sm:grid sm:grid-cols-2 lg:grid-cols-4">
-          {categories.map((category) => {
-            const visual = categoryVisuals[category.name] ?? { icon: Cpu, tone: "bg-primary" };
-            return (
-              <CategoryCard
-                key={category.name}
-                name={category.name}
-                count={category.count}
-                icon={visual.icon}
-                tone={visual.tone}
-                onSelect={() => selectCategory(category.name)}
-              />
-            );
-          })}
+      <AmbientSection tone="subtle" className="border-y border-border/60">
+        <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 sm:py-20 lg:px-8">
+          <SectionTitle
+            title="Course catalog / choose your base"
+            description="Start with the subject you want to use in a submission, a lab session, or your next rank climb."
+          />
+          <div className="mt-8 flex gap-4 overflow-x-auto pb-3 sm:grid sm:grid-cols-2 lg:grid-cols-4">
+            {categories.map((category) => {
+              const visual = categoryVisuals[category.name] ?? { icon: Cpu, tone: "bg-primary" };
+              return (
+                <CategoryCard
+                  key={category.name}
+                  name={category.name}
+                  count={category.count}
+                  icon={visual.icon}
+                  tone={visual.tone}
+                  onSelect={() => selectCategory(category.name)}
+                />
+              );
+            })}
+          </div>
         </div>
-      </section>
+      </AmbientSection>
 
       <section aria-label="Learning topics" className="border-y border-border bg-surface-1">
         <h2 className="sr-only">Learning topics</h2>
@@ -139,7 +148,7 @@ function LandingSections({ courses, catalogUnavailable = false }: LandingPagePro
         </div>
       </section>
 
-      <section id="featured-courses" className="scroll-mt-24 bg-muted/40">
+      <AmbientSection id="featured-courses" tone="subtle" className="scroll-mt-24 bg-muted/40">
         <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 sm:py-20 lg:px-8">
           <SectionTitle
             title="Courses that build the base for submissions"
@@ -171,9 +180,9 @@ function LandingSections({ courses, catalogUnavailable = false }: LandingPagePro
             </div>
           )}
         </div>
-      </section>
+      </AmbientSection>
 
-      <section className="bg-background">
+      <AmbientSection tone="subtle" className="bg-background">
         <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 sm:py-20 lg:px-8">
           <SectionTitle
             title="Topics you can submit, shell into, and climb with"
@@ -185,7 +194,7 @@ function LandingSections({ courses, catalogUnavailable = false }: LandingPagePro
             ))}
           </StaggerGroup>
         </div>
-      </section>
+      </AmbientSection>
 
       <section className="mx-auto max-w-7xl px-4 py-16 sm:px-6 sm:py-20 lg:px-8">
         <VerifiedProgression />
@@ -209,6 +218,7 @@ export function LandingPage({ courses, catalogUnavailable = false }: LandingPage
       <LiveLearningTicker />
       <main id="main-content">
         <HomeHero />
+        <TrustBar />
         <LearningLoop />
         <section className="bg-background">
           <div className="mx-auto grid max-w-7xl items-center gap-8 px-4 py-16 sm:px-6 lg:grid-cols-2 lg:gap-14 lg:px-8">
@@ -221,6 +231,9 @@ export function LandingPage({ courses, catalogUnavailable = false }: LandingPage
           </div>
         </section>
         <LandingSections courses={courses} catalogUnavailable={catalogUnavailable} />
+        <StatsBand />
+        <ComparisonSection />
+        <CaseStudySection />
         <PricingSection />
         <TestimonialWall />
         <FaqSection />

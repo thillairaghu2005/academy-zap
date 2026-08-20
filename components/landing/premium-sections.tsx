@@ -2,7 +2,8 @@
 
 import * as React from "react";
 import Link from "next/link";
-import { Check, ChevronDown, Play, ShieldCheck, Star, Users } from "lucide-react";
+import { m as motion } from "framer-motion";
+import { BadgeCheck, Check, ChevronDown, CreditCard, Lock, Play, ShieldCheck, Star, Users } from "lucide-react";
 
 import { MARKETING_FAQ, MARKETING_PLANS, MARKETING_TESTIMONIALS } from "@/lib/mocks/marketing";
 import { Button } from "@/components/ui/button";
@@ -10,6 +11,7 @@ import { Card } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { JsonLd } from "@/components/seo/json-ld";
+import { motionSprings } from "@/components/motion/motion-tokens";
 import { cn } from "@/lib/utils";
 
 
@@ -77,9 +79,32 @@ export function PricingSection({ standalone = false }: { standalone?: boolean })
             >Choose the amount of structure you need.</h2>
             <p className="mt-3 max-w-xl text-sm leading-6 text-muted-foreground">Start free, build a rhythm, and upgrade when the next level of feedback is worth it.</p>
           </div>
-          <div className="inline-flex w-fit items-center rounded-lg border border-border bg-card p-1 text-sm shadow-sm" role="group" aria-label="Billing interval">
-            <button type="button" onClick={() => setYearly(false)} aria-pressed={!yearly} className={cn("rounded-md px-3 py-2 transition-colors", !yearly ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground")}>Monthly</button>
-            <button type="button" onClick={() => setYearly(true)} aria-pressed={yearly} className={cn("rounded-md px-3 py-2 transition-colors", yearly ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground")}>Yearly <span className="ml-1 text-[10px] font-semibold">-20%</span></button>
+          <div className="relative inline-flex w-fit items-center rounded-lg border border-border bg-card p-1 text-sm shadow-sm" role="group" aria-label="Billing interval">
+            {(["Monthly", "Yearly"] as const).map((option) => {
+              const active = yearly === (option === "Yearly");
+              return (
+                <button
+                  key={option}
+                  type="button"
+                  onClick={() => setYearly(option === "Yearly")}
+                  aria-pressed={active}
+                  className={cn(
+                    "relative z-10 rounded-md px-3 py-2 outline-none transition-colors focus-visible:ring-2 focus-visible:ring-ring",
+                    active ? "text-primary-foreground" : "text-muted-foreground hover:text-foreground",
+                  )}
+                >
+                  {active ? (
+                    <motion.span
+                      layoutId="billing-pill"
+                      className="absolute inset-0 -z-10 rounded-md bg-primary"
+                      transition={motionSprings.default}
+                    />
+                  ) : null}
+                  {option}
+                  {option === "Yearly" ? <span className="ml-1 text-[10px] font-semibold">-20%</span> : null}
+                </button>
+              );
+            })}
           </div>
         </div>
 
@@ -102,7 +127,19 @@ export function PricingSection({ standalone = false }: { standalone?: boolean })
             </Card>
           ))}
         </div>
-        <p className="mt-6 flex items-center justify-center gap-2 text-center text-xs text-muted-foreground"><ShieldCheck className="size-4 text-success" /> 30-day money-back guarantee on paid plans. Cancel anytime.</p>
+        <div className="mt-6 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-xs text-muted-foreground">
+          <span className="flex items-center gap-1.5"><ShieldCheck className="size-4 text-success" /> 30-day money-back guarantee</span>
+          <span className="flex items-center gap-1.5"><Check className="size-4 text-success" /> Cancel anytime</span>
+          <span className="flex items-center gap-1.5"><CreditCard className="size-4 text-muted-foreground" /> USD · taxes added at checkout</span>
+          <span className="flex items-center gap-1.5"><BadgeCheck className="size-4 text-muted-foreground" /> Group plans for teams</span>
+        </div>
+        <div className="mx-auto mt-8 flex max-w-md items-center justify-center gap-3">
+          <span className="h-px flex-1 bg-border" aria-hidden="true" />
+          <span className="flex items-center gap-1.5 text-[11px] font-medium uppercase tracking-[0.14em] text-muted-foreground">
+            <Lock className="size-3.5" /> PCI-DSS via our payment provider
+          </span>
+          <span className="h-px flex-1 bg-border" aria-hidden="true" />
+        </div>
       </div>
     </section>
   );

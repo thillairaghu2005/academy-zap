@@ -145,9 +145,10 @@ export function LeaderboardClient() {
               return (
                 <motion.div
                   key={e.user_id}
+                  layout
                   initial={{ opacity: 0, y: 6 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: i * 0.03 }}
+                  transition={{ layout: { type: "spring", bounce: 0, duration: 0.5 }, delay: i * 0.03 }}
                   className={cn(
                     "flex items-center gap-4 border-b border-border px-4 py-3 last:border-0",
                     e.is_me && "bg-primary/5",

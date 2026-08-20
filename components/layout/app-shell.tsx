@@ -10,6 +10,7 @@ import { AuthGuard } from "@/components/providers/auth-guard";
 import { DemoModeBadge } from "@/components/layout/demo-mode-badge";
 import { AiTutor } from "@/components/ai/tutor";
 import { XpFlyout } from "@/components/gamification/xp-flyout";
+import { LevelUpCelebration } from "@/components/gamification/level-up-celebration";
 import { useSession } from "@/components/providers/session-provider";
 import { useRealtimeUpdates } from "@/lib/real-time/sse";
 
@@ -49,6 +50,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         <NavigationTour />
         <AiTutor />
         <XpFlyout />
+        <LevelUpCelebration />
         <RealtimeUpdates />
       </div>
     </AuthGuard>

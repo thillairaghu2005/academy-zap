@@ -3,27 +3,90 @@
 import * as React from "react";
 import { formatRelativeLocalDate } from "@/lib/format";
 import { useQuery } from "@tanstack/react-query";
+import { m as motion, useReducedMotion } from "framer-motion";
 import { CalendarDays, CheckCircle2, Flame, Target } from "lucide-react";
 
 import { getProgressContext } from "@/lib/data/demo/gamification";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 
-const WEEKDAYS = ["M", "T", "W", "T", "F", "S", "S"];
+const MONTHS = ["", "", "Apr", "", "", "May", "", "", "Jun", "", "", "Jul", "", ""];
 const ACTIVITY_CELL_KEYS = Array.from({ length: 84 }, (_, index) => `activity-${index}`);
 
-function ActivityHeatmap({ baseDate }: { baseDate: string }) {
-  const cells = Array.from({ length: 84 }, (_, index) => {
-    const level = (index * 7 + 3) % 5;
-    return level === 0 ? 0 : level;
-  });
+export function ActivityHeatmap({
+  baseDate = new Date().toISOString(),
+  compact = false,
+}: {
+  baseDate?: string;
+  compact?: boolean;
+}) {
   return (
     <div>
-      <div className="mb-2 flex items-center gap-2 text-xs text-muted-foreground"><span className="w-4" />{WEEKDAYS.map((day, index) => <span key={`${day}-${index}`} className="w-3 text-center text-[10px]">{day}</span>)}</div>
-      <div className="grid grid-flow-col grid-rows-7 gap-1.5" role="img" aria-label="Learning activity over the last twelve weeks">
-         {cells.map((level, index) => <span key={ACTIVITY_CELL_KEYS[index]} title={`${formatRelativeLocalDate(baseDate, cells.length - index)}: ${level * 12} XP`} className={cn("size-3 rounded-[3px] border border-transparent", level === 0 ? "bg-muted" : level === 1 ? "bg-primary/20" : level === 2 ? "bg-primary/40" : level === 3 ? "bg-primary/65" : "bg-primary")} />)}
-      </div>
-      <div className="mt-3 flex items-center justify-between text-[10px] text-muted-foreground"><span>12 weeks ago</span><span>Today</span></div>
+      {!compact ? (
+        <div className="mb-2 flex items-center gap-2 text-xs text-muted-foreground">
+          <div className="grid grid-cols-7 gap-1.5 text-center text-[10px]">
+            {MONTHS.map((month, index) => (
+              <span key={`${month}-${index}`} className={cn(month ? "text-muted-foreground" : "")}>
+                {month}
+              </span>
+            ))}
+          </div>
+        </div>
+      ) : (
+        <Card>
+          <CardHeader className="flex-row items-center justify-between gap-3 space-y-0 pb-3">
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-[0.14em] text-primary">Daily activity</p>
+              <CardTitle className="mt-1 text-lg">Twelve-week learning heat</CardTitle>
+            </div>
+            <CalendarDays className="size-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <ActivityHeatmapGrid baseDate={baseDate} />
+          </CardContent>
+        </Card>
+      )}
+      {compact ? null : (
+        <>
+          <ActivityHeatmapGrid baseDate={baseDate} />
+          <div className="mt-3 flex items-center justify-between text-[10px] text-muted-foreground">
+            <span>12 weeks ago</span>
+            <span className="flex items-center gap-1">
+              Less <span className="size-2.5 rounded-[3px] bg-muted" />
+              <span className="size-2.5 rounded-[3px] bg-primary/40" />
+              <span className="size-2.5 rounded-[3px] bg-primary/65" />
+              <span className="size-2.5 rounded-[3px] bg-primary" /> More
+            </span>
+          </div>
+        </>
+      )}
+    </div>
+  );
+}
+
+function ActivityHeatmapGrid({ baseDate }: { baseDate: string }) {
+  const reducedMotion = useReducedMotion() ?? false;
+  const cells = Array.from({ length: 84 }, (_, index) => {
+    const weekday = index % 7;
+    const weekendDip = weekday === 0 || weekday === 6 ? 0.6 : 1;
+    const level = Math.round(((((index * 7 + 3) % 5) * weekendDip + 1) % 5));
+    return level === 0 ? 0 : Math.min(4, Math.max(1, level));
+  });
+  return (
+    <div className="grid grid-flow-col grid-rows-7 gap-1.5" role="img" aria-label="Learning activity over the last twelve weeks">
+      {cells.map((level, index) => (
+        <motion.span
+          key={ACTIVITY_CELL_KEYS[index]}
+          initial={reducedMotion ? false : { opacity: 0, scale: 0.6 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ delay: reducedMotion ? 0 : index * 0.003 }}
+          title={`${formatRelativeLocalDate(baseDate, cells.length - index)}: ${level * 12} XP`}
+          className={cn(
+            "size-3 rounded-[3px] border border-transparent",
+            level === 0 ? "bg-muted" : level === 1 ? "bg-primary/20" : level === 2 ? "bg-primary/40" : level === 3 ? "bg-primary/65" : "bg-primary",
+          )}
+        />
+      ))}
     </div>
   );
 }

@@ -5,7 +5,7 @@
   --font-mono-stack: var(--font-body);
   --font-mono: var(--font-body);
 
-  --fs-hero: clamp(2.5rem, 1.35rem + 4.2vw, 4.5rem);
+  --fs-hero: clamp(2.75rem, 1.35rem + 4.6vw, 5.5rem);
   --fs-h1: clamp(2.25rem, 1.3rem + 3.5vw, 4rem);
   --fs-h2: clamp(1.75rem, 1.1rem + 2vw, 2.5rem);
   --fs-h3: clamp(1.25rem, 1rem + 1vw, 1.5rem);
@@ -22,9 +22,9 @@
 
   /* Leading tracks size inversely: tight on large display, looser on
      body copy (SKILL §15). */
-  --lh-hero: 1.1;
-  --lh-h1: 1.15;
-  --lh-h2: 1.2;
+  --lh-hero: 0.98;
+  --lh-h1: 1.05;
+  --lh-h2: 1.15;
   --lh-h3: 1.25;
   --lh-body: 1.6;
   --lh-small: 1.5;
@@ -32,8 +32,8 @@
 
   /* Tracking is size-specific, never one value: negative on display
      type, near 0 on body, slightly positive on small/caption. */
-  --ls-heading: -0.02em;
-  --ls-heading-soft: -0.01em;
+  --ls-heading: -0.03em;
+  --ls-heading-soft: -0.015em;
   --ls-body: 0em;
   --ls-small: 0.01em;
   --ls-caption: 0.02em;

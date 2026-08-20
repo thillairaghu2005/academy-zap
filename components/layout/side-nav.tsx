@@ -3,6 +3,7 @@
 import * as React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { m as motion, useReducedMotion } from "framer-motion";
 
 import { Menu, Search, X } from "lucide-react";
 
@@ -27,27 +28,45 @@ function NavLink({
   icon: Icon,
   active,
   onNavigate,
+  unread = false,
 }: {
   href: string;
   label: string;
   icon: React.ComponentType<{ className?: string }>;
   active: boolean;
   onNavigate?: () => void;
+  unread?: boolean;
 }) {
+  const reducedMotion = useReducedMotion() ?? false;
   return (
     <Link
       href={href}
       onClick={onNavigate}
       className={cn(
-        "relative flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm transition-[background-color,color,transform] outline-none focus-visible:ring-2 focus-visible:ring-ring",
-           active
-           ? "bg-primary-light font-semibold text-secondary-accent shadow-[inset_3px_0_0_var(--color-primary)]"
-           : "text-muted-foreground hover:bg-secondary hover:text-foreground",
+        "relative flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm transition-colors outline-none focus-visible:ring-2 focus-visible:ring-ring",
+        active
+          ? "font-semibold text-secondary-accent"
+          : "text-muted-foreground hover:bg-secondary hover:text-foreground",
       )}
       aria-current={active ? "page" : undefined}
     >
-      <Icon className="size-4 shrink-0" />
-      {label}
+      {active && !reducedMotion ? (
+        <motion.span
+          layoutId="active-rail-pill"
+          transition={{ type: "spring", bounce: 0, duration: 0.4 }}
+          className="absolute inset-0 rounded-xl border border-primary/15 bg-primary-light shadow-[inset_3px_0_0_var(--color-primary)]"
+        />
+      ) : active ? (
+        <span className="absolute inset-0 rounded-xl border border-primary/15 bg-primary-light shadow-[inset_3px_0_0_var(--color-primary)]" />
+      ) : null}
+      <Icon className="relative z-[1] size-4 shrink-0" />
+      <span className="relative z-[1] min-w-0 flex-1 truncate">{label}</span>
+      {unread ? (
+        <span
+          aria-hidden="true"
+          className="relative z-[1] size-1.5 rounded-full bg-primary"
+        />
+      ) : null}
     </Link>
   );
 }

@@ -26,6 +26,11 @@ const SkillTree = dynamic(
   },
 );
 
+const SkillRadar = dynamic(
+  () => import("@/components/gamification/skill-radar").then((module) => module.SkillRadar),
+  { ssr: false },
+);
+
 /* ------------------------------------------------------------------ */
 /*  Guild board — member rollup + guild-vs-guild (§5.3 GuildRollup).   */
 /* ------------------------------------------------------------------ */
@@ -143,6 +148,8 @@ export function GuildClient() {
           {/* Right rail: vs comparison + skill tree */}
           <div className="flex flex-col gap-6">
             <GuildVsCard vs={vs} />
+
+            <SkillRadar />
 
             <SkillTree />
           </div>

@@ -2,6 +2,7 @@ import * as React from "react";
 import type { LucideIcon } from "lucide-react";
 
 import { cn } from "@/lib/utils";
+import { NoiseOverlay } from "@/components/ui/noise-overlay";
 
 interface EmptyStateProps {
   icon?: LucideIcon;
@@ -31,25 +32,28 @@ export function EmptyState({
   return (
     <div
       className={cn(
-        "flex animate-fade-up flex-col items-center justify-center rounded-xl border border-dashed border-border bg-surface-2 px-6 py-14 text-center",
+        "relative flex animate-fade-up flex-col items-center justify-center overflow-hidden rounded-xl border border-dashed border-border bg-surface-2 px-6 py-14 text-center",
         className,
       )}
     >
+      <NoiseOverlay className="opacity-30" />
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute -top-16 left-1/2 size-48 -translate-x-1/2 rounded-full bg-primary/8 blur-3xl"
+      />
       {Icon ? (
-        <div className="mb-4 grid size-12 place-items-center rounded-full border border-border bg-secondary text-muted-foreground">
-          <Icon className="size-5 text-primary" />
+        <div className="relative mb-4 grid size-14 place-items-center rounded-2xl border border-primary/25 bg-gradient-to-b from-primary-light to-primary-muted text-primary shadow-[0_8px_24px_rgb(180_35_60_/_12%)]">
+          <Icon className="size-6" />
         </div>
       ) : null}
-      <h3 className="font-display text-h3">
-        {title}
-      </h3>
+      <h3 className="relative font-display text-h3">{title}</h3>
       {description ? (
-        <p className="mt-1.5 max-w-md text-sm leading-relaxed text-muted-foreground">
+        <p className="relative mt-1.5 max-w-md text-sm leading-relaxed text-muted-foreground">
           {description}
         </p>
       ) : null}
       {primary || secondaryAction ? (
-        <div className="mt-5 flex flex-wrap items-center justify-center gap-2">
+        <div className="relative mt-5 flex flex-wrap items-center justify-center gap-2">
           {primary}
           {secondaryAction}
         </div>
