@@ -489,6 +489,16 @@
     -webkit-backdrop-filter: blur(20px) saturate(160%);
     backdrop-filter: blur(20px) saturate(160%);
   }
+
+  /* Marketplace rails: native horizontal scroll with no visible scrollbar.
+     Arrow affordances + snap points replace it. */
+  .rail-scroll {
+    scrollbar-width: none;
+    overscroll-behavior-x: contain;
+  }
+  .rail-scroll::-webkit-scrollbar {
+    display: none;
+  }
 }
 
 /* ------------------------------------------------------------------ */

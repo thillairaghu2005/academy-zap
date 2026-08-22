@@ -64,13 +64,37 @@ export const DEMO_COUPONS: Record<string, { percent: number; label: string }> = 
  * entitlement gate and checkout resolve against the real products.
  */
 // Stock values are mock inventory so Buy Now can validate before checkout.
-// "Offensive Web App Testing" has stock 0 → the out-of-stock demo path;
-// "Race the Clock" has stock 3 → the low-stock display path.
+// Courses are digital — they always have stock; only the timed lab pass is
+// capacity-limited ("Race the Clock" has stock 3 → the low-stock display path).
 export const MOCK_CATALOG: CatalogProduct[] = [
-  { product_id: "b2c3d4e5-f6a7-4b8c-9d0e-1f2a3b4c5d6e", kind: "course", title: "Offensive Web App Testing", price_cents: 149900, stock: 0 },
+  { product_id: "b2c3d4e5-f6a7-4b8c-9d0e-1f2a3b4c5d6e", kind: "course", title: "Offensive Web App Testing", price_cents: 149900, stock: 25 },
   { product_id: "c3d4e5f6-a7b8-4c9d-0e1f-2a3b4c5d6e7f", kind: "course", title: "React & TypeScript Deep Dive", price_cents: 99900, stock: 25 },
   { product_id: "e5f6a7b8-c9d0-4e1f-2a3b-4c5d6e7f8a9b", kind: "course", title: "Cloud Security Essentials", price_cents: 129900, stock: 25 },
   { product_id: "f6a7b8c9-d0e1-4f2a-3b4c-5d6e7f8a9b0c", kind: "course", title: "Data Structures & Algorithms in Go", price_cents: 89900, stock: 25 },
+  { product_id: "soc-analyst-fundamentals", kind: "course", title: "SOC Analyst Fundamentals", price_cents: 129900, stock: 25 },
+  { product_id: "network-traffic-analysis", kind: "course", title: "Network Traffic Analysis", price_cents: 99900, stock: 25 },
+  { product_id: "malware-analysis-basics", kind: "course", title: "Malware Analysis Basics", price_cents: 149900, stock: 25 },
+  { product_id: "full-stack-nextjs", kind: "course", title: "Full Stack Next.js Development", price_cents: 199900, stock: 25 },
+  { product_id: "nodejs-backend-engineering", kind: "course", title: "Node.js Backend Engineering", price_cents: 149900, stock: 25 },
+  { product_id: "web-performance-engineering", kind: "course", title: "Web Performance Engineering", price_cents: 99900, stock: 25 },
+  { product_id: "accessibility-first-frontend", kind: "course", title: "Accessibility-First Frontend", price_cents: 79900, stock: 25 },
+  { product_id: "advanced-java-oop", kind: "course", title: "Advanced Java & OOP", price_cents: 99900, stock: 25 },
+  { product_id: "python-programming-masterclass", kind: "course", title: "Python Programming Masterclass", price_cents: 129900, stock: 25 },
+  { product_id: "clean-code-software-architecture", kind: "course", title: "Clean Code & Software Architecture", price_cents: 179900, stock: 25 },
+  { product_id: "go-concurrency-in-practice", kind: "course", title: "Go Concurrency in Practice", price_cents: 119900, stock: 25 },
+  { product_id: "docker-and-kubernetes", kind: "course", title: "Docker & Kubernetes", price_cents: 149900, stock: 25 },
+  { product_id: "aws-cloud-foundations", kind: "course", title: "AWS Cloud Foundations", price_cents: 99900, stock: 25 },
+  { product_id: "cicd-engineering", kind: "course", title: "CI/CD Engineering", price_cents: 129900, stock: 25 },
+  { product_id: "terraform-infrastructure-as-code", kind: "course", title: "Terraform Infrastructure as Code", price_cents: 149900, stock: 25 },
+  { product_id: "machine-learning-foundations", kind: "course", title: "Machine Learning Foundations", price_cents: 129900, stock: 25 },
+  { product_id: "deep-learning-pytorch", kind: "course", title: "Deep Learning with PyTorch", price_cents: 179900, stock: 25 },
+  { product_id: "computer-vision", kind: "course", title: "Computer Vision", price_cents: 149900, stock: 25 },
+  { product_id: "generative-ai-engineering", kind: "course", title: "Generative AI Engineering", price_cents: 199900, stock: 25 },
+  { product_id: "ai-agents-automation", kind: "course", title: "AI Agents & Automation", price_cents: 149900, stock: 25 },
+  { product_id: "tcp-ip-deep-dive", kind: "course", title: "TCP/IP Deep Dive", price_cents: 99900, stock: 25 },
+  { product_id: "network-automation-python", kind: "course", title: "Network Automation with Python", price_cents: 129900, stock: 25 },
+  { product_id: "operating-systems-internals", kind: "course", title: "Operating Systems Internals", price_cents: 149900, stock: 25 },
+  { product_id: "system-design-interview-prep", kind: "course", title: "System Design Interview Prep", price_cents: 199900, stock: 25 },
   { product_id: "lab-race-the-clock", kind: "lab", title: "Race the Clock (lab pass)", price_cents: 1200, stock: 3 },
   // Hidden demo product — only added to the cart via the "simulate provider
   // outage" demo, so the checkout 503 state is reachable on demand.
