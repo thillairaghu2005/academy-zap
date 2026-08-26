@@ -2,7 +2,7 @@
 
 import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
-import { Clock3, ExternalLink, Languages, MessageCircle, ShieldCheck, Star, Users } from "lucide-react";
+import { Clock3, Languages, MessageCircle, ShieldCheck, Star, Users } from "lucide-react";
 
 import type { InstructorProfile } from "@/lib/contracts/instructor";
 import { getInstructor } from "@/lib/data/demo/instructors";
@@ -47,7 +47,7 @@ export function InstructorCard({ instructorId, initialInstructor }: { instructor
           <Button size="sm" variant="outline" asChild><Link href={`/mentors/${instructor.id}`}>View Profile</Link></Button>
           <Button size="sm" variant="outline" asChild><Link href={`/courses?q=${encodeURIComponent(instructor.name)}`}>More Courses</Link></Button>
         </div>
-        <div className="flex gap-3 text-xs text-muted-foreground"><span>{instructor.courses_taught} courses taught</span><a href={instructor.social_links.linkedin} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 text-primary hover:underline">LinkedIn <ExternalLink className="size-3" /></a></div>
+        <div className="flex gap-3 text-xs text-muted-foreground"><span>{instructor.courses_taught} courses taught</span></div>
       </CardContent>
     </Card>
   );

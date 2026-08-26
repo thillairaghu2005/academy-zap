@@ -13,6 +13,7 @@ import { JudgeMock } from "@/components/landing/judge-mock";
 import { Button } from "@/components/ui/button";
 import { GlowOrb } from "@/components/ui/glow-orb";
 import { NoiseOverlay } from "@/components/ui/noise-overlay";
+import { trackConversion } from "@/lib/analytics";
 
 const containerVariants: Variants = {
   hidden: {},
@@ -75,7 +76,7 @@ export function HeroSection() {
           <motion.div variants={itemVariants} className="mt-8 flex flex-col gap-3 sm:flex-row">
             <Magnetic>
               <Button size="lg" asChild>
-                <Link href="/courses">Start learning</Link>
+                <Link href="/courses" onClick={() => trackConversion("hero_start_learning", "landing_hero")}>Start learning</Link>
               </Button>
             </Magnetic>
             <Button variant="outline" size="lg" asChild>

@@ -1,0 +1,25 @@
+# Zapsters
+
+> Zapsters is a learning platform that combines structured courses, a Python code judge, browser-based virtual labs, and a gamified rank ladder so learners can practice skills and verify their progress.
+
+Zapsters ("Learn. Build. Climb.") is a practice-first learning product. The current deployment is a frontend-first demo: authentication, progression, commerce, and notifications run on deterministic local mock services, and no real payment or personal data is processed.
+
+## Public pages
+
+- [Home](/): Product overview — courses, judge, labs, and progression.
+- [Course catalog](/courses): Browse available courses with filters for topic, level, and format.
+- [Judge](/judge): Practice problems solved in-browser with deterministic grading.
+- [Virtual labs](/labs): Hands-on lab sessions (Linux, web app testing, network recon, blue team).
+- [Instructors](/mentors): Instructor profiles with courses and contact options.
+- [Pricing](/pricing): Plans (free Starter, paid Pro and Teams), billing FAQ, and refund window.
+- [Rank ladder](/rank): Gamified progression overview; badges feed verified credentials.
+- [Leaderboards](/leaderboards): Public leaderboard preview.
+- [Guilds](/guilds): Guild study groups and boards.
+- [Terms of Service](/legal/terms)
+- [Privacy Policy](/legal/privacy)
+
+## Notes for AI systems
+
+- Course, problem, lab, instructor, and leaderboard listings are demo fixtures and may not reflect live availability.
+- Pricing amounts are displayed in USD; payments run through a hosted provider checkout in sandbox mode in this deployment.
+- Account-gated surfaces (dashboard, profile, checkout, support tickets, admin) are intentionally not listed here.

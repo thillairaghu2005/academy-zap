@@ -224,12 +224,14 @@ function PaidPanel({
   granted,
   onReplay,
   replayResult,
+  replaying,
 }: {
   session: CheckoutSession;
   order: Order | null;
   granted: Entitlement[];
   onReplay: () => void;
   replayResult: { duplicated: boolean } | null;
+  replaying?: boolean;
 }) {
   return (
     <motion.div
@@ -310,9 +312,13 @@ function PaidPanel({
           variant="outline"
           size="sm"
           onClick={onReplay}
-          disabled={replayResult !== null}
+          disabled={replaying || replayResult !== null}
         >
-          <RefreshCcw className="size-3.5" />
+          {replaying ? (
+            <LoaderCircle className="size-3.5 animate-spin" />
+          ) : (
+            <RefreshCcw className="size-3.5" />
+          )}
           Replay webhook (idempotency demo)
         </Button>
         <Button variant="gradient" size="sm" asChild>
@@ -516,6 +522,7 @@ export function CheckoutClient({ checkoutId }: { checkoutId: string }) {
           granted={granted}
           onReplay={() => replayMutation.mutate()}
           replayResult={replayResult}
+          replaying={replayMutation.isPending}
         />
       </PageContainer>
     );

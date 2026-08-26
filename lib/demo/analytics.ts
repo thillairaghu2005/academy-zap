@@ -30,7 +30,7 @@ export function trackDemoEvent(
   events.push({
     id: makeId(),
     type,
-    path: typeof window === "undefined" ? undefined : window.location.pathname,
+    path: typeof window === "undefined" ? undefined : window.location?.pathname,
     metadata,
     created_at: new Date().toISOString(),
   });

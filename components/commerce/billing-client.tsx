@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import Link from "next/link";
 import { formatLocalDate } from "@/lib/format";
 import { useQuery } from "@tanstack/react-query";
 import {
@@ -328,21 +329,28 @@ function renderPlans(plans: Plan[], currentPlanId?: string) {
                   /seat/mo
                 </span>
               </p>
-              <Button
-                variant={isCurrent ? "outline" : "gradient"}
-                size="sm"
-                disabled={isCurrent}
-                className="mt-auto"
-              >
-                {isCurrent ? (
-                  "Current plan"
-                ) : (
-                  <>
-                    Switch plan
+              {isCurrent ? (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  disabled
+                  className="mt-auto"
+                >
+                  Current plan
+                </Button>
+              ) : (
+                <Button
+                  variant="gradient"
+                  size="sm"
+                  className="mt-auto"
+                  asChild
+                >
+                  <Link href="/pricing">
+                    Compare plans
                     <ArrowRight className="size-3.5" />
-                  </>
-                )}
-              </Button>
+                  </Link>
+                </Button>
+              )}
             </Card>
           );
         })}

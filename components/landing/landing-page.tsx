@@ -40,6 +40,7 @@ import {
   TrustBar,
 } from "@/components/landing/conversion-sections";
 import { ErrorState } from "@/components/shared/error-state";
+import { MobileCtaBar } from "@/components/shared/mobile-cta-bar";
 import {
   FaqSection,
   FinalCta,
@@ -206,6 +207,7 @@ function LandingSections({ courses, catalogUnavailable = false }: LandingPagePro
 }
 
 export function LandingPage({ courses, catalogUnavailable = false }: LandingPageProps) {
+  const { user, isLoading } = useSession();
   return (
     <div className="min-h-dvh overflow-x-hidden bg-background">
       <a
@@ -241,6 +243,7 @@ export function LandingPage({ courses, catalogUnavailable = false }: LandingPage
         <FinalCta />
       </main>
       <MarketingFooter />
+      {isLoading || user ? null : <MobileCtaBar analyticsLabel="landing" />}
     </div>
   );
 }

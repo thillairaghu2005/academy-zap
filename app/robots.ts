@@ -1,6 +1,6 @@
 import type { MetadataRoute } from "next";
 
-import { SITE_URL } from "@/lib/seo";
+import { getSiteUrl } from "@/lib/seo";
 
 export default function robots(): MetadataRoute.Robots {
   return {
@@ -13,15 +13,16 @@ export default function robots(): MetadataRoute.Robots {
         "/checkout/",
         "/dashboard",
         "/profile",
-        "/support/",
+        "/support",
         "/assessments/",
         "/rank",
         "/leaderboards",
         "/guilds",
         "/courses/*/learn",
         "/labs/*/session/",
+        "/offline",
       ],
     },
-    sitemap: `${SITE_URL}/sitemap.xml`,
+    sitemap: `${getSiteUrl().origin}/sitemap.xml`,
   };
 }
