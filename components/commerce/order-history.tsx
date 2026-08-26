@@ -15,6 +15,8 @@ import { EmptyState } from "@/components/shared/empty-state";
 import { ErrorState } from "@/components/shared/error-state";
 import { SkeletonLines } from "@/components/shared/skeletons";
 
+import { motion } from "motion/react";
+
 /**
  * Learner-facing order history (Task 4 — persistent receipts). Orders are
  * persisted in the demo commerce store, so paid purchases survive page loads.
@@ -35,7 +37,7 @@ export function OrderHistory() {
     <Card>
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
-          <ReceiptText className="size-4 text-primary" />
+          <ReceiptText className="size-4 text-ink" />
           Order history
         </CardTitle>
       </CardHeader>
@@ -59,7 +61,7 @@ export function OrderHistory() {
                 key={order.order_id}
                 className="flex items-center gap-3 py-3 first:pt-0 last:pb-0"
               >
-                <span className="grid size-9 shrink-0 place-items-center rounded-lg bg-primary/10 text-primary">
+                <span className="grid size-9 shrink-0 place-items-center rounded-lg bg-surface-hover border border-border text-ink">
                   {order.items.some((item) => item.kind === "lab") ? (
                     <FlaskConical className="size-4" />
                   ) : (
@@ -90,11 +92,13 @@ export function OrderHistory() {
             ))}
           </ul>
         ) : (
-          <EmptyState
-            icon={ReceiptText}
-            title="No orders yet"
-            description="Paid courses and lab passes you purchase will show up here with downloadable receipts."
-          />
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.5 }}>
+            <EmptyState
+              icon={ReceiptText}
+              title="No orders yet"
+              description="Paid courses and lab passes you purchase will show up here with downloadable receipts."
+            />
+          </motion.div>
         )}
       </CardContent>
     </Card>

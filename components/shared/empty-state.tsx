@@ -1,5 +1,6 @@
 import * as React from "react";
 import type { LucideIcon } from "lucide-react";
+import { motion } from "motion/react";
 
 import { cn } from "@/lib/utils";
 import { NoiseOverlay } from "@/components/ui/noise-overlay";
@@ -39,12 +40,16 @@ export function EmptyState({
       <NoiseOverlay className="opacity-30" />
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute -top-16 left-1/2 size-48 -translate-x-1/2 rounded-full bg-primary/8 blur-3xl"
+        className="pointer-events-none absolute -top-16 left-1/2 size-48 -translate-x-1/2 rounded-full bg-ink-muted/10 blur-3xl"
       />
       {Icon ? (
-        <div className="relative mb-4 grid size-14 place-items-center rounded-2xl border border-primary/25 bg-gradient-to-b from-primary-light to-primary-muted text-primary shadow-[0_8px_24px_rgb(180_35_60_/_12%)]">
+        <motion.div
+          animate={{ y: [0, -4, 0] }}
+          transition={{ repeat: Infinity, duration: 3, ease: "easeInOut" }}
+          className="relative mb-4 grid size-14 place-items-center rounded-2xl border border-border bg-gradient-to-b from-surface-hover to-surface-2 text-ink shadow-sm"
+        >
           <Icon className="size-6" />
-        </div>
+        </motion.div>
       ) : null}
       <h3 className="relative font-display text-h3">{title}</h3>
       {description ? (
