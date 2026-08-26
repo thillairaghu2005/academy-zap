@@ -20,8 +20,7 @@
       }
     ],
     "paths": {
-      "@/*": ["./*"],
-      "motion/react": ["./node_modules/framer-motion"]
+      "@/*": ["./*"]
     }
   },
   "include": [
