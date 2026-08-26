@@ -32,10 +32,8 @@ import { useSession } from "@/components/providers/session-provider";
 import { OnboardingDialog } from "@/components/dashboard/onboarding-dialog";
 import { Progress } from "@/components/ui/progress";
 import { ProgressPulse } from "@/components/dashboard/progress-pulse";
-import { NextMove } from "@/components/learning/next-move";
 import { AnimatedNumber } from "@/components/motion/animated-number";
 import { RingProgress } from "@/components/viz/ring-progress";
-import { Sparkline } from "@/components/viz/sparkline";
 
 function SurfaceCard({ surface }: { surface: SurfaceMeta }) {
   const Icon = surface.icon;
@@ -147,63 +145,6 @@ function MomentumPanel({ userId }: { userId: string }) {
   );
 }
 
-/** KPI strip (UI §5.1): a few numbers with inline sparklines + count-up. */
-function KpiStrip({ userId }: { userId: string }) {
-  const progress = useQuery({
-    queryKey: ["progress-context", userId],
-    queryFn: () => getProgressContext(userId),
-    enabled: Boolean(userId),
-  });
-  const data = progress.data;
-
-  const kpis = [
-    {
-      label: "Current streak",
-      value: data ? data.streak.current_streak_days : 0,
-      icon: Flame,
-      series: [2, 3, 3, 4, 4, 5, 6],
-      tone: "text-warning-strong" as const,
-    },
-    {
-      label: "XP this week",
-      value: data ? Math.round((data.rank.completion_xp + data.rank.mastery_xp) * 0.18) : 0,
-      icon: Gauge,
-      series: [12, 18, 14, 26, 20, 34, 41],
-      tone: "text-primary" as const,
-    },
-    {
-      label: "Lessons done",
-      value: data ? data.rank.level * 3 + 2 : 0,
-      icon: Layers,
-      series: [2, 4, 6, 9, 13, 18, 24],
-      tone: "text-primary" as const,
-    },
-  ];
-
-  return (
-    <div className="mt-6 grid gap-3 sm:grid-cols-3">
-      {kpis.map((kpi) => {
-        const Icon = kpi.icon;
-        return (
-          <Card key={kpi.label} className="overflow-hidden">
-            <CardContent className="p-4">
-              <div className="flex items-center justify-between gap-3">
-                <span className="flex items-center gap-2 text-xs font-medium text-muted-foreground">
-                  <Icon className={cn("size-4", kpi.tone)} />
-                  {kpi.label}
-                </span>
-                <Sparkline data={kpi.series} width={72} height={24} />
-              </div>
-              <p className="mt-3 font-display text-2xl font-semibold tabular-nums">
-                <AnimatedNumber value={kpi.value} countUpOnMount />
-              </p>
-            </CardContent>
-          </Card>
-        );
-      })}
-    </div>
-  );
-}
 
 const howItClimbs = [
   {
@@ -271,10 +212,6 @@ export function Dashboard() {
           </div>
         </div>
       </motion.section>
-
-      <KpiStrip userId={user?.id ?? ""} />
-
-      <NextMove />
 
       {/* My learning — enrollments + progress from the mock state */}
       <MyLearning />

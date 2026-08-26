@@ -28,7 +28,6 @@ import { EmptyState } from "@/components/shared/empty-state";
 import { ErrorState } from "@/components/shared/error-state";
 import { cn } from "@/lib/utils";
 import { LearningInsights } from "@/components/dashboard/learning-insights";
-import { EvidenceTrail } from "@/components/learning/evidence-trail";
 
 function coverGradient(hue: number): string {
   return `linear-gradient(135deg, oklch(0.94 0.045 ${hue}), oklch(0.985 0.012 ${hue}))`;
@@ -474,37 +473,7 @@ export function MyLearning() {
                     <ContinueLearning item={featured} />
                   </motion.div>
 
-                  {secondary.length > 0 ? (
-                    <div>
-                      <div className="mb-4 flex items-end justify-between gap-3">
-                        <div>
-                          <h3 className="font-display text-lg font-semibold tracking-[-0.02em]">
-                            Your courses
-                          </h3>
-                          <p className="mt-1 text-sm text-muted-foreground">
-                            {activeCount} active {activeCount === 1 ? "course" : "courses"} in your library
-                          </p>
-                        </div>
-                        <span className="hidden text-xs text-muted-foreground sm:block">
-                          {secondary.length} more {secondary.length === 1 ? "course" : "courses"}
-                        </span>
-                      </div>
-                      <div className="grid gap-3 sm:grid-cols-2">
-                        {secondary.map((item, i) => (
-                          <motion.div
-                            key={item.course.id}
-                            initial={reducedMotion ? false : { opacity: 0, y: 10 }}
-                            animate={reducedMotion ? undefined : { opacity: 1, y: 0 }}
-                            transition={reducedMotion ? undefined : { delay: 0.05 * (i + 1), duration: 0.35, ease: "easeOut" }}
-                          >
-                            <LearningCard item={item} />
-                          </motion.div>
-                        ))}
-                      </div>
-                    </div>
-                   ) : null}
                    <LearningJourney items={data} />
-                   <EvidenceTrail items={data} />
                    <LearningInsights items={data} />
                  </div>
                );
