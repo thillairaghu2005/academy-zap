@@ -126,21 +126,8 @@ function RecentActivity({ activity }: { activity: DemoActivity[] }) {
   );
 }
 
-function Recommendations({ items }: { items: MyLearningItem[] }) {
-  const catalogQuery = useQuery({ queryKey: ["dashboard-recommendations"], queryFn: () => searchCatalog({ page: 1, pageSize: 8, sort: "recommended" }) });
-  const enrolled = new Set(items.map((item) => item.course.id));
-  const recommendations = catalogQuery.data?.hits.filter((course) => !enrolled.has(course.id)).slice(0, 3) ?? [];
-  if (!recommendations.length) return null;
-  return (
-    <section>
-      <div className="flex items-end justify-between gap-3"><div><p className="text-xs font-semibold uppercase tracking-[0.14em] text-primary">Keep exploring</p><h3 className="mt-1 font-display text-xl font-semibold">Recommended next steps</h3></div><Button variant="ghost" size="sm" asChild><Link href="/courses">View catalog <ArrowRight /></Link></Button></div>
-       <div className="mt-4 grid gap-3 md:grid-cols-3">{recommendations.map((course) => <Link key={course.id} href={`/courses/${course.id}`} className="group rounded-2xl border border-border bg-card p-4 outline-none transition-[transform,border-color] hover:-translate-y-0.5 hover:border-primary/30 focus-visible:ring-2 focus-visible:ring-ring"><div className="flex items-center justify-between gap-3"><span className="grid size-9 place-items-center rounded-xl bg-primary/10 text-primary"><BookOpen className="size-4" /></span><Badge variant="outline">{course.level}</Badge></div><h4 className="mt-4 line-clamp-2 font-display font-semibold group-hover:text-primary">{course.title}</h4><p className="mt-1 line-clamp-2 text-xs leading-relaxed text-muted-foreground">{course.subtitle}</p><p className="mt-4 text-xs font-medium text-primary">{course.estimated_hours}h · {course.category}</p></Link>)}</div>
-    </section>
-  );
-}
-
 export function LearningInsights({ items }: { items: MyLearningItem[] }) {
   const [activity, setActivity] = React.useState<DemoActivity[]>(() => getDemoActivity());
   React.useEffect(() => subscribeDemoStorage(() => setActivity(getDemoActivity())), []);
-  return <div className="mt-10 space-y-10"><div className="grid gap-4 md:grid-cols-2"><WeeklyGoal activity={activity} /><RecentActivity activity={activity} /></div><Recommendations items={items} /></div>;
+  return <div className="mt-10 space-y-10"><div className="grid gap-4 md:grid-cols-2"><WeeklyGoal activity={activity} /><RecentActivity activity={activity} /></div></div>;
 }
