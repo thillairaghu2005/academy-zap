@@ -9,6 +9,7 @@ import { MotionProvider } from "@/components/providers/motion-provider";
 import { ThemeManager } from "@/components/providers/theme-manager";
 import { LiveRegionProvider } from "@/components/providers/live-region-provider";
 import { DemoAnalyticsProvider } from "@/components/providers/demo-analytics-provider";
+import { AnalyticsInit } from "@/components/providers/analytics-init";
 import { DemoPreferencesProvider } from "@/components/providers/demo-preferences-provider";
 import { Toaster } from "@/components/ui/sonner";
 import { getSiteUrl } from "@/lib/seo";
@@ -32,21 +33,12 @@ export const metadata: Metadata = {
     title: "Zapsters - Learn. Build. Climb.",
     description:
       "Build practical skills through courses, coding challenges, virtual labs, and progression that keeps you moving.",
-    images: [
-      {
-        url: "/icons/android-chrome-512x512.png",
-        width: 512,
-        height: 512,
-        alt: "Zapsters Logo",
-      },
-    ],
   },
   twitter: {
     card: "summary_large_image",
     title: "Zapsters - Learn. Build. Climb.",
     description:
       "Build practical skills through courses, coding challenges, virtual labs, and progression that keeps you moving.",
-    images: ["/icons/android-chrome-512x512.png"],
   },
   icons: {
     icon: [
@@ -94,6 +86,7 @@ export default function RootLayout({
                 </DemoAnalyticsProvider>
               </DemoPreferencesProvider>
             </QueryProvider>
+            <AnalyticsInit />
             <Toaster />
             <CookieBanner />
             <BackToTop />

@@ -21,6 +21,7 @@ import type {
   TelemetryEvent,
 } from "@/lib/contracts/assessment";
 import { AUTH_MODE } from "@/lib/config";
+import { trackDemoEvent } from "@/lib/demo/analytics";
 import {
   MOCK_ASSESSMENTS,
   MOCK_ASSESSMENTS_BY_ID,
@@ -161,6 +162,14 @@ async function submitDemoAssessment(
   persistAttempts();
   const totalScore = assessment.questions.reduce((sum, q) => sum + pointsFor(q.difficulty), 0);
   const scorePct = totalScore > 0 ? (attempt.score / totalScore) * 100 : 0;
+  if (AUTH_MODE === "demo") {
+    // Mirrors the judge/lab engines so the admin analytics summary's
+    // assessment-submission count reflects real learner activity.
+    trackDemoEvent("assessment_submitted", {
+      assessment_id: assessment.id,
+      passed: scorePct >= assessment.passing_percent,
+    });
+  }
   return {
     event_type: "assessment.submitted",
     assessment_id: assessment.id,

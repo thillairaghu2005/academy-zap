@@ -2,6 +2,7 @@ import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
 
 import { Logo } from "@/components/layout/logo";
+import { CookieSettingsButton } from "@/components/shared/cookie-settings-button";
 
 const columns = [
   {
@@ -29,7 +30,17 @@ const columns = [
       ["Open a support ticket", "/support"],
     ],
   },
+  {
+    title: "Legal",
+    links: [
+      ["Privacy Policy", "/legal/privacy"],
+      ["Terms of Service", "/legal/terms"],
+    ],
+  },
 ] as const;
+
+/** Set NEXT_PUBLIC_CONTACT_EMAIL to publish a real support address here. */
+const CONTACT_EMAIL = process.env.NEXT_PUBLIC_CONTACT_EMAIL;
 
 /** Marketing footer intentionally uses only routes and support surfaces present in the app. */
 export function MarketingFooter() {
@@ -41,9 +52,17 @@ export function MarketingFooter() {
           <p className="mt-5 max-w-xs text-sm leading-6 text-muted-foreground">
             Submit solutions, verify objectives, and see the work accumulate in your rank.
           </p>
+          {CONTACT_EMAIL ? (
+            <a
+              href={`mailto:${CONTACT_EMAIL}`}
+              className="mt-5 inline-flex w-fit items-center gap-1 text-sm font-medium text-primary outline-none hover:underline focus-visible:ring-2 focus-visible:ring-ring"
+            >
+              {CONTACT_EMAIL}
+            </a>
+          ) : null}
           <p className="mt-8 font-mono text-xs text-muted-foreground/70">© 2026 Zapsters / learn-build-climb</p>
         </div>
-        <div className="grid gap-8 sm:grid-cols-3">
+        <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
           {columns.map((column) => (
             <div key={column.title}>
               <h2 className="text-small font-semibold">{column.title}</h2>
@@ -64,8 +83,9 @@ export function MarketingFooter() {
         </div>
       </div>
       <div className="border-t border-border/70">
-        <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-4 text-xs text-muted-foreground sm:px-6 lg:px-8">
+        <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-x-4 gap-y-2 px-4 py-4 text-xs text-muted-foreground sm:px-6 lg:px-8">
           <span>Next command: make a submission.</span>
+          <CookieSettingsButton className="inline-flex items-center gap-1.5 rounded-sm outline-none transition-colors hover:text-primary focus-visible:ring-2 focus-visible:ring-ring" />
           <Link href="/courses" className="inline-flex items-center gap-1 font-medium text-primary outline-none focus-visible:ring-2 focus-visible:ring-ring">
             Open the catalog <ArrowUpRight className="size-3.5" />
           </Link>

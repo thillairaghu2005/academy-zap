@@ -101,7 +101,12 @@ export function CreateTicketForm() {
   });
 
   const onSubmit = async (values: CreateTicketValues) => {
-    if (!user) return;
+    if (!user) {
+      setSubmitError(
+        "Your session has ended — sign in again to open a ticket.",
+      );
+      return;
+    }
     setPending(true);
     setSubmitError(null);
     try {

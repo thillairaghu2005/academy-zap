@@ -13,6 +13,7 @@ import { MOCK_COURSES, MOCK_COURSES_BY_ID, courseToSummary } from "@/lib/mocks/c
 import { mockCompletedLessons, mockEnrollments, persistProgressStore } from "@/lib/mocks/store";
 import { hueForId } from "@/lib/visual";
 import { AUTH_MODE } from "@/lib/config";
+import { trackDemoEvent } from "@/lib/demo/analytics";
 
 export type CourseProgress = ApiCourseProgress;
 export interface ProgressInput {
@@ -109,6 +110,7 @@ async function recordDemoProgress(input: ProgressInput): Promise<Enrollment> {
   const enrollment = await enrollDemo(input.courseId, input.userId);
   const key = `${input.userId}:${input.courseId}`;
   const completed = mockCompletedLessons.get(key) ?? new Set<string>();
+  const wasCompleted = completed.has(input.lessonId);
   if (input.completed) completed.add(input.lessonId);
   else completed.delete(input.lessonId);
   const lessons = course.syllabus.flatMap((section) => section.lessons);
@@ -123,6 +125,14 @@ async function recordDemoProgress(input: ProgressInput): Promise<Enrollment> {
   mockCompletedLessons.set(key, completed);
   mockEnrollments.set(key, next);
   persistProgressStore();
+  if (AUTH_MODE === "demo" && input.completed && !wasCompleted) {
+    // The admin analytics summary counts these events; emit on the
+    // false→true transition only so unchecking/re-checking doesn't inflate.
+    trackDemoEvent("lesson_completed", {
+      course_id: course.id,
+      lesson_id: input.lessonId,
+    });
+  }
   return next;
 }
 

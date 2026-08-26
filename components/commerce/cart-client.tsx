@@ -315,6 +315,7 @@ export function CartClient() {
                     size="icon"
                     className="text-muted-foreground hover:bg-destructive/5 hover:text-destructive"
                     aria-label={`Remove ${item.title} from cart`}
+                    disabled={removeMutation.isPending}
                     onClick={() => removeMutation.mutate(item.product_id)}
                   >
                     <Trash2 className="size-4" />
@@ -411,7 +412,8 @@ export function CartClient() {
                     {DEMO_MODE &&
                     cart.items.some((i) => i.product_id === "course-boom") ? (
                       <button
-                        className="self-center text-xs font-medium text-muted-foreground underline underline-offset-2 hover:text-foreground"
+                        className="self-center text-xs font-medium text-muted-foreground underline underline-offset-2 hover:text-foreground disabled:cursor-not-allowed disabled:opacity-60"
+                        disabled={removeMutation.isPending}
                         onClick={() => removeMutation.mutate("course-boom")}
                       >
                         Remove the outage demo product from your cart to
@@ -543,7 +545,9 @@ function CouponField({
           onKeyDown={(event) => {
             if (event.key === "Enter") {
               event.preventDefault();
-              onApply();
+              if (!pending && input.trim()) {
+                onApply();
+              }
             }
           }}
           placeholder="Enter promo code"

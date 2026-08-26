@@ -28,25 +28,36 @@ import { Input } from "@/components/ui/input";
 import { PasswordInput } from "@/components/ui/password-input";
 import { Logo } from "@/components/layout/logo";
 import { useSession } from "@/components/providers/session-provider";
+import { safeNext } from "@/components/auth/login-form";
+import { trackConversion } from "@/lib/analytics";
 
 const registerSchema = z.object({
   display_name: z
     .string()
+    .trim()
     .min(2, "Display name must be at least 2 characters.")
     .max(48, "Display name is too long."),
-  email: z.email("Enter a valid email address."),
+  email: z
+    .email("Enter a valid email address.")
+    .max(254, "Email address is too long."),
   password: z
     .string()
     .min(8, "Password must be at least 8 characters.")
-    .max(128, "Password is too long."),
+    .max(128, "Password is too long.")
+    .regex(/[A-Z]/, "Password must include an uppercase letter.")
+    .regex(/\d/, "Password must include a number.")
+    .regex(/[^A-Za-z0-9]/, "Password must include a special character."),
 });
 
 type RegisterValues = z.infer<typeof registerSchema>;
 
-export function RegisterForm() {
+export function RegisterForm({ next }: { next?: string }) {
   const router = useRouter();
   const { register, session, isLoading } = useSession();
   const [pending, setPending] = React.useState(false);
+  // A valid `next` returns the learner to their intended surface; otherwise a
+  // friendly confirmation step precedes the dashboard.
+  const destination = next ? safeNext(next) : "/thank-you";
 
   const form = useForm<RegisterValues>({
     resolver: zodResolver(registerSchema),
@@ -55,15 +66,16 @@ export function RegisterForm() {
 
   React.useEffect(() => {
     if (!isLoading && session.status === "authenticated") {
-      router.replace("/dashboard");
+      router.replace(destination);
     }
-  }, [isLoading, session.status, router]);
+  }, [isLoading, session.status, router, destination]);
 
   const onSubmit = async (values: RegisterValues) => {
     setPending(true);
     try {
       await register(values);
-      router.push("/dashboard");
+      trackConversion("signup_success", next ? "register_next" : "register_direct");
+      router.push(destination);
     } catch (err) {
       form.setError("email", {
         message: err instanceof Error ? err.message : "Sign up failed. Please try again later.",
@@ -147,7 +159,7 @@ export function RegisterForm() {
                   <FormLabel>Password</FormLabel>
                   <FormControl>
                     <PasswordInput
-                      placeholder="At least 8 characters"
+                      placeholder="8+ characters with a number and symbol"
                       autoComplete="new-password"
                       className="h-10"
                       {...field}
