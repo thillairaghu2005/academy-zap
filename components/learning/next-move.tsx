@@ -264,7 +264,7 @@ export function NextMove() {
     <section
       id="next-move"
       aria-labelledby="next-move-title"
-      className="relative mt-7 overflow-hidden rounded-3xl border border-primary-border bg-primary-muted shadow-[0_10px_30px_rgb(180_35_60_/_7%)]"
+      className="relative mt-7 overflow-hidden rounded-3xl border border-primary-border bg-primary-muted shadow-md"
     >
       <div className="pointer-events-none absolute inset-y-0 right-0 hidden w-2/5 bg-grid opacity-35 [mask-image:linear-gradient(to_left,black,transparent)] lg:block" />
       <div className="relative grid gap-6 p-5 sm:p-7 lg:grid-cols-[minmax(0,1fr)_minmax(220px,0.45fr)] lg:items-center lg:p-8">

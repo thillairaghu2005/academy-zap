@@ -4,7 +4,7 @@ import * as React from "react";
 import Link from "next/link";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { Award, BookOpen, Bookmark, FlaskConical, LoaderCircle, UserRound } from "lucide-react";
+import { Award, BookOpen, Bookmark, FlaskConical, LoaderCircle, UserRound, Sparkles, Trophy, Medal } from "lucide-react";
 
 import type { ExperienceLevel, Profile, ProfileEditorValues } from "@/lib/contracts/profile";
 import type { CourseSummary } from "@/lib/contracts/content";
@@ -29,7 +29,7 @@ import { PageContainer } from "@/components/shared/page-container";
 import { SkeletonLines } from "@/components/shared/skeletons";
 import { ProfileCompletion } from "@/components/profile/profile-completion";
 import { OrderHistory } from "@/components/commerce/order-history";
-import { getInitials } from "@/lib/utils";
+import { cn, getInitials } from "@/lib/utils";
 
 export function ProfilePageClient() {
   const { user } = useSession();
@@ -82,51 +82,114 @@ export function ProfilePageClient() {
         <p className="max-w-2xl text-sm leading-relaxed text-muted-foreground">Tune the signals that shape your recommendations and show the community what you are working toward.</p>
       </div>
 
-      <div className="mt-8 grid gap-6 lg:grid-cols-[1fr_360px]">
-        <div className="flex flex-col gap-6">
-          <Card>
-            <CardContent className="flex flex-wrap items-center gap-4 p-5">
-              <Avatar className="size-16">
+      <div className="mt-8 flex flex-col lg:flex-row gap-6 items-start">
+        {/* Left Sidebar */}
+        <div className="w-full lg:w-[320px] xl:w-[360px] shrink-0 flex flex-col gap-4">
+          {/* Profile Card */}
+          <Card className="flex flex-col">
+            <CardContent className="flex flex-col items-center gap-4 p-6 text-center">
+              <Avatar className="size-24 border-4 border-background shadow-md">
                 {profile.avatar_url ? <AvatarImage src={profile.avatar_url} alt="" /> : null}
-                <AvatarFallback>{getInitials(profile.display_name)}</AvatarFallback>
+                <AvatarFallback className="text-xl">{getInitials(profile.display_name)}</AvatarFallback>
               </Avatar>
               <div className="min-w-0 flex-1">
-                <h2 className="font-display text-h2">{profile.display_name}</h2>
-                <p className="text-sm text-muted-foreground">{profile.email}</p>
-                <p className="mt-2 max-w-xl text-sm leading-relaxed text-muted-foreground">{profile.bio}</p>
+                <h2 className="font-display text-h2 leading-tight">{profile.display_name}</h2>
+                <p className="text-sm text-muted-foreground mt-1">{profile.email}</p>
+                <p className="mt-4 text-sm leading-relaxed text-muted-foreground">{profile.bio}</p>
               </div>
-               <EditProfileDialog
-                 profile={profile}
-                 onSaved={() => {
-                   void queryClient.invalidateQueries({ queryKey: ["profile", user.id] });
-                 }}
-               />
+              <div className="w-full mt-2">
+                 <EditProfileDialog
+                   profile={profile}
+                   onSaved={() => {
+                     void queryClient.invalidateQueries({ queryKey: ["profile", user.id] });
+                   }}
+                 />
+              </div>
             </CardContent>
           </Card>
-          <ProfileCompletion checklist={profile.checklist} />
-          <Card>
-            <CardHeader><CardTitle>Skill tags</CardTitle></CardHeader>
-            <CardContent className="flex flex-wrap gap-2">
-              {profile.skill_tags.map((tag) => <Badge key={tag} variant="secondary">{tag}</Badge>)}
-            </CardContent>
-          </Card>
-        </div>
 
-        <div className="flex flex-col gap-4">
-          <Card>
-            <CardHeader><CardTitle>Learning preferences</CardTitle></CardHeader>
+          {/* Learning Preferences */}
+          <Card className="flex flex-col">
+            <CardHeader className="pb-3"><CardTitle>Learning preferences</CardTitle></CardHeader>
             <CardContent className="grid gap-4 text-sm">
               <Info label="Learning path" value={profile.preferred_learning_path} />
               <Info label="Experience" value={profile.experience_level} />
               <Info label="Weekly goal" value={`${profile.weekly_goal_hours} hours`} />
-              <div><p className="text-xs font-medium text-muted-foreground">Goals</p><div className="mt-2 flex flex-wrap gap-2">{profile.learning_goals.map((goal) => <Badge key={goal} variant="outline">{goal}</Badge>)}</div></div>
             </CardContent>
           </Card>
-          <OrderHistory />
-            <ProfileEmptyItems profile={profile} savedCourseIds={savedCourseIds} bookmarkedLabIds={labBookmarkIds} />
+
+          {/* Skill Tags */}
+          <Card className="flex flex-col">
+            <CardHeader className="pb-3"><CardTitle>Skill tags & Goals</CardTitle></CardHeader>
+            <CardContent className="flex flex-wrap content-start gap-2">
+              {profile.skill_tags.map((tag) => <Badge key={tag} variant="secondary">{tag}</Badge>)}
+              {profile.learning_goals.map((goal) => <Badge key={goal} variant="outline">{goal}</Badge>)}
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Main Content */}
+        <div className="flex-1 min-w-0 flex flex-col gap-6">
+          {/* Profile Completion */}
+          <div className="w-full">
+            <ProfileCompletion checklist={profile.checklist} />
+          </div>
+
+          {/* Gamified Badges Area */}
+          <div className="w-full">
+            <GamifiedBadges achievements={profile.achievement_ids} certificates={profile.certificate_ids} />
+          </div>
+
+          {/* History and Saved items */}
+          <div className="w-full">
+            <ActivityTabs savedCourseIds={savedCourseIds} labBookmarkIds={labBookmarkIds} />
+          </div>
         </div>
       </div>
     </PageContainer>
+  );
+}
+
+function ActivityTabs({ savedCourseIds, labBookmarkIds }: { savedCourseIds: string[], labBookmarkIds: string[] }) {
+  const [activeTab, setActiveTab] = React.useState<"saved" | "orders">("saved");
+
+  return (
+    <div className="flex flex-col gap-4">
+      <div className="flex gap-6 border-b border-border/50 overflow-x-auto scrollbar-hide">
+        <button
+          onClick={() => setActiveTab("saved")}
+          className={cn(
+            "pb-3 text-sm font-semibold transition-colors border-b-2 whitespace-nowrap",
+            activeTab === "saved" ? "border-primary text-foreground" : "border-transparent text-muted-foreground hover:text-foreground hover:border-border"
+          )}
+        >
+          Saved Learning
+        </button>
+        <button
+          onClick={() => setActiveTab("orders")}
+          className={cn(
+            "pb-3 text-sm font-semibold transition-colors border-b-2 whitespace-nowrap",
+            activeTab === "orders" ? "border-primary text-foreground" : "border-transparent text-muted-foreground hover:text-foreground hover:border-border"
+          )}
+        >
+          Order History
+        </button>
+      </div>
+
+      <div className="pt-2">
+        {activeTab === "saved" && (
+          <div className="grid gap-4 xl:grid-cols-2">
+            <SavedCourses courseIds={savedCourseIds} />
+            <SavedLabs ids={labBookmarkIds} />
+          </div>
+        )}
+        {activeTab === "orders" && (
+          <div className="max-w-4xl">
+            <OrderHistory />
+          </div>
+        )}
+      </div>
+    </div>
   );
 }
 
@@ -134,22 +197,50 @@ function Info({ label, value }: { label: string; value: string }) {
   return <div><p className="text-xs font-medium text-muted-foreground">{label}</p><p className="mt-1 font-medium capitalize">{value}</p></div>;
 }
 
-function ProfileEmptyItems({
-  profile,
-  savedCourseIds,
-  bookmarkedLabIds,
-}: {
-  profile: Awaited<ReturnType<typeof getProfile>>;
-  savedCourseIds: string[];
-  bookmarkedLabIds: string[];
-}) {
+function GamifiedBadges({ achievements, certificates }: { achievements: string[], certificates: string[] }) {
+  const hasAchievements = achievements.length > 0;
+  const hasCertificates = certificates.length > 0;
+
+  if (!hasAchievements && !hasCertificates) {
+    return (
+      <div className="grid gap-4 md:grid-cols-2">
+        <EmptyState icon={Award} title="No certificates yet" description="Finish a course to unlock your first completion certificate." primaryAction={<Button size="sm" variant="outline" asChild><Link href="/courses">Find a course</Link></Button>} />
+        <EmptyState icon={Trophy} title="No achievements yet" description="Your first verified milestone will appear here after you start climbing." primaryAction={<Button size="sm" variant="outline" asChild><Link href="/rank">View the rank ladder</Link></Button>} />
+      </div>
+    );
+  }
+
   return (
-    <div className="flex flex-col gap-4">
-      <SavedCourses courseIds={savedCourseIds} />
-      <SavedLabs ids={bookmarkedLabIds} />
-      {profile.certificate_ids.length === 0 ? <EmptyState icon={Award} title="No certificates yet" description="Finish a course to unlock your first completion certificate." primaryAction={<Button size="sm" variant="outline" asChild><Link href="/courses">Find a course</Link></Button>} /> : null}
-      {profile.achievement_ids.length === 0 ? <EmptyState icon={Award} title="No achievements yet" description="Your first verified milestone will appear here after you start climbing." primaryAction={<Button size="sm" variant="outline" asChild><Link href="/rank">View the rank ladder</Link></Button>} /> : null}
-    </div>
+    <Card className="overflow-hidden border-0 bg-gradient-to-br from-indigo-500/10 via-purple-500/10 to-pink-500/10 shadow-inner">
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2">
+          <Sparkles className="size-5 text-purple-500" />
+          <span>Trophies & Badges</span>
+        </CardTitle>
+      </CardHeader>
+      <CardContent>
+        <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
+          {certificates.map((cert) => (
+            <div key={cert} className="group relative flex flex-col items-center justify-center gap-3 rounded-2xl border border-white/20 bg-white/40 p-4 shadow-sm backdrop-blur-md transition-all hover:-translate-y-1 hover:shadow-md dark:border-white/10 dark:bg-black/40">
+              <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-yellow-400/20 to-orange-500/20 opacity-0 transition-opacity group-hover:opacity-100" />
+              <div className="relative flex size-14 items-center justify-center rounded-full bg-gradient-to-br from-yellow-400 to-orange-500 text-white shadow-lg">
+                <Medal className="size-7" />
+              </div>
+              <p className="relative text-center text-xs font-semibold capitalize text-foreground">{cert.replace(/-/g, " ")}</p>
+            </div>
+          ))}
+          {achievements.map((ach) => (
+            <div key={ach} className="group relative flex flex-col items-center justify-center gap-3 rounded-2xl border border-white/20 bg-white/40 p-4 shadow-sm backdrop-blur-md transition-all hover:-translate-y-1 hover:shadow-md dark:border-white/10 dark:bg-black/40">
+              <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-indigo-400/20 to-purple-500/20 opacity-0 transition-opacity group-hover:opacity-100" />
+              <div className="relative flex size-14 items-center justify-center rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 text-white shadow-lg">
+                <Trophy className="size-7" />
+              </div>
+              <p className="relative text-center text-xs font-semibold capitalize text-foreground">{ach.replace(/-/g, " ")}</p>
+            </div>
+          ))}
+        </div>
+      </CardContent>
+    </Card>
   );
 }
 
@@ -284,7 +375,7 @@ function EditProfileDialog({
     <>
       <Button
         variant="outline"
-        size="sm"
+        className="w-full font-medium"
         onClick={() => {
           setForm(profileToFormState(profile));
           setOpen(true);

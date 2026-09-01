@@ -42,7 +42,7 @@ export function EmptyState({
         className="pointer-events-none absolute -top-16 left-1/2 size-48 -translate-x-1/2 rounded-full bg-primary/8 blur-3xl"
       />
       {Icon ? (
-        <div className="relative mb-4 grid size-14 place-items-center rounded-2xl border border-primary/25 bg-gradient-to-b from-primary-light to-primary-muted text-primary shadow-[0_8px_24px_rgb(180_35_60_/_12%)]">
+        <div className="relative mb-4 grid size-14 place-items-center rounded-2xl border border-primary/25 bg-gradient-to-b from-primary-light to-primary-muted text-primary shadow-lg">
           <Icon className="size-6" />
         </div>
       ) : null}

@@ -11,6 +11,7 @@ import {
 import { toast } from "sonner";
 import {
   ArrowRight,
+  ArrowLeft,
   BookOpen,
   Check,
   CheckCircle2,
@@ -283,7 +284,7 @@ export function CourseDetailClient({
         href="/courses"
         className="inline-flex items-center gap-1.5 rounded-full border border-border bg-card px-3 py-2 text-sm text-muted-foreground shadow-sm transition-colors hover:border-primary/25 hover:text-primary"
       >
-        <ArrowRight className="size-4 rotate-180" />
+        <ArrowLeft className="size-4" />
         Back to catalog
       </Link>
 

@@ -8,9 +8,9 @@ const cardVariants = cva(
   {
     variants: {
       variant: {
-         default: "border-border bg-card shadow-[0_1px_3px_rgb(16_24_40_/_5%)]",
-         glass: "frosted border-border/70 shadow-[0_1px_3px_rgb(16_24_40_/_5%)]",
-         glow: "border-border bg-card shadow-[0_1px_3px_rgb(16_24_40_/_5%)] hover:-translate-y-0.5 hover:border-primary-border hover:shadow-[0_4px_12px_rgb(16_24_40_/_6%)]",
+         default: "border-border bg-card shadow-sm hover:shadow-lg hover:-translate-y-0.5",
+         glass: "bg-card border-border shadow-sm hover:shadow-lg hover:-translate-y-0.5",
+         glow: "border-border bg-card shadow-sm hover:shadow-lg hover:border-primary-border hover:-translate-y-0.5",
         bento: "border-border bg-surface-2 shadow-none",
         outline: "border-border bg-transparent shadow-none",
       },

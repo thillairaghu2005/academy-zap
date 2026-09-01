@@ -140,10 +140,10 @@
   --color-status-revoked: oklch(0.46 0.164 17);
 
   /* Radius scale */
-  --radius-sm: 0.375rem;
-  --radius-md: 0.625rem;
-  --radius-lg: 0.75rem;
-  --radius-xl: 1rem;
+  --radius-sm: 0.25rem;
+  --radius-md: 0.375rem;
+  --radius-lg: 0.5rem;
+  --radius-xl: 0.75rem;
   --radius-2xl: 1rem;
 
   /* Motion tokens */
@@ -215,21 +215,15 @@
 /* ------------------------------------------------------------------ */
 
 @utility frosted {
-  background: color-mix(in oklab, var(--color-background) 78%, transparent);
-  -webkit-backdrop-filter: blur(20px) saturate(180%);
-  backdrop-filter: blur(20px) saturate(180%);
+  background: var(--color-background);
 }
 
 @utility frosted-heavy {
-  background: color-mix(in oklab, var(--color-background) 88%, transparent);
-  -webkit-backdrop-filter: blur(32px) saturate(180%);
-  backdrop-filter: blur(32px) saturate(180%);
+  background: var(--color-background);
 }
 
 @utility frosted-light {
-  background: color-mix(in oklab, var(--color-background) 62%, transparent);
-  -webkit-backdrop-filter: blur(12px) saturate(160%);
-  backdrop-filter: blur(12px) saturate(160%);
+  background: var(--color-background);
 }
 
 /* Vibrancy on glass (SKILL §12): heavier weight + a small
@@ -242,10 +236,7 @@
 /* Themed decorative layers — recolored via color-mix so they hold up
    in dark mode and honor prefers-reduced-transparency / data-reduce-data. */
 @utility aurora {
-  background-image:
-    radial-gradient(60% 60% at 15% 20%, color-mix(in oklab, var(--color-primary-glow) 20%, transparent), transparent 70%),
-    radial-gradient(50% 50% at 85% 15%, color-mix(in oklab, var(--color-info) 14%, transparent), transparent 70%),
-    radial-gradient(55% 55% at 60% 85%, color-mix(in oklab, var(--color-primary-glow) 12%, transparent), transparent 70%);
+  background-image: none;
 }
 
 /* Stripe channel for the mastery XP track — meaning never relies on
@@ -259,11 +250,8 @@
 }
 
 @utility glass {
-  background: color-mix(in oklab, var(--color-card) 72%, transparent);
-  -webkit-backdrop-filter: blur(20px) saturate(180%);
-  backdrop-filter: blur(20px) saturate(180%);
-  border: 1px solid color-mix(in oklab, var(--color-border) 70%, transparent);
-  box-shadow: 0 8px 24px rgb(23 23 23 / 8%);
+  background: var(--color-card);
+  border: 1px solid var(--color-border);
 }
 
 @utility hairline {
@@ -365,11 +353,11 @@
 
   html[data-density="compact"] {
     --spacing: 0.2rem;
-    --radius-sm: 0.3125rem;
-    --radius-md: 0.625rem;
-    --radius-lg: 0.8125rem;
-    --radius-xl: 1rem;
-    --radius-2xl: 1.125rem;
+    --radius-sm: 0.125rem;
+    --radius-md: 0.25rem;
+    --radius-lg: 0.375rem;
+    --radius-xl: 0.5rem;
+    --radius-2xl: 0.75rem;
   }
 
   html[data-density="compact"] .font-display {

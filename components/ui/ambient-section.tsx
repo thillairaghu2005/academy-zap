@@ -28,20 +28,7 @@ export function AmbientSection({
       {...props}
       className={cn("relative isolate overflow-hidden", className)}
     >
-      <AuroraBackdrop
-        className={cn(
-          tone === "strong"
-            ? "opacity-100"
-            : "opacity-40 [mask-image:linear-gradient(to_bottom,transparent,black_12%,black_88%,transparent)]",
-        )}
-      />
-      {orb ? (
-        <GlowOrb
-          size={420}
-          className="left-1/2 top-0 -translate-x-1/2 -translate-y-1/2"
-        />
-      ) : null}
-      <NoiseOverlay className="opacity-40" />
+      {/* Ambient background elements removed for flat UI */}
       <div className="relative z-[1]">{children}</div>
     </section>
   );

@@ -95,7 +95,7 @@ export function CourseRail({
           className="rail-scroll -mx-1 flex snap-x gap-4 overflow-x-auto px-1 pb-2"
         >
           {courses.map((course) => (
-            <div key={course.id} className="w-[248px] shrink-0 snap-start">
+            <div key={course.id} className="min-w-[240px] shrink-0 snap-start sm:w-[calc(50%-8px)] md:w-[calc(33.333%-10.66px)] lg:w-[calc(25%-12px)] xl:w-[calc(25%-12px)]">
               <CourseCard course={course} />
             </div>
           ))}

@@ -168,15 +168,7 @@ export function CourseThumbnail({
     >
       {/* Fine engineering grid */}
       <div className="absolute inset-0 bg-grid-dark opacity-[0.35]" />
-      {/* Soft accent glows */}
-      <div
-        className="absolute -right-12 -top-16 size-44 rounded-full opacity-35 blur-2xl"
-        style={{ background: art.accent }}
-      />
-      <div
-        className="absolute -bottom-16 -left-10 size-40 rounded-full opacity-20 blur-2xl"
-        style={{ background: art.accent }}
-      />
+      {/* Removed soft accent glows */}
       {/* Decorative rings */}
       <div
         className="absolute -bottom-10 -right-6 size-36 rounded-full border opacity-25"

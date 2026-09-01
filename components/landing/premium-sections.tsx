@@ -132,7 +132,7 @@ export function PricingSection({ standalone = false, headingAs: Heading = "h2" }
                 ? "/register"
                 : `/register?next=${encodeURIComponent(destination)}`;
             return (
-              <Card key={plan.name} className={cn("relative flex h-full flex-col p-6 sm:p-7", plan.highlighted && "border-primary shadow-[0_4px_12px_rgb(180_35_60_/_15%)]")}>
+              <Card key={plan.name} className={cn("relative flex h-full flex-col p-6 sm:p-7", plan.highlighted && "border-primary shadow-lg")}>
                 {plan.highlighted ? <span className="absolute right-5 top-5 rounded-full bg-primary/10 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.12em] text-primary">Most popular</span> : null}
                 <p className="text-sm font-semibold">{plan.name}</p>
                 <p className="mt-2 text-sm leading-6 text-muted-foreground">{plan.description}</p>

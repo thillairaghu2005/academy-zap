@@ -41,7 +41,7 @@ function SurfaceCard({ surface }: { surface: SurfaceMeta }) {
 
   return (
     <Link href={surface.href} className="group block h-full rounded-[inherit] outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background">
-      <Card className="relative h-full overflow-hidden transition-[transform,border-color,box-shadow] duration-200 group-hover:-translate-y-0.5 group-hover:border-primary/40 group-hover:shadow-xl group-hover:shadow-primary/10">
+      <Card className="relative h-full overflow-hidden transition-[transform,border-color,box-shadow] duration-200 group-hover:-translate-y-0.5 group-hover:border-primary/40 group-hover:shadow-xl">
         <div className={cn("absolute inset-x-0 top-0 h-0.5", surface.status === "shipped" ? "bg-primary" : "bg-border-strong")} />
         <CardHeader className="flex-row items-start gap-3 space-y-0">
           <div
