@@ -150,7 +150,7 @@ export function VerifyClient({ credentialId }: { credentialId: string }) {
 
   return (
     <PageContainer className="max-w-5xl">
-      <div className="motion-safe:animate-fade-up overflow-hidden rounded-[2rem] border border-border bg-card shadow-xl shadow-primary/5">
+      <div className="motion-safe:animate-fade-up overflow-hidden rounded-[2rem] border border-border bg-card shadow-xl">
         <header className="flex flex-wrap items-center justify-between gap-4 border-b border-border bg-secondary/30 px-5 py-4 sm:px-8">
           <div className="flex items-center gap-3">
             <Logo size={30} linkTo={null} />

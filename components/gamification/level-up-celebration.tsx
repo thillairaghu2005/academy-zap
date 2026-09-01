@@ -86,7 +86,7 @@ export function LevelUpCelebration() {
         <div className="relative">
           <DialogHeader className="text-center">
             <motion.div
-              className="mx-auto grid size-14 place-items-center rounded-2xl bg-gradient-to-b from-primary-light to-primary-muted text-primary shadow-[0_10px_30px_rgb(180_35_60_/_18%)]"
+              className="mx-auto grid size-14 place-items-center rounded-2xl bg-gradient-to-b from-primary-light to-primary-muted text-primary shadow-lg"
               initial={{ scale: 0.6, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               transition={{ type: "spring", bounce: 0.4, duration: 0.7 }}

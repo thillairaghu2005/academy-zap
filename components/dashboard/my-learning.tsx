@@ -186,7 +186,7 @@ function ContinueLearning({ item }: { item: MyLearningItem }) {
             />
           </div>
 
-          <Button className="mt-7 rounded-lg px-4 shadow-sm shadow-primary/20" asChild>
+          <Button className="mt-7 rounded-lg px-4 shadow-sm" asChild>
             <Link href={`/courses/${course.id}/learn`}>
               <Play className="size-4 fill-current" />
               {ctaLabel}
@@ -336,7 +336,7 @@ function LearningJourney({ items }: { items: MyLearningItem[] }) {
           const Icon = milestone.icon;
           return (
             <div key={milestone.label} className="relative flex items-start gap-3 sm:block sm:text-center">
-              <span className={cn("relative z-10 grid size-10 shrink-0 place-items-center rounded-full border-4 border-card text-sm transition-colors", milestone.complete ? "bg-primary text-primary-foreground shadow-[0_0_0_4px_rgb(180_35_60_/_10%)]" : "bg-surface-1 text-muted-foreground")}>
+              <span className={cn("relative z-10 grid size-10 shrink-0 place-items-center rounded-full border-4 border-card text-sm transition-colors", milestone.complete ? "bg-primary text-primary-foreground shadow-sm" : "bg-surface-1 text-muted-foreground")}>
                 {milestone.complete ? <Check className="size-4" /> : <Icon className="size-4" />}
               </span>
               <div className="min-w-0 sm:mt-3 sm:px-2">

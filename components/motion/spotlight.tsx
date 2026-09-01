@@ -34,7 +34,7 @@ export function Spotlight({ children, className }: SpotlightProps) {
       <div
         aria-hidden="true"
         className="pointer-events-none absolute inset-0 z-10 rounded-[inherit] opacity-0 transition-opacity duration-300 group-hover:opacity-100"
-        style={{ background: "radial-gradient(360px circle at var(--spotlight-x) var(--spotlight-y), color-mix(in oklab, var(--color-primary-glow) 18%, transparent), transparent 68%)" }}
+        style={{ background: "radial-gradient(360px circle at var(--spotlight-x) var(--spotlight-y), color-mix(in oklab, var(--color-border) 18%, transparent), transparent 68%)" }}
       />
     </div>
   );

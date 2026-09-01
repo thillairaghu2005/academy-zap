@@ -38,10 +38,7 @@ export function HeroSection() {
 
   return (
     <section className="relative isolate overflow-hidden bg-background text-foreground">
-      <div className="pointer-events-none absolute inset-0 bg-grid opacity-20 [mask-image:linear-gradient(to_bottom,black,transparent_82%)]" aria-hidden="true" />
-      <div className="aurora pointer-events-none absolute inset-0 opacity-60 blur-3xl" aria-hidden="true" />
-      <GlowOrb size={520} className="-left-40 top-1/3" />
-      <NoiseOverlay className="opacity-50" />
+      {/* Ambient background textures removed for flat design */}
 
       <div className="relative mx-auto grid max-w-7xl items-center gap-12 px-5 py-16 sm:px-8 sm:py-24 lg:grid-cols-[0.88fr_1.12fr] lg:gap-16 lg:px-10 lg:py-28">
         <motion.div

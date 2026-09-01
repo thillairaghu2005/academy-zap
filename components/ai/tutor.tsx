@@ -97,7 +97,7 @@ export function AiTutor() {
         </div>
         <form onSubmit={(event) => { event.preventDefault(); send(); }} className="flex items-center gap-2 border-t border-border p-3"><input value={draft} onChange={(event) => setDraft(event.target.value)} disabled={typing} placeholder="Ask your tutor..." aria-label="Ask the AI Tutor" className="min-w-0 flex-1 rounded-lg border border-input bg-background px-3 py-2 text-sm outline-none transition-shadow placeholder:text-muted-foreground focus:border-primary focus:ring-4 focus:ring-primary/10" /><Button type="submit" size="icon-sm" disabled={typing || !draft.trim()} aria-label="Send message"><Send /></Button></form>
       </section> : null}
-      <Button onClick={() => setOpen((current) => !current)} size="lg" className="ml-auto rounded-full px-4 shadow-[0_4px_12px_rgb(180_35_60_/_15%)]" aria-expanded={open} aria-label={open ? "Close AI Tutor" : "Open AI Tutor"}><Sparkles className="size-4" /> <span className="hidden sm:inline">Tutor</span>{messages.length ? <span className="grid size-4 place-items-center rounded-full bg-white/20 text-[10px]"><Check className="size-3" /></span> : null}</Button>
+      <Button onClick={() => setOpen((current) => !current)} size="lg" className="ml-auto rounded-full px-4 shadow-md" aria-expanded={open} aria-label={open ? "Close AI Tutor" : "Open AI Tutor"}><Sparkles className="size-4" /> <span className="hidden sm:inline">Tutor</span>{messages.length ? <span className="grid size-4 place-items-center rounded-full bg-white/20 text-[10px]"><Check className="size-3" /></span> : null}</Button>
     </div>
   );
 }

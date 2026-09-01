@@ -315,7 +315,7 @@ function ProblemCard({
               <Users className="size-3.5 shrink-0" />
               <span className="truncate">Asked at {meta.companies.join(" / ")}</span>
             </div>
-            <span className="inline-flex h-11 w-full items-center justify-center gap-2 rounded-xl bg-primary px-5 text-sm font-semibold text-primary-foreground shadow-sm transition-[background-color,box-shadow] duration-200 ease-out group-hover:bg-primary-hover group-hover:shadow-lg group-hover:shadow-primary/20 sm:w-auto">
+            <span className="inline-flex h-11 w-full items-center justify-center gap-2 rounded-xl bg-primary px-5 text-sm font-semibold text-primary-foreground shadow-sm transition-[background-color,box-shadow] duration-200 ease-out group-hover:bg-primary-hover group-hover:shadow-lg sm:w-auto">
               Solve Challenge
               <ArrowUpRight className="size-4 transition-transform duration-200 ease-out group-hover:translate-x-1" />
             </span>

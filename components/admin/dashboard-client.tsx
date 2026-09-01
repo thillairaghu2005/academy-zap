@@ -85,7 +85,7 @@ export function AdminDashboardClient() {
                 dashboardQuery.data.counts[stat.key as keyof typeof dashboardQuery.data.counts];
               return (
                 <Link key={stat.key} href={stat.href} className="group rounded-[inherit] outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background">
-                  <Card className="h-full transition-[transform,border-color,box-shadow] group-hover:-translate-y-0.5 group-hover:border-primary/40 group-hover:shadow-lg group-hover:shadow-primary/5">
+                  <Card className="h-full transition-[transform,border-color,box-shadow] group-hover:-translate-y-0.5 group-hover:border-primary/40 group-hover:shadow-lg">
                     <CardContent className="flex flex-col gap-3 p-4">
                       <div
                         className={`grid size-9 place-items-center rounded-lg ${stat.accent}`}

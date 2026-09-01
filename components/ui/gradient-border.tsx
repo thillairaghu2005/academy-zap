@@ -11,7 +11,7 @@ export function GradientBorder({ className, innerClassName, children, ...props }
     <div
       {...props}
       className={cn(
-        "rounded-[inherit] bg-[linear-gradient(135deg,color-mix(in_oklab,var(--color-primary-glow)_48%,transparent),var(--color-border)_38%,transparent)] p-px",
+        "rounded-[inherit] bg-[linear-gradient(135deg,color-mix(in_oklab,var(--color-border)_60%,transparent),var(--color-border)_38%,transparent)] p-px",
         className,
       )}
     >

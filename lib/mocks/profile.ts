@@ -24,6 +24,6 @@ export const MOCK_PROFILE: Profile = {
   ],
   saved_course_ids: [],
   bookmarked_lab_ids: [],
-  certificate_ids: [],
-  achievement_ids: [],
+  certificate_ids: ["cert-soc-analyst", "cert-threat-hunting"],
+  achievement_ids: ["ach-first-blood", "ach-100-days", "ach-top-1-percent"],
 };
