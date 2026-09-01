@@ -26,11 +26,11 @@ export function SkillRadar() {
   }));
 
   return (
-    <div className="rounded-xl border border-border bg-card p-4">
-      <p className="flex items-center gap-2 font-display text-small font-semibold">
-        <Radar className="size-4 text-muted-foreground" /> Skill balance
+    <div className="rounded-2xl border border-border/50 bg-background/50 backdrop-blur-xl p-6 shadow-sm transition-all hover:border-primary/30">
+      <p className="flex items-center gap-2 font-display text-sm font-semibold tracking-wide">
+        <Radar className="size-4 text-primary" /> Skill Balance
       </p>
-      <p className="mt-0.5 text-caption text-muted-foreground">
+      <p className="mt-1.5 text-xs text-muted-foreground font-medium">
         Category completion across the curriculum.
       </p>
       {isLoading ? (
