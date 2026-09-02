@@ -301,9 +301,12 @@ export function ProblemListClient() {
       
       {/* 1. Header */}
       <header className="mb-8">
-        <h1 className="font-display text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">
-          Good afternoon, {user?.display_name || "Student"}. Continue your interview preparation.
+        <h1 className="font-display text-3xl font-semibold tracking-tight text-foreground sm:text-4xl mb-2">
+          Ready to level up, {user?.display_name?.split(' ')[0] || "Student"}?
         </h1>
+        <p className="text-lg text-muted-foreground font-medium">
+          Your next breakthrough is just one problem away.
+        </p>
       </header>
 
       {/* 2. Hero Next Action + Stats Strip */}
@@ -376,25 +379,90 @@ export function ProblemListClient() {
         </div>
       </section>
 
-      {/* 3. Recommended Paths & Recommended for You */}
-      <section className="mb-20 grid grid-cols-1 xl:grid-cols-3 gap-8 xl:gap-10">
-        <div className="xl:col-span-1">
-          <h3 className="font-display text-2xl font-semibold mb-6 text-foreground">Recommended Paths</h3>
-          <div className="space-y-3">
-            <PathCard title="DSA Foundations" progress={12} total={50} />
-            <PathCard title="Crack Product-Based Companies" progress={8} total={75} />
-            <PathCard title="Java Interview Preparation" progress={4} total={40} />
-            <PathCard title="30-Day Placement Challenge" progress={7} total={30} label="Day" />
-          </div>
-        </div>
-        
-        <div className="xl:col-span-2 flex flex-col">
-          <h3 className="font-display text-2xl font-semibold mb-6 text-foreground">Recommended for You</h3>
-          <div className="grid sm:grid-cols-2 gap-4 flex-1">
-            {data?.filter(p => !solvedIdSet.has(p.id) && p.id !== nextProblem?.id).slice(0, 2).map((problem, idx) => (
-              <ProblemCard key={problem.id} problem={problem} index={idx} solved={false} />
-            ))}
-          </div>
+      {/* 3. Upcoming Contests/Events */}
+      <section className="mb-20">
+        <h3 className="font-display text-2xl font-semibold mb-6 text-foreground flex items-center gap-2">
+          <Trophy className="size-6 text-primary" /> Upcoming Events
+        </h3>
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {/* Event Card 1 */}
+          <Card className="relative overflow-hidden group border-primary/20 bg-gradient-to-br from-surface-1 to-surface-2 shadow-sm hover:shadow-md transition-all">
+            <div className="absolute inset-0 bg-primary/5 opacity-0 group-hover:opacity-100 transition-opacity" />
+            <div className="p-6 relative z-10 flex flex-col h-full">
+              <div className="flex justify-between items-start mb-4">
+                <div className="inline-flex items-center gap-1.5 rounded-md bg-primary/10 px-2.5 py-1 text-[11px] font-bold uppercase tracking-wider text-primary">
+                  Weekly Contest
+                </div>
+                <div className="flex items-center gap-1.5 text-sm font-semibold text-danger bg-danger/10 px-2.5 py-1 rounded-md">
+                  <Timer className="size-4" /> 2d 14h
+                </div>
+              </div>
+              <h4 className="font-display text-xl font-semibold mb-2">Zapster Weekly 142</h4>
+              <p className="text-[14px] text-muted-foreground mb-6 flex-1">
+                4 problems, 90 minutes. Compete with peers and improve your global ranking!
+              </p>
+              <div className="flex items-center justify-between mt-auto">
+                <div className="flex items-center gap-2 text-sm text-muted-foreground font-medium">
+                  <CalendarDays className="size-4" /> Sat, 8:00 PM
+                </div>
+                <Button variant="outline" size="sm" className="font-semibold h-8 rounded-lg group-hover:bg-primary group-hover:text-primary-foreground group-hover:border-primary transition-colors">
+                  Register
+                </Button>
+              </div>
+            </div>
+          </Card>
+
+          {/* Event Card 2 */}
+          <Card className="relative overflow-hidden group border-border bg-gradient-to-br from-surface-1 to-surface-2 shadow-sm hover:shadow-md transition-all">
+            <div className="p-6 relative z-10 flex flex-col h-full">
+              <div className="flex justify-between items-start mb-4">
+                <div className="inline-flex items-center gap-1.5 rounded-md bg-secondary px-2.5 py-1 text-[11px] font-bold uppercase tracking-wider text-secondary-foreground">
+                  Mock Interview
+                </div>
+                <div className="flex items-center gap-1.5 text-sm font-semibold text-muted-foreground bg-surface-3/50 px-2.5 py-1 rounded-md">
+                  <Timer className="size-4" /> 5d 10h
+                </div>
+              </div>
+              <h4 className="font-display text-xl font-semibold mb-2">System Design: Chat App</h4>
+              <p className="text-[14px] text-muted-foreground mb-6 flex-1">
+                Live mock interview session focusing on scalable architecture and real-time data.
+              </p>
+              <div className="flex items-center justify-between mt-auto">
+                <div className="flex items-center gap-2 text-sm text-muted-foreground font-medium">
+                  <CalendarDays className="size-4" /> Tue, 6:30 PM
+                </div>
+                <Button variant="outline" size="sm" className="font-semibold h-8 rounded-lg hover:bg-foreground hover:text-background transition-colors">
+                  Join Waitlist
+                </Button>
+              </div>
+            </div>
+          </Card>
+
+          {/* Event Card 3 */}
+          <Card className="relative overflow-hidden group border-border bg-gradient-to-br from-surface-1 to-surface-2 shadow-sm hover:shadow-md transition-all hidden lg:flex flex-col">
+            <div className="p-6 relative z-10 flex flex-col h-full">
+              <div className="flex justify-between items-start mb-4">
+                <div className="inline-flex items-center gap-1.5 rounded-md bg-success/10 px-2.5 py-1 text-[11px] font-bold uppercase tracking-wider text-success">
+                  Hackathon
+                </div>
+                <div className="flex items-center gap-1.5 text-sm font-semibold text-muted-foreground bg-surface-3/50 px-2.5 py-1 rounded-md">
+                  <Timer className="size-4" /> 12d 0h
+                </div>
+              </div>
+              <h4 className="font-display text-xl font-semibold mb-2">Build with AI</h4>
+              <p className="text-[14px] text-muted-foreground mb-6 flex-1">
+                A 48-hour hackathon to build the most innovative AI-powered productivity tool.
+              </p>
+              <div className="flex items-center justify-between mt-auto">
+                <div className="flex items-center gap-2 text-sm text-muted-foreground font-medium">
+                  <CalendarDays className="size-4" /> Sep 15 - Sep 17
+                </div>
+                <Button variant="outline" size="sm" className="font-semibold h-8 rounded-lg hover:bg-success hover:text-success-foreground hover:border-success transition-colors">
+                  Explore
+                </Button>
+              </div>
+            </div>
+          </Card>
         </div>
       </section>
 
@@ -526,55 +594,6 @@ export function ProblemListClient() {
         </div>
       </section>
 
-      {/* 5. Weekly Progress */}
-      <section className="border-t border-border/80 pt-16 pb-12">
-        <h3 className="font-display text-2xl font-semibold mb-8">Weekly Progress</h3>
-        <div className="grid md:grid-cols-4 gap-6 xl:gap-8">
-          <Card className="p-7 md:col-span-2 bg-surface-1/50 border-border/60 shadow-sm">
-            <div className="text-[13px] font-semibold text-muted-foreground uppercase tracking-widest mb-8">Activity</div>
-            <div className="h-36 flex items-end gap-2 px-1">
-              {[4, 2, 5, 1, 0, 3, 6].map((h, i) => (
-                <div key={i} className="flex-1 bg-primary/10 rounded-t-lg hover:bg-primary/20 transition-colors relative group" style={{ height: `${Math.max(8, h * 16)}%` }}>
-                  <div className="absolute top-0 w-full h-1 bg-primary rounded-t-lg opacity-40 group-hover:opacity-100 transition-opacity" />
-                </div>
-              ))}
-            </div>
-            <div className="flex justify-between mt-4 text-[13px] font-semibold text-muted-foreground px-3">
-              <span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span><span>Sun</span>
-            </div>
-          </Card>
-          
-          <Card className="p-7 bg-surface-1/50 border-border/60 shadow-sm flex flex-col justify-center">
-            <div className="text-[13px] font-semibold text-muted-foreground uppercase tracking-widest mb-8">Topic Mastery</div>
-            <div className="space-y-6">
-              <div>
-                <div className="flex justify-between text-[13px] mb-2.5">
-                  <span className="text-muted-foreground font-medium">Strongest</span>
-                  <span className="font-semibold text-foreground">Hash Maps</span>
-                </div>
-                <div className="h-2 w-full bg-surface-3 rounded-full overflow-hidden">
-                  <div className="h-full bg-success w-[85%] rounded-full" />
-                </div>
-              </div>
-              <div>
-                <div className="flex justify-between text-[13px] mb-2.5">
-                  <span className="text-muted-foreground font-medium">Needs Improvement</span>
-                  <span className="font-semibold text-foreground">Dynamic Prog.</span>
-                </div>
-                <div className="h-2 w-full bg-surface-3 rounded-full overflow-hidden">
-                  <div className="h-full bg-warning w-[25%] rounded-full" />
-                </div>
-              </div>
-            </div>
-          </Card>
-          
-          <Card className="p-7 flex flex-col justify-center items-center text-center bg-primary/[0.03] border-primary/20 shadow-sm">
-            <CalendarDays className="size-10 text-primary mb-4" />
-            <div className="text-5xl font-display font-semibold text-foreground mb-2">12</div>
-            <div className="text-[15px] font-medium text-muted-foreground">Problems solved<br/>this week</div>
-          </Card>
-        </div>
-      </section>
 
     </PageContainer>
   );
