@@ -84,19 +84,32 @@ export function LearningLoop() {
           </p>
         </div>
 
-        <div className="mt-8 rounded-xl border border-border bg-card p-4 sm:p-5">
-          <p className="font-mono text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">
+        <motion.div 
+          className="mt-8 rounded-xl border border-border bg-card p-4 sm:p-5 hover:border-primary/30 hover:shadow-md transition-all duration-500 relative overflow-hidden group"
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-100px" }}
+          transition={{ duration: 0.6 }}
+        >
+          <div className="absolute inset-0 bg-gradient-to-r from-primary/5 via-transparent to-primary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none" />
+          <p className="font-mono text-[10px] font-semibold uppercase tracking-widest text-muted-foreground relative z-10">
             Verified handoff loop
           </p>
-          <div className="mt-4 grid gap-2 sm:grid-cols-4">
+          <div className="mt-4 grid gap-2 sm:grid-cols-4 relative z-10">
             {flow.map((event, index) => {
               const Icon = event.icon;
               return (
                 <React.Fragment key={event.label}>
-                  <div className="flex items-center gap-2 rounded-lg border border-border bg-background px-3 py-2.5 text-xs font-medium text-muted-foreground">
-                    <Icon className="size-4 text-muted-foreground" />
+                  <motion.div 
+                    initial={{ opacity: 0, x: -10 }}
+                    whileInView={{ opacity: 1, x: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.4, delay: 0.1 + index * 0.1 }}
+                    className="flex items-center gap-2 rounded-lg border border-border bg-background px-3 py-2.5 text-xs font-medium text-muted-foreground hover:bg-primary/10 hover:text-primary hover:border-primary/40 cursor-default transition-all duration-300 hover:scale-[1.02] hover:shadow-sm group/item"
+                  >
+                    <Icon className="size-4 text-muted-foreground group-hover/item:text-primary transition-colors" />
                     <span>{event.label}</span>
-                  </div>
+                  </motion.div>
                   {index < flow.length - 1 ? (
                     <ArrowDown className="mx-auto size-3.5 text-border sm:hidden" />
                   ) : null}
@@ -104,7 +117,7 @@ export function LearningLoop() {
               );
             })}
           </div>
-        </div>
+        </motion.div>
 
         <div className="mt-5 grid gap-3 lg:grid-cols-3">
           {steps.map((step, index) => {
