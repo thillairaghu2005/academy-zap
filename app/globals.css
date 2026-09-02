@@ -16,6 +16,12 @@
 
 @theme {
   /* ------------------------------------------------------------ */
+  /* Typography mappings                                          */
+  /* ------------------------------------------------------------ */
+  --font-sans: var(--font-body), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-heading), ui-sans-serif, system-ui, sans-serif;
+
+  /* ------------------------------------------------------------ */
   /* Surfaces (3-step elevation). AA for small text verified on   */
   /* every surface: muted-foreground = 4.98:1 on white, 4.77:1 on */
   /* surface-2, 4.76:1 on surface-3.                              */

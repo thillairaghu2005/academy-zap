@@ -41,17 +41,17 @@ const SEAT_STATUS_STYLES: Record<
 > = {
   active: {
     label: "Active",
-    className: "border-success/40 bg-success/10 text-success-strong",
+    className: "border-success bg-success/10 text-success-strong",
     dot: "bg-success",
   },
   invited: {
     label: "Invited",
-    className: "border-warning/40 bg-warning/10 text-warning-strong",
+    className: "border-warning bg-warning/10 text-warning-strong",
     dot: "bg-warning",
   },
   suspended: {
     label: "Suspended",
-    className: "border-primary-border bg-primary-light text-primary",
+    className: "border-primary bg-primary/10 text-primary",
     dot: "bg-primary",
   },
 };
@@ -157,16 +157,16 @@ export function BillingClient() {
         <Badge
           variant="outline"
           className={cn(
-            "gap-1.5",
+            "gap-1.5 px-3 py-1 shadow-sm transition-colors",
             subscription.active
-              ? "border-success/40 bg-success/10 text-success-strong"
-               : "border-primary-border bg-primary-light text-primary",
+              ? "border-success bg-success/10 text-success-strong"
+               : "border-primary bg-primary/10 text-primary",
           )}
         >
           <span
             className={cn(
-              "size-1.5 rounded-full",
-               subscription.active ? "bg-emerald-500" : "bg-primary",
+              "size-2 rounded-full",
+               subscription.active ? "bg-success" : "bg-primary",
             )}
           />
           {subscription.active ? "Active" : "Suspended"}
@@ -212,7 +212,7 @@ export function BillingClient() {
                   return (
                     <tr
                       key={seat.seat_id}
-                      className="border-b border-border/60 last:border-0"
+                      className="border-b border-border/60 transition-colors hover:bg-muted/30 last:border-0"
                     >
                       <td className="px-4 py-3">
                         <p className="font-medium">{seat.display_name}</p>
@@ -251,7 +251,7 @@ export function BillingClient() {
         </Card>
 
         {/* Next invoice */}
-        <Card className="mt-6">
+        <Card className="mt-6 border-border bg-muted/20 shadow-sm">
           <CardContent className="flex flex-col gap-4 p-5 sm:flex-row sm:items-center sm:justify-between">
             <div className="flex items-center gap-3">
               <div className="grid size-10 place-items-center rounded-lg bg-primary/10 text-primary">
@@ -266,10 +266,10 @@ export function BillingClient() {
               </div>
             </div>
             <div className="text-right">
-              <p className="font-display text-h2">
+              <p className="font-display text-3xl font-bold tracking-tight">
                 {formatMoney(subscription.next_invoice_cents)}
               </p>
-              <p className="text-xs text-muted-foreground">
+              <p className="mt-1 text-xs text-muted-foreground">
                 {subscription.seats.filter((s) => s.status === "active").length}{" "}
                 active seats × {formatMoney(subscription.plan.price_per_seat_cents)}
                 /seat
@@ -304,8 +304,8 @@ function renderPlans(plans: Plan[], currentPlanId?: string) {
             <Card
               key={plan.plan_id}
               className={cn(
-                "relative flex flex-col gap-3 p-5",
-                isCurrent && "border-primary/50 bg-primary/[0.03]",
+                "relative flex flex-col gap-3 p-6 transition-all duration-300 hover:-translate-y-1 hover:shadow-md",
+                isCurrent ? "border-primary border-2 shadow-sm" : "border-border",
               )}
             >
               {isCurrent ? (
@@ -322,9 +322,9 @@ function renderPlans(plans: Plan[], currentPlanId?: string) {
                   </p>
                 </div>
               </div>
-              <p className="font-display text-h2">
+              <p className="font-display text-4xl font-bold tracking-tight mt-2">
                 {formatMoney(plan.price_per_seat_cents)}
-                <span className="text-xs font-normal text-muted-foreground">
+                <span className="text-sm font-medium text-muted-foreground">
                   {" "}
                   /seat/mo
                 </span>

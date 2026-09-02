@@ -82,7 +82,11 @@ function Countdown({ expiresAt }: { expiresAt: string }) {
   const m = Math.floor(total / 60);
   const s = total % 60;
   return (
-    <span className="font-mono">
+    <span className="inline-flex items-center gap-1.5 font-mono">
+      <span className="relative flex size-2">
+        <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-destructive opacity-75"></span>
+        <span className="relative inline-flex size-2 rounded-full bg-destructive"></span>
+      </span>
       {m}:{s.toString().padStart(2, "0")}
     </span>
   );
@@ -111,27 +115,27 @@ function HostedEmbed({
   });
 
   return (
-    <div className="overflow-hidden rounded-xl border border-border shadow-sm">
+    <div className="overflow-hidden rounded-2xl border border-border bg-card shadow-lg">
       {/* Provider frame chrome */}
-      <div className="flex items-center gap-3 border-b border-border bg-muted/50 px-4 py-3">
-        <div className="grid size-7 place-items-center rounded-md bg-primary text-primary-foreground">
+      <div className="flex items-center gap-3 border-b border-border bg-muted/30 px-4 py-3">
+        <div className="grid size-8 place-items-center rounded-lg bg-primary text-primary-foreground">
           <CreditCard className="size-4" />
         </div>
         <div className="flex-1">
-          <p className="text-sm font-semibold">{PROVIDER_LABEL} Checkout</p>
-          <p className="text-caption text-muted-foreground">
+          <p className="text-sm font-semibold tracking-tight">{PROVIDER_LABEL} Checkout</p>
+          <p className="text-caption text-muted-foreground/80">
             hosted checkout · sandbox test mode
           </p>
         </div>
-          <Badge variant="outline" className="gap-1 text-caption">
+        <Badge variant="outline" className="gap-1 text-caption text-muted-foreground">
           <Lock className="size-3" />
-          provider-hosted
+          hosted
         </Badge>
       </div>
 
       {/* Embed body — the provider page content (mock) */}
-      <div className="flex flex-col gap-4 bg-card p-5">
-        <p className="text-sm text-muted-foreground">
+      <div className="flex flex-col gap-5 p-6">
+        <p className="text-sm text-muted-foreground/90 leading-relaxed">
           Paying for{" "}
           <span className="font-medium text-foreground">
             {session.cart.items.length} item
@@ -141,36 +145,43 @@ function HostedEmbed({
           card details.
         </p>
 
-        <div className="flex flex-col gap-2 rounded-lg border border-border bg-muted/30 p-3">
-          {session.cart.items.map((item) => (
-            <div
+        <div className="flex flex-col gap-1 rounded-xl border border-border bg-muted/20 p-3">
+          {session.cart.items.map((item, index) => (
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: index * 0.05 }}
               key={item.product_id}
-              className="flex items-center justify-between gap-3 text-sm"
+              className="group flex items-center justify-between gap-3 text-sm rounded-lg p-2.5 transition-colors hover:bg-muted/50"
             >
-              <span className="flex min-w-0 items-center gap-2">
+              <span className="flex min-w-0 items-center gap-2.5">
                 {item.kind === "lab" ? (
-                  <FlaskConical className="size-3.5 shrink-0 text-success-strong" />
+                  <div className="grid size-7 shrink-0 place-items-center rounded-md bg-success/10 text-success-strong group-hover:bg-success/20 transition-colors">
+                    <FlaskConical className="size-3.5" />
+                  </div>
                 ) : (
-                  <BookOpen className="size-3.5 shrink-0 text-primary" />
+                  <div className="grid size-7 shrink-0 place-items-center rounded-md bg-primary/10 text-primary group-hover:bg-primary/20 transition-colors">
+                    <BookOpen className="size-3.5" />
+                  </div>
                 )}
-                <span className="truncate">{item.title}</span>
+                <span className="truncate font-medium text-foreground/90 group-hover:text-foreground transition-colors">{item.title}</span>
                 {item.quantity > 1 ? (
-                  <Badge variant="outline" className="text-caption">
+                  <Badge variant="outline" className="text-caption bg-background/50">
                     ×{item.quantity}
                   </Badge>
                 ) : null}
               </span>
-              <span className="font-medium">
+              <span className="font-semibold text-foreground/90">
                 {formatMoney(
                   item.unit_price_cents * item.quantity,
                   session.currency,
                 )}
               </span>
-            </div>
+            </motion.div>
           ))}
-          <div className="mt-1 flex items-center justify-between border-t border-border pt-2 text-sm">
-            <span className="text-muted-foreground">Total</span>
-    <span className="font-display text-h3">
+          <div className="mt-2 flex items-center justify-between border-t border-border px-2 pt-4 pb-1">
+            <span className="text-sm font-medium text-muted-foreground uppercase tracking-wider">Total</span>
+            <span className="font-display text-2xl font-bold">
               {formatMoney(session.amount_cents, session.currency)}
             </span>
           </div>
@@ -178,8 +189,7 @@ function HostedEmbed({
 
         {/* The provider's pay action — not a card form */}
         <Button
-          variant="gradient"
-          className="w-full"
+          className="w-full transition-transform hover:scale-[1.02]"
           size="lg"
           disabled={payMutation.isPending}
           onClick={() => payMutation.mutate()}
@@ -192,24 +202,27 @@ function HostedEmbed({
           ) : (
             <>
               Pay {formatMoney(session.amount_cents, session.currency)}
-              <ArrowRight />
+              <ArrowRight className="transition-transform group-hover:translate-x-1" />
             </>
           )}
         </Button>
 
-                <p className="flex items-center justify-center gap-1.5 text-caption text-muted-foreground">
-          <ShieldCheck className="size-3.5 text-success-strong" />
-          PCI-DSS scope stays with {PROVIDER_LABEL} · 3-D Secure applies in
-          test mode
-        </p>
+        <div className="flex items-center justify-center gap-2 pt-1 text-caption text-muted-foreground/70">
+          <ShieldCheck className="size-3.5 text-success/80" />
+          <span>
+            PCI-DSS scope stays with {PROVIDER_LABEL} · 3-D Secure applies in test mode
+          </span>
+        </div>
 
         {payMutation.isError ? (
-          <div className="flex items-center gap-2 rounded-lg border border-destructive/25 bg-destructive/5 p-3 text-xs text-destructive">
-            <TriangleAlert className="size-3.5 shrink-0" />
-            {payMutation.error instanceof Error
-              ? payMutation.error.message
-              : "Payment processing failed."}
-          </div>
+          <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="flex items-center gap-2 rounded-lg border border-destructive/25 bg-destructive/10 p-3 text-xs text-destructive-foreground">
+            <TriangleAlert className="size-4 shrink-0" />
+            <span className="font-medium">
+              {payMutation.error instanceof Error
+                ? payMutation.error.message
+                : "Payment processing failed."}
+            </span>
+          </motion.div>
         ) : null}
       </div>
     </div>
@@ -235,17 +248,23 @@ function PaidPanel({
 }) {
   return (
     <motion.div
-      initial={{ opacity: 0, y: 8 }}
-      animate={{ opacity: 1, y: 0 }}
-      className="flex flex-col items-center rounded-xl border border-success/25 bg-success/5 px-6 py-10 text-center"
+      initial={{ opacity: 0, y: 10, scale: 0.98 }}
+      animate={{ opacity: 1, y: 0, scale: 1 }}
+      transition={{ type: "spring", stiffness: 300, damping: 25 }}
+      className="flex flex-col items-center rounded-2xl border border-success/30 bg-success/5 px-6 py-12 text-center"
     >
-      <div className="mb-4 grid size-14 place-items-center rounded-full border border-success/30 bg-success/10 text-success-strong">
-        <CheckCircle2 className="size-7" />
-      </div>
-      <h2 className="font-display text-h2">
+      <motion.div 
+        initial={{ scale: 0 }}
+        animate={{ scale: 1 }}
+        transition={{ type: "spring", stiffness: 400, damping: 20, delay: 0.1 }}
+        className="mb-5 grid size-16 place-items-center rounded-full border-2 border-success/30 bg-success/10 text-success"
+      >
+        <CheckCircle2 className="size-8" />
+      </motion.div>
+      <h2 className="font-display text-4xl font-bold tracking-tight text-foreground">
         Payment succeeded
       </h2>
-      <p className="mt-1.5 max-w-md text-sm text-muted-foreground">
+      <p className="mt-2 max-w-md text-sm text-muted-foreground/90 leading-relaxed">
         Your order is confirmed and entitlements were granted. A{" "}
         <code className="rounded bg-secondary px-1 font-mono text-[11px]">
           payment.succeeded
@@ -343,17 +362,23 @@ function PaidPanel({
 function DeclinedPanel() {
   return (
     <motion.div
-      initial={{ opacity: 0, y: 8 }}
-      animate={{ opacity: 1, y: 0 }}
-      className="flex flex-col items-center rounded-xl border border-destructive/25 bg-destructive/5 px-6 py-10 text-center"
+      initial={{ opacity: 0, y: 10, scale: 0.98 }}
+      animate={{ opacity: 1, y: 0, scale: 1 }}
+      transition={{ type: "spring", stiffness: 300, damping: 25 }}
+      className="flex flex-col items-center rounded-2xl border border-destructive/30 bg-destructive/5 px-6 py-12 text-center"
     >
-      <div className="mb-4 grid size-14 place-items-center rounded-full border border-destructive/30 bg-destructive/10 text-destructive">
-        <TriangleAlert className="size-7" />
-      </div>
-      <h2 className="font-display text-h2">
+      <motion.div 
+        initial={{ scale: 0 }}
+        animate={{ scale: 1 }}
+        transition={{ type: "spring", stiffness: 400, damping: 20, delay: 0.1 }}
+        className="mb-5 grid size-16 place-items-center rounded-full border-2 border-destructive/30 bg-destructive/10 text-destructive"
+      >
+        <TriangleAlert className="size-8" />
+      </motion.div>
+      <h2 className="font-display text-4xl font-bold tracking-tight text-foreground">
         Payment declined
       </h2>
-      <p className="mt-1.5 max-w-md text-sm text-muted-foreground">
+      <p className="mt-2 max-w-md text-sm text-muted-foreground/90 leading-relaxed">
         The provider declined this payment (simulated test-mode decline). No
         charge was made and no entitlements were granted. Start a new checkout
         to retry — sessions are single-use.
@@ -371,17 +396,23 @@ function DeclinedPanel() {
 function ExpiredPanel() {
   return (
     <motion.div
-      initial={{ opacity: 0, y: 8 }}
-      animate={{ opacity: 1, y: 0 }}
-      className="flex flex-col items-center rounded-xl border border-warning/25 bg-warning/5 px-6 py-10 text-center"
+      initial={{ opacity: 0, y: 10, scale: 0.98 }}
+      animate={{ opacity: 1, y: 0, scale: 1 }}
+      transition={{ type: "spring", stiffness: 300, damping: 25 }}
+      className="flex flex-col items-center rounded-2xl border border-warning/30 bg-warning/5 px-6 py-12 text-center"
     >
-      <div className="mb-4 grid size-14 place-items-center rounded-full border border-warning/30 bg-warning/10 text-warning-strong">
-        <Hourglass className="size-7" />
-      </div>
-      <h2 className="font-display text-h2">
-        Checkout session expired
+      <motion.div 
+        initial={{ scale: 0, rotate: -45 }}
+        animate={{ scale: 1, rotate: 0 }}
+        transition={{ type: "spring", stiffness: 400, damping: 20, delay: 0.1 }}
+        className="mb-5 grid size-16 place-items-center rounded-full border-2 border-warning/30 bg-warning/10 text-warning-strong"
+      >
+        <Hourglass className="size-8" />
+      </motion.div>
+      <h2 className="font-display text-4xl font-bold tracking-tight text-foreground">
+        Checkout expired
       </h2>
-      <p className="mt-1.5 max-w-md text-sm text-muted-foreground">
+      <p className="mt-2 max-w-md text-sm text-muted-foreground/90 leading-relaxed">
         This checkout link expired before payment completed (30-minute
         validity). Your cart is untouched — start a fresh session.
       </p>
@@ -558,19 +589,19 @@ export function CheckoutClient({ checkoutId }: { checkoutId: string }) {
       <HostedEmbed session={session} onPaid={refreshSession} />
 
       {/* Delivery expectation timeline (UI §7.1) */}
-      <ol className="mt-4 grid gap-2 rounded-xl border border-border bg-card p-4 sm:grid-cols-3 sm:gap-0 sm:p-0">
+      <ol className="mt-6 grid gap-4 sm:grid-cols-3 sm:gap-4 relative z-0">
         {[
           { title: "Pay securely", body: "Provider-hosted form, PCI-DSS out of your hands." },
           { title: "Instant entitlement", body: "payment.succeeded unlocks your item immediately." },
           { title: "Download proof", body: "Receipt and credential available in your profile." },
         ].map((step, index) => (
-          <li key={step.title} className="flex gap-3 sm:flex-1 sm:flex-col sm:gap-0 sm:px-5 sm:py-3">
-            <span className="grid size-5 shrink-0 place-items-center rounded-full bg-primary-muted font-mono text-[10px] font-bold text-primary sm:mb-2">
+          <li key={step.title} className="group relative flex flex-col items-center text-center sm:items-start sm:text-left rounded-xl border border-border bg-card p-4 hover:border-primary/50 hover:shadow-sm transition-all hover:-translate-y-0.5">
+            <span className="grid size-8 mb-3 shrink-0 place-items-center rounded-full bg-primary/10 font-display text-sm font-bold text-primary group-hover:bg-primary group-hover:text-primary-foreground transition-colors">
               {index + 1}
             </span>
-            <div className="sm:pl-0">
-              <p className="text-xs font-semibold">{step.title}</p>
-              <p className="mt-0.5 text-[11px] leading-relaxed text-muted-foreground">{step.body}</p>
+            <div>
+              <p className="text-sm font-semibold tracking-tight text-foreground/90 group-hover:text-foreground transition-colors">{step.title}</p>
+              <p className="mt-1 text-xs leading-relaxed text-muted-foreground/80">{step.body}</p>
             </div>
           </li>
         ))}

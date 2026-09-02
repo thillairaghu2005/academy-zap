@@ -10,30 +10,26 @@ import {
   Brackets,
   Check,
   CheckCircle2,
-  CircleDot,
   Database,
   Flame,
   GitBranch,
   Layers3,
-  ListFilter,
   Network,
-  RotateCcw,
   Search,
-  Sparkles,
-  SquareTerminal,
-  Tag,
+  Settings2,
+  Target,
   Timer,
   Type,
   Trophy,
-  Users,
   Zap,
+  CalendarDays,
+  X
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 
 import type { Problem, ProblemDifficulty } from "@/lib/contracts/judge";
 import { listProblems, listSolvedProblemIds } from "@/lib/data/demo/judge";
 import { getProgressContext } from "@/lib/data/demo/gamification";
-import { DEMO_MODE } from "@/lib/config";
 import { useSession } from "@/components/providers/session-provider";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -53,13 +49,6 @@ import { cn } from "@/lib/utils";
 
 type StatusFilter = "all" | "solved" | "unsolved";
 type SortKey = "recommended" | "title" | "difficulty" | "acceptance" | "time";
-
-const DIFFICULTIES: { value: ProblemDifficulty | "all"; label: string }[] = [
-  { value: "all", label: "All difficulties" },
-  { value: "easy", label: "Easy" },
-  { value: "medium", label: "Medium" },
-  { value: "hard", label: "Hard" },
-];
 
 const DIFFICULTY_ORDER: Record<ProblemDifficulty, number> = {
   easy: 1,
@@ -92,9 +81,9 @@ const PROBLEM_META: Record<string, { companies: string[]; solves: number; xp: nu
 };
 
 const DIFFICULTY_STYLES: Record<ProblemDifficulty, { badge: string; dot: string }> = {
-  easy: { badge: "border-success/20 bg-success/10 text-success-strong", dot: "bg-success" },
-  medium: { badge: "border-warning/25 bg-warning/10 text-warning-strong", dot: "bg-warning" },
-  hard: { badge: "border-danger/20 bg-danger/10 text-danger-strong", dot: "bg-danger" },
+  easy: { badge: "border-success/30 bg-success/15 text-success-strong", dot: "bg-success" },
+  medium: { badge: "border-warning/35 bg-warning/15 text-warning-strong", dot: "bg-warning" },
+  hard: { badge: "border-danger/30 bg-danger/15 text-danger-strong", dot: "bg-danger" },
 };
 
 const CATEGORY_BY_TOPIC: Record<string, { icon: LucideIcon; label: string }> = {
@@ -128,122 +117,13 @@ function categoryFor(problem: Problem) {
   };
 }
 
-function Metric({
-  icon: Icon,
-  value,
-  label,
-  valueClassName,
-}: {
-  icon: LucideIcon;
-  value: string;
-  label: string;
-  valueClassName?: string;
-}) {
-  return (
-    <div className="flex min-w-0 items-start gap-2.5">
-      <Icon className="mt-0.5 size-4 shrink-0 text-muted-foreground" />
-      <div className="min-w-0">
-        <p className={cn("truncate text-sm font-semibold leading-4 text-foreground", valueClassName)}>{value}</p>
-        <p className="mt-1 truncate text-[10px] font-semibold uppercase tracking-[0.1em] text-muted-foreground">{label}</p>
-      </div>
-    </div>
-  );
-}
-
-function AcceptanceMetric({ rate }: { rate: number }) {
-  return (
-    <div className="flex min-w-0 items-center gap-2.5">
-      <svg className="size-9 shrink-0 -rotate-90" viewBox="0 0 40 40" aria-label={`${rate}% acceptance rate`} role="img">
-        <circle cx="20" cy="20" r="15" fill="none" stroke="var(--color-muted)" strokeWidth="5" />
-        <circle cx="20" cy="20" r="15" fill="none" stroke="var(--color-success)" strokeWidth="5" pathLength="100" strokeDasharray="100" strokeDashoffset={100 - rate} strokeLinecap="round" />
-      </svg>
-      <div className="min-w-0">
-        <p className="text-sm font-semibold leading-4 text-foreground">{rate}%</p>
-        <p className="mt-1 truncate text-[10px] font-semibold uppercase tracking-[0.1em] text-muted-foreground">Acceptance</p>
-      </div>
-    </div>
-  );
-}
-
-function FilterSelect({
-  label,
-  icon: Icon,
-  value,
-  onValueChange,
-  options,
-}: {
-  label: string;
-  icon: React.ComponentType<{ className?: string }>;
-  value: string;
-  onValueChange: (value: string) => void;
-  options: { value: string; label: string }[];
-}) {
-  return (
-    <div className="flex min-w-[148px] flex-1 flex-col gap-1.5 sm:flex-none">
-      <span className="flex items-center gap-1.5 px-1 text-[11px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">
-        <Icon className="size-3.5" />
-        {label}
-      </span>
-      <Select value={value} onValueChange={onValueChange}>
-        <SelectTrigger className="h-10 rounded-xl border-slate-200 bg-white/80 text-sm shadow-none hover:border-slate-300 hover:bg-white">
-          <SelectValue />
-        </SelectTrigger>
-        <SelectContent>
-          {options.map((option) => (
-            <SelectItem key={option.value} value={option.value}>
-              {option.label}
-            </SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
-    </div>
-  );
-}
-
-function StatCard({
-  label,
-  value,
-  detail,
-  icon: Icon,
-  tone,
-}: {
-  label: string;
-  value: string;
-  detail: string;
-  icon: React.ComponentType<{ className?: string }>;
-  tone: string;
-}) {
-  return (
-    <div className="flex min-w-0 items-center gap-3 rounded-2xl border border-border bg-white/80 p-4 backdrop-blur-sm">
-      <div className={cn("grid size-10 shrink-0 place-items-center rounded-xl", tone)}>
-        <Icon className="size-5" />
-      </div>
-      <div className="min-w-0">
-        <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">{label}</p>
-        <div className="mt-0.5 flex items-baseline gap-2">
-          <p className="font-display text-xl font-semibold tracking-tight text-foreground">{value}</p>
-          <p className="truncate text-xs text-muted-foreground">{detail}</p>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function ProblemCard({
-  problem,
-  index,
-  solved,
-}: {
-  problem: Problem;
-  index: number;
-  solved: boolean;
-}) {
+function ProblemCard({ problem, index, solved }: { problem: Problem; index: number; solved: boolean }) {
   const reducedMotion = useReducedMotion() ?? false;
   const meta = problemMeta(problem);
   const description = problem.statement.split("\n")[0];
   const category = categoryFor(problem);
   const CategoryIcon = category.icon;
-  const visibleTopics = problem.topics.slice(0, 3);
+  const visibleTopics = problem.topics.slice(0, 2);
   const hiddenTopicCount = Math.max(problem.topics.length - visibleTopics.length, 0);
   const difficultyStyle = DIFFICULTY_STYLES[problem.difficulty];
 
@@ -252,73 +132,54 @@ function ProblemCard({
       initial={reducedMotion ? false : { opacity: 0, y: 14 }}
       animate={reducedMotion ? undefined : { opacity: 1, y: 0 }}
       transition={reducedMotion ? undefined : { delay: Math.min(index * 0.045, 0.3), duration: 0.25, ease: "easeOut" }}
-      className="h-full"
+      className="h-full group relative"
     >
-      <Link
-        href={`/judge/${problem.id}`}
-        className="group block h-full rounded-2xl outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-4"
-      >
-          <Card className="relative flex h-full flex-col overflow-hidden rounded-2xl border-border bg-card p-6 shadow-[0_8px_30px_rgb(17_24_39_/_4%)] transition-[transform,box-shadow,border-color] duration-200 ease-out group-hover:-translate-y-1 group-hover:border-primary/30 group-hover:shadow-[0_16px_40px_rgb(17_24_39_/_9%)] sm:p-6">
-          <div className="flex items-start gap-4">
-            <div className="grid size-12 shrink-0 place-items-center rounded-xl border border-border bg-surface-1 text-muted-foreground transition-transform duration-200 ease-out group-hover:scale-[1.03]" aria-label={`${category.label} category`}>
-              <CategoryIcon className="size-5" aria-hidden="true" />
-            </div>
-            <div className="min-w-0 flex-1">
-              <div className="flex min-h-5 flex-wrap items-center gap-2">
-                {solved ? (
-                  <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-success-strong">
-                    <Check className="size-3.5" /> Solved
-                  </span>
-                ) : null}
-                <span className={cn("inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-[11px] font-semibold", difficultyStyle.badge)}>
-                  <span className={cn("size-1.5 rounded-full", difficultyStyle.dot)} aria-hidden="true" />
-                  {problem.difficulty}
-                </span>
+      <Link href={`/judge/${problem.id}`} className="block h-full rounded-2xl outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-4">
+        <Card className="flex h-full flex-col justify-between overflow-hidden rounded-2xl border-border bg-card p-5 shadow-[0_8px_30px_rgb(17_24_39_/_4%)] transition-all duration-200 group-hover:-translate-y-1 group-hover:border-primary/30 group-hover:shadow-[0_16px_40px_rgb(17_24_39_/_9%)]">
+          <div>
+            <div className="flex items-start justify-between gap-3">
+              <div className="flex items-start gap-4 min-w-0">
+                <div className="grid size-11 shrink-0 place-items-center rounded-xl border border-border bg-surface-1 text-muted-foreground transition-transform duration-200 group-hover:scale-[1.03]" aria-label={`${category.label} category`}>
+                  <CategoryIcon className="size-5" aria-hidden="true" />
+                </div>
+                <div className="min-w-0">
+                  <h3 className="truncate font-display text-[18px] font-semibold tracking-tight text-foreground transition-colors duration-200 group-hover:text-primary" title={problem.title}>
+                    {problem.title}
+                  </h3>
+                  <div className="mt-1.5 flex flex-wrap items-center gap-2.5 text-[13px]">
+                    {solved ? (
+                      <span className="flex items-center gap-1 font-semibold text-success-strong">
+                        <Check className="size-3.5" /> Solved
+                      </span>
+                    ) : null}
+                    <span className={cn("flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-xs font-semibold border", difficultyStyle.badge)}>
+                      <span className={cn("size-1.5 rounded-full", difficultyStyle.dot)} aria-hidden="true" />
+                      {problem.difficulty}
+                    </span>
+                    <span className="text-muted-foreground font-medium truncate">{visibleTopics.join(", ")}{hiddenTopicCount > 0 && `, +${hiddenTopicCount}`}</span>
+                  </div>
+                </div>
               </div>
-              <h3 className="mt-2 truncate font-display text-[21px] font-semibold leading-7 tracking-[-0.025em] text-foreground transition-colors duration-200 group-hover:text-primary" title={problem.title}>
-                {problem.title}
-              </h3>
             </div>
+            <p className="mt-4 line-clamp-2 text-sm leading-relaxed text-muted-foreground" title={description}>{description}</p>
           </div>
 
-          <div className="mt-6">
-            <div className="flex min-w-0 items-center gap-2 overflow-hidden">
-              {visibleTopics.map((topic) => (
-                <span key={topic} className="max-w-[42%] truncate rounded-lg border border-border bg-surface-1 px-2.5 py-1 text-[11px] font-medium text-muted-foreground">
-                  {topic}
-                </span>
-              ))}
-              {hiddenTopicCount > 0 ? (
-                <span className="shrink-0 rounded-lg border border-border bg-surface-1 px-2.5 py-1 text-[11px] font-medium text-muted-foreground">+{hiddenTopicCount}</span>
-              ) : null}
+          <div className="mt-5 flex items-center justify-between border-t border-border/80 pt-4">
+            <div className="flex items-center gap-4 text-xs font-medium text-muted-foreground">
+              <div className="flex items-center gap-1.5" title="Acceptance Rate"><CheckCircle2 className="size-4" /> {problem.success_rate_pct}%</div>
+              <div className="flex items-center gap-1.5" title="Estimated Time"><Timer className="size-4" /> ~{problem.estimated_minutes}m</div>
+              <div className="flex items-center gap-1.5 text-xp-mastery font-semibold" title="XP Reward"><Zap className="size-4" /> +{meta.xp}</div>
             </div>
-            <p className="mt-2 truncate text-sm leading-5 text-muted-foreground" title={description}>{description}</p>
-          </div>
-
-          <div className="mt-6 rounded-xl border border-border/80 bg-surface-1/70 p-4">
-            <div className="mb-4 flex items-center justify-between">
-            <p className="text-[10px] font-semibold uppercase tracking-[0.13em] text-muted-foreground">Problem signals</p>
-              <span className="text-[11px] font-medium text-muted-foreground">{formatNumber(meta.solves)} solves</span>
+            
+            <div className="flex items-center gap-3">
+              <div className="hidden items-center gap-4 pr-3 text-xs font-medium text-muted-foreground opacity-0 transition-opacity duration-200 group-hover:opacity-100 sm:flex">
+                 <span className="flex items-center gap-1.5"><BarChart3 className="size-3.5" />{problem.time_limit_ms}ms</span>
+                 <span className="flex items-center gap-1.5"><Database className="size-3.5" />{(problem.memory_limit_kb/1024).toFixed(0)}MB</span>
+              </div>
+              <span className="inline-flex h-9 items-center justify-center gap-1.5 rounded-lg bg-surface-2 px-4 text-[13px] font-semibold text-foreground transition-colors group-hover:bg-primary group-hover:text-primary-foreground shadow-sm">
+                Solve <ArrowUpRight className="size-3.5" />
+              </span>
             </div>
-            <div className="grid grid-cols-2 gap-x-4 gap-y-4 sm:grid-cols-3">
-              <AcceptanceMetric rate={problem.success_rate_pct} />
-              <Metric icon={Timer} value={`~${problem.estimated_minutes} min`} label="Solve time" />
-              <Metric icon={Zap} value={`+${meta.xp} XP`} label="Reward" valueClassName="text-xp-mastery" />
-              <Metric icon={BarChart3} value={`${problem.time_limit_ms} ms`} label="Runtime limit" />
-              <Metric icon={Database} value={`${(problem.memory_limit_kb / 1024).toFixed(0)} MB`} label="Memory limit" />
-              <Metric icon={CircleDot} value={`${problem.hidden_test_count} tests`} label="Test cases" />
-            </div>
-          </div>
-
-          <div className="mt-6 flex flex-col gap-4 border-t border-border/80 pt-6 sm:flex-row sm:items-center sm:justify-between">
-            <div className="flex min-w-0 items-center gap-2 text-xs text-muted-foreground">
-              <Users className="size-3.5 shrink-0" />
-              <span className="truncate">Asked at {meta.companies.join(" / ")}</span>
-            </div>
-            <span className="inline-flex h-11 w-full items-center justify-center gap-2 rounded-xl bg-primary px-5 text-sm font-semibold text-primary-foreground shadow-sm transition-[background-color,box-shadow] duration-200 ease-out group-hover:bg-primary-hover group-hover:shadow-lg sm:w-auto">
-              Solve Challenge
-              <ArrowUpRight className="size-4 transition-transform duration-200 ease-out group-hover:translate-x-1" />
-            </span>
           </div>
         </Card>
       </Link>
@@ -326,14 +187,33 @@ function ProblemCard({
   );
 }
 
+function PathCard({ title, progress, total }: { title: string; progress: number; total: number; label?: string }) {
+  const percentage = Math.round((progress / total) * 100);
+  return (
+    <Card className="p-4 bg-surface-1 border-border/60 shadow-sm transition-all hover:border-primary/30 hover:shadow-md cursor-pointer group">
+      <div className="flex justify-between items-center mb-3">
+        <h4 className="font-semibold text-sm truncate pr-4 text-foreground group-hover:text-primary transition-colors">{title}</h4>
+        <span className="text-xs font-semibold text-muted-foreground shrink-0 bg-surface-2 px-2 py-0.5 rounded-full">{progress}/{total}</span>
+      </div>
+      <div className="h-1.5 w-full bg-surface-3 rounded-full overflow-hidden">
+        <div className="h-full bg-primary rounded-full transition-all" style={{ width: `${percentage}%` }} />
+      </div>
+      <p className="mt-2.5 text-[11px] text-muted-foreground uppercase tracking-wider font-semibold">{percentage}% complete</p>
+    </Card>
+  );
+}
+
 export function ProblemListClient() {
   const { user } = useSession();
   const [search, setSearch] = React.useState("");
-  const [difficulty, setDifficulty] = React.useState<ProblemDifficulty | "all">("all");
   const [status, setStatus] = React.useState<StatusFilter>("all");
   const [tag, setTag] = React.useState("all");
   const [company, setCompany] = React.useState("all");
   const [sort, setSort] = React.useState<SortKey>("recommended");
+  const [showFilters, setShowFilters] = React.useState(false);
+  const [activeTab, setActiveTab] = React.useState<"all" | "recommended" | "easy" | "medium" | "hard">("all");
+
+  const difficulty = activeTab === "all" || activeTab === "recommended" ? "all" : (activeTab as ProblemDifficulty);
 
   const { data, isLoading, isError, error, refetch } = useQuery({
     queryKey: ["judge-problems"],
@@ -352,12 +232,7 @@ export function ProblemListClient() {
 
   const solvedIds = React.useMemo(() => solvedQuery.data ?? [], [solvedQuery.data]);
   const solvedIdSet = React.useMemo(() => new Set(solvedIds), [solvedIds]);
-  const counts = React.useMemo(() => {
-    const result: Record<ProblemDifficulty, number> = { easy: 0, medium: 0, hard: 0 };
-    for (const problem of data ?? []) result[problem.difficulty]++;
-    return result;
-  }, [data]);
-
+  
   const tags = React.useMemo(
     () => [...new Set((data ?? []).flatMap((problem) => problem.topics))].sort(),
     [data],
@@ -373,178 +248,334 @@ export function ProblemListClient() {
       const meta = problemMeta(problem);
       const matchesSearch = !query || [problem.title, problem.slug, problem.statement, ...problem.topics].join(" ").toLowerCase().includes(query);
       const matchesDifficulty = difficulty === "all" || problem.difficulty === difficulty;
-       const matchesStatus = status === "all" || (status === "solved" ? solvedIdSet.has(problem.id) : !solvedIdSet.has(problem.id));
+      const matchesStatus = status === "all" || (status === "solved" ? solvedIdSet.has(problem.id) : !solvedIdSet.has(problem.id));
       const matchesTag = tag === "all" || problem.topics.includes(tag);
       const matchesCompany = company === "all" || meta.companies.includes(company);
-      return matchesSearch && matchesDifficulty && matchesStatus && matchesTag && matchesCompany;
+      
+      const isRecommended = activeTab === "recommended" ? !solvedIdSet.has(problem.id) : true;
+      
+      return matchesSearch && matchesDifficulty && matchesStatus && matchesTag && matchesCompany && isRecommended;
     });
 
     return [...result].sort((a, b) => {
       switch (sort) {
-        case "title":
-          return a.title.localeCompare(b.title);
-        case "difficulty":
-          return DIFFICULTY_ORDER[a.difficulty] - DIFFICULTY_ORDER[b.difficulty];
-        case "acceptance":
-          return b.success_rate_pct - a.success_rate_pct;
-        case "time":
-          return a.estimated_minutes - b.estimated_minutes;
-        default:
-          return 0;
+        case "title": return a.title.localeCompare(b.title);
+        case "difficulty": return DIFFICULTY_ORDER[a.difficulty] - DIFFICULTY_ORDER[b.difficulty];
+        case "acceptance": return b.success_rate_pct - a.success_rate_pct;
+        case "time": return a.estimated_minutes - b.estimated_minutes;
+        default: return 0;
       }
     });
-  }, [company, data, difficulty, search, solvedIdSet, sort, status, tag]);
+  }, [company, data, difficulty, search, solvedIdSet, sort, status, tag, activeTab]);
 
   const resetFilters = () => {
     setSearch("");
-    setDifficulty("all");
     setStatus("all");
     setTag("all");
     setCompany("all");
     setSort("recommended");
+    setActiveTab("all");
   };
 
   const activeFilters = [
-    search ? { label: `Search: ${search}`, clear: () => setSearch("") } : null,
-    difficulty !== "all" ? { label: DIFFICULTIES.find((item) => item.value === difficulty)?.label ?? difficulty, clear: () => setDifficulty("all") } : null,
     status !== "all" ? { label: STATUS_OPTIONS.find((item) => item.value === status)?.label ?? status, clear: () => setStatus("all") } : null,
-    tag !== "all" ? { label: `Tag: ${tag}`, clear: () => setTag("all") } : null,
+    tag !== "all" ? { label: `Topic: ${tag}`, clear: () => setTag("all") } : null,
     company !== "all" ? { label: `Company: ${company}`, clear: () => setCompany("all") } : null,
   ].filter((item): item is { label: string; clear: () => void } => item !== null);
 
   const problemsLoading = isLoading || solvedQuery.isLoading;
-  const totalProblems = data?.length ?? 0;
   const solvedCount = solvedIds.length;
   const totalXp = progressQuery.data
     ? progressQuery.data.rank.completion_xp + progressQuery.data.rank.mastery_xp
-    : null;
+    : 0;
+  const streak = progressQuery.data?.streak.current_streak_days ?? 0;
+  const readiness = 74; // Mocked for redesign
+
+  const nextProblem = React.useMemo(() => {
+    if (!data) return null;
+    return data.find((problem) => !solvedIdSet.has(problem.id)) ?? data[0];
+  }, [data, solvedIdSet]);
 
   return (
-    <PageContainer className="max-w-[1440px] px-4 py-6 sm:px-6 sm:py-8 lg:px-10 lg:py-10">
-      <section className="relative overflow-hidden rounded-3xl border border-border bg-card px-5 py-7 shadow-[0_20px_60px_rgb(17_24_39_/_7%)] sm:px-8 sm:py-9 lg:px-10 lg:py-10">
-        <div className="pointer-events-none absolute -right-20 -top-32 size-96 rounded-full bg-primary/8 blur-3xl" />
-        <div className="pointer-events-none absolute -bottom-40 left-1/3 size-96 rounded-full bg-primary-light/60 blur-3xl" />
-        <div className="relative">
-          <div className="flex flex-col justify-between gap-7 xl:flex-row xl:items-end">
-            <div className="max-w-2xl">
-                <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-primary/15 bg-primary/5 px-3 py-1.5 text-xs font-semibold text-primary">
-                <Sparkles className="size-3.5" /> Practice with purpose
+    <PageContainer className="max-w-[1440px] px-4 py-8 sm:px-6 sm:py-10 lg:px-10">
+      
+      {/* 1. Header */}
+      <header className="mb-8">
+        <h1 className="font-display text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">
+          Good afternoon, {user?.display_name || "Student"}. Continue your interview preparation.
+        </h1>
+      </header>
+
+      {/* 2. Hero Next Action + Stats Strip */}
+      <section className="mb-14">
+        <Card className="relative overflow-hidden rounded-3xl border-primary/20 bg-primary/5 shadow-sm">
+          <div className="absolute right-0 top-0 h-full w-1/2 bg-gradient-to-l from-primary/10 to-transparent blur-3xl pointer-events-none" />
+          <div className="relative p-7 sm:p-10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-8">
+            <div className="flex-1 min-w-0">
+              <div className="inline-flex items-center gap-1.5 rounded-full border border-primary/20 bg-primary/10 px-3.5 py-1.5 text-[13px] font-semibold text-primary mb-5 shadow-sm">
+                <Target className="size-4" /> Your next challenge
               </div>
-              <h1 className="font-display text-4xl font-semibold tracking-[-0.045em] text-foreground sm:text-5xl">Judge Engine</h1>
-              <p className="mt-3 max-w-xl text-sm leading-6 text-muted-foreground sm:text-base">
-                Sharpen your problem-solving instincts with real interview patterns, instant feedback, and a focused Python workspace.
-              </p>
+              <h2 className="font-display text-3xl sm:text-4xl font-semibold text-foreground truncate">
+                {nextProblem ? nextProblem.title : "Loading next challenge..."}
+              </h2>
+              
+              {nextProblem && (
+                <>
+                  <div className="mt-4 flex flex-wrap items-center gap-3.5 text-sm">
+                    <span className={cn("inline-flex items-center gap-1.5 rounded-full px-3 py-1 font-semibold border", DIFFICULTY_STYLES[nextProblem.difficulty].badge)}>
+                      <span className={cn("size-2 rounded-full", DIFFICULTY_STYLES[nextProblem.difficulty].dot)} />
+                      {nextProblem.difficulty}
+                    </span>
+                    <span className="text-muted-foreground font-medium">{nextProblem.topics.slice(0, 2).join(", ")}</span>
+                    <span className="text-muted-foreground font-medium flex items-center gap-1.5">
+                      <Timer className="size-4.5" /> ~{nextProblem.estimated_minutes} min
+                    </span>
+                  </div>
+                  <p className="mt-5 text-[15px] text-foreground-muted max-w-xl leading-relaxed">
+                    You haven&apos;t practiced <strong className="text-foreground font-medium">{nextProblem.topics[0] ?? "Hash Maps"}</strong> recently — builds your <strong className="text-foreground font-medium">{nextProblem.topics[1] ?? "Array"}</strong> fundamentals.
+                  </p>
+                </>
+              )}
             </div>
-            <div className="flex items-center gap-2 text-xs text-muted-foreground">
-              <span className="size-2 rounded-full bg-success" />
-              Judge queue operational
+            
+            <div className="shrink-0 w-full sm:w-auto">
+              {nextProblem ? (
+                <Button asChild size="lg" className="w-full sm:w-auto h-14 px-8 text-base font-semibold shadow-xl shadow-primary/20 bg-primary hover:bg-primary-hover text-primary-foreground group transition-all">
+                  <Link href={`/judge/${nextProblem.id}`}>
+                    Continue Challenge <ArrowUpRight className="ml-2 size-5 transition-transform group-hover:translate-x-1 group-hover:-translate-y-1" />
+                  </Link>
+                </Button>
+              ) : (
+                <SkeletonProblemRows count={1} />
+              )}
             </div>
           </div>
-          <div className="mt-8 grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4">
-            <StatCard label="Total Problems" value={isLoading ? "—" : formatNumber(totalProblems)} detail="in the library" icon={Layers3} tone="bg-primary/10 text-primary" />
-            <StatCard label="Solved" value={solvedQuery.isLoading ? "—" : formatNumber(solvedCount)} detail={solvedCount === 1 ? "challenge" : "challenges"} icon={CheckCircle2} tone="bg-success/10 text-success-strong" />
-            <StatCard label="XP" value={progressQuery.isLoading || totalXp === null ? "—" : formatNumber(totalXp)} detail="total earned" icon={Trophy} tone="bg-secondary text-primary" />
-            <StatCard label="Current Streak" value={progressQuery.isLoading || !progressQuery.data ? "—" : `${progressQuery.data.streak.current_streak_days} days`} detail="keep it going" icon={Flame} tone="bg-warning/10 text-warning-strong" />
+        </Card>
+
+        <div className="mt-6 flex flex-wrap items-center gap-x-10 gap-y-4 px-2">
+          <div className="flex items-center gap-2.5">
+            <CheckCircle2 className="size-5 text-muted-foreground" />
+            <span className="font-semibold text-foreground text-base">{solvedCount}</span>
+            <span className="text-sm font-medium text-muted-foreground">Solved</span>
+          </div>
+          <div className="flex items-center gap-2.5">
+            <Flame className="size-5 text-muted-foreground" />
+            <span className="font-semibold text-foreground text-base">{streak} days</span>
+            <span className="text-sm font-medium text-muted-foreground">Streak</span>
+          </div>
+          <div className="flex items-center gap-2.5">
+            <Trophy className="size-5 text-muted-foreground" />
+            <span className="font-semibold text-foreground text-base">{formatNumber(totalXp)}</span>
+            <span className="text-sm font-medium text-muted-foreground">XP</span>
+          </div>
+          <div className="flex items-center gap-2.5">
+            <BarChart3 className="size-5 text-muted-foreground" />
+            <span className="font-semibold text-foreground text-base">{readiness}%</span>
+            <span className="text-sm font-medium text-muted-foreground">Interview Readiness</span>
           </div>
         </div>
       </section>
 
-      <section className="mt-8 rounded-2xl border border-slate-200/90 bg-slate-50/80 p-4 shadow-sm sm:p-5" aria-label="Problem filters">
-        <div className="flex flex-col gap-4 xl:flex-row xl:items-end">
-          <label className="relative block min-w-0 flex-1 xl:max-w-[360px]">
-            <span className="mb-1.5 block px-1 text-[11px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">Search</span>
-            <Search className="pointer-events-none absolute left-3 top-[calc(50%+10px)] size-4 -translate-y-1/2 text-muted-foreground" />
-            <Input value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Search problems, topics..." className="h-10 rounded-xl border-border bg-white pl-9 shadow-none placeholder:text-muted-foreground focus-visible:ring-primary" />
-          </label>
-          <div className="grid grid-cols-2 gap-3 sm:grid-cols-4 xl:flex xl:flex-1 xl:justify-end">
-            <FilterSelect label="Difficulty" icon={BarChart3} value={difficulty} onValueChange={(value) => setDifficulty(value as ProblemDifficulty | "all")} options={DIFFICULTIES.map((item) => ({ ...item, label: item.value === "all" ? `${item.label} (${data?.length ?? "—"})` : `${item.label} (${counts[item.value]})` }))} />
-            <div className="col-span-2 flex min-w-0 flex-col gap-1.5 sm:col-span-2 xl:min-w-[220px]">
-              <span className="flex items-center gap-1.5 px-1 text-[11px] font-semibold uppercase tracking-[0.12em] text-muted-foreground"><ListFilter className="size-3.5" /> Status</span>
-              <div className="grid h-10 grid-cols-3 rounded-xl border border-slate-200 bg-white p-1">
-                {STATUS_OPTIONS.map((option) => (
-                  <button key={option.value} type="button" onClick={() => setStatus(option.value)} aria-pressed={status === option.value} className={cn("rounded-lg px-2 text-xs font-semibold transition-all", status === option.value ? "bg-primary text-primary-foreground shadow-sm" : "text-muted-foreground hover:bg-surface-3 hover:text-foreground")}>{option.label}</button>
-                ))}
-              </div>
-            </div>
-            <FilterSelect label="Tags" icon={Tag} value={tag} onValueChange={setTag} options={[{ value: "all", label: "All tags" }, ...tags.map((item) => ({ value: item, label: item }))]} />
-            <FilterSelect label="Company" icon={Users} value={company} onValueChange={setCompany} options={[{ value: "all", label: "All companies" }, ...companies.map((item) => ({ value: item, label: item }))]} />
+      {/* 3. Recommended Paths & Recommended for You */}
+      <section className="mb-20 grid grid-cols-1 xl:grid-cols-3 gap-8 xl:gap-10">
+        <div className="xl:col-span-1">
+          <h3 className="font-display text-2xl font-semibold mb-6 text-foreground">Recommended Paths</h3>
+          <div className="space-y-3">
+            <PathCard title="DSA Foundations" progress={12} total={50} />
+            <PathCard title="Crack Product-Based Companies" progress={8} total={75} />
+            <PathCard title="Java Interview Preparation" progress={4} total={40} />
+            <PathCard title="30-Day Placement Challenge" progress={7} total={30} label="Day" />
           </div>
         </div>
-        <div className="mt-4 flex flex-col gap-3 border-t border-slate-200/80 pt-4 sm:flex-row sm:items-center sm:justify-between">
-          <div className="flex min-w-0 flex-wrap items-center gap-2">
-            <span className="mr-1 inline-flex items-center gap-1.5 text-xs font-medium text-muted-foreground"><Timer className="size-3.5" /> Sort by</span>
-            <Select value={sort} onValueChange={(value) => setSort(value as SortKey)}>
-              <SelectTrigger className="h-8 w-[170px] rounded-lg border-slate-200 bg-white text-xs shadow-none"><SelectValue /></SelectTrigger>
-              <SelectContent>{SORT_OPTIONS.map((option) => <SelectItem key={option.value} value={option.value}>{option.label}</SelectItem>)}</SelectContent>
-            </Select>
-            {activeFilters.map((filter) => (
-              <button key={filter.label} type="button" onClick={filter.clear} className="inline-flex h-8 items-center gap-1.5 rounded-full border border-primary/20 bg-primary/5 px-3 text-xs font-medium text-primary transition-colors hover:border-primary/40 hover:bg-primary/10">{filter.label}<span aria-hidden="true">×</span><span className="sr-only">Remove filter</span></button>
+        
+        <div className="xl:col-span-2 flex flex-col">
+          <h3 className="font-display text-2xl font-semibold mb-6 text-foreground">Recommended for You</h3>
+          <div className="grid sm:grid-cols-2 gap-4 flex-1">
+            {data?.filter(p => !solvedIdSet.has(p.id) && p.id !== nextProblem?.id).slice(0, 2).map((problem, idx) => (
+              <ProblemCard key={problem.id} problem={problem} index={idx} solved={false} />
             ))}
           </div>
-          <Button type="button" variant="ghost" size="sm" onClick={resetFilters} disabled={activeFilters.length === 0 && sort === "recommended"} className="shrink-0 gap-1.5 rounded-lg text-muted-foreground hover:bg-white hover:text-foreground"><RotateCcw className="size-3.5" /> Reset</Button>
         </div>
       </section>
 
-      {data && data.length > 0 ? (
-        <section className="mt-8 grid gap-4 lg:grid-cols-[1.2fr_0.8fr]" aria-label="Practice queue">
-          {(() => {
-             const next = data.find((problem) => !solvedIdSet.has(problem.id)) ?? data[0];
-            if (!next) return null;
-            const topic = next?.topics[0];
-            return (
-              <Card className="relative overflow-hidden border-primary/15 bg-primary/[0.035] p-5 sm:p-6">
-                <div className="absolute -right-12 -top-16 size-48 rounded-full bg-primary/10 blur-3xl" aria-hidden="true" />
-                <div className="relative flex flex-wrap items-start justify-between gap-4">
-                  <div>
-                    <p className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-[0.14em] text-primary"><Sparkles className="size-3.5" /> Practice queue</p>
-                    <h2 className="mt-2 font-display text-xl font-semibold">One focused challenge next</h2>
-                    <p className="mt-1 max-w-xl text-sm leading-relaxed text-muted-foreground">Keep the session small. Start with an unsolved problem, then follow the topic into a short focused set.</p>
-                  </div>
-                  <Button size="sm" asChild><Link href={`/judge/${next.id}`}>Start challenge <ArrowUpRight /></Link></Button>
+      {/* 4. Practice Library */}
+      <section className="mb-20">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-5 mb-8">
+          <h3 className="font-display text-3xl font-semibold">Practice Library</h3>
+          
+          <div className="flex items-center p-1.5 rounded-xl bg-surface-2 border border-border/60 overflow-x-auto rail-scroll">
+            {(["all", "recommended", "easy", "medium", "hard"] as const).map(tab => (
+              <button
+                key={tab}
+                onClick={() => setActiveTab(tab)}
+                className={cn(
+                  "px-5 py-2 rounded-lg text-[13px] font-semibold whitespace-nowrap transition-all",
+                  activeTab === tab ? "bg-background text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground hover:bg-surface-3/50"
+                )}
+              >
+                {tab.charAt(0).toUpperCase() + tab.slice(1)}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <div className="flex flex-col gap-5">
+          <div className="flex items-center gap-3 w-full max-w-3xl">
+            <div className="relative flex-1">
+              <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 size-5 text-muted-foreground" />
+              <Input
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                placeholder="Search problems, topics..."
+                className="pl-11 h-12 rounded-xl border-border bg-card shadow-sm focus-visible:ring-primary text-[15px]"
+              />
+            </div>
+            <Button
+              variant={activeFilters.length > 0 || showFilters ? "secondary" : "outline"}
+              onClick={() => setShowFilters(!showFilters)}
+              className="h-12 px-5 rounded-xl gap-2.5 whitespace-nowrap font-semibold"
+            >
+              <Settings2 className="size-4.5" /> 
+              <span className="hidden sm:inline">Filters</span>
+              {activeFilters.length > 0 && (
+                <span className="ml-1 rounded-full bg-foreground text-background px-2 py-0.5 text-[11px] font-bold leading-none">
+                  {activeFilters.length}
+                </span>
+              )}
+            </Button>
+          </div>
+
+          {showFilters && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: "auto" }}
+              className="grid grid-cols-2 sm:grid-cols-4 gap-5 p-6 rounded-2xl border border-border bg-surface-1 shadow-sm max-w-4xl"
+            >
+              <div className="flex flex-col gap-2">
+                <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Status</span>
+                <Select value={status} onValueChange={(v) => setStatus(v as StatusFilter)}>
+                  <SelectTrigger className="h-11 rounded-lg bg-card"><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    {STATUS_OPTIONS.map(opt => <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>)}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="flex flex-col gap-2">
+                <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Topic</span>
+                <Select value={tag} onValueChange={setTag}>
+                  <SelectTrigger className="h-11 rounded-lg bg-card"><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All Topics</SelectItem>
+                    {tags.map(t => <SelectItem key={t} value={t}>{t}</SelectItem>)}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="flex flex-col gap-2">
+                <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Company</span>
+                <Select value={company} onValueChange={setCompany}>
+                  <SelectTrigger className="h-11 rounded-lg bg-card"><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All Companies</SelectItem>
+                    {companies.map(c => <SelectItem key={c} value={c}>{c}</SelectItem>)}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="flex flex-col gap-2">
+                <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Sort By</span>
+                <Select value={sort} onValueChange={(v) => setSort(v as SortKey)}>
+                  <SelectTrigger className="h-11 rounded-lg bg-card"><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    {SORT_OPTIONS.map(opt => <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>)}
+                  </SelectContent>
+                </Select>
+              </div>
+            </motion.div>
+          )}
+
+          {activeFilters.length > 0 && (
+            <div className="flex flex-wrap items-center gap-2.5 mt-1">
+              {activeFilters.map(filter => (
+                <div key={filter.label} className="flex items-center gap-2 rounded-full border border-border bg-surface-1 px-3.5 py-1.5 text-[13px] font-medium text-foreground shadow-sm">
+                  {filter.label}
+                  <button onClick={filter.clear} className="text-muted-foreground hover:text-danger p-0.5 rounded-full transition-colors">
+                    <X className="size-4" />
+                  </button>
                 </div>
-                <div className="relative mt-5 flex flex-wrap items-center gap-2 text-xs text-muted-foreground"><span className="rounded-full border border-primary/15 bg-primary/10 px-2.5 py-1 font-medium text-primary">{next.title}</span><span>{next.difficulty}</span>{topic ? <span>· {topic}</span> : null}</div>
-              </Card>
-            );
-          })()}
-          <Card className="p-5 sm:p-6">
-            <p className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-[0.14em] text-primary"><Flame className="size-3.5" /> Weak-topic practice</p>
-            <h2 className="mt-2 font-display text-xl font-semibold">Turn gaps into reps</h2>
-            <p className="mt-1 text-sm leading-relaxed text-muted-foreground">Choose a topic to filter the queue and build confidence one pattern at a time.</p>
-            <div className="mt-4 flex flex-wrap gap-2">
-              {[...new Set(data.flatMap((problem) => problem.topics))].slice(0, 4).map((item) => <Button key={item} variant="outline" size="sm" onClick={() => setTag(item)}>{item}</Button>)}
+              ))}
+              <button onClick={resetFilters} className="text-[13px] text-muted-foreground font-semibold hover:text-foreground px-2 py-1 transition-colors ml-1">
+                Clear all filters
+              </button>
+            </div>
+          )}
+        </div>
+
+        <div className="mt-8 grid md:grid-cols-2 gap-5 xl:gap-6">
+          {problemsLoading ? (
+             <div className="md:col-span-2"><SkeletonProblemRows count={6} /></div>
+          ) : isError ? (
+             <div className="md:col-span-2"><ErrorState title="Judge unavailable" message={error instanceof Error ? error.message : "The judge demo data is unavailable."} onRetry={() => refetch()} /></div>
+          ) : filtered.length === 0 ? (
+             <div className="md:col-span-2">
+               <EmptyState icon={Search} title="No problems found" description="Try adjusting your filters or search query." primaryAction={<Button onClick={resetFilters}>Clear filters</Button>} />
+             </div>
+          ) : (
+            filtered.map((problem, index) => (
+              <ProblemCard key={problem.id} problem={problem} index={index} solved={solvedIdSet.has(problem.id)} />
+            ))
+          )}
+        </div>
+      </section>
+
+      {/* 5. Weekly Progress */}
+      <section className="border-t border-border/80 pt-16 pb-12">
+        <h3 className="font-display text-2xl font-semibold mb-8">Weekly Progress</h3>
+        <div className="grid md:grid-cols-4 gap-6 xl:gap-8">
+          <Card className="p-7 md:col-span-2 bg-surface-1/50 border-border/60 shadow-sm">
+            <div className="text-[13px] font-semibold text-muted-foreground uppercase tracking-widest mb-8">Activity</div>
+            <div className="h-36 flex items-end gap-2 px-1">
+              {[4, 2, 5, 1, 0, 3, 6].map((h, i) => (
+                <div key={i} className="flex-1 bg-primary/10 rounded-t-lg hover:bg-primary/20 transition-colors relative group" style={{ height: `${Math.max(8, h * 16)}%` }}>
+                  <div className="absolute top-0 w-full h-1 bg-primary rounded-t-lg opacity-40 group-hover:opacity-100 transition-opacity" />
+                </div>
+              ))}
+            </div>
+            <div className="flex justify-between mt-4 text-[13px] font-semibold text-muted-foreground px-3">
+              <span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span><span>Sun</span>
             </div>
           </Card>
-        </section>
-      ) : null}
-
-      <div className="mt-8 flex items-center justify-between gap-3">
-        <div>
-          <p className="font-display text-lg font-semibold tracking-tight text-foreground">Explore challenges</p>
-          <p className="mt-1 text-sm text-muted-foreground">{problemsLoading ? "Loading your practice set..." : `${filtered.length} ${filtered.length === 1 ? "problem" : "problems"} matching your filters`}</p>
+          
+          <Card className="p-7 bg-surface-1/50 border-border/60 shadow-sm flex flex-col justify-center">
+            <div className="text-[13px] font-semibold text-muted-foreground uppercase tracking-widest mb-8">Topic Mastery</div>
+            <div className="space-y-6">
+              <div>
+                <div className="flex justify-between text-[13px] mb-2.5">
+                  <span className="text-muted-foreground font-medium">Strongest</span>
+                  <span className="font-semibold text-foreground">Hash Maps</span>
+                </div>
+                <div className="h-2 w-full bg-surface-3 rounded-full overflow-hidden">
+                  <div className="h-full bg-success w-[85%] rounded-full" />
+                </div>
+              </div>
+              <div>
+                <div className="flex justify-between text-[13px] mb-2.5">
+                  <span className="text-muted-foreground font-medium">Needs Improvement</span>
+                  <span className="font-semibold text-foreground">Dynamic Prog.</span>
+                </div>
+                <div className="h-2 w-full bg-surface-3 rounded-full overflow-hidden">
+                  <div className="h-full bg-warning w-[25%] rounded-full" />
+                </div>
+              </div>
+            </div>
+          </Card>
+          
+          <Card className="p-7 flex flex-col justify-center items-center text-center bg-primary/[0.03] border-primary/20 shadow-sm">
+            <CalendarDays className="size-10 text-primary mb-4" />
+            <div className="text-5xl font-display font-semibold text-foreground mb-2">12</div>
+            <div className="text-[15px] font-medium text-muted-foreground">Problems solved<br/>this week</div>
+          </Card>
         </div>
-        <div className="hidden items-center gap-1.5 text-xs font-medium text-muted-foreground sm:flex"><Zap className="size-3.5 text-primary" /> New problems every week</div>
-      </div>
+      </section>
 
-      <div className="mx-auto mt-4 grid w-full max-w-[1120px] gap-4 md:grid-cols-2 xl:gap-5">
-        {problemsLoading ? (
-          <div className="md:col-span-2"><SkeletonProblemRows count={6} /></div>
-        ) : isError ? (
-          <div className="md:col-span-2"><ErrorState title="Judge unavailable" message={error instanceof Error ? error.message : "The judge demo data is unavailable."} code="JUDGE_ERR" onRetry={() => refetch()} /></div>
-        ) : filtered.length === 0 ? (
-          <div className="md:col-span-2">
-            <EmptyState icon={CheckCircle2} title={status === "solved" ? "No solved Judge problems" : "No problems match these filters"} description={status === "solved" ? "Solve your first challenge and your accepted submissions will collect here." : "Try widening your search or resetting the filters."} primaryAction={<Button variant="gradient" size="sm" onClick={resetFilters}>Browse all problems</Button>} secondaryAction={<Button variant="outline" size="sm" asChild><Link href="/courses">Learn the fundamentals</Link></Button>} />
-          </div>
-        ) : (
-           filtered.map((problem, index) => <ProblemCard key={problem.id} problem={problem} index={index} solved={solvedIdSet.has(problem.id)} />)
-        )}
-      </div>
-
-      {DEMO_MODE ? (
-        <div className="mt-8 flex items-start gap-3 rounded-xl border border-dashed border-border bg-surface-1/70 px-4 py-3 text-xs leading-relaxed text-muted-foreground">
-          <SquareTerminal className="mt-0.5 size-4 shrink-0 text-muted-foreground" />
-          <p><span className="font-semibold text-foreground">Demo mode:</span> use <code className="rounded bg-secondary px-1">raise </code>, <code className="rounded bg-secondary px-1">sleep(</code>, <code className="rounded bg-secondary px-1">wrong_answer</code>, or <code className="rounded bg-secondary px-1">compile_error</code> in the editor to explore each verdict.</p>
-        </div>
-      ) : null}
     </PageContainer>
   );
 }
