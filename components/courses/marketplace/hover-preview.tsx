@@ -397,7 +397,7 @@ export function useCourseActions(course: MarketplaceCourse) {
   });
 
   const signInHere = `/login?next=${encodeURIComponent(pathname)}`;
-  const signInForCourse = `/login?next=${encodeURIComponent(`/courses/${course.id}`)}`;
+  const signInForCourse = `/login?next=${encodeURIComponent(`/courses/${course.id}/learn`)}`;
 
   return {
     userId,

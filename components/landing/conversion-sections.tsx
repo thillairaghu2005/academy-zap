@@ -81,13 +81,13 @@ export function ComparisonSection() {
     <AmbientSection tone="subtle" className="bg-muted/40">
       <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 sm:py-20 lg:px-8">
         <SectionTitle
-          title="Not another video library"
-          description="A generic tutorial gives you a video. Zapsters gives you a working environment, a judge, and proof you can keep."
+          title="Hands-On Execution, No Passive Theory"
+          description="A standard tutorial provides a video. Zapsters provides an isolated lab environment, automated validation, and verifiable credentials."
         />
         <div className="mt-8 overflow-hidden rounded-2xl border border-border bg-card">
           <div className="grid grid-cols-3 border-b border-border bg-surface-2 text-xs font-semibold uppercase tracking-[0.1em] text-muted-foreground">
             <div className="px-4 py-3 sm:px-6" />
-            <div className="px-4 py-3 text-center sm:px-6">Generic tutorials</div>
+            <div className="px-4 py-3 text-center sm:px-6">Generic Platforms</div>
             <div className="px-4 py-3 text-center text-primary sm:px-6">Zapsters</div>
           </div>
           {COMPARISON_ROWS.map((row, index) => (
@@ -189,8 +189,8 @@ export function CaseStudySection() {
         <div className="grid items-center gap-10 lg:grid-cols-[0.9fr_1.1fr] lg:gap-16">
           <div>
             <SectionTitle
-              title="One learner, one visible path"
-              description="Priya started with zero detection experience. Every step below is a verified record in her profile — not a story she had to retell."
+              title="Verified engineering progression"
+              description="Priya transformed her detection skills into an applied engineering workflow. Every step is an immutable record in her profile."
             />
             <div className="mt-6 flex items-center gap-4">
               <div className="grid size-12 place-items-center rounded-full border border-primary/25 bg-primary/10 font-display text-lg font-semibold text-primary">

@@ -1,7 +1,5 @@
 @import "tailwindcss";
 @import "tw-animate-css";
-@import "@fontsource-variable/inter";
-@import "@fontsource-variable/geist";
 @import "katex/dist/katex.min.css";
 @import "../src/styles/typography.css";
 

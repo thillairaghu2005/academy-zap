@@ -1,10 +1,38 @@
-/* Zapsters typography system: one source of truth for type roles and scale. */
-:root {
-  --font-heading: "Inter Variable", "Geist Variable";
-  --font-body: "Inter Variable", "Geist Variable";
-  --font-mono-stack: var(--font-body);
-  --font-mono: var(--font-body);
+/**
+ * Zapsters typography system — single source of truth for type scale, weights,
+ * leading, and tracking.
+ *
+ * Font loading: Both Geist (--font-heading) and Inter (--font-body) are loaded
+ * via next/font/google in app/fonts.ts. Their CSS variables are injected onto
+ * the <html> element, so they are available here and everywhere in CSS.
+ *
+ * Discipline:
+ *   - Tracking is size-specific: negative on display/large headings (~-0.02em
+ *     to -0.03em), near 0 on body, slightly positive on caption/small.
+ *   - Leading tracks size inversely: tight (1.05–1.15) on large headings,
+ *     relaxed (1.5–1.6) on body for readability.
+ *   - Hierarchy is built from weight + size + leading together — not size alone.
+ *   - All type-related spacing uses rem/em so layouts respect user text-size
+ *     preferences.
+ *   - font-optical-sizing: auto is enabled on all text-bearing elements so
+ *     variable-font optical tables are used at every size.
+ */
 
+:root {
+  --font-heading: "Geist Variable", "Geist", system-ui, sans-serif;
+  --font-body: "Inter Variable", "Inter", system-ui, sans-serif;
+  /*
+   * --font-mono-stack: monospace stack used by the IDE and code blocks.
+   * Geist Mono is not loaded here — the IDE loads its own Monaco stack.
+   * We fall through to system monospace rather than repurposing Inter.
+   */
+  --font-mono: ui-monospace, "SFMono-Regular", "Consolas", "Liberation Mono",
+    "Menlo", monospace;
+
+  /* ------------------------------------------------------------------ */
+  /* Fluid type scale — clamp(min, fluid, max) so text breathes across   */
+  /* viewport widths without breaking fixed-px layouts.                  */
+  /* ------------------------------------------------------------------ */
   --fs-hero: clamp(2.75rem, 1.35rem + 4.6vw, 5.5rem);
   --fs-h1: clamp(2.25rem, 1.3rem + 3.5vw, 4rem);
   --fs-h2: clamp(1.75rem, 1.1rem + 2vw, 2.5rem);
@@ -13,15 +41,21 @@
   --fs-small: 0.875rem;
   --fs-caption: 0.8125rem;
 
-  --fw-heading-strong: 700;
-  --fw-heading: 600;
-  --fw-body: 400;
-  --fw-ui: 500;
-  --fw-emphasis: 600;
-  --fw-bold: 700;
+  /* ------------------------------------------------------------------ */
+  /* Weight — build hierarchy from weight + size + leading, not size     */
+  /* alone. Geist's variable axis lets us step smoothly from 300–800.   */
+  /* ------------------------------------------------------------------ */
+  --fw-heading-strong: 800; /* hero, h1, h2 */
+  --fw-heading: 700;        /* h3, sub-headings */
+  --fw-body: 500;
+  --fw-ui: 600;             /* labels, nav items, buttons */
+  --fw-emphasis: 700;       /* inline bold within body copy */
+  --fw-bold: 800;
 
-  /* Leading tracks size inversely: tight on large display, looser on
-     body copy (SKILL §15). */
+  /* ------------------------------------------------------------------ */
+  /* Leading tracks size inversely: tight on large display, looser on    */
+  /* body copy (SKILL §15). Expressed as unitless ratios for inheritance. */
+  /* ------------------------------------------------------------------ */
   --lh-hero: 0.98;
   --lh-h1: 1.05;
   --lh-h2: 1.15;
@@ -30,20 +64,30 @@
   --lh-small: 1.5;
   --lh-caption: 1.4;
 
-  /* Tracking is size-specific, never one value: negative on display
-     type, near 0 on body, slightly positive on small/caption. */
-  --ls-heading: -0.03em;
-  --ls-heading-soft: -0.015em;
-  --ls-body: 0em;
+  /* ------------------------------------------------------------------ */
+  /* Tracking — size-specific, never a single global value.              */
+  /* Negative on large Geist headings, near 0 on Inter body copy,        */
+  /* slightly positive on small/caption to aid legibility at small sizes.*/
+  /* ------------------------------------------------------------------ */
+  --ls-heading: -0.03em;       /* hero, h1 — large display type */
+  --ls-heading-soft: -0.015em; /* h2, h3 — mid-size headings */
+  --ls-body: 0em;              /* Inter body — intentionally neutral */
   --ls-small: 0.01em;
   --ls-caption: 0.02em;
 }
 
+/* ------------------------------------------------------------------ */
+/* Tailwind v4 @theme — registers custom text utilities and font-family */
+/* aliases so Tailwind classes (font-display, font-sans, text-hero …)   */
+/* resolve to our tokens rather than Tailwind defaults.                 */
+/* ------------------------------------------------------------------ */
 @theme inline {
   --font-sans: var(--font-body);
   --font-display: var(--font-heading);
-  --font-mono: var(--font-body);
+  --font-mono: var(--font-mono);
 
+  /* Text utilities: each size carries its own line-height, weight, and
+     letter-spacing so a single class sets the complete type role.       */
   --text-hero: var(--fs-hero);
   --text-hero--line-height: var(--lh-hero);
   --text-hero--font-weight: var(--fw-heading-strong);
@@ -57,7 +101,7 @@
   --text-h2: var(--fs-h2);
   --text-h2--line-height: var(--lh-h2);
   --text-h2--font-weight: var(--fw-heading);
-  --text-h2--letter-spacing: var(--ls-heading);
+  --text-h2--letter-spacing: var(--ls-heading-soft);
 
   --text-h3: var(--fs-h3);
   --text-h3--line-height: var(--lh-h3);
@@ -67,6 +111,7 @@
   --text-body: var(--fs-body);
   --text-body--line-height: var(--lh-body);
   --text-body--font-weight: var(--fw-body);
+  /* Body tracking intentionally omitted — stays at browser default (0). */
 
   --text-small: var(--fs-small);
   --text-small--line-height: var(--lh-small);
@@ -77,13 +122,27 @@
   --text-caption--letter-spacing: var(--ls-caption);
 }
 
-/* Inter/Geist variables ship optical sizing tables; enable them. */
+/* ------------------------------------------------------------------ */
+/* font-optical-sizing: auto — enables variable-font optical tables     */
+/* on every text-bearing element, not just <body>. Headings benefit     */
+/* most because they use larger sizes where optical adjustments matter. */
+/* No-op on browsers that don't support it; safe to apply broadly.      */
+/* ------------------------------------------------------------------ */
 body,
-.font-sans {
+h1, h2, h3, h4, h5, h6,
+p,
+.font-sans,
+.font-display {
   font-optical-sizing: auto;
 }
 
+/* ------------------------------------------------------------------ */
+/* Semibold / bold weight utilities for .font-display elements.         */
+/* Without these, Tailwind's font-semibold / font-bold apply weight to  */
+/* the element but the display font-family still needs to be set        */
+/* explicitly when these utilities co-occur.                            */
+/* ------------------------------------------------------------------ */
 @layer utilities {
   .font-display.font-semibold { font-weight: 600; }
-  .font-display.font-bold { font-weight: 700; }
+  .font-display.font-bold     { font-weight: 700; }
 }
