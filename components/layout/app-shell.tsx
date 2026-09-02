@@ -47,7 +47,9 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           </main>
         </div>
         <BottomNavigation />
-        <NavigationTour />
+        <React.Suspense fallback={null}>
+          <NavigationTour />
+        </React.Suspense>
         <AiTutor />
         <XpFlyout />
         <LevelUpCelebration />
