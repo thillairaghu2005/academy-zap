@@ -2,16 +2,17 @@
 
 import * as React from "react";
 import {
+  Atom,
+  Braces,
   Cloud,
+  CloudCog,
   Code2,
   Cpu,
-  FileCode2,
   Globe2,
-  Layers3,
-  LockKeyhole,
-  ServerCog,
+  GlobeLock,
+  Network,
+  Radar,
   ShieldCheck,
-  Terminal,
 } from "lucide-react";
 
 import type { CourseSummary } from "@/lib/contracts/content";
@@ -37,7 +38,6 @@ import {
   CaseStudySection,
   ComparisonSection,
   StatsBand,
-  TrustBar,
 } from "@/components/landing/conversion-sections";
 import { ErrorState } from "@/components/shared/error-state";
 import { MobileCtaBar } from "@/components/shared/mobile-cta-bar";
@@ -63,12 +63,12 @@ const categoryVisuals: Record<string, { icon: typeof Code2; tone: string }> = {
 };
 
 const skillCards = [
-  { name: "Python", description: "Automate analysis, parse data, and build useful tools.", icon: FileCode2, tone: "text-primary", href: "/courses" },
-  { name: "Threat detection", description: "Turn telemetry into rules that survive real-world noise.", icon: ShieldCheck, tone: "text-primary", href: "/courses" },
-  { name: "Web application security", description: "Recon, test, and report against deliberately vulnerable apps.", icon: LockKeyhole, tone: "text-primary", href: "/labs" },
-  { name: "React & TypeScript", description: "Model state and data layers for production interfaces.", icon: Layers3, tone: "text-primary", href: "/courses" },
-  { name: "Cloud security", description: "Build defensible identity, network, and logging foundations.", icon: ServerCog, tone: "text-primary", href: "/courses" },
-  { name: "Linux and networking", description: "Feel at home in the shell, processes, packets, and services.", icon: Terminal, tone: "text-foreground", href: "/labs" },
+  { name: "Python", description: "Automate analysis, parse data, and build useful tools.", icon: Braces, tone: "text-primary", href: "/courses" },
+  { name: "Threat detection", description: "Turn telemetry into rules that survive real-world noise.", icon: Radar, tone: "text-primary", href: "/courses" },
+  { name: "Web application security", description: "Recon, test, and report against deliberately vulnerable apps.", icon: GlobeLock, tone: "text-primary", href: "/labs" },
+  { name: "React & TypeScript", description: "Model state and data layers for production interfaces.", icon: Atom, tone: "text-primary", href: "/courses" },
+  { name: "Cloud security", description: "Build defensible identity, network, and logging foundations.", icon: CloudCog, tone: "text-primary", href: "/courses" },
+  { name: "Linux and networking", description: "Feel at home in the shell, processes, packets, and services.", icon: Network, tone: "text-foreground", href: "/labs" },
 ] as const;
 
 const visualClasses = [
@@ -219,7 +219,6 @@ export function LandingPage({ courses, catalogUnavailable = false }: LandingPage
       <MarketingNav />
       <main id="main-content">
         <HomeHero />
-        <TrustBar />
         <LearningLoop />
         <section className="bg-background">
           <div className="mx-auto grid max-w-7xl items-center gap-8 px-4 py-16 sm:px-6 lg:grid-cols-2 lg:gap-14 lg:px-8">

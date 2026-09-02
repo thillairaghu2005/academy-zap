@@ -12,6 +12,7 @@ import {
   Trophy,
   UserRound,
   Users,
+  GitBranch,
 } from "lucide-react";
 
 export interface NavItem {
@@ -32,7 +33,7 @@ export const sideNavGroups: NavGroup[] = [
     items: [
       { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
       { href: "/courses", label: "Courses", icon: BookOpen },
-      { href: "/saved", label: "Saved", icon: Bookmark },
+      { href: "/learning-paths", label: "Learning Paths", icon: GitBranch },
     ],
   },
   {
@@ -40,15 +41,21 @@ export const sideNavGroups: NavGroup[] = [
     items: [
       { href: "/judge", label: "Judge Engine", icon: CodeXml },
       { href: "/labs", label: "Virtual Labs", icon: FlaskConical },
+      { href: "/challenges", label: "Challenges", icon: Trophy },
     ],
   },
   {
-    label: "Prove",
+    label: "Career",
     items: [
       { href: "/assessments", label: "Assessments", icon: ClipboardList },
-      { href: "/rank", label: "Rank Ladder", icon: Trophy },
+      { href: "/interviews", label: "Mock Interviews", icon: Users },
       { href: "/leaderboards", label: "Leaderboards", icon: ChartColumn },
-      { href: "/guilds", label: "Guilds", icon: Users },
+    ],
+  },
+  {
+    label: "Personal",
+    items: [
+      { href: "/saved", label: "Saved", icon: Bookmark },
       { href: "/mentors", label: "Mentors", icon: UserRound },
     ],
   },
