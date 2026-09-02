@@ -189,7 +189,7 @@ export function TestimonialWall() {
   return (
     <section className="bg-background">
       <div className="mx-auto max-w-7xl px-5 py-16 sm:px-8 sm:py-20 lg:px-10">
-        <div className="flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between"><div><p className="text-xs font-semibold uppercase tracking-[0.16em] text-muted-foreground">Learner signal</p><h2 className="mt-3 font-display font-thin text-3xl tracking-[-0.045em]">Progress feels better when it is visible.</h2></div><p className="max-w-md text-sm leading-6 text-muted-foreground">A calmer learning loop for people who want to leave each session with something they can use.</p></div>
+        <div className="flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between"><div><p className="text-xs font-semibold uppercase tracking-[0.16em] text-muted-foreground">Learner signal</p><h2 className="mt-3 font-display font-thin text-3xl tracking-[-0.045em]">Progress is measured in shipped code and active defense.</h2></div><p className="max-w-md text-sm leading-6 text-muted-foreground">A rigorous environment for engineers who demand hands-on practice, verified skills, and absolute clarity on what to learn next.</p></div>
         <div className="mt-9 grid gap-4 lg:grid-cols-3">
           {MARKETING_TESTIMONIALS.map((testimonial) => (
             <Card key={testimonial.name} className={cn("p-6", testimonial.featured && "border-primary/30 bg-primary/[0.025]")}>
@@ -229,8 +229,8 @@ export function FinalCta() {
       <div className="mx-auto grid max-w-7xl gap-8 px-5 py-14 sm:px-8 sm:py-16 lg:grid-cols-[1fr_auto] lg:items-center lg:px-10">
         <div>
           <p className="text-xs font-semibold uppercase tracking-[0.16em] text-white/65">Your next session is waiting</p>
-          <h2 className="mt-3 max-w-2xl font-display text-3xl font-semibold tracking-[-0.045em] sm:text-4xl">Make the next hour count.</h2>
-          <p className="mt-3 max-w-xl text-sm leading-6 text-white/70">Create a free account and finish your first lesson, judge problem, or lab today.</p>
+          <h2 className="mt-3 max-w-2xl font-display text-3xl font-semibold tracking-[-0.045em] sm:text-4xl">Deploy your first lab.</h2>
+          <p className="mt-3 max-w-xl text-sm leading-6 text-white/70">Create a free account, spin up an isolated environment, and start building verified engineering skills today.</p>
         </div>
         <div className="flex w-full max-w-md flex-col gap-3 sm:flex-row lg:w-auto lg:flex-row">
           <Button variant="secondary" size="lg" asChild className="w-full sm:w-auto" data-analytics-label="final-cta-start-free">

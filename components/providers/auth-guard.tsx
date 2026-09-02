@@ -7,7 +7,13 @@ import { AppRouteLoading } from "@/components/shared/route-loading";
 import { useSession } from "@/components/providers/session-provider";
 
 function isPublicRoute(pathname: string): boolean {
-  return pathname === "/" || pathname === "/offline";
+  if (pathname === "/" || pathname === "/offline") return true;
+  // Course listing and detail pages are public — guests can browse and read
+  // course details without an account. The learn/player sub-route (/courses/:id/learn)
+  // is intentionally excluded: the regex matches exactly one path segment.
+  if (pathname === "/courses") return true;
+  if (/^\/courses\/[^/]+$/.test(pathname)) return true;
+  return false;
 }
 
 export function AuthGuard({ children }: { children: React.ReactNode }) {

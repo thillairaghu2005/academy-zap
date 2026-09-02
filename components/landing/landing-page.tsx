@@ -139,7 +139,7 @@ function LandingSections({ courses, catalogUnavailable = false }: LandingPagePro
           <Marquee speed={28} className="[mask-image:linear-gradient(to_right,transparent,black_12%,black_88%,transparent)]">
             <span aria-hidden="true" className="flex">
               {skillCards.map((skill) => (
-                <span key={skill.name} className="mx-3 inline-flex shrink-0 items-center gap-2 rounded-full border border-border bg-card px-4 py-2 text-xs font-medium text-muted-foreground">
+                <span key={skill.name} className="mx-3 inline-flex shrink-0 items-center gap-2 rounded-full glass shadow-sm px-4 py-2 text-xs font-medium text-muted-foreground">
                   <skill.icon className="size-3.5 text-primary" />
                   {skill.name}
                 </span>
@@ -217,7 +217,6 @@ export function LandingPage({ courses, catalogUnavailable = false }: LandingPage
         Skip to content
       </a>
       <MarketingNav />
-      <LiveLearningTicker />
       <main id="main-content">
         <HomeHero />
         <TrustBar />
@@ -225,9 +224,9 @@ export function LandingPage({ courses, catalogUnavailable = false }: LandingPage
         <section className="bg-background">
           <div className="mx-auto grid max-w-7xl items-center gap-8 px-4 py-16 sm:px-6 lg:grid-cols-2 lg:gap-14 lg:px-8">
             <div>
-              <p className="font-mono text-xs uppercase tracking-widest text-muted-foreground">Live by default</p>
-              <h2 className="mt-3 font-display font-thin text-h1 tracking-[-0.03em]">Skill work that runs in a real environment.</h2>
-              <p className="mt-4 max-w-lg text-sm leading-6 text-muted-foreground">Every lab session spins up an isolated environment. Watch a verified objective complete, then keep the proof in your rank record.</p>
+              <p className="font-mono text-xs uppercase tracking-widest text-muted-foreground">Live infrastructure</p>
+              <h2 className="mt-3 font-display font-thin text-h1 tracking-[-0.03em]">Immersive Hands-On Labs.</h2>
+              <p className="mt-4 max-w-lg text-sm leading-6 text-muted-foreground">Every lab provisions a secure, isolated container. Complete objectives against real infrastructure and build a verifiable engineering profile.</p>
             </div>
             <TerminalMock />
           </div>

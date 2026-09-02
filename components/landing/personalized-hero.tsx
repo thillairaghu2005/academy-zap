@@ -51,10 +51,10 @@ export function PersonalizedHero() {
             className="mt-5 max-w-xl text-hero text-foreground"
             style={{ fontFamily: "'Geist Variable', sans-serif", fontWeight: 100, letterSpacing: "-0.03em" }}
           >
-            Continue where<br />
-            <span>you left off.</span>
+            Resume your active<br />
+            <span>lab session.</span>
           </h1>
-          <p className="mt-6 max-w-lg text-base leading-7 text-muted-foreground sm:text-lg">Keep the loop moving: finish the lesson, prove the skill, and turn the next verified effort into momentum.</p>
+          <p className="mt-6 max-w-lg text-base leading-7 text-muted-foreground sm:text-lg">Dive back into your isolated environment, solve the challenge, and add verifiable skills to your record.</p>
           <div className="mt-8 flex flex-col gap-3 sm:flex-row">
             <Button variant="default" size="lg" asChild><Link href={resumeHref}>{resumeItem ? "Resume lesson" : "Browse courses"}</Link></Button>
             <Button variant="outline" size="lg" asChild><Link href="/judge">Open the Judge</Link></Button>

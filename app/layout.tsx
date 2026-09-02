@@ -2,6 +2,7 @@ import { Suspense } from "react";
 import type { Metadata, Viewport } from "next";
 
 import "./globals.css";
+import { fontHeading, fontBody } from "./fonts";
 import { QueryProvider } from "@/components/providers/query-provider";
 import { SessionProvider } from "@/components/providers/session-provider";
 import { ServiceWorkerProvider } from "@/components/providers/service-worker-provider";
@@ -70,7 +71,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className="h-full"
+      className={`h-full ${fontHeading.variable} ${fontBody.variable}`}
       data-scroll-behavior="smooth"
       suppressHydrationWarning
     >

@@ -47,8 +47,8 @@ export function MarketingNav() {
   return (
     <header
       className={cn(
-        "frosted chrome-edge-bottom sticky top-0 z-40 px-3 py-3 transition-shadow duration-200 motion-reduce:transition-none sm:px-5",
-        scrolled && "shadow-[0_4px_16px_rgb(23_23_23_/_5%)]",
+        "sticky top-0 z-40 px-3 py-3 transition-all duration-200 motion-reduce:transition-none sm:px-5",
+        scrolled ? "bg-background/80 backdrop-blur-md border-b border-border/60 shadow-sm" : "bg-transparent",
       )}
     >
       <div className="mx-auto flex h-14 max-w-7xl items-center gap-3 px-0 sm:px-1 lg:h-16">

@@ -197,7 +197,7 @@ function PreviewLessonDialog({
               </p>
             </div>
             <Button variant="gradient" asChild>
-              <Link href={`/login?next=/courses/${courseId}`}>
+              <Link href={`/login?next=${encodeURIComponent(`/courses/${courseId}/learn`)}`}>
                 Sign in to continue learning <ArrowRight />
               </Link>
             </Button>
@@ -453,7 +453,7 @@ export function CourseDetailClient({
 
               {!isEnrolledUser ? (
                 <Button variant="gradient" asChild className="w-full">
-                  <Link href={`/login?next=/courses/${course.id}`}>
+                  <Link href={`/login?next=${encodeURIComponent(`/courses/${course.id}/learn`)}`}>
                     Sign in to enroll
                   </Link>
                 </Button>
