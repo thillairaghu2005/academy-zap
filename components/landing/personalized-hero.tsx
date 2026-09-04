@@ -49,7 +49,7 @@ export function PersonalizedHero() {
           <p className="font-mono text-xs font-medium uppercase tracking-widest text-muted-foreground">Welcome back, {user.display_name.split(" ")[0]}</p>
           <h1
             className="mt-5 max-w-xl text-hero text-foreground"
-            style={{ fontFamily: "'Geist Variable', sans-serif", fontWeight: 100, letterSpacing: "-0.03em" }}
+            style={{ fontFamily: "'Geist Variable', sans-serif", fontWeight: 300, letterSpacing: "-0.03em" }}
           >
             Resume your active<br />
             <span>lab session.</span>

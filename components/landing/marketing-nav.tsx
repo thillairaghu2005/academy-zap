@@ -4,6 +4,7 @@ import * as React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Menu } from "lucide-react";
+import { m as motion } from "framer-motion";
 
 import { GlobalSearch } from "@/components/layout/global-search";
 import { Logo } from "@/components/layout/logo";
@@ -76,7 +77,7 @@ export function MarketingNav() {
                   key={link.href}
                   href={link.href}
                   onClick={() => setMenuOpen(false)}
-                   className="flex min-h-11 items-center rounded-lg px-3 text-base font-medium outline-none transition-colors hover:bg-secondary hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring"
+                   className="flex min-h-11 items-center rounded-lg px-3 text-base font-medium outline-none transition-all duration-200 hover:bg-primary/5 hover:text-foreground hover:scale-[1.02] active:scale-95 focus-visible:ring-2 focus-visible:ring-ring"
                 >
                   {link.label}
                 </Link>
@@ -111,19 +112,29 @@ export function MarketingNav() {
         <Logo size="sm" eager className="lg:[&>img]:h-10" />
 
         <nav className="ml-6 hidden items-center gap-1 lg:flex" aria-label="Primary navigation">
-           {links.map((link) => (
-             <Link
-               key={link.href}
-               href={link.href}
-               aria-current={pathname === link.href || pathname.startsWith(`${link.href}/`) ? "page" : undefined}
-                className={cn(
-                    "on-glass relative rounded-lg px-3 py-2 text-sm font-medium outline-none transition-colors hover:bg-secondary hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring",
-                  pathname === link.href || pathname.startsWith(`${link.href}/`) ? "text-foreground after:absolute after:inset-x-3 after:-bottom-1 after:h-0.5 after:rounded-full after:bg-primary" : "text-muted-foreground",
-                )}
-             >
-               {link.label}
-             </Link>
-           ))}
+           {links.map((link) => {
+             const isActive = pathname === link.href || pathname.startsWith(`${link.href}/`);
+             return (
+               <Link
+                 key={link.href}
+                 href={link.href}
+                 aria-current={isActive ? "page" : undefined}
+                 className={cn(
+                   "on-glass relative rounded-lg px-3 py-2 text-sm font-medium outline-none transition-all duration-200 hover:bg-primary/5 hover:text-foreground hover:scale-[1.02] active:scale-95 focus-visible:ring-2 focus-visible:ring-ring",
+                   isActive ? "text-foreground" : "text-muted-foreground",
+                 )}
+               >
+                 {link.label}
+                 {isActive && (
+                   <motion.div
+                     layoutId="marketing-nav-underline"
+                     className="absolute inset-x-3 -bottom-1 h-0.5 rounded-full bg-primary"
+                     transition={{ type: "spring", stiffness: 350, damping: 30 }}
+                   />
+                 )}
+               </Link>
+             );
+           })}
         </nav>
 
         <div className="ml-auto flex items-center gap-2">

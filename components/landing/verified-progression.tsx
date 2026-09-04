@@ -15,7 +15,7 @@ export function VerifiedProgression() {
           <p className="font-mono text-xs uppercase tracking-widest text-muted-foreground">F5 / ProgressContext</p>
           <h2
             className="mt-4 max-w-md text-h2"
-            style={{ fontFamily: "'Geist Variable', sans-serif", fontWeight: 100, letterSpacing: "-0.03em" }}
+            style={{ fontFamily: "'Geist Variable', sans-serif", fontWeight: 300, letterSpacing: "-0.03em" }}
           >
             Your rank is two tracks, not one score.
           </h2>
