@@ -75,7 +75,7 @@ export function LearningLoop() {
               The Zapsters loop
             </p>
             <h2
-              className="mt-3 font-display font-thin text-h2 tracking-[-0.03em]"
+              className="mt-3 font-display font-light text-h2 tracking-[-0.03em]"
             >Learn. Build. Climb.</h2>
           </div>
           <p className="max-w-xl text-sm leading-relaxed text-muted-foreground">
@@ -161,7 +161,7 @@ export function LearningLoop() {
                     </motion.div>
 
                     <h3
-                      className="mt-4 font-display font-thin text-h3 tracking-[-0.02em]"
+                      className="mt-4 font-display font-light text-h3 tracking-[-0.02em]"
                     >
                       {step.title}
                     </h3>

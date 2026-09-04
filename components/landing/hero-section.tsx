@@ -53,7 +53,7 @@ export function HeroSection() {
           </motion.div>
           <motion.h1
             variants={itemVariants}
-            className="mt-5 max-w-2xl font-display font-thin leading-[1.05] tracking-[-0.05em] text-[clamp(2.2rem,4.5vw,4rem)]"
+            className="mt-5 max-w-2xl font-display font-light leading-[1.05] tracking-[-0.05em] text-[clamp(2.2rem,4.5vw,4rem)]"
           >
             <TextReveal text="Code. Defend. Advance." mode="words" delay={0.1} />
             {" "}

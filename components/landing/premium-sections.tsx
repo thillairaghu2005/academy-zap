@@ -75,7 +75,7 @@ export function PricingSection({ standalone = false, headingAs: Heading = "h2" }
           <div>
             <p className="text-xs font-semibold uppercase tracking-[0.16em] text-muted-foreground">Simple plans, serious practice</p>
             <Heading
-              className="mt-3 max-w-2xl font-display font-thin text-3xl tracking-[-0.045em] sm:text-4xl"
+              className="mt-3 max-w-2xl font-display font-light text-3xl tracking-[-0.045em] sm:text-4xl"
             >Choose the amount of structure you need.</Heading>
             <p className="mt-3 max-w-xl text-sm leading-6 text-muted-foreground">Start free, build a rhythm, and upgrade when the next level of feedback is worth it.</p>
           </div>
@@ -189,7 +189,7 @@ export function TestimonialWall() {
   return (
     <section className="bg-background">
       <div className="mx-auto max-w-7xl px-5 py-16 sm:px-8 sm:py-20 lg:px-10">
-        <div className="flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between"><div><p className="text-xs font-semibold uppercase tracking-[0.16em] text-muted-foreground">Learner signal</p><h2 className="mt-3 font-display font-thin text-3xl tracking-[-0.045em]">Progress is measured in shipped code and active defense.</h2></div><p className="max-w-md text-sm leading-6 text-muted-foreground">A rigorous environment for engineers who demand hands-on practice, verified skills, and absolute clarity on what to learn next.</p></div>
+        <div className="flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between"><div><p className="text-xs font-semibold uppercase tracking-[0.16em] text-muted-foreground">Learner signal</p><h2 className="mt-3 font-display font-light text-3xl tracking-[-0.045em]">Progress is measured in shipped code and active defense.</h2></div><p className="max-w-md text-sm leading-6 text-muted-foreground">A rigorous environment for engineers who demand hands-on practice, verified skills, and absolute clarity on what to learn next.</p></div>
         <div className="mt-9 grid gap-4 lg:grid-cols-3">
           {MARKETING_TESTIMONIALS.map((testimonial) => (
             <Card key={testimonial.name} className={cn("p-6", testimonial.featured && "border-primary/30 bg-primary/[0.025]")}>
@@ -214,7 +214,7 @@ export function FaqSection() {
     <section className="bg-surface-1">
       <JsonLd data={jsonLd} />
       <div className="mx-auto max-w-4xl px-5 py-16 sm:px-8 sm:py-20">
-        <div className="text-center"><p className="text-xs font-semibold uppercase tracking-[0.16em] text-muted-foreground">Questions, answered</p><h2 className="mt-3 font-display font-thin text-3xl tracking-[-0.045em]">A clear start, without the fine print.</h2></div>
+        <div className="text-center"><p className="text-xs font-semibold uppercase tracking-[0.16em] text-muted-foreground">Questions, answered</p><h2 className="mt-3 font-display font-light text-3xl tracking-[-0.045em]">A clear start, without the fine print.</h2></div>
         <div className="mt-9 divide-y divide-border rounded-xl border border-border bg-card">
           {MARKETING_FAQ.map((item, index) => { const expanded = open === index; return <div key={item.question}><button type="button" aria-expanded={expanded} onClick={() => setOpen(expanded ? -1 : index)} className="flex min-h-14 w-full items-center justify-between gap-4 px-5 py-4 text-left text-sm font-semibold outline-none transition-colors hover:text-primary focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring sm:px-6"><span>{item.question}</span><ChevronDown className={cn("size-4 shrink-0 text-muted-foreground transition-transform", expanded && "rotate-180 text-primary")} /></button>{expanded ? <div className="px-5 pb-5 text-sm leading-6 text-muted-foreground sm:px-6">{item.answer}</div> : null}</div>; })}
         </div>

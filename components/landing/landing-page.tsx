@@ -224,7 +224,7 @@ export function LandingPage({ courses, catalogUnavailable = false }: LandingPage
           <div className="mx-auto grid max-w-7xl items-center gap-8 px-4 py-16 sm:px-6 lg:grid-cols-2 lg:gap-14 lg:px-8">
             <div>
               <p className="font-mono text-xs uppercase tracking-widest text-muted-foreground">Live infrastructure</p>
-              <h2 className="mt-3 font-display font-thin text-h1 tracking-[-0.03em]">Immersive Hands-On Labs.</h2>
+              <h2 className="mt-3 font-display font-light text-h1 tracking-[-0.03em]">Immersive Hands-On Labs.</h2>
               <p className="mt-4 max-w-lg text-sm leading-6 text-muted-foreground">Every lab provisions a secure, isolated container. Complete objectives against real infrastructure and build a verifiable engineering profile.</p>
             </div>
             <TerminalMock />
