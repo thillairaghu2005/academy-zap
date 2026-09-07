@@ -13,8 +13,22 @@ function isPublicRoute(pathname: string): boolean {
   // is intentionally excluded: the regex matches exactly one path segment.
   if (pathname === "/courses") return true;
   if (/^\/courses\/[^/]+$/.test(pathname)) return true;
+  // Labs listing and detail are public — guests can read lab descriptions and
+  // see the "Sign in to save progress / buy" CTA. The notebook sub-route stays guarded.
+  if (pathname === "/labs") return true;
+  if (/^\/labs\/[^/]+$/.test(pathname)) return true;
+  // Mentor directory and individual mentor profiles are fully public.
+  if (pathname === "/mentors") return true;
+  if (/^\/mentors\/[^/]+$/.test(pathname)) return true;
+  // Leaderboards show community aggregate rankings — no personal private data.
+  if (pathname === "/leaderboards") return true;
+  // Public credential verification — anyone with the link can verify a certificate.
+  if (/^\/rank\/verify\/.+$/.test(pathname)) return true;
+  // Dedicated FAQ page lives in (marketing) but guard defensively here too.
+  if (pathname === "/faq") return true;
   return false;
 }
+
 
 export function AuthGuard({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
