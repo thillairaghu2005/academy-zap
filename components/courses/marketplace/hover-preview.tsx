@@ -3,7 +3,7 @@
 import * as React from "react";
 import ReactDOM from "react-dom";
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import {
@@ -22,6 +22,7 @@ import { addToCart, buyNow } from "@/lib/data/demo/commerce";
 import { enroll } from "@/lib/data/demo/content";
 import { useSession } from "@/components/providers/session-provider";
 import { cartQueryKey } from "@/components/commerce/cart-query";
+import { AuthPromptDialog } from "@/components/auth/auth-prompt-dialog";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
@@ -358,15 +359,25 @@ export function PriceDisplay({
 /* ------------------------------------------------------------------ */
 
 /**
- * One shared action set for cards and previews. Signed-out users are routed
- * to sign-in with a return path (mirrors the commerce buttons' behavior).
+ * One shared action set for cards and previews.
+ *
+ * Authenticated users execute mutations directly. Guests open an in-context
+ * `AuthPromptDialog` — no hard navigation away from the page.
  */
 export function useCourseActions(course: MarketplaceCourse) {
   const router = useRouter();
-  const pathname = usePathname();
   const queryClient = useQueryClient();
   const { user } = useSession();
   const userId = user?.id ?? "";
+  const [authPromptOpen, setAuthPromptOpen] = React.useState(false);
+  const [authPromptMessage, setAuthPromptMessage] = React.useState("");
+  const [authPromptNext, setAuthPromptNext] = React.useState("");
+
+  const openAuthPrompt = React.useCallback((next: string, message: string) => {
+    setAuthPromptNext(next);
+    setAuthPromptMessage(message);
+    setAuthPromptOpen(true);
+  }, []);
 
   const addToCartMutation = useMutation({
     mutationFn: () => addToCart(userId, course.id, 1),
@@ -396,21 +407,44 @@ export function useCourseActions(course: MarketplaceCourse) {
     onError: (error: Error) => toast.error(error.message),
   });
 
-  const signInHere = `/login?next=${encodeURIComponent(pathname)}`;
-  const signInForCourse = `/login?next=${encodeURIComponent(`/courses/${course.id}/learn`)}`;
+  const courseNext = `/courses/${course.id}/learn`;
 
   return {
     userId,
+    authPrompt: {
+      open: authPromptOpen,
+      onOpenChange: setAuthPromptOpen,
+      next: authPromptNext,
+      message: authPromptMessage,
+    },
     addToCart: {
-      run: () => (user ? addToCartMutation.mutate() : router.push(signInHere)),
+      run: () =>
+        user
+          ? addToCartMutation.mutate()
+          : openAuthPrompt(
+              `/courses/${course.id}`,
+              `Sign in to add "${course.title}" to your cart.`,
+            ),
       pending: addToCartMutation.isPending,
     },
     buyNow: {
-      run: () => (user ? buyNowMutation.mutate() : router.push(signInHere)),
+      run: () =>
+        user
+          ? buyNowMutation.mutate()
+          : openAuthPrompt(
+              `/courses/${course.id}`,
+              `Sign in to purchase "${course.title}".`,
+            ),
       pending: buyNowMutation.isPending,
     },
     startLearning: {
-      run: () => (user ? startLearningMutation.mutate() : router.push(signInForCourse)),
+      run: () =>
+        user
+          ? startLearningMutation.mutate()
+          : openAuthPrompt(
+              courseNext,
+              `Create a free account to enroll in "${course.title}" and start learning.`,
+            ),
       pending: startLearningMutation.isPending,
     },
   };
@@ -422,62 +456,60 @@ export function PreviewCta({ course }: { course: MarketplaceCourse }) {
   const actions = useCourseActions(course);
   const enrolled = enrolledCourseIds.has(course.id);
 
-  if (course.comingSoon) {
-    return (
-      <Button size="sm" variant="secondary" disabled>
-        Coming soon
-      </Button>
-    );
-  }
-  if (enrolled) {
-    return (
-      <Button size="sm" asChild>
-        <Link href={`/courses/${course.id}/learn`}>
-          Go to course
-          <ArrowRight className="size-4" />
-        </Link>
-      </Button>
-    );
-  }
-  if (course.isFree) {
-    return (
-      <Button size="sm" onClick={actions.startLearning.run} disabled={actions.startLearning.pending}>
-        {actions.startLearning.pending ? (
-          <LoaderCircle className="size-4 animate-spin" />
-        ) : (
-          <ArrowRight className="size-4" />
-        )}
-        Start learning
-      </Button>
-    );
-  }
-
-  const inCart = cartProductIds.has(course.id);
-  if (inCart) {
-    return (
-      <Button size="sm" variant="secondary" asChild>
-        <Link href="/cart">
-          <Check className="size-4 text-success-strong" />
-          In cart
-        </Link>
-      </Button>
-    );
-  }
   return (
-    <div className="flex items-center gap-2">
-      <Button size="sm" variant="outline" onClick={actions.addToCart.run} disabled={actions.addToCart.pending}>
-        {actions.addToCart.pending ? (
-          <LoaderCircle className="size-4 animate-spin" />
-        ) : (
-          <ShoppingCart className="size-4" />
-        )}
-        Add
-      </Button>
-      <Button size="sm" onClick={actions.buyNow.run} disabled={actions.buyNow.pending}>
-        {actions.buyNow.pending ? <LoaderCircle className="size-4 animate-spin" /> : <Zap className="size-4" />}
-        Buy now
-      </Button>
-    </div>
+    <>
+      {/* Auth prompt — shown in-context instead of redirecting away from the page */}
+      <AuthPromptDialog
+        open={actions.authPrompt.open}
+        onOpenChange={actions.authPrompt.onOpenChange}
+        next={actions.authPrompt.next}
+        message={actions.authPrompt.message}
+      />
+
+      {course.comingSoon ? (
+        <Button size="sm" variant="secondary" disabled>
+          Coming soon
+        </Button>
+      ) : enrolled ? (
+        <Button size="sm" asChild>
+          <Link href={`/courses/${course.id}/learn`}>
+            Go to course
+            <ArrowRight className="size-4" />
+          </Link>
+        </Button>
+      ) : course.isFree ? (
+        <Button size="sm" onClick={actions.startLearning.run} disabled={actions.startLearning.pending}>
+          {actions.startLearning.pending ? (
+            <LoaderCircle className="size-4 animate-spin" />
+          ) : (
+            <ArrowRight className="size-4" />
+          )}
+          Start learning
+        </Button>
+      ) : cartProductIds.has(course.id) ? (
+        <Button size="sm" variant="secondary" asChild>
+          <Link href="/cart">
+            <Check className="size-4 text-success-strong" />
+            In cart
+          </Link>
+        </Button>
+      ) : (
+        <div className="flex items-center gap-2">
+          <Button size="sm" variant="outline" onClick={actions.addToCart.run} disabled={actions.addToCart.pending}>
+            {actions.addToCart.pending ? (
+              <LoaderCircle className="size-4 animate-spin" />
+            ) : (
+              <ShoppingCart className="size-4" />
+            )}
+            Add
+          </Button>
+          <Button size="sm" onClick={actions.buyNow.run} disabled={actions.buyNow.pending}>
+            {actions.buyNow.pending ? <LoaderCircle className="size-4 animate-spin" /> : <Zap className="size-4" />}
+            Buy now
+          </Button>
+        </div>
+      )}
+    </>
   );
 }
 

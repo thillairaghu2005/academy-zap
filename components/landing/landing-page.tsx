@@ -4,32 +4,23 @@ import * as React from "react";
 import {
   Atom,
   Braces,
-  Cloud,
   CloudCog,
-  Code2,
-  Cpu,
-  Globe2,
   GlobeLock,
   Network,
   Radar,
-  ShieldCheck,
 } from "lucide-react";
 
 import type { CourseSummary } from "@/lib/contracts/content";
-import { CategoryCard } from "@/components/landing/category-card";
 import { FeaturedCourseCard } from "@/components/landing/featured-course-card";
 import { FilterTabs } from "@/components/landing/filter-tabs";
 import { HeroSection } from "@/components/landing/hero-section";
 import { LearningLoop } from "@/components/landing/learning-loop";
-import { TerminalMock } from "@/components/landing/live-demo";
 import { MarketingFooter } from "@/components/landing/marketing-footer";
 import { MarketingNav } from "@/components/landing/marketing-nav";
 import { PersonalizedHero } from "@/components/landing/personalized-hero";
 import { useSession } from "@/components/providers/session-provider";
 import { SectionTitle } from "@/components/landing/section-title";
 import { SocialProof } from "@/components/landing/social-proof";
-import { SkillCard } from "@/components/landing/skill-card";
-import { StaggerGroup } from "@/components/motion/stagger-group";
 import { Marquee } from "@/components/motion/marquee";
 import { AmbientSection } from "@/components/ui/ambient-section";
 import { VerifiedProgression } from "@/components/landing/verified-progression";
@@ -54,13 +45,6 @@ export interface LandingPageProps {
   courses: CourseSummary[];
   catalogUnavailable?: boolean;
 }
-
-const categoryVisuals: Record<string, { icon: typeof Code2; tone: string }> = {
-  Cybersecurity: { icon: ShieldCheck, tone: "text-primary" },
-  "Web Development": { icon: Globe2, tone: "text-primary" },
-  "Cloud & DevOps": { icon: Cloud, tone: "text-secondary-accent" },
-  Programming: { icon: Code2, tone: "text-foreground" },
-};
 
 const skillCards = [
   { name: "Python", description: "Automate analysis, parse data, and build useful tools.", icon: Braces, tone: "text-primary", href: "/courses" },
@@ -96,43 +80,8 @@ function LandingSections({ courses, catalogUnavailable = false }: LandingPagePro
     : courses.filter((course) => course.category === activeCategory);
   const tabs = [{ value: "All", label: "All skills" }, ...categories.map((category) => ({ value: category.name, label: category.name }))];
 
-  const selectCategory = (category: string) => {
-    setActiveCategory(category);
-    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    window.requestAnimationFrame(() => {
-      document.getElementById("featured-courses")?.scrollIntoView({
-        behavior: reducedMotion ? "auto" : "smooth",
-        block: "start",
-      });
-    });
-  };
-
   return (
     <>
-      <AmbientSection tone="subtle" className="border-y border-border/60">
-        <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 sm:py-20 lg:px-8">
-          <SectionTitle
-            title="Course catalog / choose your base"
-            description="Start with the subject you want to use in a submission, a lab session, or your next rank climb."
-          />
-          <div className="mt-8 flex gap-4 overflow-x-auto pb-3 sm:grid sm:grid-cols-2 lg:grid-cols-4">
-            {categories.map((category) => {
-              const visual = categoryVisuals[category.name] ?? { icon: Cpu, tone: "bg-primary" };
-              return (
-                <CategoryCard
-                  key={category.name}
-                  name={category.name}
-                  count={category.count}
-                  icon={visual.icon}
-                  tone={visual.tone}
-                  onSelect={() => selectCategory(category.name)}
-                />
-              );
-            })}
-          </div>
-        </div>
-      </AmbientSection>
-
       <section aria-label="Learning topics" className="border-y border-border bg-surface-1">
         <h2 className="sr-only">Learning topics</h2>
         <div className="py-4">
@@ -183,20 +132,6 @@ function LandingSections({ courses, catalogUnavailable = false }: LandingPagePro
         </div>
       </AmbientSection>
 
-      <AmbientSection tone="subtle" className="bg-background">
-        <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 sm:py-20 lg:px-8">
-          <SectionTitle
-            title="Topics you can submit, shell into, and climb with"
-            description="Python, detection, web security, cloud controls, and the systems underneath them are all connected to a working surface."
-          />
-          <StaggerGroup className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3" childClassName="h-full">
-            {skillCards.map((skill) => (
-              <SkillCard key={skill.name} {...skill} />
-            ))}
-          </StaggerGroup>
-        </div>
-      </AmbientSection>
-
       <section className="mx-auto max-w-7xl px-4 py-16 sm:px-6 sm:py-20 lg:px-8">
         <VerifiedProgression />
         <div className="mt-8"><TrustHighlights /></div>
@@ -220,16 +155,6 @@ export function LandingPage({ courses, catalogUnavailable = false }: LandingPage
       <main id="main-content">
         <HomeHero />
         <LearningLoop />
-        <section className="bg-background">
-          <div className="mx-auto grid max-w-7xl items-center gap-8 px-4 py-16 sm:px-6 lg:grid-cols-2 lg:gap-14 lg:px-8">
-            <div>
-              <p className="font-mono text-xs uppercase tracking-widest text-muted-foreground">Live infrastructure</p>
-              <h2 className="mt-3 font-display font-light text-h1 tracking-[-0.03em]">Immersive Hands-On Labs.</h2>
-              <p className="mt-4 max-w-lg text-sm leading-6 text-muted-foreground">Every lab provisions a secure, isolated container. Complete objectives against real infrastructure and build a verifiable engineering profile.</p>
-            </div>
-            <TerminalMock />
-          </div>
-        </section>
         <LandingSections courses={courses} catalogUnavailable={catalogUnavailable} />
         <StatsBand />
         <ComparisonSection />
