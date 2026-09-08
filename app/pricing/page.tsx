@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 
 import { MarketingFooter } from "@/components/landing/marketing-footer";
 import { MarketingNav } from "@/components/landing/marketing-nav";
-import { FaqSection, FinalCta, PricingSection } from "@/components/landing/premium-sections";
+import { FaqSection, FinalCta, DetailedPricingSection } from "@/components/landing/premium-sections";
 import { MobileCtaBar } from "@/components/shared/mobile-cta-bar";
 
 export const metadata: Metadata = {
@@ -18,7 +18,7 @@ export default function PricingPage() {
     <div className="min-h-dvh overflow-x-hidden bg-background">
       <MarketingNav />
       <main>
-        <PricingSection standalone headingAs="h1" />
+        <DetailedPricingSection standalone headingAs="h1" />
         <FaqSection />
         <FinalCta />
       </main>

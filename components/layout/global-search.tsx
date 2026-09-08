@@ -130,9 +130,6 @@ export function GlobalSearch({ className }: { className?: string }) {
       >
         <Search />
         <span className="hidden sm:inline">Search</span>
-        <kbd className="ml-1 hidden rounded border border-border bg-secondary px-1.5 py-0.5 font-mono text-[10px] text-muted-foreground sm:inline">
-          ⌘K / Ctrl K
-        </kbd>
       </Button>
 
       <CommandDialog open={open} onOpenChange={(nextOpen) => (nextOpen ? setOpen(true) : close())}>

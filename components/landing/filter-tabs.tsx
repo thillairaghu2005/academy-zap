@@ -12,11 +12,10 @@ export interface FilterTabsProps {
   label: string;
 }
 
-/** Keyboard-native filter buttons used for client-side landing filters. */
 export function FilterTabs({ tabs, value, onChange, label }: FilterTabsProps) {
   return (
     <div
-      className="flex max-w-full gap-2 overflow-x-auto pb-1"
+      className="flex max-w-full gap-6 overflow-x-auto border-b border-border pb-px"
       aria-label={label}
       role="group"
     >
@@ -29,10 +28,10 @@ export function FilterTabs({ tabs, value, onChange, label }: FilterTabsProps) {
             aria-pressed={active}
             onClick={() => onChange(tab.value)}
             className={cn(
-              "min-h-11 shrink-0 rounded-full border px-4 text-sm font-medium outline-none transition-colors duration-200 focus-visible:ring-2 focus-visible:ring-ring",
+              "whitespace-nowrap pb-2 text-sm font-bold outline-none transition-colors duration-200 focus-visible:ring-2 focus-visible:ring-ring",
               active
-                ? "border-primary bg-primary text-primary-foreground shadow-sm"
-                : "border-border bg-card text-muted-foreground hover:border-primary/40 hover:text-foreground",
+                ? "border-b-2 border-foreground text-foreground"
+                : "text-muted-foreground hover:text-foreground",
             )}
           >
             {tab.label}
