@@ -8,7 +8,6 @@ import { Check } from "lucide-react";
 import { Magnetic } from "@/components/motion/magnetic";
 import { Parallax } from "@/components/motion/parallax";
 import { TextReveal } from "@/components/motion/text-reveal";
-import { TextScramble } from "@/components/motion/text-scramble";
 import { motionDurations, motionEasings, motionSprings } from "@/components/motion/motion-tokens";
 import { Button } from "@/components/ui/button";
 import { GlowOrb } from "@/components/ui/glow-orb";
@@ -48,9 +47,6 @@ export function HeroSection() {
           variants={containerVariants}
           className="relative z-10 max-w-2xl"
         >
-          <motion.div variants={itemVariants} className="inline-flex items-center gap-2 rounded-full border border-border bg-card px-3 py-1.5 text-xs font-medium text-muted-foreground shadow-sm">
-            <TextScramble text="Interactive Learning Environment v2.0" className="tabular-nums" />
-          </motion.div>
           <motion.h1
             variants={itemVariants}
             className="mt-5 max-w-2xl font-display font-light leading-[1.05] tracking-[-0.05em] text-[clamp(2.2rem,4.5vw,4rem)]"
