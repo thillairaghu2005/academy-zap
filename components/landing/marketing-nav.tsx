@@ -24,11 +24,8 @@ import { useSession } from "@/components/providers/session-provider";
 import { cn } from "@/lib/utils";
 
 const links = [
-  { href: "/courses", label: "Courses" },
-  { href: "/judge", label: "Judge" },
-  { href: "/labs", label: "Labs" },
-  { href: "/rank", label: "Rank" },
-  { href: "/pricing", label: "Pricing" },
+  { href: "/courses", label: "Explore" },
+  { href: "/pricing", label: "Subscribe" },
 ] as const;
 
 /** Public navigation keeps the landing page distinct from the learner shell. */
@@ -52,13 +49,13 @@ export function MarketingNav() {
         scrolled ? "bg-background/80 backdrop-blur-md border-b border-border/60 shadow-sm" : "bg-transparent",
       )}
     >
-      <div className="mx-auto flex h-14 max-w-7xl items-center gap-3 px-0 sm:px-1 lg:h-16">
+      <div className="mx-auto flex h-14 max-w-7xl items-center gap-4 px-0 sm:px-1 lg:h-16">
         <Sheet open={menuOpen} onOpenChange={setMenuOpen}>
           <SheetTrigger asChild>
             <Button
               variant="ghost"
               size="icon"
-              className="lg:hidden"
+              className="lg:hidden shrink-0"
               aria-label="Open site navigation"
             >
               <Menu />
@@ -68,7 +65,7 @@ export function MarketingNav() {
             <SheetHeader className="border-b border-border px-6 pb-5 pt-6">
               <SheetTitle className="font-display text-h3 text-left">Surface index</SheetTitle>
               <SheetDescription className="text-left">
-                Courses, Judge, Labs, and the Rank Ladder.
+                Courses and Pricing.
               </SheetDescription>
             </SheetHeader>
             <nav className="flex flex-col gap-1 p-4" aria-label="Mobile navigation">
@@ -83,7 +80,7 @@ export function MarketingNav() {
                 </Link>
               ))}
               <div className="mt-4 border-t border-border pt-4">
-                <GlobalSearch className="inline-flex w-full justify-start" />
+                <GlobalSearch className="inline-flex w-full justify-start rounded-full h-11" />
               </div>
               <div className="mt-3 grid gap-2">
                 {isLoading ? (
@@ -94,12 +91,12 @@ export function MarketingNav() {
                   <>
                     <Button variant="outline" asChild>
                       <Link href="/login" onClick={() => setMenuOpen(false)}>
-                        Sign in
+                        Log In
                       </Link>
                     </Button>
                     <Button variant="gradient" asChild>
                       <Link href="/register" onClick={() => setMenuOpen(false)}>
-                        Join Zapsters
+                        Sign up
                       </Link>
                     </Button>
                   </>
@@ -109,9 +106,9 @@ export function MarketingNav() {
           </SheetContent>
         </Sheet>
 
-        <Logo size="sm" eager className="lg:[&>img]:h-10" />
+        <Logo size="lg" eager className="shrink-0" />
 
-        <nav className="ml-6 hidden items-center gap-1 lg:flex" aria-label="Primary navigation">
+        <nav className="ml-2 hidden items-center gap-1 lg:flex shrink-0" aria-label="Primary navigation">
            {links.map((link) => {
              const isActive = pathname === link.href || pathname.startsWith(`${link.href}/`);
              return (
@@ -137,23 +134,22 @@ export function MarketingNav() {
            })}
         </nav>
 
-        <div className="ml-auto flex items-center gap-2">
-          <GlobalSearch />
-          <RankXpChip />
+        <div className="flex flex-1 items-center justify-center px-4 lg:px-8">
+           <GlobalSearch className="hidden sm:flex w-full max-w-[600px] justify-start rounded-full border border-border/50 bg-secondary/40 px-4 hover:bg-secondary/60 h-11 text-sm font-normal text-muted-foreground" />
+        </div>
+
+        <div className="ml-auto flex shrink-0 items-center gap-3">
           {isLoading ? (
             <Skeleton className="hidden h-9 w-28 rounded-md sm:block" />
           ) : user ? (
             <UserMenu />
           ) : (
             <>
-              <Link
-                href="/login"
-                className="hidden rounded-md px-3 py-2 text-sm font-medium text-muted-foreground outline-none transition-colors hover:bg-accent hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring sm:inline-flex"
-              >
-                Sign in
-              </Link>
-                 <Button variant="default" size="sm" asChild>
-                <Link href="/register">Join Zapsters</Link>
+              <Button variant="outline" className="hidden sm:inline-flex rounded-sm font-bold bg-transparent border-primary/20 hover:bg-primary/5 h-10 px-5" asChild>
+                <Link href="/login">Log In</Link>
+              </Button>
+              <Button variant="default" className="rounded-sm font-bold h-10 px-5" asChild>
+                <Link href="/register">Sign up</Link>
               </Button>
             </>
           )}

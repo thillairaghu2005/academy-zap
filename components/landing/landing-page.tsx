@@ -23,8 +23,6 @@ import { SectionTitle } from "@/components/landing/section-title";
 import { SocialProof } from "@/components/landing/social-proof";
 import { Marquee } from "@/components/motion/marquee";
 import { AmbientSection } from "@/components/ui/ambient-section";
-import { VerifiedProgression } from "@/components/landing/verified-progression";
-import { TrustHighlights } from "@/components/landing/trust-highlights";
 import {
   CaseStudySection,
   ComparisonSection,
@@ -132,10 +130,6 @@ function LandingSections({ courses, catalogUnavailable = false }: LandingPagePro
         </div>
       </AmbientSection>
 
-      <section className="mx-auto max-w-7xl px-4 py-16 sm:px-6 sm:py-20 lg:px-8">
-        <VerifiedProgression />
-        <div className="mt-8"><TrustHighlights /></div>
-      </section>
       <SocialProof />
     </>
   );
