@@ -44,94 +44,62 @@ export interface LandingPageProps {
   catalogUnavailable?: boolean;
 }
 
-const skillCards = [
-  { name: "Python", description: "Automate analysis, parse data, and build useful tools.", icon: Braces, tone: "text-primary", href: "/courses" },
-  { name: "Threat detection", description: "Turn telemetry into rules that survive real-world noise.", icon: Radar, tone: "text-primary", href: "/courses" },
-  { name: "Web application security", description: "Recon, test, and report against deliberately vulnerable apps.", icon: GlobeLock, tone: "text-primary", href: "/labs" },
-  { name: "React & TypeScript", description: "Model state and data layers for production interfaces.", icon: Atom, tone: "text-primary", href: "/courses" },
-  { name: "Cloud security", description: "Build defensible identity, network, and logging foundations.", icon: CloudCog, tone: "text-primary", href: "/courses" },
-  { name: "Linux and networking", description: "Feel at home in the shell, processes, packets, and services.", icon: Network, tone: "text-foreground", href: "/labs" },
-] as const;
-
-const visualClasses = [
-  "bg-surface-1",
-  "bg-surface-1",
-  "bg-surface-1",
-  "bg-surface-1",
-  "bg-surface-1",
-  "bg-surface-1",
-] as const;
-
 function LandingSections({ courses, catalogUnavailable = false }: LandingPageProps) {
-  const [activeCategory, setActiveCategory] = React.useState("All");
-  const categories = courses.reduce<{ name: string; count: number }[]>((result, course) => {
-    const existing = result.find((category) => category.name === course.category);
-    if (existing) {
-      existing.count += 1;
-    } else {
-      result.push({ name: course.category, count: 1 });
-    }
-    return result;
-  }, []);
-  const filteredCourses = activeCategory === "All"
-    ? courses
-    : courses.filter((course) => course.category === activeCategory);
-  const tabs = [{ value: "All", label: "All skills" }, ...categories.map((category) => ({ value: category.name, label: category.name }))];
+  const udemyTabs = [
+    { value: "AI", label: "Artificial Intelligence (AI)" },
+    { value: "Python", label: "Python" },
+    { value: "Excel", label: "Microsoft Excel" },
+    { value: "Agentic", label: "AI Agents & Agentic AI" },
+    { value: "Marketing", label: "Digital Marketing" },
+    { value: "AWS", label: "Amazon AWS" },
+  ];
+  const [activeCategory, setActiveCategory] = React.useState("AI");
+
+  // Determine which 4 courses to show based on the active tab index
+  const activeTabIndex = Math.max(0, udemyTabs.findIndex(t => t.value === activeCategory));
+  // Ensure we don't go out of bounds of the courses array
+  const maxStartIndex = Math.max(0, courses.length - 4);
+  const startIndex = (activeTabIndex * 4) % (maxStartIndex || 1);
+  const demoCourses = courses.slice(startIndex, startIndex + 4);
 
   return (
-    <>
-      <section aria-label="Learning topics" className="border-y border-border bg-surface-1">
-        <h2 className="sr-only">Learning topics</h2>
-        <div className="py-4">
-          <Marquee speed={28} className="[mask-image:linear-gradient(to_right,transparent,black_12%,black_88%,transparent)]">
-            <span aria-hidden="true" className="flex">
-              {skillCards.map((skill) => (
-                <span key={skill.name} className="mx-3 inline-flex shrink-0 items-center gap-2 rounded-full glass shadow-sm px-4 py-2 text-xs font-medium text-muted-foreground">
-                  <skill.icon className="size-3.5 text-primary" />
-                  {skill.name}
-                </span>
-              ))}
-            </span>
-          </Marquee>
+    <AmbientSection id="featured-courses" tone="subtle" className="scroll-mt-24 bg-background">
+      <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 sm:py-20 lg:px-8">
+        <div className="mb-8">
+          <h2 className="font-display text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
+            Skills to transform your career and life
+          </h2>
+          <p className="mt-4 text-lg text-muted-foreground">
+            From critical workplace skills to technical topics, Udemy supports your professional development.
+          </p>
         </div>
-      </section>
-
-      <AmbientSection id="featured-courses" tone="subtle" className="scroll-mt-24 bg-muted/40">
-        <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 sm:py-20 lg:px-8">
-          <SectionTitle
-            title="Courses that build the base for submissions"
-            description="The catalog is where you learn the syntax, reasoning, and operating context before you open the Judge or a Lab."
+        
+        <div className="mt-8">
+          <FilterTabs tabs={udemyTabs} value={activeCategory} onChange={setActiveCategory} label="Filter courses by category" />
+        </div>
+        
+        {catalogUnavailable ? (
+          <ErrorState
+            title="Course catalog unavailable"
+            message="The catalog could not be reached. Retry shortly to request the latest courses."
           />
-          <div className="mt-8">
-            <FilterTabs tabs={tabs} value={activeCategory} onChange={setActiveCategory} label="Filter featured courses by category" />
+        ) : (
+          <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            {demoCourses.map((course, index) => {
+              // Override category to match the selected tab just for visual effect
+              const displayCourse = { ...course, category: udemyTabs.find(t => t.value === activeCategory)?.label || course.category };
+              return (
+                <FeaturedCourseCard
+                  key={`${activeCategory}-${course.id}`} // ensure remounting if id is the same to trigger animations
+                  course={displayCourse}
+                  index={index}
+                />
+              );
+            })}
           </div>
-          {catalogUnavailable ? (
-            <ErrorState
-              title="Course catalog unavailable"
-              message="The catalog could not be reached. Retry shortly to request the latest courses."
-            />
-          ) : (
-            <div className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-              {filteredCourses.slice(0, 6).map((course, index) => {
-                const visualClass =
-                  visualClasses[index % visualClasses.length] ??
-                   "bg-surface-1";
-                return (
-                  <FeaturedCourseCard
-                    key={course.id}
-                    course={course}
-                    visualClass={visualClass}
-                    index={index}
-                  />
-                );
-              })}
-            </div>
-          )}
-        </div>
-      </AmbientSection>
-
-      <SocialProof />
-    </>
+        )}
+      </div>
+    </AmbientSection>
   );
 }
 

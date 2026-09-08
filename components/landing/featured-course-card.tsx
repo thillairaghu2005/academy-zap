@@ -2,61 +2,75 @@
 
 import * as React from "react";
 import Link from "next/link";
-import { ArrowUpRight, Bookmark, BookmarkCheck, Clock3, Star, Users } from "lucide-react";
 
 import type { CourseSummary } from "@/lib/contracts/content";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { Spotlight } from "@/components/motion/spotlight";
-import { TiltCard } from "@/components/motion/tilt-card";
-import { isCourseBookmarked, toggleCourseBookmark } from "@/lib/demo/course-notes";
-import { toast } from "sonner";
 
 export interface FeaturedCourseCardProps {
   course: CourseSummary;
-  visualClass: string;
-  index: number;
+  visualClass?: string;
+  index?: number;
 }
 
 export function FeaturedCourseCard({ course, visualClass, index }: FeaturedCourseCardProps) {
-  const [saved, setSaved] = React.useState(() => isCourseBookmarked(course.id));
-  const price = course.price_cents === 0 ? "Free" : `$${(course.price_cents / 100).toFixed(0)}`;
+  // Use a mock original price for the strikethrough effect
+  const price = course.price_cents === 0 ? "Free" : `₹${(course.price_cents / 100).toFixed(2)}`;
+  const originalPrice = course.price_cents === 0 ? "" : `₹${((course.price_cents * 1.5) / 100).toFixed(2)}`;
 
   return (
-    <TiltCard className="h-full rounded-3xl">
-      <article className="group h-full overflow-hidden rounded-3xl border border-border bg-card shadow-[0_8px_24px_rgb(17_24_39_/_5%)] transition-[border-color,box-shadow] duration-300 hover:border-primary/25 hover:shadow-[0_18px_44px_rgb(17_24_39_/_10%)]">
-        <Link href={`/courses/${course.id}`} className="block outline-none focus-visible:ring-2 focus-visible:ring-ring">
-          <Spotlight className={cn("flex aspect-[1.8] items-end overflow-hidden p-5", visualClass)}>
-            <div className="absolute inset-0 aurora opacity-75 transition-transform duration-700 group-hover:scale-105" aria-hidden="true" />
-            <div className="absolute inset-0 bg-grid opacity-60" aria-hidden="true" />
-            <span className="absolute right-5 top-5 font-mono text-xs text-muted-foreground">{String(index + 1).padStart(2, "0")}</span>
-            <div className="relative">
-              <Badge variant="outline" className="border-primary/20 bg-white/80 text-primary backdrop-blur-sm">{course.category}</Badge>
-              <h3 className="mt-3 max-w-md font-display text-h3 font-semibold text-foreground">{course.title}</h3>
-            </div>
-          </Spotlight>
-        </Link>
-
-      <div className="p-5">
-        <p className="line-clamp-2 min-h-10 text-sm leading-relaxed text-muted-foreground">{course.subtitle}</p>
-        <div className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-2 text-xs text-muted-foreground">
-          <span className="font-medium text-foreground">{course.instructor_name}</span>
-          <span className="inline-flex items-center gap-1"><Star className="size-3.5 fill-primary text-primary" /> {course.rating > 0 ? course.rating.toFixed(1) : "New"}</span>
-          <span className="inline-flex items-center gap-1"><Users className="size-3.5" /> {course.enrolled_count.toLocaleString()}</span>
-          <span className="inline-flex items-center gap-1"><Clock3 className="size-3.5" /> {course.estimated_hours}h</span>
+    <article className="group flex h-full flex-col overflow-hidden rounded-xl border border-border bg-card transition-all hover:shadow-md">
+      <Link href={`/courses/${course.id}`} className="block outline-none focus-visible:ring-2 focus-visible:ring-ring">
+        <div className={cn("relative flex aspect-video items-center justify-center overflow-hidden bg-muted", visualClass)}>
+          {/* Using website primary color for the background gradient */}
+          <div className="absolute inset-0 bg-gradient-to-br from-primary/20 to-primary/5" />
+          {/* Mock Image Content */}
+          <div className="z-10 text-center font-display text-xl font-bold text-foreground/50">
+            {course.category}
+          </div>
+          {/* Mock Author Banner on Image */}
+          <div className="absolute bottom-2 left-1/2 -translate-x-1/2 rounded bg-white/90 px-2 py-0.5 text-[10px] font-bold text-black backdrop-blur-sm">
+            {course.instructor_name}
+          </div>
         </div>
-        <div className="mt-5 flex items-center gap-3 border-t border-border pt-4">
-          <Button variant="link" className="h-auto p-0 font-semibold" asChild>
-            <Link href={`/courses/${course.id}`}>View course <ArrowUpRight /></Link>
-          </Button>
-          <span className="ml-auto font-display text-h3 font-semibold">{price}</span>
-            <Button type="button" variant="ghost" size="icon-sm" aria-label={saved ? `Remove ${course.title} from saved courses` : `Save ${course.title}`} aria-pressed={saved} onClick={() => { const next = toggleCourseBookmark(course.id); setSaved(next); toast(next ? "Course saved for later" : "Course removed from saved"); }} className={cn(saved && "text-primary")}>
-            {saved ? <BookmarkCheck className="fill-primary/10" /> : <Bookmark />}
+      </Link>
+
+      <div className="flex flex-1 flex-col p-4">
+        <Link href={`/courses/${course.id}`} className="outline-none focus-visible:ring-2 focus-visible:ring-ring">
+          <h3 className="line-clamp-2 min-h-[3rem] font-bold leading-snug text-foreground">
+            {course.title}
+          </h3>
+        </Link>
+        <p className="mt-1 line-clamp-1 text-xs text-muted-foreground">{course.instructor_name}</p>
+        
+        <div className="mt-2 flex items-center gap-1.5 text-xs">
+          {course.rating >= 4.5 && (
+            <span className="rounded-sm bg-primary px-1.5 py-0.5 font-bold text-primary-foreground">
+              Bestseller
+            </span>
+          )}
+          {course.rating < 4.5 && course.rating > 0 && (
+            <span className="rounded-sm bg-secondary px-1.5 py-0.5 font-bold text-secondary-foreground">
+              Role Play
+            </span>
+          )}
+        </div>
+
+        <div className="mt-auto pt-4 flex items-center justify-between">
+          <div className="flex flex-col">
+            <span className="font-bold text-foreground">{price}</span>
+            {originalPrice && (
+              <span className="text-xs text-muted-foreground line-through">{originalPrice}</span>
+            )}
+          </div>
+          <Button 
+            variant="outline" 
+            className="h-9 rounded border-primary font-bold text-primary hover:bg-primary/10 hover:text-primary"
+          >
+            Add to cart
           </Button>
         </div>
       </div>
-    </article>
-    </TiltCard>
-  );
+    </article>  );
 }
