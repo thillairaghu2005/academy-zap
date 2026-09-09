@@ -19,7 +19,6 @@ import {
   FileText,
   FlaskConical,
   Globe,
-  GraduationCap,
   Hourglass,
   LoaderCircle,
   Lock,
@@ -41,12 +40,10 @@ import { getCourseReviews } from "@/lib/data/demo/reviews";
 import { hasEntitlement } from "@/lib/data/demo/commerce";
 import { AddToCartButton } from "@/components/commerce/add-to-cart-button";
 import { BuyNowButton } from "@/components/commerce/buy-now-button";
-import { hueForId } from "@/lib/visual";
 import { useSession } from "@/components/providers/session-provider";
 import { AUTH_MODE } from "@/lib/config";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Progress } from "@/components/ui/progress";
 import { PageContainer } from "@/components/shared/page-container";
@@ -77,12 +74,6 @@ function initials(name: string): string {
     .slice(0, 2)
     .toUpperCase();
 }
-
-function coverGradient(hue: number): string {
-  void hue;
-  return "linear-gradient(135deg, var(--color-primary-light), var(--color-surface-3))";
-}
-
 
 function LessonRow({
   lesson,

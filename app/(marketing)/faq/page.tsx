@@ -1,9 +1,5 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ChevronDown } from "lucide-react";
-
-import { MARKETING_FAQ } from "@/lib/mocks/marketing";
-import { JsonLd } from "@/components/seo/json-ld";
 import { MarketingNav } from "@/components/landing/marketing-nav";
 import { MarketingFooter } from "@/components/landing/marketing-footer";
 import { FaqSection } from "@/components/landing/premium-sections";
@@ -18,16 +14,6 @@ export const metadata: Metadata = {
 };
 
 export default function FaqPage() {
-  const jsonLd = {
-    "@context": "https://schema.org",
-    "@type": "FAQPage",
-    mainEntity: MARKETING_FAQ.map((item) => ({
-      "@type": "Question",
-      name: item.question,
-      acceptedAnswer: { "@type": "Answer", text: item.answer },
-    })),
-  };
-
   return (
     <div className="min-h-dvh bg-background">
       <MarketingNav />

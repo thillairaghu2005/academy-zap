@@ -7,7 +7,6 @@ import {
   ArrowRight,
   BadgeCheck,
   Flame,
-  Gauge,
   Gift,
   Layers,
   LoaderCircle,

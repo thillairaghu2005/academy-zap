@@ -10,9 +10,7 @@ import { Parallax } from "@/components/motion/parallax";
 import { TextReveal } from "@/components/motion/text-reveal";
 import { motionDurations, motionEasings, motionSprings } from "@/components/motion/motion-tokens";
 import { Button } from "@/components/ui/button";
-import { GlowOrb } from "@/components/ui/glow-orb";
 import heroImage from "@/src/assets/images/hero.png";
-import { NoiseOverlay } from "@/components/ui/noise-overlay";
 import { trackConversion } from "@/lib/analytics";
 
 const containerVariants: Variants = {

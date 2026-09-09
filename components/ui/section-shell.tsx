@@ -1,7 +1,6 @@
 import * as React from "react";
 
 import { cn } from "@/lib/utils";
-import { AuroraBackdrop } from "./aurora-backdrop";
 import { Eyebrow } from "./eyebrow";
 
 type SectionShellProps = React.ComponentProps<"section"> & {
@@ -17,7 +16,7 @@ export function SectionShell({
   eyebrow,
   title,
   subtitle,
-  ambient = false,
+  ambient: _ambient = false,
   ...props
 }: SectionShellProps) {
   return (
