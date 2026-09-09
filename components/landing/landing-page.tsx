@@ -124,7 +124,6 @@ export function LandingPage({ courses, catalogUnavailable = false }: LandingPage
         <PricingSection />
         <TestimonialWall />
         <FaqSection />
-        <section className="bg-background px-5 py-10 sm:px-8"><MarketingProofBar /></section>
         <FinalCta />
       </main>
       <MarketingFooter />

@@ -92,10 +92,10 @@ export function CourseRail({
         <div
           ref={scrollerRef}
           onScroll={updateArrows}
-          className="rail-scroll -mx-1 flex snap-x gap-4 overflow-x-auto px-1 pb-2"
+          className="rail-scroll -mx-1 flex snap-x gap-6 overflow-x-auto px-1 pb-4"
         >
           {courses.map((course) => (
-            <div key={course.id} className="flex flex-col min-w-[240px] shrink-0 snap-start sm:w-[calc(50%-8px)] md:w-[calc(33.333%-10.66px)] lg:w-[calc(25%-12px)] xl:w-[calc(25%-12px)]">
+            <div key={course.id} className="flex flex-col min-w-[280px] shrink-0 snap-start sm:w-[calc(50%-12px)] md:w-[calc(33.333%-16px)] lg:w-[calc(25%-18px)] xl:w-[calc(25%-18px)]">
               <CourseCard course={course} className="flex-1" />
             </div>
           ))}

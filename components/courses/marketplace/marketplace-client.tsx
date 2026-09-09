@@ -220,7 +220,7 @@ export function MarketplaceClient() {
   return (
     <MarketplaceStateProvider value={marketplaceState}>
       <CourseHoverPreviewProvider>
-        <div className="flex flex-col gap-8 pb-16">
+        <div className="mx-auto w-full max-w-7xl flex flex-col gap-8 px-4 pb-16 pt-6 sm:px-6 lg:px-8">
           {isFiltering ? (
             <ResultsView
               results={results}
@@ -240,7 +240,7 @@ export function MarketplaceClient() {
               {continueLearning.length > 0 ? (
                 <ContinueLearningStrip entries={continueLearning} />
               ) : null}
-              <div className="flex flex-col gap-9">
+              <div className="flex flex-col gap-12 sm:gap-16">
                 {MARKETPLACE_COLLECTIONS.map((collection) => (
                   <CourseRail
                     key={collection.id}
@@ -598,7 +598,7 @@ function ResultsView({
       {results.length === 0 ? (
         <EmptyResults onClear={onClear} />
       ) : (
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {results.map((course) => (
             <CourseCard key={course.id} course={course} className="flex-1" />
           ))}

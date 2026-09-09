@@ -312,62 +312,59 @@ export function CourseDetailClient({
       ) : null}
 
       {/* Header */}
-      <div className="mt-8 grid gap-10 lg:grid-cols-[minmax(0,1fr)_380px] lg:items-start">
-        <div className="flex flex-col gap-4">
-          <div className="flex flex-wrap items-center gap-2">
-            <Badge variant="secondary">{course.category}</Badge>
-            <Badge variant="outline">{course.level}</Badge>
-            <Badge variant="outline">
-              <Globe className="size-3" />
-              {course.language}
-            </Badge>
-            <Badge variant={isFree ? "success" : "default"}>
-              {isFree ? "Free" : `$${(course.price_cents / 100).toFixed(0)}`}
-            </Badge>
-          </div>
-
-           <h1 className="max-w-4xl font-display text-h1 tracking-[-0.05em]">
-            {course.title}
-          </h1>
-          <p className="text-lg text-muted-foreground">{course.subtitle}</p>
-
-          <div className="flex flex-wrap items-center gap-x-5 gap-y-2 text-sm text-muted-foreground">
-            <span className="flex items-center gap-1.5">
-               <Star className="size-4 fill-primary text-primary" />
-              <span className="font-medium text-foreground">
-                {course.rating > 0 ? course.rating.toFixed(1) : "New"}
-              </span>
-              {course.review_count > 0 ? (
-                <span>({course.review_count.toLocaleString()} reviews)</span>
-              ) : null}
-            </span>
-            <span className="flex items-center gap-1.5">
-              <Users className="size-4" />
-              {course.enrolled_count.toLocaleString()} enrolled
-            </span>
-            <span className="flex items-center gap-1.5">
-              <Hourglass className="size-4" />
-              {course.estimated_hours}h of content
-            </span>
-            <span className="flex items-center gap-1.5">
-              <GraduationCap className="size-4" />
-              {course.instructor.title}
-            </span>
-          </div>
-
-          {/* Instructor */}
-          <div className="flex items-center gap-3">
-             <div className="grid size-10 place-items-center rounded-full bg-primary/10 font-display text-small font-bold text-primary ring-4 ring-primary/5">
-              {course.instructor.display_name
-                .split(" ")
-                .map((n) => n[0])
-                .join("")}
+      <div className="mt-8 grid gap-8 lg:grid-cols-[minmax(0,1fr)_380px] lg:items-start">
+        <div className="flex flex-col gap-6">
+          
+          {/* Bento Main Header Card */}
+          <div className="flex flex-col gap-4 rounded-[28px] border border-border bg-card p-8 shadow-[0_12px_32px_rgb(17_24_39_/_0.08)]">
+            <div className="flex flex-wrap items-center gap-2">
+              <Badge variant="secondary" className="bg-muted/50 text-foreground border-transparent">{course.category}</Badge>
+              <Badge variant="secondary" className="bg-muted/50 text-foreground border-transparent">{course.level}</Badge>
+              <Badge variant="secondary" className="bg-muted/50 text-foreground border-transparent">
+                <Globe className="size-3 mr-1" />
+                {course.language}
+              </Badge>
+              <Badge variant="secondary" className={isFree ? "bg-success/10 text-success-strong border-transparent" : "bg-primary/10 text-primary border-transparent"}>
+                {isFree ? "Free" : `$${(course.price_cents / 100).toFixed(0)}`}
+              </Badge>
             </div>
-            <div>
-              <p className="text-sm font-medium">{course.instructor.display_name}</p>
-              <p className="text-xs text-muted-foreground">
-                {course.instructor.title}
-              </p>
+
+             <h1 className="max-w-4xl font-display text-h1 tracking-[-0.05em] text-foreground">
+              {course.title}
+            </h1>
+            <p className="text-lg text-muted-foreground">{course.subtitle}</p>
+
+            <div className="flex flex-wrap items-center gap-x-5 gap-y-2 text-sm text-muted-foreground">
+              <span className="flex items-center gap-1.5">
+                 <Star className="size-4 fill-primary text-primary" />
+                <span className="font-medium text-foreground">
+                  {course.rating > 0 ? course.rating.toFixed(1) : "New"}
+                </span>
+                {course.review_count > 0 ? (
+                  <span>({course.review_count.toLocaleString()} reviews)</span>
+                ) : null}
+              </span>
+              <span className="flex items-center gap-1.5">
+                <Users className="size-4" />
+                {course.enrolled_count.toLocaleString()} enrolled
+              </span>
+              <span className="flex items-center gap-1.5">
+                <Hourglass className="size-4" />
+                {course.estimated_hours}h of content
+              </span>
+            </div>
+
+            {/* Instructor Inline */}
+            <div className="mt-4 flex items-center gap-3 border-t border-border/50 pt-6">
+               <div className="flex size-10 shrink-0 items-center justify-center rounded-full bg-primary/10 font-bold text-lg text-primary">
+                {course.instructor.display_name.charAt(0)}
+              </div>
+              <div>
+                <p className="text-sm font-medium text-foreground">{course.instructor.display_name}</p>
+                <p className="text-xs text-muted-foreground">
+                  {course.instructor.title}
+                </p>
+              </div>
             </div>
           </div>
 
@@ -416,36 +413,34 @@ export function CourseDetailClient({
 
         {/* CTA card */}
         <div className="sticky top-20 z-20 self-start lg:top-24">
-           <Card variant="glow" className="overflow-hidden rounded-3xl border-primary/10 shadow-[0_18px_50px_rgb(17_24_39_/_10%)]">
-            <div
-              className="relative h-36 w-full"
-              style={{ background: coverGradient(hueForId(course.id)) }}
-            >
-               <div className="absolute inset-0 bg-primary-muted/70" />
-              {enrollment ? (
-                <div className="absolute bottom-3 left-4 right-4">
-                  <p className="text-xs font-medium text-white/80">Your progress</p>
-                  <div className="mt-1.5 flex items-center gap-2">
-                    <Progress
-                      value={enrollment.progress_pct}
-                       className="h-1.5 bg-primary/15"
-                       indicatorClassName="bg-primary"
-                    />
-                     <span className="text-xs font-semibold text-foreground">
-                      {enrollment.progress_pct}%
-                    </span>
-                  </div>
+           <div className="flex flex-col gap-6 overflow-hidden rounded-[28px] border border-border bg-card p-6 shadow-[0_12px_32px_rgb(17_24_39_/_0.08)]">
+            
+            {enrollment ? (
+              <div className="mb-2">
+                <p className="mb-2 text-xs font-medium text-muted-foreground">Your progress</p>
+                <div className="flex items-center gap-2">
+                  <Progress
+                    value={enrollment.progress_pct}
+                     className="h-2 bg-muted flex-1"
+                     indicatorClassName="bg-primary"
+                  />
+                   <span className="text-xs font-semibold text-foreground">
+                    {enrollment.progress_pct}%
+                  </span>
                 </div>
-              ) : null}
-            </div>
+              </div>
+            ) : null}
 
-            <CardContent className="flex flex-col gap-4 p-5">
-               <div className="flex items-baseline justify-between border-b border-border pb-4">
-                <span className="font-display text-h2">
-                  {isFree ? "Free" : `$${(course.price_cents / 100).toFixed(0)}`}
-                </span>
+            <div className="flex flex-col gap-4">
+               <div className="flex items-end justify-between border-b border-border/60 pb-4">
+                <div className="flex flex-col">
+                  <span className="text-xs text-muted-foreground uppercase tracking-wider font-semibold mb-1">Price</span>
+                  <span className="font-display text-h2 leading-none">
+                    {isFree ? "Free" : `$${(course.price_cents / 100).toFixed(0)}`}
+                  </span>
+                </div>
                 {!isFree ? (
-                  <span className="text-xs text-muted-foreground">
+                  <span className="text-[10px] text-muted-foreground mb-1">
                     one-time · 30-day refund
                   </span>
                 ) : null}
@@ -554,9 +549,9 @@ export function CourseDetailClient({
                   On-demand video + articles
                 </span>
               </div>
-            </CardContent>
-          </Card>
-          <div className="mt-4">
+            </div>
+           </div>
+          <div className="mt-6">
             <InstructorCard instructorId={course.instructor.id} />
           </div>
         </div>
@@ -580,28 +575,28 @@ export function CourseDetailClient({
               (l) => completedSet.has(l.id),
             ).length;
             return (
-               <Card key={section.id} variant="glass">
-                <CardHeader className="flex flex-row items-center justify-between gap-3 p-4">
-                  <div className="flex items-center gap-3">
-                    <span className="grid size-7 place-items-center rounded-md bg-primary/10 font-display text-small font-bold text-primary">
+               <div key={section.id} className="rounded-[28px] border border-border bg-card shadow-[0_4px_16px_rgb(17_24_39_/_0.04)] overflow-hidden">
+                <div className="flex flex-row items-center justify-between gap-3 p-6 pb-4">
+                  <div className="flex items-center gap-4">
+                    <span className="flex size-8 items-center justify-center rounded-full bg-primary/10 font-display text-sm font-bold text-primary">
                       {si + 1}
                     </span>
                     <div>
-                      <h3 className="font-display text-h3">
+                      <h3 className="font-display text-lg font-semibold text-foreground">
                         {section.title}
                       </h3>
-                      <p className="text-xs text-muted-foreground">
+                      <p className="text-xs text-muted-foreground mt-0.5">
                         {section.lessons.length} lessons
                       </p>
                     </div>
                   </div>
                   {enrollment && sectionCompleted > 0 ? (
-                    <Badge variant="success" className="text-caption">
+                    <Badge variant="secondary" className="bg-success/10 text-success-strong text-caption border-transparent">
                       {sectionCompleted}/{section.lessons.length}
                     </Badge>
                   ) : null}
-                </CardHeader>
-                <CardContent className="p-2 pt-0">
+                </div>
+                <div className="p-4 pt-0">
                   {section.lessons.map((lesson, li) => (
                     <LessonRow
                       key={lesson.id}
@@ -615,8 +610,8 @@ export function CourseDetailClient({
                        }
                      />
                   ))}
-                </CardContent>
-              </Card>
+                </div>
+              </div>
             );
           })}
         </div>
@@ -631,26 +626,26 @@ export function CourseDetailClient({
         }}
       />
 
-      <Card className="mt-8 border-primary/20 bg-primary/5">
-        <CardContent className="flex flex-col items-start justify-between gap-4 p-5 sm:flex-row sm:items-center">
-          <div className="flex items-start gap-3">
-            <span className="grid size-9 shrink-0 place-items-center rounded-lg bg-primary/10 text-primary">
-              <MessageCircle className="size-4" />
+      <div className="mt-8 rounded-[28px] border border-primary/20 bg-primary/5 p-6 shadow-[0_4px_16px_rgb(17_24_39_/_0.04)]">
+        <div className="flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
+          <div className="flex items-start gap-4">
+            <span className="flex size-12 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
+              <MessageCircle className="size-5" />
             </span>
             <div>
-              <h2 className="font-display text-h3">Stuck? Talk to a mentor</h2>
+              <h2 className="font-display text-xl font-semibold text-foreground">Stuck? Talk to a mentor</h2>
               <p className="mt-1 text-sm text-muted-foreground">
                 Get practical guidance from someone who works in the field.
               </p>
             </div>
           </div>
-          <Button variant="outline" asChild>
+          <Button variant="outline" className="rounded-xl h-10 px-6 font-semibold" asChild>
             <Link href="/mentors">
-              Browse mentors <ArrowRight />
+              Browse mentors <ArrowRight className="ml-1.5 size-4" />
             </Link>
           </Button>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
 
       <div className="mt-12">
         <h2 className="font-display text-h2">Discussion</h2>
@@ -670,7 +665,7 @@ export function CourseDetailClient({
         <h2 className="font-display text-h2">
           Reviews
         </h2>
-         <div className="mt-4 flex flex-col items-start gap-6 rounded-2xl border border-border bg-surface-1 p-6 sm:flex-row sm:items-start">
+         <div className="mt-4 flex flex-col items-start gap-6 rounded-[28px] border border-border bg-card p-8 shadow-[0_12px_32px_rgb(17_24_39_/_0.04)] sm:flex-row sm:items-start">
           <div className="text-center sm:text-left">
             <p className="font-display text-h1">
               {course.rating > 0 ? course.rating.toFixed(1) : "—"}

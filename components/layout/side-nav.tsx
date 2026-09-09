@@ -105,6 +105,12 @@ export function NavLinks({ onNavigate }: { onNavigate?: () => void }) {
 
 /** Desktop side rail — hidden below lg, replaced by the mobile sheet */
 export function SideNav() {
+  const { user } = useSession();
+
+  if (!user) {
+    return null;
+  }
+
   return (
     <aside className="frosted-heavy sticky top-16 hidden h-[calc(100dvh-4rem)] w-60 shrink-0 flex-col overflow-y-auto border-r border-border/70 px-3 py-5 lg:flex">
       <div className="mb-2 rounded-lg border border-border bg-surface-2 px-3 py-2.5 text-xs text-muted-foreground">
