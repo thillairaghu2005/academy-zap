@@ -6,7 +6,6 @@ import { usePathname } from "next/navigation";
 import { Menu } from "lucide-react";
 import { m as motion } from "framer-motion";
 
-import { GlobalSearch } from "@/components/layout/global-search";
 import { Logo } from "@/components/layout/logo";
 import { RankXpChip } from "@/components/gamification/rank-xp-chip";
 import { UserMenu } from "@/components/layout/user-menu";
@@ -79,9 +78,6 @@ export function MarketingNav() {
                   {link.label}
                 </Link>
               ))}
-              <div className="mt-4 border-t border-border pt-4">
-                <GlobalSearch className="inline-flex w-full justify-start rounded-full h-11" />
-              </div>
               <div className="mt-3 grid gap-2">
                 {isLoading ? (
                   <Skeleton className="h-9 w-full" />
@@ -133,10 +129,6 @@ export function MarketingNav() {
              );
            })}
         </nav>
-
-        <div className="flex flex-1 items-center justify-center px-4 lg:px-8">
-           <GlobalSearch className="hidden sm:flex w-full max-w-[600px] justify-start rounded-full border border-border/50 bg-secondary/40 px-4 hover:bg-secondary/60 h-11 text-sm font-normal text-muted-foreground" />
-        </div>
 
         <div className="ml-auto flex shrink-0 items-center gap-3">
           {isLoading ? (

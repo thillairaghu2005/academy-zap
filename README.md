@@ -1,7 +1,7 @@
 # Zapsters
 
-Zapsters is a learning-platform frontend with courses, a code judge, virtual
-labs, assessments, commerce, support, and gamification.
+Zapsters is a learning-platform frontend featuring a modern bento aesthetic landing page,
+courses, a code judge, virtual labs, assessments, commerce, support, and gamification.
 
 ## Current Architecture
 
@@ -76,8 +76,8 @@ machines, containers, isolated networks, or code-execution servers are started.
 
 ## Stack
 
-Next.js 16 App Router, React 19, TypeScript, Tailwind CSS, TanStack Query,
-Zod, Framer Motion, Monaco, xterm.js, Video.js, and Vitest.
+Next.js 16 App Router, React 19, TypeScript, Tailwind CSS v4, Radix UI, TanStack Query,
+Supabase, Zod, Framer Motion, Monaco, xterm.js, Video.js, and Vitest.
 
 Backend: FastAPI (0.141.x line), Pydantic v2, SQLAlchemy 2.0 async, Alembic,
 PostgreSQL 16 + TimescaleDB, Redis 7, Arq, PyJWT + `pwdlib[argon2]`, structlog,
