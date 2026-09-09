@@ -83,13 +83,6 @@ const PRICE_OPTIONS: { value: PriceFilter; label: string }[] = [
 
 const CATEGORY_CHIPS = MARKETPLACE_CATEGORIES.filter((c) => c !== "All").slice(0, 5);
 
-/** Flagship covers used in the hero collage. */
-const HERO_COVER_IDS = [
-  "b2c3d4e5-f6a7-4b8c-9d0e-1f2a3b4c5d6e",
-  "d4e5f6a7-b8c9-4d0e-1f2a-3b4c5d6e7f8a",
-  "c3d4e5f6-a7b8-4c9d-0e1f-2a3b4c5d6e7f",
-] as const;
-
 export function MarketplaceClient() {
   const router = useRouter();
   const pathname = usePathname();

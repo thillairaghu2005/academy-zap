@@ -5,23 +5,16 @@ import Link from "next/link";
 import {
   Bookmark,
   Check,
-  Clock3,
   LoaderCircle,
-  PlayCircle,
-  ShoppingCart,
-  Star,
-  Zap,
 } from "lucide-react";
 
 import type { MarketplaceCourse } from "@/lib/mocks/marketplace";
-import { CourseThumbnail } from "@/components/courses/marketplace/course-thumbnail";
 import {
   PriceDisplay,
   useCourseActions,
   useCourseHoverPreview,
   useMarketplaceState,
 } from "@/components/courses/marketplace/hover-preview";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 

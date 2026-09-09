@@ -7,7 +7,6 @@ import { Menu } from "lucide-react";
 import { m as motion } from "framer-motion";
 
 import { Logo } from "@/components/layout/logo";
-import { RankXpChip } from "@/components/gamification/rank-xp-chip";
 import { UserMenu } from "@/components/layout/user-menu";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";

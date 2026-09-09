@@ -4,10 +4,9 @@ import * as React from "react";
 import { formatShortMonthDay } from "@/lib/format";
 import Link from "next/link";
 import { useQuery } from "@tanstack/react-query";
-import { ArrowRight, BookOpen, CalendarDays, Flame, Target } from "lucide-react";
+import { ArrowRight, CalendarDays, Flame, Target } from "lucide-react";
 
 import type { MyLearningItem } from "@/lib/data/demo/content";
-import { searchCatalog } from "@/lib/data/demo/content";
 import { getProfile } from "@/lib/data/demo/profile";
 import { getDemoActivity, type DemoActivity } from "@/lib/demo/activity";
 import { subscribeDemoStorage } from "@/lib/demo/storage";
@@ -126,8 +125,10 @@ function RecentActivity({ activity }: { activity: DemoActivity[] }) {
   );
 }
 
-export function LearningInsights({ items }: { items: MyLearningItem[] }) {
+export function LearningInsights({ items: _items }: { items: MyLearningItem[] }) {
   const [activity, setActivity] = React.useState<DemoActivity[]>(() => getDemoActivity());
+  // We ignore `items` and use the raw query directly for the insights panel
+  // because insights often need historical data beyond just the active set.
   React.useEffect(() => subscribeDemoStorage(() => setActivity(getDemoActivity())), []);
   return <div className="mt-10 space-y-10"><div className="grid gap-4 md:grid-cols-2"><WeeklyGoal activity={activity} /><RecentActivity activity={activity} /></div></div>;
 }

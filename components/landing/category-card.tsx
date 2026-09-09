@@ -1,7 +1,5 @@
 import type { LucideIcon } from "lucide-react";
-import { ArrowUpRight } from "lucide-react";
 
-import { cn } from "@/lib/utils";
 import { Spotlight } from "@/components/motion/spotlight";
 
 export interface CategoryCardProps {
@@ -13,7 +11,7 @@ export interface CategoryCardProps {
 }
 
 /** Catalog category row. The count is real; the visual treatment stays editorial. */
-export function CategoryCard({ name, count, icon: Icon, tone, onSelect }: CategoryCardProps) {
+export function CategoryCard({ name, count, icon: _Icon, tone: _tone, onSelect }: CategoryCardProps) {
   return (
     <Spotlight className="min-w-56 flex-1 rounded-2xl">
       <button

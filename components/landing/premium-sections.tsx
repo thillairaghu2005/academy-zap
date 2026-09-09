@@ -286,15 +286,6 @@ export function DetailedPricingSection({ standalone = false, headingAs: Heading 
 
         <div className="mt-10 grid gap-4 lg:grid-cols-3">
           {MARKETING_PLANS.map((plan) => {
-            const planInterval = yearly ? "yearly" : "monthly";
-            // Paid plans funnel through registration first; "next" returns the
-            // learner to their intended surface (billing / support) after signup.
-            const destination =
-              plan.name === "Pro"
-                ? "/checkout/billing?plan=pro&interval=${planInterval}"
-                : plan.name === "Teams"
-                  ? "/support/new"
-                  : "/dashboard";
             const href =
               plan.name === "Starter"
                 ? "/register"

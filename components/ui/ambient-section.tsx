@@ -1,9 +1,6 @@
 import * as React from "react";
 
 import { cn } from "@/lib/utils";
-import { AuroraBackdrop } from "@/components/ui/aurora-backdrop";
-import { GlowOrb } from "@/components/ui/glow-orb";
-import { NoiseOverlay } from "@/components/ui/noise-overlay";
 
 type AmbientSectionProps = React.ComponentProps<"section"> & {
   /** Signal strength of the signature aurora wash. */
@@ -19,8 +16,8 @@ type AmbientSectionProps = React.ComponentProps<"section"> & {
 export function AmbientSection({
   className,
   children,
-  tone = "subtle",
-  orb = false,
+  tone: _tone = "subtle",
+  orb: _orb = true,
   ...props
 }: AmbientSectionProps) {
   return (

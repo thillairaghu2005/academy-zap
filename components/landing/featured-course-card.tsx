@@ -14,7 +14,7 @@ export interface FeaturedCourseCardProps {
   index?: number;
 }
 
-export function FeaturedCourseCard({ course, visualClass, index }: FeaturedCourseCardProps) {
+export function FeaturedCourseCard({ course, visualClass, index: _index }: FeaturedCourseCardProps) {
   const price = course.price_cents === 0 ? "Free" : `₹${(course.price_cents / 100).toLocaleString("en-IN")}`;
 
   return (
