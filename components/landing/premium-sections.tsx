@@ -186,10 +186,15 @@ export function FaqSection() {
   return (
     <section className="bg-surface-1">
       <JsonLd data={jsonLd} />
-      <div className="mx-auto max-w-4xl px-5 py-16 sm:px-8 sm:py-20">
-        <div className="text-center"><p className="text-xs font-semibold uppercase tracking-[0.16em] text-muted-foreground">Questions, answered</p><h2 className="mt-3 font-display font-light text-3xl tracking-[-0.045em]">A clear start, without the fine print.</h2></div>
-        <div className="mt-9 divide-y divide-border rounded-xl border border-border bg-card">
-          {MARKETING_FAQ.map((item, index) => { const expanded = open === index; return <div key={item.question}><button type="button" aria-expanded={expanded} onClick={() => setOpen(expanded ? -1 : index)} className="flex min-h-14 w-full items-center justify-between gap-4 px-5 py-4 text-left text-sm font-semibold outline-none transition-colors hover:text-primary focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring sm:px-6"><span>{item.question}</span><ChevronDown className={cn("size-4 shrink-0 text-muted-foreground transition-transform", expanded && "rotate-180 text-primary")} /></button>{expanded ? <div className="px-5 pb-5 text-sm leading-6 text-muted-foreground sm:px-6">{item.answer}</div> : null}</div>; })}
+      <div className="mx-auto max-w-7xl px-5 py-16 sm:px-8 sm:py-20 lg:px-10">
+        <div className="grid gap-12 lg:grid-cols-[1fr_1.5fr] lg:gap-16 items-start">
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-[0.16em] text-muted-foreground">Questions, answered</p>
+            <h2 className="mt-3 font-display font-light text-3xl tracking-[-0.045em]">A clear start, without the fine print.</h2>
+          </div>
+          <div className="divide-y divide-border rounded-xl border border-border bg-card">
+            {MARKETING_FAQ.map((item, index) => { const expanded = open === index; return <div key={item.question}><button type="button" aria-expanded={expanded} onClick={() => setOpen(expanded ? -1 : index)} className="flex min-h-16 w-full items-center justify-between gap-4 px-6 py-5 text-left text-sm font-semibold outline-none transition-colors hover:text-primary focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring sm:px-8 sm:py-6"><span>{item.question}</span><ChevronDown className={cn("size-4 shrink-0 text-muted-foreground transition-transform", expanded && "rotate-180 text-primary")} /></button>{expanded ? <div className="px-6 pb-6 text-sm leading-6 text-muted-foreground sm:px-8 sm:pb-8">{item.answer}</div> : null}</div>; })}
+          </div>
         </div>
       </div>
     </section>
