@@ -187,22 +187,6 @@ function ProblemCard({ problem, index, solved }: { problem: Problem; index: numb
   );
 }
 
-function PathCard({ title, progress, total }: { title: string; progress: number; total: number; label?: string }) {
-  const percentage = Math.round((progress / total) * 100);
-  return (
-    <Card className="p-4 bg-surface-1 border-border/60 shadow-sm transition-all hover:border-primary/30 hover:shadow-md cursor-pointer group">
-      <div className="flex justify-between items-center mb-3">
-        <h4 className="font-semibold text-sm truncate pr-4 text-foreground group-hover:text-primary transition-colors">{title}</h4>
-        <span className="text-xs font-semibold text-muted-foreground shrink-0 bg-surface-2 px-2 py-0.5 rounded-full">{progress}/{total}</span>
-      </div>
-      <div className="h-1.5 w-full bg-surface-3 rounded-full overflow-hidden">
-        <div className="h-full bg-primary rounded-full transition-all" style={{ width: `${percentage}%` }} />
-      </div>
-      <p className="mt-2.5 text-[11px] text-muted-foreground uppercase tracking-wider font-semibold">{percentage}% complete</p>
-    </Card>
-  );
-}
-
 export function ProblemListClient() {
   const { user } = useSession();
   const [search, setSearch] = React.useState("");

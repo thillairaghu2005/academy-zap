@@ -8,11 +8,9 @@ import {
   ArrowRight,
   BookOpen,
   Check,
-  CheckCircle2,
   Clock3,
   Compass,
   Flame,
-  Layers3,
   Play,
   Trophy,
 } from "lucide-react";
@@ -50,34 +48,6 @@ function remainingTime(item: MyLearningItem): string {
   if (wholeHours === 0) return `${Math.max(1, minutes)} min left`;
   if (minutes === 0) return `${wholeHours}h left`;
   return `${wholeHours}h ${minutes}m left`;
-}
-
-function statusFor(item: MyLearningItem): {
-  label: string;
-  className: string;
-  icon: typeof CheckCircle2;
-} {
-  if (item.enrollment.status === "completed") {
-    return {
-      label: "Completed",
-      className: "bg-success/10 text-success-strong",
-      icon: CheckCircle2,
-    };
-  }
-
-  if (item.enrollment.progress_pct > 0) {
-    return {
-      label: "In progress",
-      className: "bg-primary/10 text-primary",
-      icon: Play,
-    };
-  }
-
-  return {
-    label: "Not started",
-    className: "bg-secondary text-muted-foreground",
-    icon: Layers3,
-  };
 }
 
 function StatsRow({ items }: { items: MyLearningItem[] }) {
@@ -214,74 +184,6 @@ function ContinueLearning({ item }: { item: MyLearningItem }) {
   );
 }
 
-function LearningCard({ item }: { item: MyLearningItem }) {
-  const { enrollment, course } = item;
-  const progress = Math.round(enrollment.progress_pct);
-  const status = statusFor(item);
-  const StatusIcon = status.icon;
-  const href = enrollment.status === "completed" ? `/courses/${course.id}` : `/courses/${course.id}/learn`;
-
-  return (
-    <Link
-      href={href}
-      className="group block outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-    >
-      <Card className="h-full rounded-xl border-border/80 shadow-none transition-[transform,border-color,box-shadow] duration-200 group-hover:-translate-y-0.5 group-hover:border-primary/30 group-hover:shadow-[0_12px_30px_-22px_rgba(31,41,55,0.65)]">
-        <div className="flex min-h-[108px] items-center gap-3.5 p-4 sm:gap-4 sm:p-4.5">
-          <div
-            className="relative size-12 shrink-0 overflow-hidden rounded-lg shadow-sm transition-transform duration-300 group-hover:scale-[1.04] sm:size-14"
-            style={{ background: coverGradient(hueForId(course.id)) }}
-          >
-            <div className="absolute inset-0 bg-primary-light/50" />
-            <span className="absolute bottom-1 left-1.5 right-1.5 truncate text-[9px] font-semibold uppercase tracking-wide text-primary">
-              {course.category}
-            </span>
-          </div>
-
-          <div className="min-w-0 flex-1 self-stretch py-0.5">
-            <div className="flex items-start justify-between gap-2">
-              <div className="min-w-0">
-                <h3 className="truncate font-display text-sm font-semibold tracking-[-0.01em] sm:text-[15px]">
-                  {course.title}
-                </h3>
-                <p className="mt-1 truncate text-xs text-muted-foreground">
-                  {course.instructor_name}
-                </p>
-              </div>
-              <span className="grid size-7 shrink-0 place-items-center rounded-full text-muted-foreground transition-[background-color,color] duration-200 group-hover:bg-primary/10 group-hover:text-primary">
-                <ArrowRight className="size-4 transition-transform duration-200 group-hover:translate-x-0.5" />
-              </span>
-            </div>
-
-            <div className="mt-3 flex items-center gap-2.5">
-              <Progress
-                value={progress}
-                className="h-1.5 bg-secondary"
-                indicatorClassName={cn(
-                  enrollment.status === "completed" ? "bg-success" : "bg-primary",
-                  "transition-[width] duration-700",
-                )}
-              />
-              <span className="shrink-0 text-xs font-medium tabular-nums text-muted-foreground">
-                {progress}%
-              </span>
-            </div>
-
-            <div className="mt-2 flex items-center justify-between gap-2">
-              <span className={cn("inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-semibold", status.className)}>
-                <StatusIcon className="size-3" />
-                {status.label}
-              </span>
-              <span className="hidden text-[11px] text-muted-foreground sm:block">
-                {course.estimated_hours}h course
-              </span>
-            </div>
-          </div>
-        </div>
-      </Card>
-    </Link>
-  );
-}
 
 function LearningJourney({ items }: { items: MyLearningItem[] }) {
   const hasStarted = items.some((item) => item.enrollment.progress_pct > 0);
@@ -382,9 +284,6 @@ export function MyLearning() {
     enabled: Boolean(userId),
   });
 
-  const activeCount =
-    data?.filter((item) => item.enrollment.status !== "completed").length ?? 0;
-
   return (
     <section className="mt-16 sm:mt-20">
       <div className="flex flex-wrap items-end justify-between gap-4">
@@ -461,7 +360,6 @@ export function MyLearning() {
                     item.enrollment.progress_pct > 0,
                 ) ?? data.find((item) => item.enrollment.status !== "completed") ?? data[0];
               if (!featured) return null;
-              const secondary = data.filter((item) => item !== featured);
 
                return (
                  <div className="mt-6 space-y-10">

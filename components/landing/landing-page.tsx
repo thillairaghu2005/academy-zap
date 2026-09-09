@@ -1,14 +1,6 @@
 "use client";
 
 import * as React from "react";
-import {
-  Atom,
-  Braces,
-  CloudCog,
-  GlobeLock,
-  Network,
-  Radar,
-} from "lucide-react";
 
 import type { CourseSummary } from "@/lib/contracts/content";
 import { FeaturedCourseCard } from "@/components/landing/featured-course-card";
@@ -19,9 +11,6 @@ import { MarketingFooter } from "@/components/landing/marketing-footer";
 import { MarketingNav } from "@/components/landing/marketing-nav";
 import { PersonalizedHero } from "@/components/landing/personalized-hero";
 import { useSession } from "@/components/providers/session-provider";
-import { SectionTitle } from "@/components/landing/section-title";
-import { SocialProof } from "@/components/landing/social-proof";
-import { Marquee } from "@/components/motion/marquee";
 import { AmbientSection } from "@/components/ui/ambient-section";
 import {
   CaseStudySection,
@@ -33,8 +22,6 @@ import { MobileCtaBar } from "@/components/shared/mobile-cta-bar";
 import {
   FaqSection,
   FinalCta,
-  LiveLearningTicker,
-  MarketingProofBar,
   PricingSection,
   TestimonialWall,
 } from "@/components/landing/premium-sections";
