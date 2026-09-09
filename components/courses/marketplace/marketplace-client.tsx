@@ -339,24 +339,7 @@ function MarketplaceHero() {
           </p>
         </div>
 
-        {/* Cover collage */}
-        <div className="relative hidden h-[280px] w-[320px] shrink-0 lg:block" aria-hidden="true">
-          <div className="absolute left-0 top-6 w-[220px] rotate-[-8deg] overflow-hidden rounded-xl border border-border shadow-[0_18px_44px_rgb(17_24_39_/_0.22)] transition-transform duration-300 ease-out hover:rotate-[-4deg]">
-            <div className="aspect-video">
-              <CourseThumbnail courseId={HERO_COVER_IDS[1]!} category="Cybersecurity" />
-            </div>
-          </div>
-          <div className="absolute right-0 top-0 w-[220px] rotate-[6deg] overflow-hidden rounded-xl border border-border shadow-[0_18px_44px_rgb(17_24_39_/_0.22)] transition-transform duration-300 ease-out hover:rotate-[2deg]">
-            <div className="aspect-video">
-              <CourseThumbnail courseId={HERO_COVER_IDS[2]!} category="Web Development" />
-            </div>
-          </div>
-          <div className="absolute bottom-0 left-16 w-[240px] rotate-[-2deg] overflow-hidden rounded-xl border-2 border-primary/40 shadow-[0_24px_56px_rgb(17_24_39_/_0.28)] ring-4 ring-primary/10 transition-transform duration-300 ease-out hover:rotate-0">
-            <div className="aspect-video">
-              <CourseThumbnail courseId={HERO_COVER_IDS[0]!} category="Cybersecurity" />
-            </div>
-          </div>
-        </div>
+
       </div>
     </section>
   );
