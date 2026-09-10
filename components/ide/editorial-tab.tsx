@@ -6,7 +6,6 @@ import { getEditorial } from "@/lib/data/judge-facade";
 import { MarkdownRenderer } from "./statement/MarkdownRenderer";
 import { SkeletonLines } from "@/components/shared/skeletons";
 import { ErrorState } from "@/components/shared/error-state";
-import { EmptyState } from "@/components/shared/empty-state";
 
 export function EditorialTab({ problemId }: { problemId: string }) {
   const { data, isLoading, isError, refetch } = useQuery({

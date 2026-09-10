@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { Lightbulb, Unlock, LoaderCircle, Zap } from "lucide-react";
+import { Lightbulb, Unlock, LoaderCircle } from "lucide-react";
 import { requestHint } from "@/lib/data/demo/lab";
 import { useSession } from "@/components/providers/session-provider";
 import { Card } from "@/components/ui/card";
