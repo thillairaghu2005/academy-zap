@@ -14,7 +14,7 @@ acceptance tier does.
 """
 
 import uuid
-from collections.abc import AsyncGenerator
+from collections.abc import AsyncGenerator, Callable
 from typing import TYPE_CHECKING
 
 import pytest
@@ -160,7 +160,7 @@ async def _run_worker_once(
     postgres_test_db: str,
     redis: AsyncRedis,
     monkeypatch: pytest.MonkeyPatch,
-    sandbox_factory=None,
+    sandbox_factory: Callable[[], object] | None = None,
 ) -> int:
     from contextlib import asynccontextmanager
 
@@ -189,7 +189,7 @@ async def _run_worker_once(
 
 def _ok_sandbox() -> object:
     class _OkSandbox:
-        async def run(self, *args, **kwargs):
+        async def run(self, *args: object, **kwargs: object) -> dict[str, object]:
             return {
                 "stdout": "hi\n",
                 "stderr": "",
@@ -203,7 +203,7 @@ def _ok_sandbox() -> object:
 
 def _failing_program_sandbox() -> object:
     class _FailingSandbox:
-        async def run(self, *args, **kwargs):
+        async def run(self, *args: object, **kwargs: object) -> dict[str, object]:
             return {
                 "stdout": "",
                 "stderr": "NameError: name 'x' is not defined\n",
@@ -249,7 +249,9 @@ async def test_execute_to_worker_to_succeeded_result(
         finally:
             await engine.dispose()
 
-        pel = await real_redis.xpending(LABS_QUEUE_STREAM, "labs_worker_group")
+        pel = await real_redis.xpending(  # type: ignore[no-untyped-call]
+            LABS_QUEUE_STREAM, "labs_worker_group"
+        )
         assert pel["pending"] == 0
     finally:
         await _cleanup_rows(postgres_test_db, lab_id=lab_id, progress_id=progress_id)
@@ -323,10 +325,12 @@ async def test_permanent_failure_dlqs_and_marks_error(
 
         import labs.worker.queue as queue_module
 
-        monkeypatch.setattr(queue_module.settings, "LABS_MAX_RETRIES", 0)
+        monkeypatch.setattr(
+            queue_module.settings, "LABS_MAX_RETRIES", 0  # type: ignore[attr-defined]
+        )
 
         class _ExplodingSandbox:
-            async def run(self, *args, **kwargs):
+            async def run(self, *args: object, **kwargs: object) -> dict[str, object]:
                 raise RuntimeError("kubectl: pod network not ready")
 
         await _run_worker_once(
