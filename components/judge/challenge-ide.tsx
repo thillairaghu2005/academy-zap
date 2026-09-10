@@ -22,9 +22,7 @@ const MOCK_PROBLEM: Problem = {
 Output: [5,4,3,2,1]</code></pre>
   `,
   constraints: ["The number of nodes in the list is the range [0, 5000].", "-5000 <= Node.val <= 5000"],
-  starter_code: {
-    python: "class Solution:\n    def reverseList(self, head: ListNode) -> ListNode:\n        pass\n"
-  },
+  starter_code: "class Solution:\n    def reverseList(self, head: ListNode) -> ListNode:\n        pass\n",
   sample_cases: [
     { input: "[1,2,3,4,5]", output: "[5,4,3,2,1]" }
   ],
