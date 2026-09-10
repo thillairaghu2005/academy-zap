@@ -211,31 +211,29 @@ function GamifiedBadges({ achievements, certificates }: { achievements: string[]
   }
 
   return (
-    <Card className="overflow-hidden border-0 bg-gradient-to-br from-indigo-500/10 via-purple-500/10 to-pink-500/10 shadow-inner">
+    <Card className="overflow-hidden border border-border shadow-sm">
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
-          <Sparkles className="size-5 text-purple-500" />
+          <Sparkles className="size-5 text-primary" />
           <span>Trophies & Badges</span>
         </CardTitle>
       </CardHeader>
       <CardContent>
         <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
           {certificates.map((cert) => (
-            <div key={cert} className="group relative flex flex-col items-center justify-center gap-3 rounded-2xl border border-white/20 bg-white/40 p-4 shadow-sm backdrop-blur-md transition-all hover:-translate-y-1 hover:shadow-md dark:border-white/10 dark:bg-black/40">
-              <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-yellow-400/20 to-orange-500/20 opacity-0 transition-opacity group-hover:opacity-100" />
-              <div className="relative flex size-14 items-center justify-center rounded-full bg-gradient-to-br from-yellow-400 to-orange-500 text-white shadow-lg">
-                <Medal className="size-7" />
+            <div key={cert} className="group flex flex-col items-center justify-center gap-3 rounded-xl border border-border bg-surface-1 p-4 transition-all hover:border-primary/30 hover:bg-accent hover:shadow-sm">
+              <div className="flex size-12 items-center justify-center rounded-full bg-primary/10 text-primary transition-colors group-hover:bg-primary group-hover:text-primary-foreground">
+                <Medal className="size-6" />
               </div>
-              <p className="relative text-center text-xs font-semibold capitalize text-foreground">{cert.replace(/-/g, " ")}</p>
+              <p className="text-center text-xs font-medium capitalize text-foreground">{cert.replace(/-/g, " ")}</p>
             </div>
           ))}
           {achievements.map((ach) => (
-            <div key={ach} className="group relative flex flex-col items-center justify-center gap-3 rounded-2xl border border-white/20 bg-white/40 p-4 shadow-sm backdrop-blur-md transition-all hover:-translate-y-1 hover:shadow-md dark:border-white/10 dark:bg-black/40">
-              <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-indigo-400/20 to-purple-500/20 opacity-0 transition-opacity group-hover:opacity-100" />
-              <div className="relative flex size-14 items-center justify-center rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 text-white shadow-lg">
-                <Trophy className="size-7" />
+            <div key={ach} className="group flex flex-col items-center justify-center gap-3 rounded-xl border border-border bg-surface-1 p-4 transition-all hover:border-primary/30 hover:bg-accent hover:shadow-sm">
+              <div className="flex size-12 items-center justify-center rounded-full bg-primary/10 text-primary transition-colors group-hover:bg-primary group-hover:text-primary-foreground">
+                <Trophy className="size-6" />
               </div>
-              <p className="relative text-center text-xs font-semibold capitalize text-foreground">{ach.replace(/-/g, " ")}</p>
+              <p className="text-center text-xs font-medium capitalize text-foreground">{ach.replace(/-/g, " ")}</p>
             </div>
           ))}
         </div>
