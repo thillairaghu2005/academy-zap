@@ -5,7 +5,6 @@ import { CalendarClock, Users, Database, Code, MessageSquare, Video, ArrowRight,
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { PageContainer } from "@/components/shared/page-container";
-import { Badge } from "@/components/ui/badge";
 
 const MOCK_INTERVIEWS = [
   {
