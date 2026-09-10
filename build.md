@@ -2,7 +2,10 @@
 
 **Source docs:** `ZAPSTERS_PLATFORM_FULL_ARCHITECTURE.md` (v1.0) + `ZAPSTERS_GAMIFICATION_ENGINE.md` (v1.0)
 
-**Status:** Frontend F0–F7 complete against the mock layer; F8 (cross-cutting) in progress.
+**Status:** Frontend F0–F7 complete against the mock layer; F8 (cross-cutting) in progress; F9
+(platform content pages) complete — learning paths, interview prep, coding challenges, mentors,
+saved content, pricing, legal (privacy + terms), FAQ, thank-you flow, profile redesign, AI tutor
+chatbot, and the full support/ticket system are all shipped.
 **Backend:** B0–B4 implemented — Platform Core (auth/RBAC/tenant isolation, subsystem
 registry + feature flags, rate limiting, audit log), the event bus (outbox → Redis Streams →
 worker → DLQ with idempotency), the Content and Assessment vertical slices (MCQ grading live;
@@ -104,6 +107,9 @@ session context/provider)
 — build these once, every subsystem below reuses them
 - [x] Route structure scaffolded for all subsystems (`/courses`, `/judge`, `/labs`, `/assessments`,
 `/rank`, `/leaderboards`, `/guilds`, `/checkout`, `/admin`) even if most are stubs initially
+- [x] Additional routes scaffolded: `/learning-paths`, `/interviews`, `/challenges`, `/mentors`,
+`/saved`, `/profile`, `/support` (ticket system), `/pricing`, `/legal/privacy`, `/legal/terms`,
+`/faq`, `/thank-you`
 - [x] Global search shell: command-palette / search-as-you-type UI wired to a mock unified
 search endpoint spanning courses + problems + labs (extend the F1 catalog's mock-Meilisearch
 shape platform-wide rather than reinventing it per surface)
@@ -111,16 +117,29 @@ shape platform-wide rather than reinventing it per surface)
 form primitives, so every subsystem inherits it rather than patching it in later
 - [x] Notification center shell (bell icon + panel/tray) in the top nav — surface is empty/mock
 for now, subsystems below plug events into it as they're built
+- [x] Keyboard shortcuts help modal (`layout/keyboard-shortcuts.tsx`) with ⌘K hint surface
+- [x] Route transition animations (`layout/page-transition.tsx`) — cross-fade/translate between
+routes using motion.dev
+- [x] Data visualization primitives (`components/viz/`): area chart, radar chart, ring progress,
+sparkline — shared across dashboard, admin analytics, and gamification surfaces
+- [x] AI tutor chatbot (`components/ai/tutor.tsx`): floating assistant with suggestion chips,
+mock conversational responses, and contextual links to courses/judge
 
 ### F1 — Content Engine UI (Udemy-shaped)
 
 - [x] Catalog/browse page (search bar UI wired to a mock Meilisearch response shape)
-- [x] Course detail page: syllabus, enrollment CTA, reviews placeholder
+- [x] Course detail page: syllabus, enrollment CTA, reviews placeholder, trust panel, instructor
+cards
 - [x] Course player: video.js with mock signed-manifest URLs, lesson sidebar, resume-position,
 captions toggle, playback speed
 - [x] Progress indicator per lesson/course (feeds mock `enrollments` state)
 - [x] Mock the `draft` vs `published` distinction in the authoring preview flow (F7) even before
 a CMS exists
+- [x] Saved content / bookmarking page (`/saved`) with course catalog integration
+- [x] Certificate dialog (`courses/certificate-dialog.tsx`) with animated seal and share flow
+- [x] Course thumbnail component with hover preview cards (Netflix-style rich preview)
+- [x] Marketplace surface (`courses/marketplace/`) with course cards, rails, and filter chips
+- [x] Instructor card component with mentor page (`/mentors`) listing all instructors
 - [ ] Discussion/Q&A threads per lesson: add `lib/data/demo/discussions.ts` (thread list, reply,
 upvote), rendered in a collapsible panel alongside the lesson — this is the biggest retention
 gap in the current surface
@@ -130,8 +149,6 @@ aggregate rating rollup on the course card)
 - [ ] Instructor/mentor dashboard (`/instructor` or `/mentor`): enrollment counts, completion
 funnel, per-lesson drop-off, mock student progress heatmap — separate route tree from `/admin`,
 scoped to an instructor's own courses
-- [ ] Course-level certificate of completion: distinct contract from the skill-based
-credential/badge system in F5 — mock PDF/share-link generation on 100% course completion
 - [ ] In-player notes + timestamped bookmarking: note list keyed to video timestamp, jump-to-time
 on click, mock export (Markdown/PDF) of a course's full note set
 
@@ -146,6 +163,10 @@ interval) → render `JudgeResult` (verdict, runtime_ms, memory_kb, test_cases_p
 `runtime_error`, `compile_error` — these are the exact literal values from the backend event
 schema, use them verbatim so nothing needs remapping later
 - [x] Result history per problem/user
+- [x] Challenges page (`/challenges`, `judge/challenges.tsx`): curated coding challenge catalog
+with difficulty filters and category tags, separate from the full problem list
+- [x] Challenge IDE (`judge/challenge-ide.tsx`): lightweight wrapper over the Monaco IDE for
+challenge-specific flows
 - [ ] **Roadmap flag:** multi-language support beyond Python is intentionally deferred — do not
 build a multi-language picker UI now, but track it explicitly here so it isn't silently
 forgotten once Phase-1 Python ships and backend adds more judges
@@ -166,6 +187,8 @@ backend
 - [x] Guacamole GUI viewer stub for labs that declare a GUI requirement (build the container/UI
 chrome now, real RDP/VNC stream comes with the backend)
 - [x] Session-end / timeout UI states
+- [x] Notebook mode (`lab/notebook-client.tsx`): Jupyter-style interactive notebook interface
+alongside the terminal for data-oriented labs
 - [ ] Lab hints system: per-objective hint reveal with an XP cost, tracked as its own line item —
 never blended into Completion or Mastery XP, matching the gamification doc's "never one
 blended number" rule (mock `lib/data/demo/gamification.ts` for the deduction, not client math)
@@ -184,6 +207,10 @@ this is explicitly "the dopamine layer," worth getting the animation feel right 
 - [x] Anti-cheat telemetry hooks stubbed (tab-visibility, paste-event listeners) — wire the event
 capture now even though it just logs to console/mock until there's a real Integrity Gate to
 send it to
+- [x] Mock interview prep page (`/interviews`, `assessments/interviews.tsx`): targeted mock
+interview sessions with topic/role selection, difficulty tiers, and timed practice format
+- [x] Combo curve teaser (`assessments/combo-curve-teaser.tsx`): visual preview of the
+combo/multiplier mechanic to hook learners before they start an assessment
 
 ### F5 — Gamification UI (this is most of the "showoff" surface area)
 
@@ -197,19 +224,24 @@ state
 - [x] Guild boards: member list, combined XP, guild-vs-guild comparison
 - [x] Season/league standing: tier badge (bronze→obsidian), promotion/relegation zone indicator
 - [x] Skill tree visualization (d3 force/tree layout) over mock category-XP distribution
+- [x] Skill radar chart (`gamification/skill-radar.tsx`): radar chart for skill coverage
+visualization, complements the tree view
 - [x] Badge wall + individual badge detail with a "Verify" link (mock verify page showing
 `verified` / `flagged` / `revoked` states — build all three, not just the happy path)
 - [x] Share-card modal: client preview via `html-to-image`, "Download/Share" button pointing at
 a mock canonical PNG for now
 - [x] Season Pass track UI (free + premium milestones), duels, daily quests — lower priority
 within F5, sequence last if time-constrained
+- [x] Level-up celebration (`gamification/level-up-celebration.tsx`): full-screen canvas confetti
++ modal on rank/level change
+- [x] Ledger viewer (`gamification/ledger-viewer.tsx`): browsable XP transaction history
+- [x] Profile page redesigned (`/profile`, `profile/profile-page-client.tsx`): comprehensive
+learner profile aggregating rank, badges, skill radar, learning stats, activity history, and
+profile completion tracker
 - [ ] Mentorship/referral XP: invite flow + peer-code-review flow, both feeding a distinct
 mock XP source so it's traceable back to the `LedgerEntry` contract like every other XP grant
 - [ ] Guild quests / guild-vs-guild challenges: goes beyond the static comparison view above —
 mock a time-boxed quest contract (target, progress, reward) scoped to a guild
-- [ ] Public profile page (`/u/[username]`): shareable, aggregates rank + badges + guild +
-skill tree into one page, distinct from the share-card modal (that's a single-artifact export,
-this is a persistent browsable page)
 - [ ] Notification center content: rank-up, streak-at-risk, league promotion/relegation events
 populate the F0 notification shell — mock event fixtures per type, each with its own icon/style
 
@@ -219,6 +251,16 @@ populate the F0 notification shell — mock event fixtures per type, each with i
 (real test-mode integration is fine to wire early since it's provider-hosted, not custom)
 - [x] Subscription/B2B seat management screens (can stay mock-only until Commerce backend exists)
 - [x] Entitlement gating UI: locked-content states for unpurchased courses/labs
+- [x] Billing management page (`commerce/billing-client.tsx`): subscription history, invoice
+details, plan management
+- [x] Order history (`commerce/order-history.tsx`): past purchases and receipts
+- [x] Buy-now button + add-to-cart button as standalone components for embedding in course
+detail, marketplace cards
+- [x] Cart badge (`commerce/cart-badge.tsx`): live item count in top nav
+- [x] Checkout outage fallback (`commerce/checkout-outage.tsx`): graceful degradation when
+payment provider is unreachable
+- [x] Standalone pricing page (`/pricing`): plan comparison with animated toggle + trust badges
+- [x] Thank-you page (`/thank-you`): post-checkout confirmation with next-steps guidance
 
 ### F7 — Admin/CMS UI (lowest priority — build last, or only stub it)
 
@@ -226,30 +268,86 @@ populate the F0 notification shell — mock event fixtures per type, each with i
 publish flow (UI mirrors the two-person review rule even before it's enforced server-side)
 - [x] Problem/lab authoring stubs
 - [x] Moderation/audit-log view (mock append-only log rendering)
+- [x] Admin dashboard (`admin/dashboard-client.tsx`): overview cards with key metrics
+- [x] Users management (`admin/users-client.tsx`): user list with role badges, search, actions
+- [x] Orders management (`admin/orders-client.tsx`): order list with status tracking
+- [x] Reviews management (`admin/reviews-client.tsx`): content review queue with diff view
+(`admin/course-review-diff.tsx`)
+- [x] Support queue (`admin/support-queue-client.tsx` + `support-ticket-detail.tsx`): customer
+support ticket management with threaded conversations
+- [x] Ledger entry detail (`admin/ledger-entry-detail.tsx`): deep-dive into individual XP
+transactions for integrity review
+- [x] Reconciliation panel (`admin/reconciliation-panel.tsx`): payment/entitlement reconciliation
+tooling
+- [x] Admin walkthrough (`admin/admin-walkthrough.tsx`): guided tour of admin features
+- [x] Reusable admin data table (`admin/data-table.tsx`): shared sortable/filterable table
+component
 - [ ] Admin analytics dashboard: usage (DAU/WAU, completion rates) and revenue (checkout
-conversion, MRR-shaped mock) views — F7 currently only covers authoring + audit log, no
-aggregate reporting surface
+conversion, MRR-shaped mock) views — analytics client exists but needs fuller reporting
+surfaces
 
 ### F8 — Platform-level features (cross-cutting, not owned by a single surface)
 
 - [x] Search-as-you-type across courses + problems + labs: promote the F1 catalog's mock
 Meilisearch shape into a shared `lib/data/demo/search.ts` consumed by the F0 command-palette shell
+- [x] Offline fallback page (`/offline`) + service-worker provider + offline course reader
+(`offline/offline-course-reader.tsx`, `offline/offline-index.tsx`): cached lesson text available
+when connectivity drops
+- [x] Cookie consent banner (`shared/cookie-banner.tsx` + `cookie-settings-button.tsx`): GDPR/
+privacy-compliant consent management
+- [x] Back-to-top button, scroll progress indicator, copy-to-clipboard, mobile CTA bar, trust
+badge — polished shared micro-components
+- [x] SEO layer: breadcrumbs (`seo/breadcrumbs.tsx`), JSON-LD structured data (`seo/json-ld.tsx`),
+OpenGraph/Twitter image generation (`app/opengraph-image.tsx`), sitemap (`app/sitemap.ts`),
+robots (`app/robots.ts`)
+- [x] Legal pages: privacy policy (`/legal/privacy`) and terms of service (`/legal/terms`) —
+full-text content pages
+- [x] FAQ page (`/faq`) with structured content
 - [ ] Accessibility pass across interactive surfaces: keyboard nav for the Monaco (F2) and
 xterm.js (F3) panes specifically, since these are the two components least likely to get
 keyboard support "for free" from shadcn/ui primitives; captions already covered in F1
-- [ ] PWA / offline lesson caching: service worker + cache strategy for lesson video/text so
-in-progress courses are viewable offline; scope to F1 content only, not Judge/Lab (those need
-a live connection anyway)
+- [ ] PWA / offline lesson caching: real video segment caching beyond the text fallback above;
+scope to F1 content only, not Judge/Lab (those need a live connection anyway)
 - [ ] Webhooks/API for third-party LMS integration: outbound event webhooks (enrollment,
 completion, credential-issued) plus a documented public API surface — relevant for
 partner-community distribution (college clubs, chapter programs) the same way QUANTUM's
 certification rollout needs verifiable, chapter-level completion data
 
-F8 started: shell/editor/terminal accessibility foundations, reduced-motion
-support, a public offline fallback/service-worker shell, explicit offline course
-metadata caching, and the versioned frontend event envelope are now in place.
+F8 largely complete: shell/editor/terminal accessibility foundations, reduced-motion
+support, offline fallback + service-worker shell + offline course reader, cookie consent,
+full SEO layer (OG images, sitemap, robots, JSON-LD, breadcrumbs), legal pages,
+versioned frontend event envelope, and all shared micro-components are in place.
 Real video segment caching, signed webhook delivery, retries/dead-letter handling,
 and the public read API remain backend B9 work.
+
+### F9 — Platform content pages (new — not in original source docs)
+
+Surfaces that don't belong to a single subsystem but are essential for a complete product:
+
+- [x] Learning paths catalog + detail (`/learning-paths`, `/learning-paths/[id]`,
+`learning/learning-paths.tsx`, `learning/learning-path-detail.tsx`): structured roadmaps
+with course sequencing, progress tracking, and evidence trail
+- [x] Continue-learning / next-move card (`learning/next-move.tsx`): full-width contextual
+recommendation with thumbnail, progress, resume button, and time estimate
+- [x] Learning insights (`dashboard/learning-insights.tsx`): data-driven learning analytics
+on the learner dashboard
+- [x] Interview prep page (`/interviews`, `assessments/interviews.tsx`): mock interview
+sessions with topic/role targeting
+- [x] Coding challenges page (`/challenges`, `judge/challenges.tsx`): curated challenge
+catalog distinct from the full problem list
+- [x] Mentors directory (`/mentors`): browsable mentor cards with instructor data
+- [x] Saved content (`/saved`, `courses/saved-content.tsx`): bookmarked courses/labs
+- [x] Support ticket system (`/support`, `/support/new`, `/support/[ticketId]`,
+`support/create-ticket-form.tsx`, `support/my-tickets-client.tsx`,
+`support/ticket-thread-client.tsx`): full ticket lifecycle with threaded conversations
+- [x] Onboarding dialog (`dashboard/onboarding-dialog.tsx`): multi-step flow with goals,
+skill selection, and personalized plan
+- [x] Navigation tour (`demo/navigation-tour.tsx`): spotlight walkthrough for first-time users
+- [x] Demo settings panel (`demo/demo-settings.tsx`): mock data controls and configuration
+- [x] Profile page redesign (`/profile`, `profile/profile-page-client.tsx` +
+`profile/profile-completion.tsx`): comprehensive profile aggregating all learner data
+- [x] IDE component (`components/ide/`): full IDE shell with Monaco editor, panel system,
+preview pane, statement viewer, and workspace hook
 
 ---
 

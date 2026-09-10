@@ -106,7 +106,7 @@ function NotificationRow({
           aria-label={`Mark ${notification.title} as read`}
           onClick={() => onRead(notification.id)}
         >
-          <Check />
+          <Check className="size-4" />
         </Button>
       ) : null}
     </li>
@@ -231,11 +231,11 @@ export function NotificationCenter() {
               />
               <div className="border-b border-border px-4 pb-3 pt-2.5">
                 <div className="flex items-center justify-between gap-3">
-                  <div>
-                    <h2 id="notification-panel-title" className="font-display text-base font-semibold">Notifications</h2>
-                    <p className="mt-0.5 text-xs text-muted-foreground">Updates from your learning journey.</p>
+                  <div className="min-w-0 flex-1">
+                    <h2 id="notification-panel-title" className="truncate font-display text-base font-semibold">Notifications</h2>
+                    <p className="truncate mt-0.5 text-xs text-muted-foreground">Updates from your learning journey.</p>
                   </div>
-                  {unreadCount ? <Button variant="ghost" size="sm" className="h-8 shrink-0 px-2 text-xs" onClick={() => markAllRead.mutate()} disabled={markAllRead.isPending}><Check /> Mark all as read</Button> : null}
+                  {unreadCount ? <Button variant="ghost" size="sm" className="h-8 shrink-0 px-2 text-xs" onClick={() => markAllRead.mutate()} disabled={markAllRead.isPending}><Check className="mr-1.5 size-3.5" /> Mark all as read</Button> : null}
                 </div>
               </div>
             </div>

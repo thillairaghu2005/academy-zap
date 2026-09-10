@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
 import {
@@ -12,6 +13,7 @@ import {
   Search,
   SearchX,
   Sparkles,
+  ShieldCheck,
 } from "lucide-react";
 
 import type { MarketplaceCourse } from "@/lib/mocks/marketplace";
@@ -256,14 +258,6 @@ export function MarketplaceClient() {
 /* ------------------------------------------------------------------ */
 
 function MarketplaceHero() {
-  const router = useRouter();
-  const [query, setQuery] = React.useState("");
-
-  const submit = (event: React.FormEvent) => {
-    event.preventDefault();
-    const trimmed = query.trim();
-    router.replace(trimmed ? `/courses?q=${encodeURIComponent(trimmed)}` : "/courses");
-  };
 
   return (
     <section className="relative overflow-hidden rounded-3xl border border-border bg-card">
@@ -271,45 +265,21 @@ function MarketplaceHero() {
       <div className="absolute inset-0 aurora opacity-70" aria-hidden="true" />
       <div className="absolute inset-0 bg-grid-dark opacity-40 [mask-image:radial-gradient(ellipse_at_center,black,transparent_75%)]" aria-hidden="true" />
 
-      <div className="relative grid gap-8 p-7 sm:p-10 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center lg:p-12">
-        <div className="max-w-2xl">
-          <Badge variant="outline" className="gap-1.5 rounded-full bg-background/70 px-3 py-1 backdrop-blur">
-            <Sparkles className="size-3.5 text-primary" aria-hidden="true" />
-            New · The Zapsters course marketplace
-          </Badge>
+      <div className="relative grid gap-8 p-7 sm:p-10 lg:grid-cols-[minmax(0,1fr)_400px] lg:items-center lg:p-12 xl:grid-cols-[minmax(0,1fr)_500px]">
+        <div className="max-w-2xl relative z-10 flex flex-col gap-8 py-2">
+          <div>
+            <h1 className="font-display text-h1 font-semibold leading-[1.05] tracking-tight text-foreground">
+              Go beyond courses. <br className="hidden sm:inline" />
+              <span className="bg-gradient-to-r from-primary via-primary-deep to-primary bg-[length:200%_auto] bg-clip-text text-transparent animate-gradient-x">
+                Build expertise.
+              </span>
+            </h1>
+            <p className="mt-4 max-w-xl text-body leading-relaxed text-muted-foreground">
+              Master in-demand skills with expert-led learning, hands-on labs, and real-world challenges built to prepare you for what&apos;s next.
+            </p>
+          </div>
 
-          <h1 className="mt-4 font-display text-h1 font-semibold leading-[1.05] tracking-tight text-foreground">
-            Learn the skills that{" "}
-            <span className="bg-gradient-to-r from-primary to-primary-deep bg-clip-text text-transparent">
-              break barriers
-            </span>
-            .
-          </h1>
-          <p className="mt-3 max-w-xl text-body leading-relaxed text-muted-foreground">
-            {MARKETPLACE_COURSES.length}+ expert-led courses across security, engineering and AI —
-            with hands-on labs, real projects and lifetime access.
-          </p>
-
-          <form onSubmit={submit} role="search" className="mt-6 flex max-w-xl gap-2">
-            <div className="relative flex-1">
-              <Search
-                className="pointer-events-none absolute left-3.5 top-1/2 size-4.5 -translate-y-1/2 text-muted-foreground"
-                aria-hidden="true"
-              />
-              <Input
-                value={query}
-                onChange={(event) => setQuery(event.target.value)}
-                placeholder='Search 40+ courses — try "wireshark" or "kubernetes"'
-                aria-label="Search courses"
-                className="h-12 rounded-xl bg-background/80 pl-10 text-base shadow-sm backdrop-blur"
-              />
-            </div>
-            <Button type="submit" size="lg" className="h-12 rounded-xl px-6">
-              Search
-            </Button>
-          </form>
-
-          <div className="mt-4 flex flex-wrap items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2">
             <span className="text-caption font-medium uppercase tracking-[0.14em] text-muted-foreground">
               Popular:
             </span>
@@ -320,18 +290,32 @@ function MarketplaceHero() {
             ))}
           </div>
 
-          <p className="mt-6 flex flex-wrap items-center gap-x-2 gap-y-1 text-caption text-muted-foreground">
-            <span className="inline-flex items-center gap-1.5">
-              <GraduationCap className="size-4 text-primary" aria-hidden="true" />
-              Industry practitioners as instructors
+          <div className="flex flex-wrap items-center gap-x-6 gap-y-3 text-sm font-medium text-muted-foreground">
+            <span className="inline-flex items-center gap-2 text-foreground/80">
+              <GraduationCap className="size-4.5 text-primary/80" aria-hidden="true" />
+              Industry instructors
             </span>
-            <span aria-hidden="true">·</span>
-            <span>Labs, projects &amp; assessments included</span>
-            <span aria-hidden="true">·</span>
-            <span>30-day refund guarantee</span>
-          </p>
+            <span className="inline-flex items-center gap-2 text-foreground/80">
+              <Sparkles className="size-4 text-primary/80" aria-hidden="true" />
+              Labs &amp; assessments
+            </span>
+            <span className="inline-flex items-center gap-2 text-foreground/80">
+              <ShieldCheck className="size-4 text-primary/80" aria-hidden="true" />
+              30-day refund guarantee
+            </span>
+          </div>
         </div>
 
+        <div className="hidden lg:block relative z-10 w-full aspect-square md:aspect-video lg:aspect-square">
+          <Image
+            src="/images/hero_3.png"
+            alt="Zapsters Course Marketplace"
+            fill
+            className="object-contain"
+            sizes="(min-width: 1024px) 500px, 100vw"
+            priority
+          />
+        </div>
 
       </div>
     </section>

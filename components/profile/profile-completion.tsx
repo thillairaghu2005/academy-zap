@@ -50,11 +50,11 @@ export function ProfileCompletion({
             const content = (
               <>
                 {item.completed ? (
-                  <span className="grid size-7 shrink-0 place-items-center rounded-full bg-success/15 text-success-strong">
+                  <span className="grid size-7 shrink-0 place-items-center rounded-full bg-primary/10 text-primary">
                     <Check className="size-4" />
                   </span>
                 ) : (
-                  <Circle className="size-7 shrink-0 text-muted-foreground/50" />
+                  <Circle className="size-7 shrink-0 text-muted-foreground/30" />
                 )}
                 <span className="min-w-0">
                   <span className={cn("block text-sm font-medium", item.completed && "text-muted-foreground")}>{item.label}</span>

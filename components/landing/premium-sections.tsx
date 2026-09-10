@@ -289,14 +289,14 @@ export function DetailedPricingSection({ standalone = false, headingAs: Heading 
             const href =
               plan.name === "Starter"
                 ? "/register"
-                : "/register?next=${encodeURIComponent(destination)}";
+                : `/register?plan=${plan.name.toLowerCase()}`;
             return (
               <Card key={plan.name} className={cn("relative flex h-full flex-col p-6 sm:p-7", plan.highlighted && "border-primary shadow-lg")}>
                 {plan.highlighted ? <span className="absolute right-5 top-5 rounded-full bg-primary/10 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.12em] text-primary">Most popular</span> : null}
                 <p className="text-sm font-semibold">{plan.name}</p>
                 <p className="mt-2 text-sm leading-6 text-muted-foreground">{plan.description}</p>
                 <div className="mt-7 flex items-end gap-1">
-                  <span className="font-display text-4xl font-semibold tracking-[-0.06em]">{plan.monthly === 0 ? "Free" : "$${yearly ? plan.yearly : plan.monthly}"}</span>
+                  <span className="font-display text-4xl font-semibold tracking-[-0.06em]">{plan.monthly === 0 ? "Free" : `$${yearly ? plan.yearly : plan.monthly}`}</span>
                   {plan.monthly > 0 ? <span className="mb-1 text-xs text-muted-foreground">/ month{yearly ? ", billed yearly" : ""}</span> : null}
                 </div>
                 <ul className="mt-7 grid flex-1 content-start gap-3 border-t border-border pt-6 text-sm text-muted-foreground">
