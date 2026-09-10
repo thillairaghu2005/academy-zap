@@ -9,7 +9,7 @@ export default async function ContestPage({ params }: { params: Promise<{ id: st
   let problem;
   try {
     problem = await getProblem(id);
-  } catch (_err) {
+  } catch {
     problem = await getProblem("p-two-sum"); // Fallback for the mock
   }
 

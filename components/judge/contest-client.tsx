@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { Trophy, Clock } from "lucide-react";
 
@@ -160,7 +160,7 @@ export function ContestClient({
           </div>
           
           <div className="flex items-center gap-6">
-            <ComboMeter combo={combo} multiplier={comboMultiplier} size="sm" />
+            <ComboMeter combo={{ count: combo, multiplier: comboMultiplier, best: combo }} />
             <div className="flex flex-col items-end">
               <div className="flex items-center gap-1.5 text-xl font-mono font-bold">
                 <Clock className="h-4 w-4 text-muted-foreground" />
