@@ -34,7 +34,6 @@ import {
   MarketplaceStateProvider,
   type MarketplaceState,
 } from "@/components/courses/marketplace/hover-preview";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {

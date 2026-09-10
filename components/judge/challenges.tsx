@@ -3,11 +3,11 @@
 import { m as motion, useReducedMotion } from "framer-motion";
 import Link from "next/link";
 import { ArrowRight, CodeXml, Trophy, Flame, Play, ChartColumn, CheckCircle2 } from "lucide-react";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { PageContainer } from "@/components/shared/page-container";
 import { Badge } from "@/components/ui/badge";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 
 const MOCK_CHALLENGES = [
   {
