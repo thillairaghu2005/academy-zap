@@ -20,7 +20,7 @@ const MonacoEditor = dynamic(() => import("./editor/EditorPane").then((module) =
   loading: () => <div className={styles.editorLoading}>Loading code canvas...</div>,
 });
 
-const StatementPane = dynamic(() => import("./statement/StatementPane").then((module) => module.StatementPane), {
+const ProblemTabsPane = dynamic(() => import("./problem-tabs-pane").then((module) => module.ProblemTabsPane), {
   ssr: false,
   loading: () => <div className={styles.statementLoading}>Loading problem statement...</div>,
 });
@@ -71,7 +71,7 @@ export function IDE(props: IDEProps) {
        <Toolbar title={problem?.title ?? problemTitle} difficulty={problem?.difficulty} topics={problem?.topics} language={getJudgeLanguageConfig(active?.language).value} theme={chrome.theme} settings={settings} settingsOpen={settingsOpen} canRun={Boolean(active)} runBusy={runBusy} primaryAction={primaryAction} onLanguageChange={changeLanguage} onThemeChange={(theme: IDETheme) => changeTheme(theme)} onSettingsToggle={() => setSettingsOpen((current) => !current)} onSettingsChange={updateSettings} onRun={handleRun} onFontStep={stepFont} onOpenPalette={() => setPaletteOpen(true)} />
       {problem ? <div className={styles.mobileTabs} role="tablist" aria-label="Mobile IDE views"><button type="button" role="tab" aria-selected={mobileView === "problem"} onClick={() => setMobileView("problem")}>Problem</button><button type="button" role="tab" aria-selected={mobileView === "code"} onClick={() => setMobileView("code")}>Code</button><button type="button" role="tab" aria-selected={mobileView === "results"} onClick={() => { setMobileView("results"); chrome.setBottomPanel("results"); }}>Results</button></div> : null}
       <main className={`${styles.splitLayout} ${!problem || !statementVisible ? styles.statementHidden : ""}`} data-dragging={dragging ? "true" : undefined}>
-        {problem ? <div className={`${styles.statementSlot} ${mobileView === "problem" ? styles.mobileVisible : ""}`}><StatementPane problem={problem} colorizeCode={colorizeCode} /></div> : null}
+        {problem ? <div className={`${styles.statementSlot} ${mobileView === "problem" ? styles.mobileVisible : ""}`}><ProblemTabsPane problem={problem} colorizeCode={colorizeCode} /></div> : null}
         <SplitDivider value={split} onChange={setSplit} onDragEnd={layoutEditor} onDraggingChange={setDragging} />
         <div className={`${styles.codeColumn} ${mobileView === "results" ? styles.codeResultsMode : ""}`}>
           <div className={`${styles.editorSlot} ${mobileView === "code" ? styles.mobileVisible : ""}`}>

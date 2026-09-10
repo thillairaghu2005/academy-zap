@@ -218,9 +218,25 @@ export async function listSubmissions(
       graded_at: stored.graded_at ?? stored.submission.received_at,
     });
   }
-  return results.sort((a, b) =>
-    b.graded_at.localeCompare(a.graded_at),
+  return results.sort(
+    (a, b) => new Date(b.graded_at).getTime() - new Date(a.graded_at).getTime(),
   );
+}
+
+export async function getEditorial(problemId: string) {
+  await delay(jitter(200));
+  const { MOCK_EDITORIALS } = await import("@/lib/mocks/judge");
+  const editorial = MOCK_EDITORIALS[problemId];
+  if (!editorial) {
+    throw new MockDataError("editorial_not_found", "Editorial was not found.", 404);
+  }
+  return editorial;
+}
+
+export async function listPeerSolutions(problemId: string) {
+  await delay(jitter(250));
+  const { MOCK_PEER_SOLUTIONS } = await import("@/lib/mocks/judge");
+  return MOCK_PEER_SOLUTIONS.filter((s) => s.problem_id === problemId);
 }
 
 function publicProblem(problem: Problem): Problem {

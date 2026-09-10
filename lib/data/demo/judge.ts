@@ -5,4 +5,6 @@ export {
   listSolvedProblemIds,
   listSubmissions,
   submit,
+  getEditorial,
+  listPeerSolutions,
 } from "./engines/judge";

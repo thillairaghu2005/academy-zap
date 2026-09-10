@@ -34,6 +34,9 @@ import {
 import { useSession } from "@/components/providers/session-provider";
 import { LabTerminalShell } from "@/components/lab/terminal-shell";
 import { GuacamoleStub } from "@/components/lab/guacamole-stub";
+import { HintsPanel } from "@/components/lab/hints-panel";
+import { TeamPresence, SharedCursorOverlay } from "@/components/lab/team-presence";
+import { LabReportModal } from "@/components/lab/lab-report-modal";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -192,8 +195,21 @@ function SessionEnded({
   } | null;
 }) {
   const isCompleted = kind === "completed";
+  const [reportModalOpen, setReportModalOpen] = React.useState(false);
+  const [reportSubmitted, setReportSubmitted] = React.useState(false);
+
   return (
-    <motion.div
+    <>
+      <LabReportModal 
+        isOpen={reportModalOpen} 
+        onClose={() => setReportModalOpen(false)} 
+        onSubmit={(report) => {
+          console.log("Submitted report:", report);
+          setReportSubmitted(true);
+        }}
+        isSubmitting={false}
+      />
+      <motion.div
       initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
       className="flex flex-col items-center gap-4 py-10 text-center"
@@ -250,14 +266,23 @@ function SessionEnded({
       )}
 
       <div className="flex gap-2">
-        <Button variant="outline" size="sm" asChild>
-          <Link href="/labs">Back to labs</Link>
-        </Button>
-        <Button size="sm" asChild>
-          <Link href={`/labs/${lab.id}`}>Restart this lab</Link>
-        </Button>
+        <div className="flex gap-3 mt-2">
+          {!reportSubmitted ? (
+            <Button variant="default" size="sm" onClick={() => setReportModalOpen(true)}>
+              Submit Writeup
+            </Button>
+          ) : (
+            <Badge variant="outline" className="h-9 px-3 border-success/40 bg-success/10 text-success-strong">
+              Writeup Submitted (Pending Review)
+            </Badge>
+          )}
+          <Button variant="outline" size="sm" asChild>
+            <Link href="/labs">Return to catalog</Link>
+          </Button>
+        </div>
       </div>
     </motion.div>
+    </>
   );
 }
 
@@ -323,6 +348,8 @@ export function LabSessionClient({
   const [checkResults, setCheckResults] = React.useState<
     Record<string, ObjectiveResult>
   >({});
+  
+  const [teamModeEnabled, setTeamModeEnabled] = React.useState(false);
 
   const terminate = useMutation({
     mutationFn: () => terminateSession(sessionId),
@@ -486,6 +513,8 @@ export function LabSessionClient({
             </p>
           </div>
         </div>
+        
+        <TeamPresence isEnabled={teamModeEnabled} onToggle={setTeamModeEnabled} />
 
         <div className="flex items-center gap-2">
           {!ended ? (
@@ -576,19 +605,21 @@ export function LabSessionClient({
                   ) : null}
                 </div>
               </div>
-              <div className="h-[440px]">
+              <div className="h-[440px] relative">
                 {lab?.requires_gui ? (
                   <GuacamoleStub sessionId={sessionId} />
                 ) : (
-                  <LabTerminalShell
-                    sessionId={sessionId}
-                    onCommand={handleTerminalCommand}
-                  />
+                  <>
+                    <SharedCursorOverlay isEnabled={teamModeEnabled} />
+                    <LabTerminalShell
+                      sessionId={sessionId}
+                      onCommand={handleTerminalCommand}
+                    />
+                  </>
                 )}
               </div>
             </div>
 
-            {/* Terminal hint bar */}
             {!lab?.requires_gui ? (
               <div className="flex flex-wrap items-center justify-between gap-2 rounded-lg border border-dashed border-border bg-muted/30 px-3.5 py-2.5">
                 <p className="text-caption leading-relaxed text-muted-foreground">
@@ -598,22 +629,6 @@ export function LabSessionClient({
                   <code className="rounded bg-muted px-1">cat /root/flag.txt</code>{" "}
                    to capture flags — objective state is derived by the demo service.
                 </p>
-                <Button
-                  variant="outline"
-                  size="sm"
-                    className="h-7 gap-1.5 px-2.5 text-caption"
-                  onClick={() => hintMutation.mutate()}
-                  disabled={hintMutation.isPending}
-                >
-                  <Sparkles className="size-3.5" />
-                  {hintMutation.isPending ? "Asking…" : "Request hint"}
-                </Button>
-              </div>
-            ) : null}
-
-            {hintMutation.data ? (
-              <div className="animate-fade-up rounded-lg border border-warning/25 bg-warning/5 px-3.5 py-2.5 text-xs text-warning-strong">
-                <span className="font-semibold">Hint:</span> {hintMutation.data}
               </div>
             ) : null}
           </div>
@@ -627,6 +642,8 @@ export function LabSessionClient({
                 onCheck={(id) => checkMutation.mutate(id)}
               />
             ) : null}
+            
+            <HintsPanel sessionId={sessionId} hintsUsed={session.hints_used} />
 
             {/* Latest demo-service check feedback */}
             {Object.keys(checkResults).length > 0 ? (
