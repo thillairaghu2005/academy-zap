@@ -107,3 +107,23 @@ export interface Problem {
   /** Deterministic "expected" solution (mock grading reference, not shipped to the judge). */
   expected_solution?: string;
 }
+
+export interface Editorial {
+  problem_id: string;
+  markdown_content: string;
+  author_id: string;
+  published_at: string;
+}
+
+export interface PeerSolution {
+  submission_id: string;
+  problem_id: string;
+  user_id: string;
+  user_name: string;
+  user_avatar: string;
+  language: JudgeLanguage;
+  source_code: string;
+  runtime_ms: number;
+  memory_kb: number;
+  submitted_at: string;
+}

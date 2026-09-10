@@ -1,4 +1,4 @@
-import type { JudgeLanguage, JudgeResult, Problem, SubmissionAccepted, Verdict } from "@/lib/contracts/judge";
+import type { JudgeLanguage, JudgeResult, Problem, SubmissionAccepted, Verdict, Editorial, PeerSolution } from "@/lib/contracts/judge";
 
 /**
  * Judge Engine fixtures + in-memory submission store.
@@ -409,3 +409,76 @@ export function seedSubmissionHistory(): void {
     });
   });
 }
+
+export const MOCK_EDITORIALS: Record<string, Editorial> = {
+  "p-two-sum": {
+    problem_id: "p-two-sum",
+    author_id: "m1",
+    published_at: "2026-08-01T12:00:00Z",
+    markdown_content: `
+# Approach 1: Brute Force
+
+The brute force approach is simple. Loop through each element $x$ and find if there is another value that equals to $target - x$.
+
+\`\`\`python
+def two_sum(nums, target):
+    for i in range(len(nums)):
+        for j in range(i + 1, len(nums)):
+            if nums[j] == target - nums[i]:
+                return [i, j]
+\`\`\`
+
+**Complexity Analysis**
+* Time complexity: $O(n^2)$. For each element, we try to find its complement by looping through the rest of the array which takes $O(n)$ time.
+* Space complexity: $O(1)$. The space required does not depend on the size of the input array.
+
+---
+
+# Approach 2: One-pass Hash Table
+
+While we are iterating and inserting elements into the hash table, we also look back to check if current element's complement already exists in the hash table. If it exists, we have found a solution and return the indices immediately.
+
+\`\`\`python
+def two_sum(nums, target):
+    seen = {}
+    for i, num in enumerate(nums):
+        complement = target - num
+        if complement in seen:
+            return [seen[complement], i]
+        seen[num] = i
+    return []
+\`\`\`
+
+**Complexity Analysis**
+* Time complexity: $O(n)$. We traverse the list containing $n$ elements exactly once. Each lookup in the table costs only $O(1)$ time.
+* Space complexity: $O(n)$. The extra space required depends on the number of items stored in the hash table, which stores at most $n$ elements.
+    `,
+  }
+};
+
+export const MOCK_PEER_SOLUTIONS: PeerSolution[] = [
+  {
+    submission_id: "ps-1",
+    problem_id: "p-two-sum",
+    user_id: "u-1",
+    user_name: "Alex",
+    user_avatar: "https://i.pravatar.cc/150?u=1",
+    language: "python",
+    source_code: "def two_sum(nums, target):\n    seen = {}\n    for i, num in enumerate(nums):\n        if target - num in seen:\n            return [seen[target - num], i]\n        seen[num] = i\n",
+    runtime_ms: 3,
+    memory_kb: 4200,
+    submitted_at: "2026-09-01T10:00:00Z"
+  },
+  {
+    submission_id: "ps-2",
+    problem_id: "p-two-sum",
+    user_id: "u-2",
+    user_name: "Maya",
+    user_avatar: "https://i.pravatar.cc/150?u=2",
+    language: "python",
+    source_code: "def two_sum(nums, target):\n    for i in range(len(nums)):\n        for j in range(i+1, len(nums)):\n            if nums[i] + nums[j] == target:\n                return [i, j]\n",
+    runtime_ms: 850,
+    memory_kb: 3900,
+    submitted_at: "2026-09-02T11:20:00Z"
+  }
+];

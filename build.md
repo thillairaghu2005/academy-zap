@@ -140,16 +140,16 @@ a CMS exists
 - [x] Course thumbnail component with hover preview cards (Netflix-style rich preview)
 - [x] Marketplace surface (`courses/marketplace/`) with course cards, rails, and filter chips
 - [x] Instructor card component with mentor page (`/mentors`) listing all instructors
-- [ ] Discussion/Q&A threads per lesson: add `lib/data/demo/discussions.ts` (thread list, reply,
+- [x] Discussion/Q&A threads per lesson: add `lib/data/demo/discussions.ts` (thread list, reply,
 upvote), rendered in a collapsible panel alongside the lesson — this is the biggest retention
 gap in the current surface
-- [ ] Course reviews/ratings: turn the existing reviews placeholder on the course detail page
+- [x] Course reviews/ratings: turn the existing reviews placeholder on the course detail page
 into a real mock-backed surface (`Review` contract: rating, text, author, helpful-count;
 aggregate rating rollup on the course card)
-- [ ] Instructor/mentor dashboard (`/instructor` or `/mentor`): enrollment counts, completion
+- [x] Instructor/mentor dashboard (`/instructor` or `/mentor`): enrollment counts, completion
 funnel, per-lesson drop-off, mock student progress heatmap — separate route tree from `/admin`,
 scoped to an instructor's own courses
-- [ ] In-player notes + timestamped bookmarking: note list keyed to video timestamp, jump-to-time
+- [x] In-player notes + timestamped bookmarking: note list keyed to video timestamp, jump-to-time
 on click, mock export (Markdown/PDF) of a course's full note set
 
 ### F2 — Judge Engine UI (HackerRank-shaped)
@@ -238,11 +238,11 @@ within F5, sequence last if time-constrained
 - [x] Profile page redesigned (`/profile`, `profile/profile-page-client.tsx`): comprehensive
 learner profile aggregating rank, badges, skill radar, learning stats, activity history, and
 profile completion tracker
-- [ ] Mentorship/referral XP: invite flow + peer-code-review flow, both feeding a distinct
+- [x] Mentorship/referral XP: invite flow + peer-code-review flow, both feeding a distinct
 mock XP source so it's traceable back to the `LedgerEntry` contract like every other XP grant
-- [ ] Guild quests / guild-vs-guild challenges: goes beyond the static comparison view above —
+- [x] Guild quests / guild-vs-guild challenges: goes beyond the static comparison view above —
 mock a time-boxed quest contract (target, progress, reward) scoped to a guild
-- [ ] Notification center content: rank-up, streak-at-risk, league promotion/relegation events
+- [x] Notification center content: rank-up, streak-at-risk, league promotion/relegation events
 populate the F0 notification shell — mock event fixtures per type, each with its own icon/style
 
 ### F6 — Commerce UI

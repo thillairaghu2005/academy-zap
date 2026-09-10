@@ -3,6 +3,8 @@ import type {
   JudgeResult,
   Problem,
   SubmissionAccepted,
+  Editorial,
+  PeerSolution,
 } from "@/lib/contracts/judge";
 import { apiRequest } from "@/lib/api/client";
 import { z } from "zod";
@@ -57,8 +59,16 @@ export async function listSubmissions(
   _problemId: string,
   _userId: string,
 ): Promise<JudgeResult[]> {
-  // The backend might not have this endpoint implemented yet. We'll return an empty array for now.
+// The backend might not have this endpoint implemented yet. We'll return an empty array for now.
   return [];
+}
+
+export async function getEditorial(problemId: string): Promise<Editorial> {
+  return await apiRequest<Editorial>(`/judge/problems/${problemId}/editorial`, z.any(), { method: "GET" });
+}
+
+export async function listPeerSolutions(problemId: string): Promise<PeerSolution[]> {
+  return await apiRequest<PeerSolution[]>(`/judge/problems/${problemId}/solutions`, z.any(), { method: "GET" });
 }
 
 // Subscribe to SSE (F-7): EventSource cannot set an Authorization header, so the

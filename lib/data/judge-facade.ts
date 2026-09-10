@@ -8,6 +8,8 @@ export const getProblem = DEMO_MODE ? demoJudge.getProblem : realJudge.getProble
 export const submit = DEMO_MODE ? demoJudge.submit : realJudge.submit;
 export const getResult = DEMO_MODE ? demoJudge.getResult : realJudge.getResult;
 export const listSubmissions = DEMO_MODE ? demoJudge.listSubmissions : realJudge.listSubmissions;
+export const getEditorial = DEMO_MODE ? demoJudge.getEditorial : realJudge.getEditorial;
+export const listPeerSolutions = DEMO_MODE ? demoJudge.listPeerSolutions : realJudge.listPeerSolutions;
 
 /** SSE freshness is a real-API enhancement. The demo mock has no SSE backend — the
  * scripted `setTimeout` grader plus TanStack Query polling is authoritative there, so the
