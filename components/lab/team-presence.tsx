@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { Users, MousePointer2 } from "lucide-react";
+import { MousePointer2 } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
@@ -39,9 +39,12 @@ export function SharedCursorOverlay({ isEnabled }: { isEnabled: boolean }) {
   const [positions, setPositions] = React.useState<{ id: string; x: number; y: number; name: string; color: string }[]>([]);
 
   React.useEffect(() => {
+    let timeout: ReturnType<typeof setTimeout>;
     if (!isEnabled) {
-      setPositions([]);
-      return;
+      timeout = setTimeout(() => {
+        setPositions([]);
+      }, 0);
+      return () => clearTimeout(timeout);
     }
 
     const interval = setInterval(() => {

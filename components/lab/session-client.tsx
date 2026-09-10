@@ -27,7 +27,6 @@ import {
   completeSession,
   getLab,
   getSession,
-  requestHint,
   terminateSession,
 } from "@/lib/data/demo/lab";
 import { useSession } from "@/components/providers/session-provider";
