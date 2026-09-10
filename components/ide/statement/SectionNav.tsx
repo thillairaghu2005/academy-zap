@@ -4,16 +4,10 @@ import * as React from "react";
 import { Search } from "lucide-react";
 
 import styles from "../ide.module.css";
+import { STATEMENT_SECTIONS } from "./statement-sections";
 
-export const STATEMENT_SECTIONS = [
-  { id: "description", label: "Description" },
-  { id: "examples", label: "Examples" },
-  { id: "constraints", label: "Constraints" },
-  { id: "limits", label: "Limits" },
-  { id: "hints", label: "Hints" },
-  { id: "editorial", label: "Editorial" },
-  { id: "discussion", label: "Discussion" },
-] as const;
+// STATEMENT_SECTIONS data lives in ./statement-sections.ts so this file is a
+// pure React module for Vite/react-refresh Fast Refresh. Import from there.
 
 export function SectionNav({ activeId, onSearch, onNavigate }: { activeId: string; onSearch: () => void; onNavigate: (id: string) => void }) {
   return (

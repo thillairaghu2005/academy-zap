@@ -5,9 +5,11 @@ import { Clock3, Gauge, ShieldCheck, Sparkles, Terminal, Users } from "lucide-re
 
 import type { Problem } from "@/lib/contracts/judge";
 import { GatedSection } from "./GatedSection";
-import { countMatches, HighlightedText, MarkdownRenderer } from "./MarkdownRenderer";
+import { countMatches } from "./markdown-utils";
+import { HighlightedText, MarkdownRenderer } from "./MarkdownRenderer";
 import { SampleCase } from "./SampleCase";
-import { SectionNav, STATEMENT_SECTIONS } from "./SectionNav";
+import { SectionNav } from "./SectionNav";
+import { STATEMENT_SECTIONS } from "./statement-sections";
 import { StatementSearch } from "./StatementSearch";
 import styles from "../ide.module.css";
 

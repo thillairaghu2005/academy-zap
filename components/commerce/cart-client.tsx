@@ -230,9 +230,9 @@ export function CartClient() {
       <div className="mt-8 grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_360px]">
         {/* Item list */}
         <div className="flex flex-col gap-3">
-          {cart.items.map((item) => (
+          {cart.items.map((item, index) => (
             <Card
-              key={item.product_id}
+              key={`${item.product_id}-${index}`}
               className="group overflow-hidden hover:border-primary/25 hover:shadow-[0_6px_18px_rgb(16_24_40_/_6%)]"
             >
               <CardContent className="grid gap-5 p-4 sm:p-5 md:grid-cols-[minmax(0,1fr)_auto_auto] md:items-center">

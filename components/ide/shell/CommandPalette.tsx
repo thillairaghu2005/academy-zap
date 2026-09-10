@@ -2,9 +2,13 @@
 
 import * as React from "react";
 import { Command } from "cmdk";
-import { Check, Command as CommandIcon, Keyboard, Play, RotateCcw, Settings2, SquareTerminal, WandSparkles } from "lucide-react";
+import { Check, Command as CommandIcon, Keyboard } from "lucide-react";
 
 import styles from "../ide.module.css";
+
+// COMMAND_ICONS lives in ./command-icons.ts so this file is a pure component
+// module for Vite/react-refresh Fast Refresh. Import it from there.
+// CommandPaletteAction is a type-only export — types never affect Fast Refresh.
 
 export interface CommandPaletteAction {
   id: string;
@@ -43,11 +47,3 @@ export function CommandPalette({ open, onOpenChange, actions }: { open: boolean;
     </Command.Dialog>
   );
 }
-
-export const COMMAND_ICONS = {
-  run: Play,
-  submit: WandSparkles,
-  reset: RotateCcw,
-  settings: Settings2,
-  panel: SquareTerminal,
-};

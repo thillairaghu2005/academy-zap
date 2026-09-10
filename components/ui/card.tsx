@@ -1,25 +1,9 @@
 import * as React from "react";
-import { cva, type VariantProps } from "class-variance-authority";
+import { type VariantProps } from "class-variance-authority";
 
 import { cn } from "@/lib/utils";
+import { cardVariants } from "./card-variants";
 
-const cardVariants = cva(
-       "rounded-xl border text-card-foreground transition-[border-color,background-color,box-shadow,transform] duration-200",
-  {
-    variants: {
-      variant: {
-         default: "border-border bg-card shadow-sm hover:shadow-lg hover:-translate-y-0.5",
-         glass: "bg-card border-border shadow-sm hover:shadow-lg hover:-translate-y-0.5",
-         glow: "border-border bg-card shadow-sm hover:shadow-lg hover:border-primary-border hover:-translate-y-0.5",
-        bento: "border-border bg-surface-2 shadow-none",
-        outline: "border-border bg-transparent shadow-none",
-      },
-    },
-    defaultVariants: {
-      variant: "default",
-    },
-  },
-);
 
 function Card({ className, variant, ...props }: React.ComponentProps<"div"> & VariantProps<typeof cardVariants>) {
   return (
@@ -83,7 +67,6 @@ function CardFooter({ className, ...props }: React.ComponentProps<"div">) {
 
 export {
   Card,
-  cardVariants,
   CardHeader,
   CardTitle,
   CardDescription,

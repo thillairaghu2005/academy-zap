@@ -10,7 +10,8 @@ import { getMonacoThemeName } from "@/lib/monaco";
 import { useEditor } from "@/hooks/useEditor";
 import { useFiles } from "@/hooks/useFiles";
 import { useIDE } from "@/hooks/useIDE";
-import { COMMAND_ICONS, type CommandPaletteAction } from "./shell/CommandPalette";
+import { COMMAND_ICONS } from "./shell/command-icons";
+import type { CommandPaletteAction } from "./shell/CommandPalette";
 import type { IDEExecution, IDEProps } from "./IDE";
 import type { IDELogEntry } from "./panel/BottomPanel";
 

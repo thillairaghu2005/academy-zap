@@ -28,7 +28,7 @@ import { Input } from "@/components/ui/input";
 import { PasswordInput } from "@/components/ui/password-input";
 import { Logo } from "@/components/layout/logo";
 import { useSession } from "@/components/providers/session-provider";
-import { safeNext } from "@/components/auth/login-form";
+import { safeNext } from "@/components/auth/safe-redirect";
 import { trackConversion } from "@/lib/analytics";
 
 const registerSchema = z.object({

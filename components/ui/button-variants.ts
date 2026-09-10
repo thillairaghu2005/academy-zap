@@ -1,0 +1,42 @@
+import { cva } from "class-variance-authority";
+
+/**
+ * CVA variants for Button — kept in a separate file so button.tsx (component)
+ * and button-variants.ts (non-component) form two clean Fast-Refresh modules.
+ */
+export const buttonVariants = cva(
+  "inline-flex shrink-0 items-center justify-center gap-2 whitespace-nowrap rounded-lg text-small font-semibold transition-[background-color,border-color,box-shadow,transform,background-size] duration-200 outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:pointer-events-none disabled:opacity-50 active:scale-[0.97] [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 [&_svg]:shrink-0",
+  {
+    variants: {
+      variant: {
+        default:
+            "bg-primary text-primary-foreground shadow-sm hover:bg-primary-hover active:bg-primary-active",
+        gradient:
+           "bg-primary text-primary-foreground shadow-sm hover:bg-primary-hover active:bg-primary-active",
+        destructive:
+          "bg-destructive text-destructive-foreground shadow-sm hover:bg-destructive-hover active:bg-destructive-active",
+        outline:
+           "border border-border-strong bg-background text-secondary-foreground hover:bg-secondary active:bg-border",
+        secondary:
+          "border border-border bg-secondary text-secondary-foreground hover:border-border-strong hover:bg-surface-3 active:bg-border",
+         ghost: "border border-transparent text-muted-foreground hover:bg-secondary hover:text-foreground",
+        link: "border border-transparent text-primary [background:linear-gradient(currentColor,currentColor)_left_bottom/0%_1px_no-repeat] transition-[background-size] hover:[background-size:100%_1px]",
+      },
+      size: {
+        default: "h-9 px-4 py-2 has-[>svg]:px-3",
+         sm: "h-8 gap-1.5 rounded-md px-3 text-caption has-[>svg]:px-2.5",
+        lg: "h-10 rounded-md px-6 has-[>svg]:px-4",
+        icon: "size-9",
+        "icon-sm": "size-8",
+      },
+      sheen: {
+        false: "",
+        true: "relative overflow-hidden [&>*]:relative",
+      },
+    },
+    defaultVariants: {
+      variant: "default",
+      size: "default",
+    },
+  },
+);
