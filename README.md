@@ -1,6 +1,6 @@
 # Zapsters
 
-Zapsters is a full-stack learning platform featuring a modern bento aesthetic landing page,
+Zapsters is a learning platform featuring a modern bento aesthetic landing page,
 courses/player, a code judge (with editorial, peer solutions, and contest mode), virtual labs
 (with hints, team presence, and post-lab writeups), assessments, gamification, commerce,
 support, and admin surfaces — all running against a mock data layer with a real FastAPI backend
@@ -118,7 +118,7 @@ configured environment.
 - **B4 Progress Context & projections** — done: rank/streaks/leagues context,
   Redis leaderboards, Ed25519 credentials + verify URL, seasonal leagues;
   share cards, skill tree/quests/season-pass projections, and Arq schedulers
-deferred.
+  deferred.
 - **B5 Judge / B6 Labs / B8 Commerce / B9 Search+Notifications** — typed 501
   stubs (tables exist).
 - **B7 Assessment** — MCQ vertical slice live; short-answer and code grading

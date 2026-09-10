@@ -2,10 +2,17 @@
 
 **Source docs:** `ZAPSTERS_PLATFORM_FULL_ARCHITECTURE.md` (v1.0) + `ZAPSTERS_GAMIFICATION_ENGINE.md` (v1.0)
 
-**Status:** Frontend F0–F7 complete against the mock layer; F8 (cross-cutting) in progress; F9
-(platform content pages) complete — learning paths, interview prep, coding challenges, mentors,
-saved content, pricing, legal (privacy + terms), FAQ, thank-you flow, profile redesign, AI tutor
-chatbot, and the full support/ticket system are all shipped.
+**Status:** Frontend F0–F7 complete against the mock layer; F8 (cross-cutting) largely complete
+(shell accessibility, offline fallback, cookie consent, SEO, legal pages in place; real video
+segment caching, PWA, and webhooks remain backend B9 work); F9 (platform content pages) complete
+— learning paths, interview prep, coding challenges, mentors, saved content, pricing, legal
+(privacy + terms), FAQ, thank-you flow, profile redesign, AI tutor chatbot, and the full
+support/ticket system are all shipped. **F2 is fully complete** — editorial reveal, peer
+solution browsing, and contest/timed-challenge mode with countdown timer, combo meter, and live
+leaderboard are all shipped (`EditorialTab`, `PeerSolutionsTab`, `ProblemTabsPane`,
+`ContestClient`). **F3 is fully complete** — lab hints system (`HintsPanel`), team/collaborative
+presence (`TeamPresence`, `SharedCursorOverlay`), and post-lab writeup modal (`LabReportModal`)
+are all integrated into `session-client.tsx`.
 **Backend:** B0–B4 implemented — Platform Core (auth/RBAC/tenant isolation, subsystem
 registry + feature flags, rate limiting, audit log), the event bus (outbox → Redis Streams →
 worker → DLQ with idempotency), the Content and Assessment vertical slices (MCQ grading live;
@@ -170,12 +177,15 @@ challenge-specific flows
 - [ ] **Roadmap flag:** multi-language support beyond Python is intentionally deferred — do not
 build a multi-language picker UI now, but track it explicitly here so it isn't silently
 forgotten once Phase-1 Python ships and backend adds more judges
-- [ ] Editorial/solution reveal: unlock after a passing submission or after N failed attempts
-(mock the unlock-condition check in `lib/data/demo/judge.ts`, not in components)
-- [ ] Peer solution browsing: sanitized top-solutions list sortable by runtime/memory, mock
-fixture data with multiple submitters per problem
-- [ ] Contest/timed-challenge mode: reuses the Judge submit/poll flow plus the F4 combo-meter
-component; mock a contest leaderboard and countdown timer
+- [x] Editorial/solution reveal: unlock after a passing submission or after N failed attempts
+(mock the unlock-condition check in `lib/data/demo/judge.ts`, not in components) — `EditorialTab`
+in `components/ide/editorial-tab.tsx`, gated via `getEditorial` stub
+- [x] Peer solution browsing: sanitized top-solutions list sortable by runtime/memory, mock
+fixture data with multiple submitters per problem — `PeerSolutionsTab` in
+`components/ide/peer-solutions-tab.tsx`, both tabs surfaced via `ProblemTabsPane`
+- [x] Contest/timed-challenge mode: reuses the Judge submit/poll flow plus the F4 combo-meter
+component; mock a contest leaderboard and countdown timer — `ContestClient` +
+`app/(app)/judge/contests/[id]/page.tsx`
 
 ### F3 — Lab Engine UI (TryHackMe-shaped)
 
@@ -189,14 +199,15 @@ chrome now, real RDP/VNC stream comes with the backend)
 - [x] Session-end / timeout UI states
 - [x] Notebook mode (`lab/notebook-client.tsx`): Jupyter-style interactive notebook interface
 alongside the terminal for data-oriented labs
-- [ ] Lab hints system: per-objective hint reveal with an XP cost, tracked as its own line item —
-never blended into Completion or Mastery XP, matching the gamification doc's "never one
-blended number" rule (mock `lib/data/demo/gamification.ts` for the deduction, not client math)
-- [ ] Team/collaborative lab sessions: shared terminal view for a session with >1 participant —
-scope as backend-phase-only; for now just stub the UI shell (participant list, shared cursor
-indicator) behind a feature flag, don't build real multi-user WebSocket fanout yet
-- [ ] Post-lab writeup/report submission: free-text/markdown report form on session end, mock
-submission + a `pending_review`/`graded` status for CTF-style scoring
+- [x] Lab hints system: per-objective hint reveal with an XP cost, tracked as its own line item —
+`HintsPanel` in `components/lab/hints-panel.tsx`, integrated into `session-client.tsx`'s right
+rail; deduction mocked in `lib/data/demo/lab.ts` (`requestHint`)
+- [x] Team/collaborative lab sessions: shared terminal view for a session with >1 participant —
+`TeamPresence` + `SharedCursorOverlay` in `components/lab/team-presence.tsx`, toggled via a
+"Co-op Mode" switch in the session header; no real WebSocket fanout built
+- [x] Post-lab writeup/report submission: free-text/markdown report form on session end, mock
+submission + a `pending_review`/`graded` status — `LabReportModal` in
+`components/lab/lab-report-modal.tsx`, triggered from `SessionEnded` on lab completion
 
 ### F4 — Assessment Engine UI
 

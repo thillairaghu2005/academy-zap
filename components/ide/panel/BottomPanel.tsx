@@ -23,7 +23,7 @@ import {
 import type { JudgeResult, Verdict } from "@/lib/contracts/judge";
 import type { IDEFile, IDEOutputEntry, IDEPanel } from "@/types/ide";
 import type { IDEExecution } from "../IDE";
-import { verdictLabel } from "@/components/judge/verdict-badge";
+import { verdictLabel } from "@/components/judge/verdict-meta";
 import { LivePreview } from "../preview/LivePreview";
 import styles from "../ide.module.css";
 

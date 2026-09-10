@@ -1,0 +1,11 @@
+{
+  "ignore": {
+    "files": [
+      "backend/.venv/**",
+      "backend/venv/**",
+      "**/site-packages/**",
+      "**/__pycache__/**",
+      "**/node_modules/**"
+    ]
+  }
+}

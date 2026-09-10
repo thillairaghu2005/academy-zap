@@ -75,7 +75,12 @@ export default function RootLayout({
       data-scroll-behavior="smooth"
       suppressHydrationWarning
     >
-      <head />
+      <head>
+        {process.env.NODE_ENV === "development" && (
+          <script src="https://unpkg.com/react-scan/dist/auto.global.js" crossOrigin="anonymous" />
+        )}
+      </head>
+
       <body className="min-h-full">
         <ThemeManager />
         <LiveRegionProvider>

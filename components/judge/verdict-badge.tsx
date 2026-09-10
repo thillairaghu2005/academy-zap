@@ -1,22 +1,16 @@
 import type { Verdict } from "@/lib/contracts/judge";
 import { Badge } from "@/components/ui/badge";
+import { VERDICT_META } from "./verdict-meta";
+
+// VERDICT_META and verdictLabel live in ./verdict-meta.ts so this file is a
+// pure React module for Vite/react-refresh Fast Refresh.
+// BottomPanel.tsx imports verdictLabel from verdict-meta directly.
 
 /**
  * Verdict badge — the literal value from the event schema (§4.3) is used
  * verbatim; only the label + styling vary. Verdict literals must never be
  * renamed or remapped in the UI.
  */
-export const VERDICT_META: Record<
-  Verdict,
-  { label: string }
-> = {
-  accepted: { label: "Accepted" },
-  wrong_answer: { label: "Wrong Answer" },
-  time_limit_exceeded: { label: "Time Limit Exceeded" },
-  runtime_error: { label: "Runtime Error" },
-  compile_error: { label: "Compile Error" },
-};
-
 export function VerdictBadge({ verdict }: { verdict: Verdict }) {
   const meta = VERDICT_META[verdict];
   return (
@@ -24,8 +18,4 @@ export function VerdictBadge({ verdict }: { verdict: Verdict }) {
       {meta.label}
     </Badge>
   );
-}
-
-export function verdictLabel(verdict: Verdict): string {
-  return VERDICT_META[verdict].label;
 }

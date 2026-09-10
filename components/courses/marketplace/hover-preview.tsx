@@ -25,6 +25,8 @@ import { cartQueryKey } from "@/components/commerce/cart-query";
 import { AuthPromptDialog } from "@/components/auth/auth-prompt-dialog";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { formatMarketPrice } from "./price-format";
+
 
 /**
  * Marketplace hover preview (Udemy-style).
@@ -303,14 +305,6 @@ export function PreviewBody({ course }: { course: MarketplaceCourse }) {
       </div>
     </div>
   );
-}
-
-/* ------------------------------------------------------------------ */
-/*  Pricing                                                            */
-/* ------------------------------------------------------------------ */
-
-export function formatMarketPrice(cents: number): string {
-  return `₹${(cents / 100).toLocaleString("en-IN")}`;
 }
 
 export function PriceDisplay({
