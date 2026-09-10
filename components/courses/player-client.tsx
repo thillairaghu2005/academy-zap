@@ -35,7 +35,6 @@ import {
   LoaderCircle,
   PlayCircle,
   Search,
-  StickyNote,
 } from "lucide-react";
 
 import type { Course, CourseLesson } from "@/lib/contracts/content";
@@ -65,13 +64,13 @@ import {
   isCourseCached,
 } from "@/lib/offline/course-cache";
 import {
-  getLessonNote,
   isCourseBookmarked,
-  saveLessonNote,
   toggleCourseBookmark,
 } from "@/lib/demo/course-notes";
 import { readDemoStorage, writeDemoStorage } from "@/lib/demo/storage";
 import { CertificateDialog } from "@/components/courses/certificate-dialog";
+import { PlayerNotes } from "@/components/courses/player-notes";
+import { DiscussionsPanel } from "@/components/courses/discussions";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { motionSprings } from "@/components/motion/motion-tokens";
 import { feedback } from "@/lib/feedback";
@@ -598,12 +597,13 @@ export function PlayerClient({ course }: { course: Course }) {
                     })
                   }
                 />
-                <LessonNotes
+                <PlayerNotes
                   key={activeLesson.id}
                   courseId={course.id}
                   lessonId={activeLesson.id}
                   lessonTitle={activeLesson.title}
                 />
+                <DiscussionsPanel lessonId={activeLesson.id} />
                 <LessonNavigation previous={previousLesson} next={nextLesson} onSelect={setPickedLessonId} />
               </div>
             ) : null
@@ -697,12 +697,14 @@ export function PlayerClient({ course }: { course: Course }) {
 
               {activeLesson ? (
                 <>
-                  <LessonNotes
+                  <PlayerNotes
                     key={activeLesson.id}
                     courseId={course.id}
                     lessonId={activeLesson.id}
                     lessonTitle={activeLesson.title}
+                    currentTime={resumeSeconds}
                    />
+                   <div className="mt-2"><DiscussionsPanel lessonId={activeLesson.id} /></div>
                    <LessonNavigation previous={previousLesson} next={nextLesson} onSelect={setPickedLessonId} />
                    <div className="flex flex-col gap-3 rounded-2xl border border-primary/15 bg-primary/5 p-4 sm:flex-row sm:items-center sm:justify-between">
                      <div className="flex items-start gap-3">
@@ -1097,70 +1099,3 @@ function MarkCompleteButton({
   );
 }
 
-/** Per-lesson notes panel — persisted per course/lesson in the browser. */
-function LessonNotes({
-  courseId,
-  lessonId,
-  lessonTitle,
-}: {
-  courseId: string;
-  lessonId: string;
-  lessonTitle: string;
-}) {
-  const [note, setNote] = React.useState(() => getLessonNote(courseId, lessonId));
-  const [saveState, setSaveState] = React.useState<"saved" | "saving">("saved");
-  const announce = useAnnounce();
-  const savedRef = React.useRef(false);
-
-  // Debounced autosave — writing a note is a local demo write, no server hop.
-  React.useEffect(() => {
-    if (!savedRef.current) {
-      savedRef.current = true;
-      return;
-    }
-    setSaveState("saving");
-    const timer = window.setTimeout(() => {
-      saveLessonNote(courseId, lessonId, note);
-      setSaveState("saved");
-    }, 500);
-    return () => window.clearTimeout(timer);
-  }, [note, courseId, lessonId]);
-
-  const handleSave = () => {
-    saveLessonNote(courseId, lessonId, note);
-    setSaveState("saved");
-    announce("Note saved");
-  };
-
-  return (
-    <div className="rounded-2xl border border-border bg-card p-4">
-      <div className="flex items-center justify-between gap-2">
-        <label
-          htmlFor={`note-${lessonId}`}
-          className="flex items-center gap-2 text-xs font-semibold text-muted-foreground"
-        >
-          <StickyNote className="size-4 text-primary" />
-          My notes
-        </label>
-        <span className="text-caption text-muted-foreground">
-          {lessonTitle}
-        </span>
-      </div>
-      <textarea
-        id={`note-${lessonId}`}
-        value={note}
-        onChange={(event) => setNote(event.target.value)}
-        onBlur={handleSave}
-        placeholder="Jot down what you want to remember from this lesson…"
-        rows={4}
-        className="mt-3 w-full resize-y rounded-lg border border-input bg-surface-1 p-3 text-sm leading-relaxed outline-none transition-colors placeholder:text-muted-foreground/50 focus-visible:ring-2 focus-visible:ring-ring"
-      />
-      <p className="mt-2 flex items-center justify-between text-caption text-muted-foreground">
-        <span aria-live="polite">{saveState === "saving" ? "Saving locally..." : "Saved locally in your browser."}</span>
-        <span className={cn(note.trim() && "text-success-strong")}>
-          {note.trim() ? `${note.trim().split(/\s+/).length} words` : "Empty"}
-        </span>
-      </p>
-    </div>
-  );
-}

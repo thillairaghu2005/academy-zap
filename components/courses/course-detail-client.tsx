@@ -2,8 +2,6 @@
 
 import * as React from "react";
 import Link from "next/link";
-import {
-  useInfiniteQuery,
   useMutation,
   useQuery,
   useQueryClient,
@@ -36,7 +34,7 @@ import {
   getLessonPreview,
   type CourseProgress,
 } from "@/lib/data/demo/content";
-import { getCourseReviews } from "@/lib/data/demo/reviews";
+import { CourseReviews } from "@/components/courses/course-reviews";
 import { hasEntitlement } from "@/lib/data/demo/commerce";
 import { AddToCartButton } from "@/components/commerce/add-to-cart-button";
 import { BuyNowButton } from "@/components/commerce/buy-now-button";
@@ -44,13 +42,13 @@ import { useSession } from "@/components/providers/session-provider";
 import { AUTH_MODE } from "@/lib/config";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+
 import { Progress } from "@/components/ui/progress";
 import { PageContainer } from "@/components/shared/page-container";
 import { ErrorState } from "@/components/shared/error-state";
 import { EmptyState } from "@/components/shared/empty-state";
 import { cn } from "@/lib/utils";
-import { formatReviewDate } from "@/lib/format";
+
 import { InstructorCard } from "@/components/courses/instructor-card";
 import { CourseTrustPanel } from "@/components/courses/course-trust-panel";
 import {
@@ -66,14 +64,6 @@ function formatDuration(seconds: number): string {
   return `${mins} min`;
 }
 
-function initials(name: string): string {
-  return name
-    .split(" ")
-    .map((part) => part[0])
-    .join("")
-    .slice(0, 2)
-    .toUpperCase();
-}
 
 function LessonRow({
   lesson,
@@ -257,16 +247,7 @@ export function CourseDetailClient({
   const completedCount = allLessons.filter((l) => completedSet.has(l.id)).length;
   const isDraft = course.status === "draft";
   const [previewLesson, setPreviewLesson] = React.useState<CourseLesson | null>(null);
-  const reviewsQuery = useInfiniteQuery({
-    queryKey: ["course-reviews", course.id],
-    queryFn: ({ pageParam }) => getCourseReviews(course.id, pageParam),
-    initialPageParam: 0,
-    getNextPageParam: (lastPage) =>
-      lastPage.has_more
-        ? lastPage.offset + lastPage.reviews.length
-        : undefined,
-  });
-  const reviewRows = reviewsQuery.data?.pages.flatMap((page) => page.reviews) ?? [];
+
 
   return (
     <PageContainer className="max-w-7xl">
@@ -652,100 +633,7 @@ export function CourseDetailClient({
       </div>
 
       {/* Reviews are a paged Content Engine projection. */}
-      <div className="mt-12">
-        <h2 className="font-display text-h2">
-          Reviews
-        </h2>
-         <div className="mt-4 flex flex-col items-start gap-6 rounded-[28px] border border-border bg-card p-8 shadow-[0_12px_32px_rgb(17_24_39_/_0.04)] sm:flex-row sm:items-start">
-          <div className="text-center sm:text-left">
-            <p className="font-display text-h1">
-              {course.rating > 0 ? course.rating.toFixed(1) : "—"}
-            </p>
-            <div className="mt-1 flex items-center justify-center gap-0.5 sm:justify-start">
-              {Array.from({ length: 5 }).map((_, i) => (
-                <Star
-                  key={i}
-                  className={cn(
-                    "size-4",
-                    i < Math.round(course.rating)
-                       ? "fill-primary text-primary"
-                      : "text-muted-foreground/30",
-                  )}
-                />
-              ))}
-            </div>
-            <p className="mt-1 text-xs text-muted-foreground">
-              {course.review_count > 0
-                ? `${course.review_count.toLocaleString()} reviews`
-                : "No reviews yet"}
-            </p>
-          </div>
-          <div className="flex-1 border-t border-border pt-4 sm:border-l sm:border-t-0 sm:pl-6 sm:pt-0">
-            {reviewsQuery.isLoading ? (
-              <p className="text-sm text-muted-foreground">Loading learner reviews…</p>
-            ) : reviewRows.length > 0 ? (
-              <div className="flex flex-col gap-5">
-                {reviewRows.map((review) => (
-                  <article key={review.id} className="flex gap-3">
-                    <Avatar className="size-9">
-                      {review.author.avatar_url ? (
-                        <AvatarImage src={review.author.avatar_url} alt="" />
-                      ) : null}
-                      <AvatarFallback>{initials(review.author.name)}</AvatarFallback>
-                    </Avatar>
-                    <div className="min-w-0 flex-1">
-                      <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-1">
-                        <p className="text-sm font-semibold">{review.author.name}</p>
-                        <time className="text-xs text-muted-foreground" dateTime={review.date}>
-                          {formatReviewDate(review.date)}
-                        </time>
-                      </div>
-                      <div className="mt-1 flex items-center gap-2">
-                        <span className="flex items-center gap-0.5" aria-label={`${review.rating} out of 5 stars`}>
-                          {Array.from({ length: 5 }).map((_, index) => (
-                            <Star
-                              key={index}
-                              className={cn(
-                                "size-3.5",
-                                index < review.rating
-                                   ? "fill-primary text-primary"
-                                  : "text-muted-foreground/30",
-                              )}
-                            />
-                          ))}
-                        </span>
-                        <span className="text-caption text-muted-foreground">
-                          {review.helpful_count} found this helpful
-                        </span>
-                      </div>
-                      <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-                        {review.comment}
-                      </p>
-                    </div>
-                  </article>
-                ))}
-                {reviewsQuery.hasNextPage ? (
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="self-start"
-                    onClick={() => void reviewsQuery.fetchNextPage()}
-                    disabled={reviewsQuery.isFetchingNextPage}
-                  >
-                    {reviewsQuery.isFetchingNextPage
-                      ? "Loading reviews…"
-                      : "Load more reviews"}
-                  </Button>
-                ) : null}
-              </div>
-            ) : (
-              <p className="text-sm leading-relaxed text-muted-foreground">
-                Be the first to review this course once you&apos;ve completed a lesson.
-              </p>
-            )}
-          </div>
-        </div>
-      </div>
+      <CourseReviews courseId={course.id} rating={course.rating} reviewCount={course.review_count} />
     </PageContainer>
   );
 }
