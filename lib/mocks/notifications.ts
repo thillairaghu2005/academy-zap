@@ -6,6 +6,8 @@ import {
 } from "@/lib/demo/storage";
 
 export const MOCK_NOTIFICATIONS: NotificationEvent[] = [
+  { id: "notification-guild-quest", type: "guild_invitation", category: "achievements", title: "Guild quest started!", body: "Your guild just started The Great Refactor quest. Jump in to help!", created_at: "2026-08-06T09:12:00Z", href: "/guilds", read: false },
+  { id: "notification-mentor-xp", type: "xp_earned", category: "achievements", title: "+250 Mentorship XP", body: "You earned 250 XP for completing a mentorship session with David Chen.", created_at: "2026-08-06T08:50:00Z", href: "/rank", read: false },
   { id: "notification-course", type: "course_available", category: "learning", title: "New course in your path", body: "Cloud Security Essentials is ready when you are.", created_at: "2026-08-06T08:42:00Z", href: "/courses", read: false },
   { id: "notification-judge-accepted", type: "judge_accepted", category: "judge", title: "Judge submission accepted", body: "Your solution for Two Sum passed every test case.", created_at: "2026-08-06T07:48:00Z", href: "/judge/p-two-sum", read: false },
   { id: "notification-streak", type: "streak_maintained", category: "achievements", title: "Streak maintained", body: "You kept your 12-day learning streak alive.", created_at: "2026-08-06T06:15:00Z", href: "/rank", read: false },
