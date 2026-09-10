@@ -3,7 +3,7 @@
 import * as React from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
-import { Trophy, Clock, Zap, Target } from "lucide-react";
+import { Trophy, Clock } from "lucide-react";
 
 import type { JudgeLanguage, Problem, Verdict } from "@/lib/contracts/judge";
 import { getProblem, getResult, submit } from "@/lib/data/judge-facade";
@@ -16,7 +16,6 @@ import { PageContainer } from "@/components/shared/page-container";
 import { Card } from "@/components/ui/card";
 import { CodeEditorSkeleton, SkeletonLines } from "@/components/shared/skeletons";
 import { ErrorState } from "@/components/shared/error-state";
-import { EmptyState } from "@/components/shared/empty-state";
 
 const POLL_INTERVAL_MS = 1100;
 const QUEUE_TIMEOUT_S = 15;
@@ -32,7 +31,6 @@ export function ContestClient({
   const { user } = useSession();
   const userId = user?.id;
   const router = useRouter();
-  const queryClient = useQueryClient();
   
   // Time remaining
   const [timeLeft, setTimeLeft] = React.useState(CONTEST_DURATION_S);
@@ -97,13 +95,19 @@ export function ContestClient({
   }, [submissionId, resultQuery.data, resultQuery.isError, timedOut]);
 
   React.useEffect(() => {
+    let timeout: ReturnType<typeof setTimeout>;
     if (resultQuery.data?.verdict === "accepted") {
-      setCombo(prev => Math.min(prev + 1, 5));
-      setComboMultiplier(prev => Math.min(prev + 0.2, 2.0));
+      timeout = setTimeout(() => {
+        setCombo(prev => Math.min(prev + 1, 5));
+        setComboMultiplier(prev => Math.min(prev + 0.2, 2.0));
+      }, 0);
     } else if (resultQuery.data) {
-      setCombo(1);
-      setComboMultiplier(1.0);
+      timeout = setTimeout(() => {
+        setCombo(1);
+        setComboMultiplier(1.0);
+      }, 0);
     }
+    return () => clearTimeout(timeout);
   }, [resultQuery.data]);
 
   const judging = !!submissionId && !resultQuery.data && !resultQuery.isError && !timedOut;

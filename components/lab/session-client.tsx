@@ -17,7 +17,6 @@ import {
   Lock,
   Monitor,
   Power,
-  Sparkles,
   Terminal,
   TimerReset,
 } from "lucide-react";
@@ -379,15 +378,6 @@ export function LabSessionClient({
         });
         return result;
       }),
-  });
-
-  const hintMutation = useMutation({
-    mutationFn: () => requestHint(sessionId),
-    onSuccess: () => {
-      void queryClient.invalidateQueries({
-        queryKey: ["lab-session", sessionId],
-      });
-    },
   });
 
   // Refresh the session when the terminal reports a command (flag found → the

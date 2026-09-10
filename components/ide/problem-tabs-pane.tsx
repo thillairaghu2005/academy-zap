@@ -7,8 +7,6 @@ import type { Problem } from "@/lib/contracts/judge";
 import { StatementPane } from "./statement/StatementPane";
 import { EditorialTab } from "./editorial-tab";
 import { PeerSolutionsTab } from "./peer-solutions-tab";
-import styles from "./ide.module.css";
-
 export function ProblemTabsPane({ problem, colorizeCode }: { problem: Problem; colorizeCode?: (code: string, language: string) => Promise<string> }) {
   const [activeTab, setActiveTab] = React.useState("statement");
 

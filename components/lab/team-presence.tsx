@@ -65,7 +65,7 @@ export function SharedCursorOverlay({ isEnabled }: { isEnabled: boolean }) {
         <div 
           key={p.id} 
           className="absolute transition-all duration-1000 ease-in-out flex items-center"
-          style={{ top: \`\${p.y}%\`, left: \`\${p.x}%\` }}
+          style={{ top: `${p.y}%`, left: `${p.x}%` }}
         >
           <MousePointer2 className="h-4 w-4 drop-shadow-md" style={{ color: p.color, fill: p.color }} />
           <div 
