@@ -145,6 +145,10 @@ class NotebookService:
     async def save_progress(
         self, identifier: str, data: SaveProgressRequest, *, user: User
     ) -> LabProgressSaveResult:
+        for cell_code in data.code.values():
+            if cell_code is not None and len(cell_code.encode("utf-8")) > MAX_CELL_SOURCE_BYTES:
+                raise ConflictError("Cell source exceeds maximum size of 64KB")
+
         lab_id = await self._resolve_lab_id(identifier, user=user)
         progress = await self._progress_or_create(lab_id, user=user)
         saved = await self._progress.save_code(progress.id, data.code)
@@ -159,8 +163,10 @@ class NotebookService:
         self, identifier: str, request: ExecuteCellRequest, *, user: User
     ) -> CellExecutionAccepted:
         lab_id = await self._resolve_lab_id(identifier, user=user)
-        version = await self._published_version_or_raise(lab_id)
         progress = await self._progress_or_create(lab_id, user=user)
+        version = await self._versions.get_by_id(progress.version_id)
+        if version is None:
+            raise ConflictError("The version pinned to this session is no longer available.")
 
         if progress.status == "completed":
             raise ConflictError("This lab is already completed.")
@@ -237,8 +243,10 @@ class NotebookService:
 
     async def complete_lab(self, identifier: str, *, user: User) -> LabCompleteResult:
         lab_id = await self._resolve_lab_id(identifier, user=user)
-        version = await self._published_version_or_raise(lab_id)
         progress = await self._progress_or_create(lab_id, user=user)
+        version = await self._versions.get_by_id(progress.version_id)
+        if version is None:
+            raise ConflictError("The version pinned to this session is no longer available.")
 
         code_cells = self._code_cells(version)
         succeeded: list[str] = []
@@ -250,13 +258,24 @@ class NotebookService:
                 )
             succeeded.append(str(cell.id))
 
+        end_time = (
+            progress.completed_at
+            if (progress.status == "completed" and progress.completed_at)
+            else datetime.now(UTC)
+        )
+        if end_time.tzinfo is None:
+            end_time = end_time.replace(tzinfo=UTC)
+        started_at = progress.started_at
+        if started_at.tzinfo is None:
+            started_at = started_at.replace(tzinfo=UTC)
+        time_taken_seconds = max(0, int((end_time - started_at).total_seconds()))
+
         if progress.status == "completed" and progress.completed_at is not None:
             # Idempotent replay of the completion endpoint: the event was already emitted on
             # first completion, so return the same outcome without double-emitting.
             pass
         else:
-            now = datetime.now(UTC)
-            completed = await self._progress.mark_completed(progress.id, completed_at=now)
+            completed = await self._progress.mark_completed(progress.id, completed_at=end_time)
             if completed is None:
                 raise ConflictError("This lab is already completed.")
             event = LabSessionCompletedEvent(
@@ -267,7 +286,7 @@ class NotebookService:
                 lab_id=lab_id,
                 session_id=progress.id,
                 objectives_completed=succeeded,
-                time_taken_seconds=0,
+                time_taken_seconds=time_taken_seconds,
                 hints_used=progress.hints_used,
                 payload={
                     "lab_id": str(lab_id),
@@ -289,15 +308,10 @@ class NotebookService:
 
         await self._session.commit()
 
-        started_at = progress.started_at
-        if started_at.tzinfo is None:
-            started_at = started_at.replace(tzinfo=UTC)
-        time_taken = max(0, int((datetime.now(UTC) - started_at).total_seconds()))
-
         return LabCompleteResult(
             lab_id=lab_id,
             session_id=progress.id,
             objectives_completed=succeeded,
-            time_taken_seconds=time_taken,
+            time_taken_seconds=time_taken_seconds,
             hints_used=progress.hints_used,
         )

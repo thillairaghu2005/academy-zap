@@ -107,7 +107,7 @@ export function Interviews() {
                     </div>
                   </div>
                 </CardContent>
-                <CardFooter className="pt-0 flex-col items-stretch gap-3 border-t border-border mt-auto pt-4">
+                <CardFooter className="flex-col items-stretch gap-3 border-t border-border mt-auto pt-4">
                   <p className="text-xs text-muted-foreground text-center font-medium">
                     {interview.availability}
                   </p>

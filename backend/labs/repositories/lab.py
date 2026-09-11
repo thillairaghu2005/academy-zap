@@ -22,6 +22,7 @@ class LabRepository:
     async def list_all(self, *, limit: int = 50, offset: int = 0) -> list[Lab]:
         result = await self._session.execute(
             select(Lab)
+            .where(Lab.org_id.is_(None))
             .order_by(Lab.title)
             .limit(limit)
             .offset(offset)
@@ -43,7 +44,9 @@ class LabRepository:
         slug (exact match), then — only if the segment parses as a UUID — the id.
         """
         result = await self._session.execute(
-            select(Lab).where(Lab.slug == identifier).options(selectinload(Lab.objectives))
+            select(Lab)
+            .where(Lab.slug == identifier, Lab.org_id.is_(None))
+            .options(selectinload(Lab.objectives))
         )
         lab = result.scalar_one_or_none()
         if lab is not None:
@@ -52,7 +55,12 @@ class LabRepository:
             lab_id = uuid.UUID(identifier)
         except (ValueError, TypeError):
             return None
-        return await self.get_by_id(lab_id)
+        result = await self._session.execute(
+            select(Lab)
+            .where(Lab.id == lab_id, Lab.org_id.is_(None))
+            .options(selectinload(Lab.objectives))
+        )
+        return result.scalar_one_or_none()
 
     async def get_visible_by_slug_or_id(
         self, identifier: str, *, org_id: uuid.UUID | None

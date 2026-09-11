@@ -98,8 +98,9 @@ function LabCard({
       initial={reducedMotion ? false : { opacity: 0, y: 12 }}
       animate={reducedMotion ? undefined : { opacity: 1, y: 0 }}
       transition={reducedMotion ? undefined : { delay: 0.04 * index, duration: 0.35, ease: "easeOut" }}
+      className="group h-full"
     >
-      <Card className="group relative flex h-full flex-col overflow-hidden transition-[transform,border-color,box-shadow] duration-200 group-hover:-translate-y-0.5 group-hover:border-primary-border group-hover:shadow-[0_8px_24px_rgb(16_24_40_/_6%)]">
+      <Card className="relative flex h-full flex-col overflow-hidden transition-[transform,border-color,box-shadow] duration-200 group-hover:-translate-y-0.5 group-hover:border-primary-border group-hover:shadow-[0_8px_24px_rgb(16_24_40_/_6%)]">
         <Link
           href={`/labs/${lab.id}`}
           className="flex-1 outline-none focus-visible:ring-2 focus-visible:ring-ring"
