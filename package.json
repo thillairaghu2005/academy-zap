@@ -12,8 +12,7 @@
     "lint": "eslint",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
-    "knip": "knip",
-    "doctor": "npx react-doctor@latest"
+    "knip": "knip"
   },
   "dependencies": {
     "@base-ui/react": "^1.7.0",
@@ -74,7 +73,6 @@
     "eslint": "^9",
     "eslint-config-next": "16.2.12",
     "knip": "^6.34.0",
-    "react-doctor": "^0.9.13",
     "react-scan": "^0.5.7",
     "tailwindcss": "^4",
     "typescript": "^5.9.3",
