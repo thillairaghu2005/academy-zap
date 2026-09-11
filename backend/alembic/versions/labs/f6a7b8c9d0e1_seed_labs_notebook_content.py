@@ -74,13 +74,12 @@ def _labs() -> list[dict[str, object]]:
         },
         {
             "id": _LAB_3_ID,
-            "slug": "python-pandas-basics",
-            "title": "Pandas Basics",
+            "slug": "python-json-basics",
+            "title": "JSON Basics",
             "category": "data_science",
             "difficulty": "intermediate",
             "description": (
-                "Load a frame, inspect it, filter rows, and aggregate by group "
-                "with pandas."
+                "Parse JSON strings, access data, and serialize dicts."
             ),
             "estimated_minutes": 60,
             "requires_gui": False,
@@ -176,37 +175,37 @@ def _objectives() -> list[dict[str, object]]:
             "position": 2,
         },
         {
-            "id": "import-pandas",
+            "id": "import-json",
             "lab_id": _LAB_3_ID,
-            "title": "Import pandas",
-            "description": "Import pandas and print its version.",
+            "title": "Import json",
+            "description": "Import json and print its docstring.",
             "hints": [
-                "import pandas as pd",
-                "pandas exposes __version__.",
+                "import json",
+                "print(json.__doc__.split('\\n')[0])",
             ],
             "requires_terminal": False,
             "position": 0,
         },
         {
-            "id": "inspect-frame",
+            "id": "parse-json",
             "lab_id": _LAB_3_ID,
-            "title": "Inspect a frame",
-            "description": "Build a small frame and print its shape and columns.",
+            "title": "Parse JSON",
+            "description": "Parse a JSON string into a dict and print its keys.",
             "hints": [
-                "pd.DataFrame({...}) from a dict of lists.",
-                ".shape is a (rows, cols) tuple.",
+                "json.loads(string)",
+                "dict.keys()",
             ],
             "requires_terminal": False,
             "position": 1,
         },
         {
-            "id": "filter-group",
+            "id": "dump-json",
             "lab_id": _LAB_3_ID,
-            "title": "Filter and aggregate",
-            "description": "Keep rows with score >= 90, then print the mean score per team.",
+            "title": "Serialize to JSON",
+            "description": "Serialize a dict back to a JSON string and print it.",
             "hints": [
-                "Boolean mask: df[df.score >= 90].",
-                "df.groupby('team').score.mean()",
+                "json.dumps(obj)",
+                "Use indent=2 for pretty printing.",
             ],
             "requires_terminal": False,
             "position": 2,
@@ -384,8 +383,8 @@ def _cells() -> list[dict[str, object]]:
             "section_id": _LAB_3_SECTION_1,
             "cell_type": "markdown",
             "content": (
-                "# Pandas basics\n\n"
-                "pandas is preinstalled in the sandbox. Import it first — later "
+                "# JSON basics\n\n"
+                "The json module is built into Python. Import it first — later "
                 "cells rely on it."
             ),
             "position": 0,
@@ -393,15 +392,15 @@ def _cells() -> list[dict[str, object]]:
         {
             "section_id": _LAB_3_SECTION_1,
             "cell_type": "code",
-            "content": "import pandas as pd\nprint(pd.__version__)",
+            "content": "import json\nprint(json.__doc__.split('\\n')[0])",
             "position": 1,
         },
         {
             "section_id": _LAB_3_SECTION_2,
             "cell_type": "markdown",
             "content": (
-                "## Analyze\n\n"
-                "Build a frame, inspect its shape, then filter and aggregate it."
+                "## Parse and Serialize\n\n"
+                "Parse a JSON string, then serialize a dictionary back to JSON."
             ),
             "position": 0,
         },
@@ -409,11 +408,10 @@ def _cells() -> list[dict[str, object]]:
             "section_id": _LAB_3_SECTION_2,
             "cell_type": "code",
             "content": (
-                "import pandas as pd\n"
-                'df = pd.DataFrame({"name": ["ada", "grace", "alan"], '
-                '"score": [95, 88, 91]})\n'
-                "print(df.shape)\n"
-                "print(df.columns.tolist())"
+                "import json\n"
+                'data = \'{"name": "ada", "score": 95, "active": true}\'\n'
+                "parsed = json.loads(data)\n"
+                "print(list(parsed.keys()))"
             ),
             "position": 1,
         },
@@ -421,11 +419,9 @@ def _cells() -> list[dict[str, object]]:
             "section_id": _LAB_3_SECTION_2,
             "cell_type": "code",
             "content": (
-                "import pandas as pd\n"
-                'df = pd.DataFrame({"name": ["ada", "grace", "alan"], '
-                '"team": ["a", "a", "b"], "score": [95, 88, 91]})\n'
-                "print(df[df.score >= 90])\n"
-                'print(df.groupby("team").score.mean().to_dict())'
+                "import json\n"
+                'output = {"team": "a", "members": ["ada", "grace"]}\n'
+                "print(json.dumps(output, indent=2))"
             ),
             "position": 2,
         },
@@ -502,5 +498,5 @@ def downgrade() -> None:
     conn = op.get_bind()
     conn.execute(
         sa.text("DELETE FROM lab WHERE slug IN (:s1, :s2, :s3)"),
-        {"s1": "intro-to-python", "s2": "python-data-wrangling", "s3": "python-pandas-basics"},
+        {"s1": "intro-to-python", "s2": "python-data-wrangling", "s3": "python-json-basics"},
     )

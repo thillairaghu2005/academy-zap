@@ -85,7 +85,7 @@ export function LearningPaths() {
                 <CardContent className="flex flex-1 flex-col justify-end pt-0">
                   <div className="flex items-center justify-between text-sm text-muted-foreground mb-4">
                     <span className="flex items-center gap-1"><BookOpen className="size-4" /> {path.modules} Modules</span>
-                    <span className="flex items-center gap-1 text-mastery font-medium"><Star className="size-4 text-mastery" /> {path.xpReward} XP</span>
+                    <span className="flex items-center gap-1 font-medium" style={{ color: "var(--color-xp-mastery)" }}><Star className="size-4" style={{ color: "var(--color-xp-mastery)" }} /> {path.xpReward} XP</span>
                   </div>
                   {path.status === "in-progress" ? (
                     <Link href={`/learning-paths/${path.id}`} className="w-full block hover:opacity-80 transition-opacity">

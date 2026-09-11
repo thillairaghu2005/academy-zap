@@ -142,10 +142,6 @@ export function AssessmentCatalogClient() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, ease: "easeOut" }}
             >
-              <Badge variant="outline" className="mb-6 rounded-full border-primary/20 bg-primary/5 px-3 py-1.5 text-xs text-primary backdrop-blur-sm shadow-sm transition-colors hover:bg-primary/10">
-                <Sparkles className="mr-1.5 size-3.5" />
-                Interactive Evaluation Engine
-              </Badge>
               <h1 className="font-display text-4xl tracking-tight text-foreground sm:text-5xl md:text-6xl lg:text-7xl">
                 Mastery through <br className="hidden sm:block" />
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-primary/60">
