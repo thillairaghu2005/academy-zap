@@ -2,8 +2,13 @@
 
 import * as React from "react";
 import Link from "next/link";
-import { useInfiniteQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { m as motion } from "framer-motion";
+import {
+  type InfiniteData,
+  useInfiniteQuery,
+  useMutation,
+  useQueryClient,
+} from "@tanstack/react-query";
+import { AnimatePresence, m as motion } from "framer-motion";
 import {
   Award,
   Bell,
@@ -23,13 +28,22 @@ import {
   UserPlus,
 } from "lucide-react";
 
-import type { NotificationCategory, NotificationEvent, NotificationType } from "@/lib/contracts/notification";
-import { getNotifications, markAllNotificationsRead, markNotificationRead } from "@/lib/data/demo/notifications";
-import { Button } from "@/components/ui/button";
-import { EmptyState } from "@/components/shared/empty-state";
+import type {
+  NotificationCategory,
+  NotificationEvent,
+  NotificationPage,
+  NotificationType,
+} from "@/lib/contracts/notification";
+import {
+  getNotifications,
+  markAllNotificationsRead,
+  markNotificationRead,
+} from "@/lib/data/demo/notifications";
 import { cn } from "@/lib/utils";
 import { formatNotificationTime } from "@/lib/format";
-import { useGestureSheet } from "@/components/motion/use-gesture-sheet";
+import { Button } from "@/components/ui/button";
+import { EmptyState } from "@/components/shared/empty-state";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const NOTIFICATION_ICON: Record<NotificationType, React.ComponentType<{ className?: string }>> = {
   course_available: BookOpen,
@@ -94,7 +108,14 @@ function NotificationRow({
   return (
     <li className="group list-none flex items-start gap-1 rounded-lg px-1 transition-colors hover:bg-accent">
       {notification.href ? (
-        <Link href={notification.href} onClick={() => { onRead(notification.id); onClose(); }} className="min-h-11 min-w-0 flex-1 rounded-lg px-2 py-3 outline-none focus-visible:ring-2 focus-visible:ring-ring">
+        <Link
+          href={notification.href}
+          onClick={() => {
+            onRead(notification.id);
+            onClose();
+          }}
+          className="min-h-11 min-w-0 flex-1 rounded-lg px-2 py-3 outline-none focus-visible:ring-2 focus-visible:ring-ring"
+        >
           {content}
         </Link>
       ) : <div className="min-w-0 flex-1 px-2 py-3">{content}</div>}
@@ -113,27 +134,95 @@ function NotificationRow({
   );
 }
 
+function NotificationSkeleton() {
+  return (
+    <ul role="status" aria-label="Loading notifications" className="m-0 list-none space-y-1 p-1">
+      {Array.from({ length: 5 }).map((_, index) => (
+        <li key={index} className="flex items-center gap-3 rounded-lg px-2 py-3">
+          <Skeleton className="size-9 shrink-0 rounded-full" />
+          <div className="min-w-0 flex-1 space-y-2">
+            <Skeleton className="h-3.5 w-2/3" />
+            <Skeleton className="h-3 w-full" />
+            <Skeleton className="h-3 w-1/3" />
+          </div>
+        </li>
+      ))}
+    </ul>
+  );
+}
+
 export function NotificationCenter() {
   const [open, setOpen] = React.useState(false);
   const centerRef = React.useRef<HTMLDivElement>(null);
   const triggerRef = React.useRef<HTMLButtonElement>(null);
+  const panelRef = React.useRef<HTMLDivElement>(null);
+  const listRef = React.useRef<HTMLElement>(null);
   const [category, setCategory] = React.useState<"all" | NotificationCategory>("all");
   const loadMoreRef = React.useRef<HTMLDivElement>(null);
   const categoryRefs = React.useRef<Array<HTMLButtonElement | null>>([]);
   const queryClient = useQueryClient();
-  const sheet = useGestureSheet({ open, onDismiss: () => setOpen(false) });
+
   const notifications = useInfiniteQuery({
     queryKey: ["notifications"],
     queryFn: ({ pageParam }) => getNotifications(pageParam),
     initialPageParam: 0,
-    getNextPageParam: (lastPage) => lastPage.has_more ? lastPage.offset + lastPage.notifications.length : undefined,
+    getNextPageParam: (lastPage) => (lastPage.has_more ? lastPage.offset + lastPage.notifications.length : undefined),
     retry: false,
   });
-  const markRead = useMutation({ mutationFn: markNotificationRead, onSuccess: () => queryClient.invalidateQueries({ queryKey: ["notifications"] }) });
-  const markAllRead = useMutation({ mutationFn: markAllNotificationsRead, onSuccess: () => queryClient.invalidateQueries({ queryKey: ["notifications"] }) });
+
+  const markRead = useMutation({
+    mutationFn: markNotificationRead,
+    onMutate: async (id) => {
+      await queryClient.cancelQueries({ queryKey: ["notifications"] });
+      const previous = queryClient.getQueryData<InfiniteData<NotificationPage, number>>(["notifications"]);
+      queryClient.setQueryData<InfiniteData<NotificationPage, number>>(["notifications"], (current) => current && ({
+        ...current,
+        pages: current.pages.map((page, pageIndex) => ({
+          ...page,
+          notifications: page.notifications.map((notification) =>
+            notification.id === id ? { ...notification, read: true } : notification,
+          ),
+          unread_count: pageIndex === 0 ? Math.max(0, page.unread_count - (page.notifications.some((n) => n.id === id && !n.read) ? 1 : 0)) : page.unread_count,
+        })),
+      }));
+      return { previous };
+    },
+    onError: (_error, _id, context) => {
+      if (context?.previous) queryClient.setQueryData(["notifications"], context.previous);
+    },
+    onSettled: () => {
+      void queryClient.invalidateQueries({ queryKey: ["notifications"] });
+    },
+  });
+
+  const markAllRead = useMutation({
+    mutationFn: markAllNotificationsRead,
+    onMutate: async () => {
+      await queryClient.cancelQueries({ queryKey: ["notifications"] });
+      const previous = queryClient.getQueryData<InfiniteData<NotificationPage, number>>(["notifications"]);
+      queryClient.setQueryData<InfiniteData<NotificationPage, number>>(["notifications"], (current) => current && ({
+        ...current,
+        pages: current.pages.map((page, pageIndex) => ({
+          ...page,
+          notifications: page.notifications.map((notification) => ({ ...notification, read: true })),
+          unread_count: pageIndex === 0 ? 0 : page.unread_count,
+        })),
+      }));
+      return { previous };
+    },
+    onError: (_error, _variables, context) => {
+      if (context?.previous) queryClient.setQueryData(["notifications"], context.previous);
+    },
+    onSettled: () => {
+      void queryClient.invalidateQueries({ queryKey: ["notifications"] });
+    },
+  });
 
   const allNotifications = notifications.data?.pages.flatMap((page) => page.notifications) ?? [];
-  const visibleNotifications = category === "all" ? allNotifications : allNotifications.filter((notification) => notification.category === category);
+  const visibleNotifications =
+    category === "all"
+      ? allNotifications
+      : allNotifications.filter((notification) => notification.category === category);
   const unreadCount = notifications.data?.pages[0]?.unread_count ?? 0;
   const { fetchNextPage, hasNextPage, isFetchingNextPage } = notifications;
 
@@ -159,26 +248,53 @@ export function NotificationCenter() {
     };
   }, [open]);
 
+  React.useEffect(() => {
+    if (!open) return;
+    listRef.current?.focus();
+  }, [open]);
+
   const moveCategory = (index: number, direction: "next" | "previous" | "first" | "last") => {
-    const nextIndex = direction === "next"
-      ? (index + 1) % CATEGORY_VALUES.length
-      : direction === "previous"
-        ? (index - 1 + CATEGORY_VALUES.length) % CATEGORY_VALUES.length
-        : direction === "first"
-          ? 0
-          : CATEGORY_VALUES.length - 1;
+    const nextIndex =
+      direction === "next"
+        ? (index + 1) % CATEGORY_VALUES.length
+        : direction === "previous"
+          ? (index - 1 + CATEGORY_VALUES.length) % CATEGORY_VALUES.length
+          : direction === "first"
+            ? 0
+            : CATEGORY_VALUES.length - 1;
     const next = CATEGORY_VALUES[nextIndex];
     if (!next) return;
     setCategory(next);
     categoryRefs.current[nextIndex]?.focus();
   };
 
+  const trapFocus = (event: React.KeyboardEvent<HTMLDivElement>) => {
+    if (event.key !== "Tab") return;
+    const focusable = panelRef.current?.querySelectorAll<HTMLElement>(
+      'a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])',
+    );
+    if (!focusable || focusable.length === 0) return;
+    const first = focusable[0] as HTMLElement | undefined;
+    const last = focusable[focusable.length - 1] as HTMLElement | undefined;
+    if (!first || !last) return;
+    if (event.shiftKey && document.activeElement === first) {
+      event.preventDefault();
+      last.focus();
+    } else if (!event.shiftKey && document.activeElement === last) {
+      event.preventDefault();
+      first.focus();
+    }
+  };
+
   React.useEffect(() => {
     const target = loadMoreRef.current;
     if (!target || !hasNextPage || isFetchingNextPage) return;
-    const observer = new IntersectionObserver((entries) => {
-      if (entries[0]?.isIntersecting) void fetchNextPage();
-    }, { rootMargin: "160px" });
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0]?.isIntersecting) void fetchNextPage();
+      },
+      { rootMargin: "160px" },
+    );
     observer.observe(target);
     return () => observer.disconnect();
   }, [fetchNextPage, hasNextPage, isFetchingNextPage]);
@@ -190,7 +306,7 @@ export function NotificationCenter() {
         variant="ghost"
         size="icon"
         className={cn(
-          "relative h-9 w-9 rounded-xl border border-border bg-white text-muted-foreground shadow-none hover:border-primary/25 hover:bg-primary-muted hover:text-primary active:bg-primary-light",
+          "relative h-9 w-9 rounded-xl border border-border bg-white text-muted-foreground shadow-none transition-none hover:border-primary/25 hover:bg-primary-muted hover:text-primary active:bg-primary-light",
           open && "border-primary/30 bg-primary-light text-primary",
         )}
         aria-expanded={open}
@@ -200,50 +316,69 @@ export function NotificationCenter() {
         onClick={() => setOpen((current) => !current)}
       >
         <Bell className="size-4" />
-        {unreadCount ? <span className="absolute -right-1 -top-1 grid h-4 min-w-4 place-items-center rounded-full bg-primary px-1 text-[10px] font-bold leading-4 text-primary-foreground ring-2 ring-background">{unreadCount > 9 ? "9+" : unreadCount}</span> : null}
+        <AnimatePresence initial={false}>
+          {unreadCount ? (
+            <motion.span
+              key={unreadCount}
+              initial={{ scale: 0.5, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.5, opacity: 0 }}
+              transition={{ type: "spring", bounce: 0.45, duration: 0.45 }}
+              className="absolute -right-1 -top-1 grid h-4 min-w-4 place-items-center rounded-full bg-primary px-1 text-[10px] font-bold leading-4 text-primary-foreground ring-2 ring-background"
+            >
+              {unreadCount > 9 ? "9+" : unreadCount}
+            </motion.span>
+          ) : null}
+        </AnimatePresence>
       </Button>
 
-      {open ? (
-        <motion.div
-          // eslint-disable-next-line react-hooks/refs
-          ref={sheet.ref}
-          // eslint-disable-next-line react-hooks/refs
-          style={{ y: sheet.y }}
-          className="absolute right-0 top-[calc(100%+0.75rem)] z-50"
-        >
-          <div
-            id="notification-panel"
-            aria-labelledby="notification-panel-title"
-            role="dialog"
-            aria-modal="true"
-            className="frosted-heavy flex max-h-[min(640px,calc(100dvh-5rem))] w-[min(360px,calc(100vw-1rem))] flex-col overflow-hidden rounded-2xl border border-border/70 text-foreground shadow-[0_14px_36px_rgb(23_23_23_/_11%)]"
+      <AnimatePresence initial={false}>
+        {open ? (
+          <motion.div
+            key="notification-panel"
+            ref={panelRef}
+            initial={{ opacity: 0, y: -8, scale: 0.98 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -8, scale: 0.98 }}
+            transition={{ type: "spring", bounce: 0, duration: 0.3 }}
+            className="absolute right-0 top-[calc(100%+0.75rem)] z-50 origin-top-right"
+            onKeyDown={trapFocus}
           >
             <div
-              // eslint-disable-next-line react-hooks/refs
-              ref={sheet.handleRef}
-              // eslint-disable-next-line react-hooks/refs
-              {...sheet.handleProps}
-              className="shrink-0 touch-none"
+              id="notification-panel"
+              aria-labelledby="notification-panel-title"
+              role="dialog"
+              aria-modal="true"
+              className="frosted-heavy flex max-h-[min(640px,calc(100dvh-5rem))] w-[min(360px,calc(100vw-1rem))] flex-col overflow-hidden rounded-2xl border border-border/70 text-foreground shadow-[0_14px_36px_rgb(23_23_23_/_11%)]"
             >
-              <span
-                aria-hidden="true"
-                className="mx-auto mt-2 block h-1.5 w-9 rounded-full bg-foreground/15"
-              />
-              <div className="border-b border-border px-4 pb-3 pt-2.5">
+              <div className="shrink-0 border-b border-border px-4 pb-3 pt-3.5">
                 <div className="flex items-center justify-between gap-3">
                   <div className="min-w-0 flex-1">
                     <h2 id="notification-panel-title" className="truncate font-display text-base font-semibold">Notifications</h2>
-                    <p className="truncate mt-0.5 text-xs text-muted-foreground">Updates from your learning journey.</p>
+                    <p className="mt-0.5 truncate text-xs text-muted-foreground">Updates from your learning journey.</p>
                   </div>
-                  {unreadCount ? <Button variant="ghost" size="sm" className="h-8 shrink-0 px-2 text-xs" onClick={() => markAllRead.mutate()} disabled={markAllRead.isPending}><Check className="mr-1.5 size-3.5" /> Mark all as read</Button> : null}
+                  {unreadCount ? (
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="h-8 shrink-0 px-2 text-xs"
+                      onClick={() => markAllRead.mutate()}
+                      disabled={markAllRead.isPending}
+                    >
+                      {markAllRead.isPending ? <LoaderCircle className="mr-1.5 size-3.5 animate-spin" /> : <Check className="mr-1.5 size-3.5" />}
+                      {markAllRead.isPending ? "Marking..." : "Mark all as read"}
+                    </Button>
+                  ) : null}
                 </div>
               </div>
-            </div>
-            <div className="flex gap-1 overflow-x-auto border-b border-border px-4 py-2" role="tablist" aria-label="Notification categories" aria-orientation="horizontal">
+
+              <div className="flex gap-1 overflow-x-auto border-b border-border px-4 py-2" role="tablist" aria-label="Notification categories" aria-orientation="horizontal">
                 {CATEGORY_VALUES.map((value, index) => (
                   <button
                     key={value}
-                    ref={(element) => { categoryRefs.current[index] = element; }}
+                    ref={(element) => {
+                      categoryRefs.current[index] = element;
+                    }}
                     type="button"
                     id={`notification-tab-${value}`}
                     role="tab"
@@ -266,32 +401,83 @@ export function NotificationCenter() {
                         moveCategory(index, "last");
                       }
                     }}
-                    className={cn("min-h-9 shrink-0 rounded-md px-3 text-xs font-medium outline-none transition-colors focus-visible:ring-2 focus-visible:ring-ring", category === value ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:bg-accent hover:text-foreground")}
+                    className={cn(
+                      "min-h-9 shrink-0 rounded-md px-3 text-xs font-medium outline-none transition-colors focus-visible:ring-2 focus-visible:ring-ring",
+                      category === value
+                        ? "bg-primary text-primary-foreground"
+                        : "text-muted-foreground hover:bg-accent hover:text-foreground",
+                    )}
                   >
                     {CATEGORY_LABELS[value]}
                   </button>
                 ))}
               </div>
 
-            <section id="notification-panel-list" aria-labelledby={`notification-tab-${category}`} tabIndex={0} className="min-h-0 flex-1 overflow-y-auto p-2 outline-none">
-              {notifications.isLoading ? (
-                <div role="status" className="flex items-center justify-center gap-2 px-3 py-12 text-sm text-muted-foreground"><LoaderCircle className="size-4 animate-spin" /> Loading notifications...</div>
-              ) : notifications.isError ? (
-                <EmptyState icon={Bell} title="Notifications unavailable" description="We could not load your notification feed." primaryAction={<Button variant="outline" size="sm" onClick={() => void notifications.refetch()}>Try again</Button>} />
-              ) : visibleNotifications.length ? (
-                <ul className="m-0 space-y-1 p-0" aria-label={`${CATEGORY_LABELS[category]} notifications`}>
-                  {visibleNotifications.map((notification) => <NotificationRow key={notification.id} notification={notification} onRead={(id) => markRead.mutate(id)} onClose={() => setOpen(false)} />)}
-                  <div ref={loadMoreRef} className="flex min-h-8 items-center justify-center text-xs text-muted-foreground" aria-live="polite">
-                    {notifications.isFetchingNextPage ? <><LoaderCircle className="mr-2 size-3.5 animate-spin" /> Loading more</> : notifications.hasNextPage ? "" : "All caught up"}
-                  </div>
-                </ul>
-              ) : (
-                <EmptyState icon={Bell} title="No notifications" description="You are all caught up. New learning and achievement updates will appear here." primaryAction={<Button variant="outline" size="sm" asChild><Link href="/dashboard" onClick={() => setOpen(false)}>Go to dashboard</Link></Button>} />
-              )}
-            </section>
-          </div>
-        </motion.div>
-      ) : null}
+              <section
+                id="notification-panel-list"
+                ref={listRef}
+                aria-labelledby={`notification-tab-${category}`}
+                tabIndex={0}
+                className="min-h-0 flex-1 overflow-y-auto p-2 outline-none"
+              >
+                {notifications.isLoading ? (
+                  <NotificationSkeleton />
+                ) : notifications.isError ? (
+                  <EmptyState
+                    icon={Bell}
+                    title="Notifications unavailable"
+                    description="We could not load your notification feed."
+                    primaryAction={
+                      <Button variant="outline" size="sm" onClick={() => void notifications.refetch()}>
+                        Try again
+                      </Button>
+                    }
+                  />
+                ) : visibleNotifications.length ? (
+                  <ul className="m-0 space-y-1 p-0" aria-label={`${CATEGORY_LABELS[category]} notifications`}>
+                    {visibleNotifications.map((notification) => (
+                      <NotificationRow
+                        key={notification.id}
+                        notification={notification}
+                        onRead={(id) => markRead.mutate(id)}
+                        onClose={() => setOpen(false)}
+                      />
+                    ))}
+                    <div
+                      ref={loadMoreRef}
+                      className="flex min-h-8 items-center justify-center text-xs text-muted-foreground"
+                      aria-live="polite"
+                    >
+                      {notifications.isFetchingNextPage ? (
+                        <>
+                          <LoaderCircle className="mr-2 size-3.5 animate-spin" /> Loading more
+                        </>
+                      ) : notifications.hasNextPage ? (
+                        ""
+                      ) : (
+                        "All caught up"
+                      )}
+                    </div>
+                  </ul>
+                ) : (
+                  <EmptyState
+                    icon={Bell}
+                    title="No notifications"
+                    description="You are all caught up. New learning and achievement updates will appear here."
+                    primaryAction={
+                      <Button variant="outline" size="sm" asChild>
+                        <Link href="/dashboard" onClick={() => setOpen(false)}>
+                          Go to dashboard
+                        </Link>
+                      </Button>
+                    }
+                  />
+                )}
+              </section>
+            </div>
+          </motion.div>
+        ) : null}
+      </AnimatePresence>
     </div>
   );
 }

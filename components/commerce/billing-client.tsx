@@ -146,7 +146,7 @@ export function BillingClient() {
     <PageContainer>
       <div className="flex items-end justify-between gap-4">
         <div>
-          <h1 className="font-display text-h1">
+          <h1 className="font-display text-3xl font-semibold tracking-tight">
             Subscription & seats
           </h1>
           <p className="mt-1 text-sm text-muted-foreground">
@@ -179,10 +179,10 @@ export function BillingClient() {
       <div className="mt-10">
         <div className="flex items-center justify-between gap-3">
           <div>
-            <h2 className="font-display text-h2">
+            <h2 className="font-display text-2xl font-semibold tracking-tight">
               Seats
             </h2>
-            <p className="mt-0.5 text-xs text-muted-foreground">
+            <p className="mt-1 text-sm text-muted-foreground">
               {subscription.seats.length} seats on the{" "}
               {subscription.plan.name} plan
             </p>
@@ -259,17 +259,17 @@ export function BillingClient() {
               </div>
               <div>
                 <p className="text-sm font-medium">Next invoice</p>
-                <p className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                <p className="flex items-center gap-1.5 text-sm text-muted-foreground">
                   <CalendarClock className="size-3.5" />
                   renews {formatLocalDate(subscription.renews_at)}
                 </p>
               </div>
             </div>
             <div className="text-right">
-              <p className="font-display text-3xl font-bold tracking-tight">
+              <p className="font-display text-4xl font-bold tracking-tight">
                 {formatMoney(subscription.next_invoice_cents)}
               </p>
-              <p className="mt-1 text-xs text-muted-foreground">
+              <p className="mt-1 text-sm text-muted-foreground">
                 {subscription.seats.filter((s) => s.status === "active").length}{" "}
                 active seats × {formatMoney(subscription.plan.price_per_seat_cents)}
                 /seat
@@ -294,7 +294,7 @@ export function BillingClient() {
 function renderPlans(plans: Plan[], currentPlanId?: string) {
   return (
     <div>
-      <h2 className="font-display text-h2">
+      <h2 className="font-display text-2xl font-semibold tracking-tight">
         Plans
       </h2>
       <div className="mt-3 grid gap-4 md:grid-cols-2">
@@ -324,7 +324,7 @@ function renderPlans(plans: Plan[], currentPlanId?: string) {
               </div>
               <p className="font-display text-4xl font-bold tracking-tight mt-2">
                 {formatMoney(plan.price_per_seat_cents)}
-                <span className="text-sm font-medium text-muted-foreground">
+                <span className="text-base font-medium text-muted-foreground">
                   {" "}
                   /seat/mo
                 </span>
