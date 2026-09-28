@@ -259,13 +259,9 @@ export function MarketplaceClient() {
 function MarketplaceHero() {
 
   return (
-    <section className="relative overflow-hidden rounded-3xl border border-border bg-card">
-      {/* Backdrop layers */}
-      <div className="absolute inset-0 aurora opacity-70" aria-hidden="true" />
-      <div className="absolute inset-0 bg-grid-dark opacity-40 [mask-image:radial-gradient(ellipse_at_center,black,transparent_75%)]" aria-hidden="true" />
-
-      <div className="relative grid gap-8 p-7 sm:p-10 lg:grid-cols-[minmax(0,1fr)_400px] lg:items-center lg:p-12 xl:grid-cols-[minmax(0,1fr)_500px]">
-        <div className="max-w-2xl relative z-10 flex flex-col gap-8 py-2">
+    <section className="rounded-3xl border border-border bg-card">
+      <div className="flex flex-col items-center text-center gap-8 p-7 sm:p-10 lg:p-12">
+        <div className="max-w-2xl flex flex-col items-center gap-8 py-2">
           <div>
             <h1 className="font-display text-h1 font-semibold leading-[1.05] tracking-tight text-foreground">
               Go beyond courses. <br className="hidden sm:inline" />
@@ -278,7 +274,7 @@ function MarketplaceHero() {
             </p>
           </div>
 
-          <div className="flex flex-wrap items-center gap-2">
+          <div className="flex flex-wrap items-center justify-center gap-2">
             <span className="text-caption font-medium uppercase tracking-[0.14em] text-muted-foreground">
               Popular:
             </span>
@@ -289,7 +285,7 @@ function MarketplaceHero() {
             ))}
           </div>
 
-          <div className="flex flex-wrap items-center gap-x-6 gap-y-3 text-sm font-medium text-muted-foreground">
+          <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-3 text-sm font-medium text-muted-foreground">
             <span className="inline-flex items-center gap-2 text-foreground/80">
               <GraduationCap className="size-4.5 text-primary/80" aria-hidden="true" />
               Industry instructors
@@ -305,16 +301,7 @@ function MarketplaceHero() {
           </div>
         </div>
 
-        <div className="hidden lg:block relative z-10 w-full aspect-square md:aspect-video lg:aspect-square">
-          <Image
-            src="/images/hero_3.png"
-            alt="Zapsters Course Marketplace"
-            fill
-            className="object-contain"
-            sizes="(min-width: 1024px) 500px, 100vw"
-            priority
-          />
-        </div>
+
 
       </div>
     </section>
