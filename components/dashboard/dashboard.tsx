@@ -178,8 +178,7 @@ export function Dashboard() {
         transition={reducedMotion ? undefined : { duration: 0.5, ease: "easeOut" }}
         className="relative overflow-hidden rounded-3xl border border-border/80 bg-card"
       >
-        <div className="pointer-events-none absolute inset-0 bg-grid opacity-45 [mask-image:radial-gradient(ellipse_at_top_left,black,transparent_75%)]" />
-        <div className="pointer-events-none absolute -right-24 -top-24 size-96 rounded-full bg-primary/8 blur-3xl" />
+        {/* Removed decorative background elements for a cleaner workspace feel */}
 
         <div className="relative z-10 grid gap-8 px-6 py-9 sm:px-10 sm:py-11 lg:grid-cols-[1fr_auto] lg:items-center">
           <div>
@@ -258,19 +257,17 @@ export function Dashboard() {
               animate={reducedMotion ? undefined : { opacity: 1, y: 0 }}
               transition={reducedMotion ? undefined : { delay: 0.05 * i, duration: 0.4, ease: "easeOut" }}
             >
-              <Card className="h-full">
-                <CardHeader className="flex-row items-center gap-3 space-y-0">
-                  <div className="grid size-9 shrink-0 place-items-center rounded-lg border border-border bg-secondary text-primary">
+              <div className="flex h-full flex-col gap-3 p-2">
+                <div className="flex items-center gap-3">
+                  <div className="grid size-9 shrink-0 place-items-center rounded-lg bg-primary/10 text-primary">
                     <item.icon className="size-4" />
                   </div>
-                  <CardTitle className="text-sm">{item.title}</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-sm leading-relaxed text-muted-foreground">
-                    {item.body}
-                  </p>
-                </CardContent>
-              </Card>
+                  <h3 className="font-semibold text-foreground text-sm">{item.title}</h3>
+                </div>
+                <p className="text-sm leading-relaxed text-muted-foreground">
+                  {item.body}
+                </p>
+              </div>
             </motion.div>
           ))}
         </div>

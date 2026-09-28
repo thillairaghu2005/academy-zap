@@ -109,23 +109,23 @@ export function ProfilePageClient() {
           </Card>
 
           {/* Learning Preferences */}
-          <Card className="flex flex-col">
-            <CardHeader className="pb-3"><CardTitle>Learning preferences</CardTitle></CardHeader>
-            <CardContent className="grid gap-4 text-sm">
+          <div className="flex flex-col border-t border-border pt-4">
+            <h3 className="font-semibold mb-3">Learning preferences</h3>
+            <div className="grid gap-4 text-sm">
               <Info label="Learning path" value={profile.preferred_learning_path} />
               <Info label="Experience" value={profile.experience_level} />
               <Info label="Weekly goal" value={`${profile.weekly_goal_hours} hours`} />
-            </CardContent>
-          </Card>
+            </div>
+          </div>
 
           {/* Skill Tags */}
-          <Card className="flex flex-col">
-            <CardHeader className="pb-3"><CardTitle>Skill tags & Goals</CardTitle></CardHeader>
-            <CardContent className="flex flex-wrap content-start gap-2">
+          <div className="flex flex-col border-t border-border pt-4">
+            <h3 className="font-semibold mb-3">Skill tags & Goals</h3>
+            <div className="flex flex-wrap content-start gap-2">
               {profile.skill_tags.map((tag) => <Badge key={tag} variant="secondary">{tag}</Badge>)}
               {profile.learning_goals.map((goal) => <Badge key={goal} variant="outline">{goal}</Badge>)}
-            </CardContent>
-          </Card>
+            </div>
+          </div>
         </div>
 
         {/* Main Content */}
