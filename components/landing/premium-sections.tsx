@@ -133,9 +133,9 @@ export function PricingSection({ standalone = false, headingAs: Heading = "h2" }
               {/* Main Image Block */}
               <div className="relative flex-1 rounded-2xl overflow-hidden bg-card flex items-end justify-center">
                 {/* Abstract shapes using theme colors */}
-                <div className="absolute top-10 -left-10 w-48 h-20 bg-primary/20 transform -rotate-12" />
-                <div className="absolute bottom-16 -right-16 w-64 h-24 bg-primary/30 transform -rotate-45" />
-                <div className="absolute top-1/2 right-6 w-24 h-48 bg-primary/20 transform rotate-12" />
+                <div className="absolute top-10 -left-10 w-48 h-20 bg-muted/60 transform -rotate-12" />
+                <div className="absolute bottom-16 -right-16 w-64 h-24 bg-muted/80 transform -rotate-45" />
+                <div className="absolute top-1/2 right-6 w-24 h-48 bg-muted/60 transform rotate-12" />
                 
                 {/* Placeholder for the person (silhouette) */}
                 <div className="relative z-10 w-[80%] h-[85%] bg-gradient-to-t from-primary-deep/50 to-primary-deep/10 rounded-t-full shadow-2xl border-b-0 border-border border" />
@@ -144,7 +144,7 @@ export function PricingSection({ standalone = false, headingAs: Heading = "h2" }
               {/* Side Accent Block */}
               <div className="relative w-20 md:w-24 rounded-2xl overflow-hidden bg-gradient-to-b from-primary/80 via-primary-deep to-primary-deep">
                 <div className="absolute -left-8 top-1/3 w-20 h-40 bg-white/10 blur-xl rounded-full transform rotate-45" />
-                <div className="absolute -right-6 bottom-8 w-20 h-24 bg-primary/30 blur-xl rounded-full" />
+                <div className="absolute -right-6 bottom-8 w-20 h-24 bg-muted/50 blur-xl rounded-full" />
                 
                 {/* Curving swoosh effect */}
                 <div className="absolute -left-8 bottom-0 w-24 h-48 border-r-8 border-white/10 rounded-full transform -rotate-12 blur-[2px]" />
@@ -165,7 +165,7 @@ export function TestimonialWall() {
         <div className="flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between"><div><p className="text-xs font-semibold uppercase tracking-[0.16em] text-muted-foreground">Learner signal</p><h2 className="mt-3 font-display font-light text-3xl tracking-[-0.045em]">Progress is measured in shipped code and active defense.</h2></div><p className="max-w-md text-sm leading-6 text-muted-foreground">A rigorous environment for engineers who demand hands-on practice, verified skills, and absolute clarity on what to learn next.</p></div>
         <div className="mt-9 grid gap-4 lg:grid-cols-3">
           {MARKETING_TESTIMONIALS.map((testimonial) => (
-            <Card key={testimonial.name} className={cn("p-6", testimonial.featured && "border-primary/30 bg-primary/[0.025]")}>
+            <Card key={testimonial.name} className={cn("p-6", testimonial.featured && "border-border bg-surface-2")}>
               <div className="flex items-center gap-1 text-primary" aria-label={`${testimonial.rating} out of 5 stars`}>{Array.from({ length: testimonial.rating }).map((_, index) => <Star key={index} className="size-3.5 fill-current" />)}</div>
               <p className="mt-5 font-display text-xl font-medium leading-8 tracking-[-0.025em]">&ldquo;{testimonial.quote}&rdquo;</p>
               <div className="mt-7 flex items-center gap-3"><span className="grid size-9 place-items-center rounded-full bg-primary text-xs font-semibold text-primary-foreground">{testimonial.initials}</span><div><p className="text-sm font-semibold">{testimonial.name}</p><p className="text-xs text-muted-foreground">{testimonial.role}</p></div><button type="button" onClick={() => setActive(testimonial)} className="ml-auto inline-flex size-8 items-center justify-center rounded-full border border-border text-muted-foreground transition-colors hover:border-primary hover:text-primary" aria-label={`Play video testimonial from ${testimonial.name}`}><Play className="size-3.5 fill-current" /></button></div>

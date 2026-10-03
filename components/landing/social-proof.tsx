@@ -176,7 +176,7 @@ export function SocialProof() {
                   </div>
                   <Medal className="size-5 text-primary" />
                 </div>
-                <div className="mt-5 rounded-xl border border-primary/20 bg-primary/5 p-4">
+                <div className="mt-5 rounded-xl border border-border bg-surface-2 p-4">
                   <p className="text-xs text-muted-foreground">Guild momentum</p>
                   <p className="mt-1 font-display text-3xl">{guild.combined_xp_this_week.toLocaleString()}</p>
                   <p className="mt-1 font-mono text-[10px] uppercase tracking-widest text-primary">XP this week</p>
