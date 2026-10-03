@@ -70,10 +70,10 @@
   --color-primary-active: oklch(0.405 0.179 18); /* base − 0.10 L */
   --color-primary-deep: oklch(0.348 0.121 16);
   --color-primary-glow: oklch(0.505 0.179 18);
-  --color-primary-light: oklch(0.966 0.014 7);
-  --color-primary-muted: oklch(0.978 0.011 10);
-  --color-card-tint: oklch(0.985 0.007 17);
-  --color-primary-border: oklch(0.87 0.051 7);
+  --color-primary-light: oklch(0.968 0 0);       /* neutral — was pinkish */
+  --color-primary-muted: oklch(0.978 0 0);       /* neutral — was pinkish */
+  --color-card-tint: oklch(0.985 0 0);           /* neutral — was pinkish */
+  --color-primary-border: oklch(0.88 0 0);       /* neutral — was red-tinted */
   --color-secondary-accent: oklch(0.46 0.164 17);
   --color-primary-foreground: oklch(1 0 0);
 

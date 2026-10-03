@@ -156,7 +156,7 @@ export function StatsBand() {
   return (
     <section className="bg-background">
       <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
-        <div className="grid gap-8 rounded-3xl border border-primary-border bg-primary-muted px-6 py-10 sm:grid-cols-2 lg:grid-cols-4 lg:px-10">
+        <div className="grid gap-8 rounded-3xl border border-border bg-surface-2 px-6 py-10 sm:grid-cols-2 lg:grid-cols-4 lg:px-10">
           {STATS.map((stat) => (
             <div key={stat.label} className="text-center">
               <StatValue value={stat.value} suffix={stat.suffix} />
@@ -193,7 +193,7 @@ export function CaseStudySection() {
               description="Priya transformed her detection skills into an applied engineering workflow. Every step is an immutable record in her profile."
             />
             <div className="mt-6 flex items-center gap-4">
-              <div className="grid size-12 place-items-center rounded-full border border-primary/25 bg-primary/10 font-display text-lg font-semibold text-primary">
+              <div className="grid size-12 place-items-center rounded-full border border-border bg-muted font-display text-lg font-semibold text-foreground">
                 P
               </div>
               <div>
@@ -219,11 +219,10 @@ export function CaseStudySection() {
                 >
                   <Card className={cn(
                     "relative h-full overflow-hidden border-border/50 p-6 transition-all duration-300 hover:-translate-y-1 hover:border-primary/40 hover:shadow-xl hover:shadow-primary/5",
-                    index === 3 
-                      ? "bg-gradient-to-br from-primary/10 via-primary/5 to-background" 
+                      ? "bg-gradient-to-br from-muted/60 via-muted/30 to-background"
                       : "bg-gradient-to-br from-card via-card/80 to-card/30"
                   )}>
-                    <div className="absolute inset-0 bg-gradient-to-r from-primary/0 via-primary/5 to-primary/0 opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+                    <div className="absolute inset-0 bg-gradient-to-r from-muted/0 via-muted/10 to-muted/0 opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
                     
                     {index === 3 && (
                       <div className="absolute -right-8 -top-8 text-primary/10 transition-transform duration-500 group-hover:scale-110">
@@ -233,7 +232,7 @@ export function CaseStudySection() {
                     
                     <div className={cn("relative z-10 flex h-full flex-col", index === 2 ? "sm:flex-row sm:items-center sm:justify-between" : "")}>
                       <div className="flex-1">
-                        <div className="mb-4 inline-flex size-10 items-center justify-center rounded-xl bg-primary/10 text-primary">
+                        <div className="mb-4 inline-flex size-10 items-center justify-center rounded-xl bg-muted text-muted-foreground">
                           <Icon className="size-5" />
                         </div>
                         <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-primary">{step.title}</p>
@@ -249,8 +248,8 @@ export function CaseStudySection() {
                       {index === 2 && (
                         <div className="mt-6 flex shrink-0 sm:mt-0 sm:justify-end">
                           <div className="flex -space-x-3">
-                            <div className="size-12 rounded-full border-4 border-background bg-primary/20" />
-                            <div className="size-12 rounded-full border-4 border-background bg-primary/40" />
+                            <div className="size-12 rounded-full border-4 border-background bg-muted" />
+                            <div className="size-12 rounded-full border-4 border-background bg-muted-foreground/30" />
                             <div className="flex size-12 items-center justify-center rounded-full border-4 border-background bg-primary font-display text-sm font-bold text-primary-foreground shadow-sm">
                               <ShieldCheck className="size-5" />
                             </div>
