@@ -219,6 +219,7 @@ export function CaseStudySection() {
                 >
                   <Card className={cn(
                     "relative h-full overflow-hidden border-border/50 p-6 transition-all duration-300 hover:-translate-y-1 hover:border-primary/40 hover:shadow-xl hover:shadow-primary/5",
+                    index === 3
                       ? "bg-gradient-to-br from-muted/60 via-muted/30 to-background"
                       : "bg-gradient-to-br from-card via-card/80 to-card/30"
                   )}>
