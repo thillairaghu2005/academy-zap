@@ -45,7 +45,7 @@ function NavLink({
       className={cn(
         "relative flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm transition-colors outline-none focus-visible:ring-2 focus-visible:ring-ring",
         active
-          ? "font-semibold text-secondary-accent"
+          ? "font-semibold text-foreground"
           : "text-muted-foreground hover:bg-secondary hover:text-foreground",
       )}
       aria-current={active ? "page" : undefined}
@@ -54,10 +54,10 @@ function NavLink({
         <motion.span
           layoutId="active-rail-pill"
           transition={{ type: "spring", bounce: 0, duration: 0.4 }}
-          className="absolute inset-0 rounded-xl border border-primary/15 bg-primary-light shadow-[inset_3px_0_0_var(--color-primary)]"
+          className="absolute inset-0 rounded-xl border border-border bg-secondary"
         />
       ) : active ? (
-        <span className="absolute inset-0 rounded-xl border border-primary/15 bg-primary-light shadow-[inset_3px_0_0_var(--color-primary)]" />
+        <span className="absolute inset-0 rounded-xl border border-border bg-secondary" />
       ) : null}
       <Icon className="relative z-[1] size-4 shrink-0" />
       <span className="relative z-[1] min-w-0 flex-1 truncate">{label}</span>
