@@ -263,7 +263,7 @@ function MarketplaceHero() {
       <div className="flex flex-col items-center text-center gap-8 p-7 sm:p-10 lg:p-12">
         <div className="max-w-2xl flex flex-col items-center gap-8 py-2">
           <div>
-            <h1 className="font-display text-h1 font-semibold leading-[1.05] tracking-tight text-foreground">
+            <h1 className="font-display text-h1 font-semibold leading-none tracking-tight text-foreground">
               Go beyond courses. <br className="hidden sm:inline" />
               <span className="bg-gradient-to-r from-primary via-primary-deep to-primary bg-[length:200%_auto] bg-clip-text text-transparent animate-gradient-x">
                 Build expertise.
@@ -285,17 +285,17 @@ function MarketplaceHero() {
             ))}
           </div>
 
-          <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-3 text-sm font-medium text-muted-foreground">
-            <span className="inline-flex items-center gap-2 text-foreground/80">
-              <GraduationCap className="size-4.5 text-primary/80" aria-hidden="true" />
+          <div className="flex flex-wrap items-center justify-center gap-x-8 gap-y-3 text-sm font-medium text-muted-foreground">
+            <span className="inline-flex items-center gap-2 text-foreground font-semibold">
+              <GraduationCap className="size-5 text-primary drop-shadow-sm" strokeWidth={2.5} aria-hidden="true" />
               Industry instructors
             </span>
-            <span className="inline-flex items-center gap-2 text-foreground/80">
-              <Sparkles className="size-4 text-primary/80" aria-hidden="true" />
+            <span className="inline-flex items-center gap-2 text-foreground font-semibold">
+              <Sparkles className="size-5 text-primary drop-shadow-sm" strokeWidth={2.5} aria-hidden="true" />
               Labs &amp; assessments
             </span>
-            <span className="inline-flex items-center gap-2 text-foreground/80">
-              <ShieldCheck className="size-4 text-primary/80" aria-hidden="true" />
+            <span className="inline-flex items-center gap-2 text-foreground font-semibold">
+              <ShieldCheck className="size-5 text-primary drop-shadow-sm" strokeWidth={2.5} aria-hidden="true" />
               30-day refund guarantee
             </span>
           </div>
