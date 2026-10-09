@@ -32,7 +32,6 @@ import type { Course, CourseLesson } from "@/lib/contracts/content";
 import {
   enroll,
   getCourseProgress,
-  getLessonPreview,
   type CourseProgress,
 } from "@/lib/data/demo/content";
 import { CourseReviews } from "@/components/courses/course-reviews";
@@ -49,16 +48,6 @@ import { PageContainer } from "@/components/shared/page-container";
 import { ErrorState } from "@/components/shared/error-state";
 import { EmptyState } from "@/components/shared/empty-state";
 import { cn } from "@/lib/utils";
-
-import { InstructorCard } from "@/components/courses/instructor-card";
-import { CourseTrustPanel } from "@/components/courses/course-trust-panel";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
 
 function formatDuration(seconds: number): string {
   const mins = Math.round(seconds / 60);
@@ -109,11 +98,6 @@ function LessonRow({
           formatDuration(lesson.duration_seconds)
         )}
       </span>
-      {lesson.isPreview ? (
-        <Badge variant="info" className="text-caption">
-          <Eye className="size-3" /> Preview
-        </Badge>
-      ) : null}
     </>
   );
   const className = cn(
@@ -129,66 +113,6 @@ function LessonRow({
   );
 }
 
-function PreviewLessonDialog({
-  courseId,
-  lesson,
-  open,
-  onOpenChange,
-}: {
-  courseId: string;
-  lesson: CourseLesson | null;
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-}) {
-  const previewQuery = useQuery({
-    queryKey: ["lesson-preview", lesson?.id],
-    queryFn: () => getLessonPreview(lesson?.id ?? ""),
-    enabled: open && Boolean(lesson),
-  });
-
-  return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl">
-        <DialogHeader>
-          <DialogTitle>{lesson?.title ?? "Lesson preview"}</DialogTitle>
-          <DialogDescription>
-            A free preview from this course. Sign in to keep learning beyond this lesson.
-          </DialogDescription>
-        </DialogHeader>
-        {previewQuery.isLoading ? (
-          <div className="flex h-48 items-center justify-center text-sm text-muted-foreground">
-            Loading preview…
-          </div>
-        ) : previewQuery.isError ? (
-          <p className="rounded-lg border border-destructive/25 bg-destructive/5 p-4 text-sm text-destructive">
-            This preview is temporarily unavailable.
-          </p>
-        ) : previewQuery.data ? (
-          <div className="flex flex-col gap-4">
-            {previewQuery.data.manifest_url ? (
-              <video
-                controls
-                preload="metadata"
-                className="aspect-video w-full rounded-lg bg-foreground object-cover"
-                src={previewQuery.data.manifest_url}
-              />
-            ) : null}
-            <div className="rounded-lg border border-border bg-muted/30 p-4">
-              <p className="text-sm leading-relaxed text-muted-foreground">
-                {previewQuery.data.body}
-              </p>
-            </div>
-            <Button variant="gradient" asChild>
-              <Link href={`/login?next=${encodeURIComponent(`/courses/${courseId}/learn`)}`}>
-                Sign in to continue learning <ArrowRight />
-              </Link>
-            </Button>
-          </div>
-        ) : null}
-      </DialogContent>
-    </Dialog>
-  );
-}
 
 export function CourseDetailClient({
   course,
@@ -247,7 +171,6 @@ export function CourseDetailClient({
   const completedSet = new Set(progress?.completed_lesson_ids ?? []);
   const completedCount = allLessons.filter((l) => completedSet.has(l.id)).length;
   const isDraft = course.status === "draft";
-  const [previewLesson, setPreviewLesson] = React.useState<CourseLesson | null>(null);
 
 
   return (
@@ -288,26 +211,26 @@ export function CourseDetailClient({
       <div className="mt-8 grid gap-8 lg:grid-cols-[minmax(0,1fr)_380px] lg:items-start">
         <div className="flex flex-col gap-6">
           
-          {/* Bento Main Header Card */}
-          <div className="flex flex-col gap-4 rounded-[28px] border border-border bg-card p-8 shadow-[0_12px_32px_rgb(17_24_39_/_0.08)]">
+          {/* Enterprise Main Header Card */}
+          <div className="flex flex-col gap-6 border border-border bg-card p-8 sm:p-10 shadow-sm">
             <div className="flex flex-wrap items-center gap-2">
-              <Badge variant="secondary" className="bg-muted/50 text-foreground border-transparent">{course.category}</Badge>
-              <Badge variant="secondary" className="bg-muted/50 text-foreground border-transparent">{course.level}</Badge>
-              <Badge variant="secondary" className="bg-muted/50 text-foreground border-transparent">
+              <Badge variant="outline" className="rounded-sm bg-muted/30 uppercase tracking-wider text-xs font-semibold">{course.category}</Badge>
+              <Badge variant="outline" className="rounded-sm bg-muted/30 uppercase tracking-wider text-xs font-semibold">{course.level}</Badge>
+              <Badge variant="outline" className="rounded-sm bg-muted/30 uppercase tracking-wider text-xs font-semibold">
                 <Globe className="size-3 mr-1" />
                 {course.language}
               </Badge>
-              <Badge variant="secondary" className={isFree ? "bg-success/10 text-success-strong border-transparent" : "bg-primary/10 text-primary border-transparent"}>
+              <Badge variant="outline" className={isFree ? "rounded-sm border-success/30 bg-success/10 text-success-strong uppercase tracking-wider text-xs font-semibold" : "rounded-sm border-primary/30 bg-primary/10 text-primary uppercase tracking-wider text-xs font-semibold"}>
                 {isFree ? "Free" : `$${(course.price_cents / 100).toFixed(0)}`}
               </Badge>
             </div>
 
-             <h1 className="max-w-4xl font-display text-h1 tracking-[-0.05em] text-foreground">
+             <h1 className="max-w-4xl font-display text-4xl sm:text-5xl tracking-tight text-foreground font-semibold">
               {course.title}
             </h1>
-            <p className="text-lg text-muted-foreground">{course.subtitle}</p>
+            <p className="text-lg text-muted-foreground leading-relaxed max-w-3xl">{course.subtitle}</p>
 
-            <div className="flex flex-wrap items-center gap-x-5 gap-y-2 text-sm text-muted-foreground">
+            <div className="flex flex-wrap items-center gap-x-6 gap-y-3 text-sm text-muted-foreground border-y border-border/50 py-4 mt-2">
               <span className="flex items-center gap-1.5">
                  <Star className="size-4 fill-primary text-primary" />
                 <span className="font-medium text-foreground">
@@ -328,8 +251,8 @@ export function CourseDetailClient({
             </div>
 
             {/* Instructor Inline */}
-            <div className="mt-4 flex items-center gap-3 border-t border-border/50 pt-6">
-               <div className="flex size-10 shrink-0 items-center justify-center rounded-full bg-primary/10 font-bold text-lg text-primary">
+            <div className="flex items-center gap-3 mt-2">
+               <div className="flex size-10 shrink-0 items-center justify-center bg-primary/10 font-bold text-lg text-primary">
                 {course.instructor.display_name.charAt(0)}
               </div>
               <div>
@@ -352,49 +275,48 @@ export function CourseDetailClient({
            </div>
            <section
              aria-labelledby="course-outcome-title"
-             className="mt-3 rounded-2xl border border-primary/15 bg-primary/5 p-4 sm:p-5"
+             className="mt-6 border border-border bg-card p-6 shadow-sm"
            >
-             <div className="flex flex-wrap items-end justify-between gap-3">
+             <div className="flex flex-wrap items-end justify-between gap-3 border-b border-border/50 pb-4">
                <div>
                  <p className="text-xs font-semibold uppercase tracking-[0.13em] text-primary">The working loop</p>
                  <h2 id="course-outcome-title" className="mt-1 font-display text-xl font-semibold tracking-[-0.025em]">Learn it. Use it. Prove it.</h2>
                </div>
-               <Button variant="outline" size="sm" asChild>
-                 <Link href="/dashboard#next-move">Build your path <ArrowRight /></Link>
+               <Button variant="outline" size="sm" className="rounded-sm" asChild>
+                 <Link href="/dashboard#next-move">Build your path <ArrowRight className="ml-1" /></Link>
                </Button>
              </div>
-             <div className="mt-4 grid gap-2 sm:grid-cols-3">
-               <div className="rounded-xl border border-primary/10 bg-card p-3">
-                 <BookOpen className="size-4 text-primary" aria-hidden="true" />
-                 <p className="mt-2 text-sm font-semibold">Learn</p>
+             <div className="mt-6 grid gap-6 sm:grid-cols-3">
+               <div className="p-2">
+                 <BookOpen className="size-5 text-primary mb-3" aria-hidden="true" />
+                 <p className="text-sm font-semibold">Learn</p>
                  <p className="mt-1 text-xs leading-relaxed text-muted-foreground">Short lessons turn the concept into a usable mental model.</p>
                </div>
-               <div className="rounded-xl border border-primary/10 bg-card p-3">
-                 <FlaskConical className="size-4 text-primary" aria-hidden="true" />
-                 <p className="mt-2 text-sm font-semibold">Practice</p>
+               <div className="p-2 border-l border-border/50 pl-6">
+                 <FlaskConical className="size-5 text-primary mb-3" aria-hidden="true" />
+                 <p className="text-sm font-semibold">Practice</p>
                  <p className="mt-1 text-xs leading-relaxed text-muted-foreground">Hands-on prompts make the tradeoffs visible before they matter.</p>
                </div>
-               <div className="rounded-xl border border-primary/10 bg-card p-3">
-                 <CheckCircle2 className="size-4 text-success-strong" aria-hidden="true" />
-                 <p className="mt-2 text-sm font-semibold">Prove</p>
+               <div className="p-2 border-l border-border/50 pl-6">
+                 <CheckCircle2 className="size-5 text-success-strong mb-3" aria-hidden="true" />
+                 <p className="text-sm font-semibold">Prove</p>
                  <p className="mt-1 text-xs leading-relaxed text-muted-foreground">Verified work becomes evidence you can return to and share.</p>
                </div>
              </div>
            </section>
-           <CourseTrustPanel courseId={course.id} />
         </div>
 
         {/* CTA card */}
         <div className="sticky top-20 z-20 self-start lg:top-24">
-           <div className="flex flex-col gap-6 overflow-hidden rounded-[28px] border border-border bg-card p-6 shadow-[0_12px_32px_rgb(17_24_39_/_0.08)]">
+           <div className="flex flex-col gap-6 border border-border bg-card p-6 shadow-sm">
             
             {enrollment ? (
               <div className="mb-2">
-                <p className="mb-2 text-xs font-medium text-muted-foreground">Your progress</p>
+                <p className="mb-2 text-xs font-medium text-muted-foreground uppercase tracking-widest">Your progress</p>
                 <div className="flex items-center gap-2">
                   <Progress
                     value={enrollment.progress_pct}
-                     className="h-2 bg-muted flex-1"
+                     className="h-1.5 bg-muted flex-1"
                      indicatorClassName="bg-primary"
                   />
                    <span className="text-xs font-semibold text-foreground">
@@ -404,11 +326,11 @@ export function CourseDetailClient({
               </div>
             ) : null}
 
-            <div className="flex flex-col gap-4">
-               <div className="flex items-end justify-between border-b border-border/60 pb-4">
+            <div className="flex flex-col gap-5">
+               <div className="flex items-end justify-between border-b border-border/60 pb-5">
                 <div className="flex flex-col">
-                  <span className="text-xs text-muted-foreground uppercase tracking-wider font-semibold mb-1">Price</span>
-                  <span className="font-display text-h2 leading-none">
+                  <span className="text-xs text-muted-foreground uppercase tracking-wider font-semibold mb-1">Pricing</span>
+                  <span className="font-display text-4xl font-semibold leading-none text-foreground">
                     {isFree ? "Free" : `$${(course.price_cents / 100).toFixed(0)}`}
                   </span>
                 </div>
@@ -420,36 +342,36 @@ export function CourseDetailClient({
               </div>
 
               {!isEnrolledUser ? (
-                <Button variant="gradient" asChild className="w-full">
+                <Button className="w-full rounded-sm h-12 text-base font-semibold" asChild>
                   <Link href={`/login?next=${encodeURIComponent(`/courses/${course.id}/learn`)}`}>
                     Sign in to enroll
                   </Link>
                 </Button>
               ) : progressLoading || (ownedQuery.isLoading && !isFree) ? (
-                <Button variant="gradient" disabled className="w-full">
-                  <LoaderCircle className="animate-spin" />
+                <Button disabled className="w-full rounded-sm h-12 text-base font-semibold">
+                  <LoaderCircle className="animate-spin mr-2" />
                   Checking access…
                 </Button>
               ) : progressError || (ownedQuery.isError && !isFree) ? (
                 <ErrorState
                   title="Couldn't check your access"
                   message="Refresh to retry."
-                  className="px-4 py-6"
+                  className="px-4 py-6 rounded-sm border-destructive/20"
                 />
               ) : enrollment ? (
                 <>
                   {enrollment.status === "completed" ? (
-                    <div className="flex items-center gap-2 rounded-md bg-success/10 px-3 py-2 text-sm font-medium text-success-strong">
+                    <div className="flex items-center gap-2 border border-success/30 bg-success/10 px-3 py-2 text-sm font-medium text-success-strong">
                       <CheckCircle2 className="size-4" />
                       Course completed — great climb!
                     </div>
                   ) : null}
-                  <Button asChild className="w-full">
+                  <Button asChild className="w-full rounded-sm h-12 text-base font-semibold">
                     <Link href={`/courses/${course.id}/learn`}>
                       {enrollment.progress_pct > 0
                         ? "Continue learning"
                         : "Start course"}
-                      <ArrowRight />
+                      <ArrowRight className="ml-2" />
                     </Link>
                   </Button>
                   <p className="text-center text-xs text-muted-foreground">
@@ -457,52 +379,49 @@ export function CourseDetailClient({
                   </p>
                 </>
               ) : isPreview ? (
-                <Button disabled className="w-full">
+                <Button disabled className="w-full rounded-sm h-12 text-base font-semibold">
                   {isDraft
                     ? "Draft — not enrollable"
                     : "In review — not enrollable"}
                 </Button>
               ) : !isFree && !owned ? (
-                /* Paid + not owned → entitlement gate: Buy now / Add to cart */
-                <div className="flex flex-col gap-2.5">
-                  <BuyNowButton productId={course.id} className="w-full" />
-                  <AddToCartButton productId={course.id} className="w-full" />
-                  <p className="flex items-start gap-1.5 text-xs leading-relaxed text-muted-foreground">
-                    <Lock className="mt-0.5 size-3.5 shrink-0 text-warning-strong" />
-                    You don&apos;t have access yet. Payment happens on the
-                    provider&apos;s hosted page — no card data touches Zapsters.
+                <div className="flex flex-col gap-3">
+                  <BuyNowButton productId={course.id} className="w-full rounded-sm h-12 text-base font-semibold" />
+                  <AddToCartButton productId={course.id} className="w-full rounded-sm h-12" />
+                  <p className="flex items-start gap-1.5 text-xs leading-relaxed text-muted-foreground mt-2 border-t border-border/50 pt-3">
+                    <Lock className="mt-0.5 size-3.5 shrink-0 text-muted-foreground" />
+                    Payment happens on the provider&apos;s hosted page — no card data touches Zapsters.
                   </p>
                 </div>
               ) : (
                 <Button
-                  variant="gradient"
-                  className="w-full"
+                  className="w-full rounded-sm h-12 text-base font-semibold"
                   disabled={enrollMutation.isPending}
                   onClick={() => enrollMutation.mutate()}
                 >
                   {enrollMutation.isPending ? (
                     <>
-                      <LoaderCircle className="animate-spin" />
+                      <LoaderCircle className="animate-spin mr-2" />
                       Enrolling…
                     </>
                   ) : isFree ? (
                     <>
                       Enroll for free
-                      <ArrowRight />
+                      <ArrowRight className="ml-2" />
                     </>
                   ) : (
                     <>
                       Enroll now
-                      <ArrowRight />
+                      <ArrowRight className="ml-2" />
                     </>
                   )}
                 </Button>
               )}
 
               {enrollment ? (
-                <Button variant="outline" asChild className="w-full">
+                <Button variant="outline" asChild className="w-full rounded-sm border-border">
                   <Link href={`/courses/${course.id}/learn`}>
-                    <BookOpen className="size-4" />
+                    <BookOpen className="size-4 mr-2" />
                     Open syllabus view
                   </Link>
                 </Button>
@@ -524,9 +443,6 @@ export function CourseDetailClient({
               </div>
             </div>
            </div>
-          <div className="mt-6">
-            <InstructorCard instructorId={course.instructor.id} />
-          </div>
         </div>
       </div>
 
@@ -542,20 +458,20 @@ export function CourseDetailClient({
           )}
         </p>
 
-        <div className="mt-4 flex flex-col gap-3">
+        <div className="mt-6 flex flex-col gap-4">
           {course.syllabus.map((section, si) => {
             const sectionCompleted = section.lessons.filter(
               (l) => completedSet.has(l.id),
             ).length;
             return (
-               <div key={section.id} className="rounded-[28px] border border-border bg-card shadow-[0_4px_16px_rgb(17_24_39_/_0.04)] overflow-hidden">
-                <div className="flex flex-row items-center justify-between gap-3 p-6 pb-4">
+               <div key={section.id} className="border border-border bg-card shadow-sm">
+                <div className="flex flex-row items-center justify-between gap-3 bg-muted/20 border-b border-border/40 p-5">
                   <div className="flex items-center gap-4">
-                    <span className="flex size-8 items-center justify-center rounded-full bg-primary/10 font-display text-sm font-bold text-primary">
-                      {si + 1}
+                    <span className="text-xs font-bold text-muted-foreground uppercase tracking-widest min-w-8">
+                      {String(si + 1).padStart(2, '0')}
                     </span>
                     <div>
-                      <h3 className="font-display text-lg font-semibold text-foreground">
+                      <h3 className="font-semibold text-foreground text-base">
                         {section.title}
                       </h3>
                       <p className="text-xs text-muted-foreground mt-0.5">
@@ -564,59 +480,24 @@ export function CourseDetailClient({
                     </div>
                   </div>
                   {enrollment && sectionCompleted > 0 ? (
-                    <Badge variant="secondary" className="bg-success/10 text-success-strong text-caption border-transparent">
+                    <Badge variant="outline" className="border-success/30 bg-success/10 text-success-strong text-caption">
                       {sectionCompleted}/{section.lessons.length}
                     </Badge>
                   ) : null}
                 </div>
-                <div className="p-4 pt-0">
+                <div className="p-2">
                   {section.lessons.map((lesson, li) => (
                     <LessonRow
                       key={lesson.id}
                       lesson={lesson}
                       index={li}
                        completed={completedSet.has(lesson.id)}
-                       onPreview={
-                         lesson.isPreview
-                           ? () => setPreviewLesson(lesson)
-                           : undefined
-                       }
                      />
                   ))}
                 </div>
               </div>
             );
           })}
-        </div>
-      </div>
-
-      <PreviewLessonDialog
-        courseId={course.id}
-        lesson={previewLesson}
-        open={Boolean(previewLesson)}
-        onOpenChange={(open) => {
-          if (!open) setPreviewLesson(null);
-        }}
-      />
-
-      <div className="mt-8 rounded-[28px] border border-primary/20 bg-primary/5 p-6 shadow-[0_4px_16px_rgb(17_24_39_/_0.04)]">
-        <div className="flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
-          <div className="flex items-start gap-4">
-            <span className="flex size-12 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
-              <MessageCircle className="size-5" />
-            </span>
-            <div>
-              <h2 className="font-display text-xl font-semibold text-foreground">Stuck? Talk to a mentor</h2>
-              <p className="mt-1 text-sm text-muted-foreground">
-                Get practical guidance from someone who works in the field.
-              </p>
-            </div>
-          </div>
-          <Button variant="outline" className="rounded-xl h-10 px-6 font-semibold" asChild>
-            <Link href="/mentors">
-              Browse mentors <ArrowRight className="ml-1.5 size-4" />
-            </Link>
-          </Button>
         </div>
       </div>
 
