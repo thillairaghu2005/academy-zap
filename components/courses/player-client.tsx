@@ -263,7 +263,7 @@ export function PlayerClient({ course }: { course: Course }) {
   const previousLesson = activeLessonIndex > 0 ? allLessons[activeLessonIndex - 1] ?? null : null;
   const nextLesson = activeLessonIndex >= 0 && activeLessonIndex < allLessons.length - 1 ? allLessons[activeLessonIndex + 1] ?? null : null;
 
-  const isVideo = activeLesson?.kind === "video";
+  const isVideo = false; // User requested no video in course content
 
   // Full lesson content is enrollment-gated on the backend (slice 02 §2) and is never part of
   // the public course payload. In demo mode the mock fixtures already carry the body on the

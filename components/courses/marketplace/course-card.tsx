@@ -133,6 +133,7 @@ export const CourseCard = React.memo(function CourseCard({
 
 function CardActions({ course, enrolled }: { course: MarketplaceCourse; enrolled: boolean }) {
   const actions = useCourseActions(course);
+  const isLoggedIn = !!actions.userId;
 
   if (course.comingSoon) {
     return (
@@ -142,68 +143,31 @@ function CardActions({ course, enrolled }: { course: MarketplaceCourse; enrolled
     );
   }
 
+  if (!isLoggedIn) {
+    return (
+      <Button size="sm" className="h-9 px-5 rounded-lg text-xs font-semibold shadow-none bg-primary text-primary-foreground hover:bg-primary/90" asChild>
+        <Link href={`/login?callbackUrl=/courses/${course.id}`}>
+          Enroll
+        </Link>
+      </Button>
+    );
+  }
+
   if (enrolled) {
     return (
       <Button size="sm" className="h-9 px-5 rounded-lg text-xs font-semibold shadow-none bg-primary text-primary-foreground hover:bg-primary/90" asChild>
-        <Link href={`/courses/${course.id}/learn`}>
-          {(course.progressPercent ?? 0) > 0 ? "Continue" : "Start"}
-        </Link>
-      </Button>
-    );
-  }
-
-  if (course.isFree) {
-    return (
-      <Button
-        size="sm"
-        className="h-9 px-5 rounded-lg text-xs font-medium shadow-none bg-primary text-primary-foreground hover:bg-primary/90"
-        onClick={actions.startLearning.run}
-        disabled={actions.startLearning.pending}
-      >
-        {actions.startLearning.pending ? (
-          <LoaderCircle className="mr-1.5 size-3.5 animate-spin" />
-        ) : null}
-        Apply now
-      </Button>
-    );
-  }
-
-  return (
-    <CartActions course={course} actions={actions} />
-  );
-}
-
-function CartActions({
-  course,
-  actions,
-}: {
-  course: MarketplaceCourse;
-  actions: ReturnType<typeof useCourseActions>;
-}) {
-  const { cartProductIds } = useMarketplaceState();
-  const inCart = cartProductIds.has(course.id);
-
-  if (inCart) {
-    return (
-      <Button variant="secondary" size="sm" className="h-9 px-5 rounded-lg text-xs font-medium" asChild>
-        <Link href="/cart">
-          <Check className="mr-1.5 size-3.5 text-success-strong" />
-          In cart
+        <Link href={`/courses/${course.id}`}>
+          Resume
         </Link>
       </Button>
     );
   }
 
   return (
-    <Button
-      size="sm"
-      aria-label={`Buy now — ${course.title}`}
-      onClick={actions.buyNow.run}
-      disabled={actions.buyNow.pending}
-      className="h-9 px-5 rounded-lg text-xs font-medium shadow-none bg-primary text-primary-foreground hover:bg-primary/90"
-    >
-      {actions.buyNow.pending ? <LoaderCircle className="mr-1.5 size-3.5 animate-spin" /> : null}
-      Apply now
+    <Button size="sm" className="h-9 px-5 rounded-lg text-xs font-semibold shadow-none bg-primary text-primary-foreground hover:bg-primary/90" asChild>
+      <Link href={`/courses/${course.id}`}>
+        Enroll
+      </Link>
     </Button>
   );
 }
