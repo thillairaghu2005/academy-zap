@@ -523,9 +523,117 @@ export function PlayerClient({ course }: { course: Course }) {
         ) : null}
       </div>
 
-      <div className="flex flex-1 flex-col lg:flex-row">
+      <div className="flex flex-1 flex-col lg:flex-row items-stretch">
+        {/* Lesson sidebar */}
+        <aside className="w-full shrink-0 border-b border-border bg-white lg:w-[360px] lg:border-b-0 lg:border-r">
+          <div className="bg-gradient-to-r from-[#008272] to-[#006060] px-6 py-10 text-white">
+            <h2 className="font-display text-2xl font-bold leading-tight">{course.title}</h2>
+            <div className="mt-8">
+              <Progress
+                value={enrollment?.progress_pct ?? 0}
+                className="h-1 w-full bg-white/20 [&>div]:bg-white"
+              />
+              <p className="mt-3 text-xs font-bold tracking-widest">{enrollment?.progress_pct ?? 0}% COMPLETE</p>
+            </div>
+          </div>
+
+          <div className="flex flex-col">
+            {course.syllabus.map((section) => {
+              const collapsed = collapsedSections[section.id] === true;
+              const sectionContentId = `course-section-${section.id}`;
+              return (
+                <div key={section.id} className="border-b border-border">
+                  <button
+                    className="flex w-full items-center gap-3 px-6 py-5 text-left hover:bg-slate-50"
+                    type="button"
+                    aria-expanded={!collapsed}
+                    aria-controls={sectionContentId}
+                    onClick={() =>
+                      setCollapsedSections((current) => ({
+                        ...current,
+                        [section.id]: !collapsed,
+                      }))
+                    }
+                  >
+                    <ChevronDown
+                      className={cn(
+                        "size-4 shrink-0 text-slate-800 transition-transform",
+                        collapsed && "-rotate-90",
+                      )}
+                    />
+                    <span className="flex-1 text-xs font-bold uppercase tracking-widest text-slate-800">
+                      {section.title}
+                    </span>
+                  </button>
+                  <div
+                    id={sectionContentId}
+                    hidden={collapsed}
+                    className="flex flex-col bg-white"
+                  >
+                    {section.lessons.map((lesson) => {
+                      const active = lesson.id === activeLesson?.id;
+                      const done = completedSet.has(lesson.id);
+                      return (
+                        <button
+                          key={lesson.id}
+                          type="button"
+                          onClick={() => {
+                            setPickedLessonId(lesson.id);
+                            setSpeed(1);
+                          }}
+                          className={cn(
+                            "group relative flex w-full items-center justify-between px-6 py-4 text-left transition-colors",
+                            active
+                              ? "bg-slate-100 text-slate-900 before:absolute before:inset-y-0 before:left-0 before:w-1.5 before:bg-[#008272]"
+                              : "text-slate-600 hover:bg-slate-50 hover:text-slate-900",
+                          )}
+                        >
+                          <div className="flex flex-1 items-start gap-3 pr-4">
+                            {lesson.kind === "article" ? (
+                              <FileText className={cn("mt-0.5 size-4 shrink-0", active ? "text-slate-900" : "text-slate-400")} />
+                            ) : (
+                              <PlayCircle className={cn("mt-0.5 size-4 shrink-0", active ? "text-slate-900" : "text-slate-400")} />
+                            )}
+                            <span className={cn("text-sm font-medium leading-tight", active && "font-semibold")}>
+                              {lesson.title}
+                            </span>
+                          </div>
+                          <div
+                            className={cn(
+                              "grid size-[18px] shrink-0 place-items-center rounded-full border-2",
+                              done
+                                ? "border-[#008272] bg-[#008272] text-white"
+                                : "border-slate-300",
+                            )}
+                          >
+                            {done && <Check className="size-3" strokeWidth={3} />}
+                          </div>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </aside>
+
         {/* Player / article main column */}
-        <div ref={articleRef} className="flex-1 p-4 sm:p-8 lg:p-10">
+        <div ref={articleRef} className="flex flex-1 flex-col bg-white">
+          {/* Main Content Header Banner */}
+          {activeLesson && (
+            <div className="bg-gradient-to-r from-[#008272] to-[#004e6e] px-8 py-16 text-white sm:px-12 lg:px-20">
+              <div className="flex items-center gap-3 text-sm italic tracking-wide text-white/90">
+                <span>Lesson {activeLessonIndex + 1} of {allLessons.length}</span>
+              </div>
+              <h1 className="mt-4 font-display text-4xl font-bold tracking-tight sm:text-5xl lg:text-6xl">
+                {activeLesson?.title}
+              </h1>
+              <div className="mt-10 h-1 w-24 bg-white" />
+            </div>
+          )}
+
+          <div className="mx-auto w-full max-w-[1200px] p-4 sm:p-8 lg:p-12">
           <CertificateDialog
             open={certificateOpen}
             onOpenChange={setCertificateOpen}
@@ -726,187 +834,10 @@ export function PlayerClient({ course }: { course: Course }) {
             </div>
           ) : null}
           {isCourseComplete ? <CourseCompletionSummary course={course} lessonCount={allLessons.length} /> : null}
+          </div>
         </div>
 
-        {/* Lesson sidebar */}
-        <aside className="w-full border-t border-border bg-white lg:w-96 lg:shrink-0 lg:border-l lg:border-t-0">
-          <div className="flex items-center justify-between border-b border-border px-5 py-4">
-            <h2 className="text-sm font-semibold">Course content</h2>
-            <span className="text-xs text-muted-foreground">
-              {completedSet.size}/{allLessons.length} done
-            </span>
-          </div>
-
-          {/* Lesson search (Task 4 — richer course UX) */}
-          <div className="border-b border-border px-3 py-2.5">
-            <label htmlFor="lesson-search" className="sr-only">
-              Search lessons
-            </label>
-            <div className="relative">
-              <Search className="pointer-events-none absolute left-2.5 top-1/2 size-3.5 -translate-y-1/2 text-muted-foreground" />
-              <input
-                id="lesson-search"
-                value={lessonSearch}
-                onChange={(event) => setLessonSearch(event.target.value)}
-                placeholder="Search lessons…"
-                className="h-9 w-full rounded-md border border-input bg-surface-1 pl-8 pr-3 text-xs outline-none transition-colors placeholder:text-muted-foreground/60 focus-visible:ring-2 focus-visible:ring-ring"
-              />
-            </div>
-          </div>
-
-          <div className="max-h-[60vh] overflow-y-auto px-3 pb-5 lg:max-h-[calc(100vh-6rem)]">
-            {noSearchResults ? (
-              <p className="px-2 py-8 text-center text-xs text-muted-foreground">
-                No lessons match “{lessonSearch.trim()}”.
-              </p>
-            ) : null}
-            {course.syllabus.map((section) => {
-              if (hasSearch) {
-                const visible = section.lessons.filter((lesson) =>
-                  filteredLessons!.has(lesson.id),
-                );
-                if (visible.length === 0) return null;
-                return (
-                  <div key={section.id} className="mb-3">
-                    <p className="px-2 pb-1 pt-1 text-caption font-semibold uppercase tracking-wide text-muted-foreground">
-                      {section.title}
-                    </p>
-                    <div className="flex flex-col gap-0.5">
-                      {visible.map((lesson) => (
-                        <button
-                          key={lesson.id}
-                          type="button"
-                          onClick={() => {
-                            setPickedLessonId(lesson.id);
-                            setSpeed(1);
-                          }}
-                          className={cn(
-                            "relative flex w-full items-center gap-2.5 rounded-md px-2.5 py-2 text-left text-xs transition-colors",
-                            lesson.id === activeLesson?.id
-                              ? "text-primary"
-                              : "text-muted-foreground hover:bg-accent/60 hover:text-foreground",
-                          )}
-                        >
-                          {lesson.id === activeLesson?.id && !reducedMotion ? (
-                            <motion.span
-                              layoutId="active-lesson-pill"
-                              transition={motionSprings.default}
-                              className="absolute inset-0 rounded-md bg-primary/10"
-                              aria-hidden="true"
-                            />
-                          ) : null}
-                          <PlayCircle className="relative size-4 shrink-0" />
-                          <span className="relative min-w-0 flex-1 truncate">
-                            {lesson.title}
-                          </span>
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                );
-              }
-              const sectionDone = section.lessons.filter((l) =>
-                completedSet.has(l.id),
-              ).length;
-              const collapsed = collapsedSections[section.id] === true;
-              const sectionContentId = `course-section-${section.id}`;
-              return (
-                <div key={section.id} className="mb-3">
-                  <button
-                    className="flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-left hover:bg-accent/60"
-                    type="button"
-                    aria-expanded={!collapsed}
-                    aria-controls={sectionContentId}
-                    aria-label={`${collapsed ? "Expand" : "Collapse"} ${section.title}`}
-                    onClick={() =>
-                      setCollapsedSections((current) => ({
-                        ...current,
-                        [section.id]: !collapsed,
-                      }))
-                    }
-                  >
-                    <ChevronDown
-                      className={cn(
-                        "size-3.5 text-muted-foreground transition-transform",
-                        collapsed && "-rotate-90",
-                      )}
-                    />
-                    <span className="flex-1 truncate text-xs font-medium">
-                      {section.title}
-                    </span>
-                    <span className="text-caption text-muted-foreground">
-                      {sectionDone}/{section.lessons.length}
-                    </span>
-                  </button>
-                  <div
-                    id={sectionContentId}
-                    hidden={collapsed}
-                    className="mt-1 flex flex-col gap-0.5"
-                  >
-                    {section.lessons.map((lesson, i) => {
-                      const active = lesson.id === activeLesson?.id;
-                      const done = completedSet.has(lesson.id);
-                      return (
-                        <button
-                          key={lesson.id}
-                          type="button"
-                          onClick={() => {
-                            setPickedLessonId(lesson.id);
-                            setSpeed(1);
-                          }}
-                          className={cn(
-                            "relative flex w-full items-center gap-2.5 rounded-md px-2.5 py-2 text-left text-xs transition-colors",
-                            active
-                              ? "text-primary"
-                              : "text-muted-foreground hover:bg-accent/60 hover:text-foreground",
-                          )}
-                        >
-                          {active && !reducedMotion ? (
-                            <motion.span
-                              layoutId="active-lesson-pill"
-                              transition={motionSprings.default}
-                              className="absolute inset-0 rounded-md bg-primary/10"
-                              aria-hidden="true"
-                            />
-                          ) : null}
-                          <span
-                            className={cn(
-                              "relative grid size-5 shrink-0 place-items-center rounded-full border text-caption font-medium",
-                              done
-                                ? "border-transparent bg-success/15 text-success-strong"
-                                : active
-                                  ? "border-primary/40 text-primary"
-                                  : "border-border text-muted-foreground",
-                            )}
-                          >
-                            {done ? (
-                              <Check className="size-3" />
-                            ) : (
-                              i + 1
-                            )}
-                          </span>
-                          <span className="relative min-w-0 flex-1 truncate">
-                            {lesson.title}
-                          </span>
-                          <span className="relative flex shrink-0 items-center gap-1 text-caption text-muted-foreground">
-                            {lesson.kind === "article" ? (
-                              <FileText className="size-3" />
-                            ) : (
-                              <PlayCircle className="size-3" />
-                            )}
-                            {lesson.kind === "article"
-                              ? "read"
-                              : formatClock(lesson.duration_seconds)}
-                          </span>
-                        </button>
-                      );
-                    })}
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        </aside>
+        {/* Old sidebar removed */}
       </div>
     </div>
   );
