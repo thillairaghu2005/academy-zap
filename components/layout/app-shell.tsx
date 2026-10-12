@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import { usePathname } from "next/navigation";
 
 import { TopNav } from "@/components/layout/top-nav";
 import { SideNav } from "@/components/layout/side-nav";
@@ -13,6 +14,7 @@ import { XpFlyout } from "@/components/gamification/xp-flyout";
 import { LevelUpCelebration } from "@/components/gamification/level-up-celebration";
 import { useSession } from "@/components/providers/session-provider";
 import { useRealtimeUpdates } from "@/lib/real-time/sse";
+import { cn } from "@/lib/utils";
 
 /**
  * Activates the real-time SSE freshness channel while a user is signed in (backend mode
@@ -29,6 +31,9 @@ function RealtimeUpdates() {
  * this: sticky top nav + responsive side nav + content region.
  */
 export function AppShell({ children }: { children: React.ReactNode }) {
+  const pathname = usePathname();
+  const isLearningCourse = pathname ? /^\/courses\/[^/]+\/learn/.test(pathname) : false;
+
   return (
     <AuthGuard>
       <div className="relative flex min-h-dvh flex-col overflow-x-clip bg-background">
@@ -42,7 +47,14 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         <DemoModeBadge />
         <div className="flex min-h-0 flex-1">
           <SideNav />
-          <main id="main-content" tabIndex={-1} className="min-w-0 flex-1 pb-20 outline-none lg:pb-0">
+          <main
+            id="main-content"
+            tabIndex={-1}
+            className={cn(
+              "min-w-0 flex-1 outline-none",
+              isLearningCourse ? "pb-0" : "pb-20 lg:pb-0"
+            )}
+          >
             {children}
           </main>
         </div>

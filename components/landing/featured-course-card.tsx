@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import Link from "next/link";
-import { Bookmark } from "lucide-react";
+
 
 import type { CourseSummary } from "@/lib/contracts/content";
 import { Button } from "@/components/ui/button";
@@ -32,14 +32,10 @@ export function FeaturedCourseCard({ course, visualClass, index: _index }: Featu
         className="absolute inset-0 z-0 rounded-[28px] focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-ring"
       />
 
-      {/* Header section (Avatar + Save) */}
+      {/* Header section (Avatar) */}
       <div className="relative z-10 mb-5 flex items-center justify-between">
         <div className="flex size-[42px] shrink-0 items-center justify-center rounded-full bg-primary/10 font-bold text-lg text-primary">
           {course.instructor_name.charAt(0)}
-        </div>
-        <div className="flex items-center gap-1.5 rounded-full bg-primary/5 px-2.5 py-1 text-[11px] font-medium text-primary/80 transition-colors hover:bg-primary/15 cursor-pointer">
-          Save
-          <Bookmark className="size-3" />
         </div>
       </div>
 

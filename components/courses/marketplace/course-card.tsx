@@ -3,7 +3,6 @@
 import * as React from "react";
 import Link from "next/link";
 import {
-  Bookmark,
   Check,
   LoaderCircle,
 } from "lucide-react";
@@ -57,19 +56,15 @@ export const CourseCard = React.memo(function CourseCard({
     >
       {/* Stretched link */}
       <Link
-        href={`/courses/${course.id}`}
+        href={enrolled ? `/courses/${course.id}/learn` : `/courses/${course.id}`}
         aria-label={course.title}
         className="absolute inset-0 z-0 rounded-[28px] focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-ring"
       />
 
-      {/* Header section (Avatar + Save) */}
+      {/* Header section (Avatar) */}
       <div className="relative z-10 mb-5 flex items-center justify-between">
         <div className="flex size-[42px] shrink-0 items-center justify-center rounded-full bg-primary/10 font-bold text-lg text-primary">
           {course.instructor.charAt(0)}
-        </div>
-        <div className="flex items-center gap-1.5 rounded-full bg-primary/5 px-2.5 py-1 text-[11px] font-medium text-primary/80 transition-colors hover:bg-primary/15 cursor-pointer">
-          Save
-          <Bookmark className="size-3" />
         </div>
       </div>
 
@@ -154,10 +149,11 @@ function CardActions({ course, enrolled }: { course: MarketplaceCourse; enrolled
   }
 
   if (enrolled) {
+    const hasProgress = (course.progressPercent ?? 0) > 0;
     return (
       <Button size="sm" className="h-9 px-5 rounded-lg text-xs font-semibold shadow-none bg-primary text-primary-foreground hover:bg-primary/90" asChild>
-        <Link href={`/courses/${course.id}`}>
-          Resume
+        <Link href={`/courses/${course.id}/learn`}>
+          {hasProgress ? "Resume" : "Start"}
         </Link>
       </Button>
     );
