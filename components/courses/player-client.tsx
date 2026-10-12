@@ -20,7 +20,6 @@ import {
   ArrowLeft,
   ArrowRight,
   Award,
-  Bookmark,
   Captions,
   CaptionsOff,
   Check,
@@ -28,7 +27,6 @@ import {
   ChevronDown,
   Clock,
   CodeXml,
-  Download,
   FileText,
   Gauge,
   Lightbulb,
@@ -59,18 +57,9 @@ import {
 } from "@/components/ui/select";
 import { ErrorState } from "@/components/shared/error-state";
 import { cn } from "@/lib/utils";
-import {
-  cacheCourseForOffline,
-  isCourseCached,
-} from "@/lib/offline/course-cache";
-import {
-  isCourseBookmarked,
-  toggleCourseBookmark,
-} from "@/lib/demo/course-notes";
 import { readDemoStorage, writeDemoStorage } from "@/lib/demo/storage";
 import { CertificateDialog } from "@/components/courses/certificate-dialog";
 import { PlayerNotes } from "@/components/courses/player-notes";
-import { DiscussionsPanel } from "@/components/courses/discussions";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { motionSprings } from "@/components/motion/motion-tokens";
 import { feedback } from "@/lib/feedback";
@@ -132,7 +121,7 @@ function ReadingProgress({
 function ArticleBody({ lesson }: { lesson: CourseLesson }) {
   const body = lesson.preview_body?.trim() || `## ${lesson.title}
 
-This lesson turns the idea into a practical skill. Read the notes below, try the example in your own environment, and finish by marking the lesson complete.
+This lesson turns the idea into a practical skill. Read the notes below and try the example in your own environment.
 
 ### What to remember
 
@@ -179,54 +168,16 @@ export function PlayerClient({ course }: { course: Course }) {
   // Only the user's explicit picks live in state — the resume lesson and the
   // first lesson are derived, so no effect is needed to sync them.
   const [pickedLessonId, setPickedLessonId] = React.useState<string | null>(null);
-  const [offlineSaved, setOfflineSaved] = React.useState(false);
-  const [offlineSaving, setOfflineSaving] = React.useState(false);
   const [collapsedSections, setCollapsedSections] = React.useState<
     Record<string, boolean>
   >({});
-  const [bookmarked, setBookmarked] = React.useState(() =>
-    isCourseBookmarked(course.id),
-  );
   const [lessonSearch, setLessonSearch] = React.useState("");
   const [certificateOpen, setCertificateOpen] = React.useState(false);
   const [explainOpen, setExplainOpen] = React.useState(false);
   const articleRef = React.useRef<HTMLDivElement | null>(null);
+  const contentEndRef = React.useRef<HTMLDivElement | null>(null);
+  const completedTriggeredRef = React.useRef<Set<string>>(new Set());
   const reducedMotion = useReducedMotion() ?? false;
-
-  React.useEffect(() => {
-    let cancelled = false;
-    void isCourseCached(course.id).then((cached) => {
-      if (!cancelled) setOfflineSaved(cached);
-    });
-    return () => {
-      cancelled = true;
-    };
-  }, [course.id]);
-
-  const saveForOffline = async () => {
-    setOfflineSaving(true);
-    try {
-      await cacheCourseForOffline(course);
-      setOfflineSaved(true);
-      announce("Course saved for offline reading");
-      toast.success("Course lessons saved for offline reading.");
-    } catch (error) {
-      toast.error(
-        error instanceof Error
-          ? error.message
-          : "Could not save this course offline.",
-      );
-    } finally {
-      setOfflineSaving(false);
-    }
-  };
-
-  const handleToggleBookmark = () => {
-    const nowBookmarked = toggleCourseBookmark(course.id);
-    setBookmarked(nowBookmarked);
-    announce(nowBookmarked ? "Course bookmarked" : "Bookmark removed");
-    toast(nowBookmarked ? "Course bookmarked ⭐" : "Bookmark removed");
-  };
 
   const filteredLessons = React.useMemo(() => {
     const query = lessonSearch.trim().toLowerCase();
@@ -398,6 +349,104 @@ export function PlayerClient({ course }: { course: Course }) {
     return () => window.removeEventListener("keydown", onKeyDown);
   }, [isVideo]);
 
+  // Scroll to top when active lesson changes
+  React.useEffect(() => {
+    window.scrollTo({ top: 0, behavior: "instant" });
+  }, [activeLessonId]);
+
+  // Auto-mark lesson as complete when learner scrolls down the content
+  React.useEffect(() => {
+    if (!activeLesson || isActiveCompleted) return;
+
+    let hasScrolled = window.scrollY > 40;
+
+    const checkAndComplete = () => {
+      if (
+        !activeLesson ||
+        isActiveCompleted ||
+        completedTriggeredRef.current.has(activeLesson.id)
+      ) {
+        return;
+      }
+
+      const isScrollable =
+        document.documentElement.scrollHeight > window.innerHeight + 80;
+
+      // If page is scrollable, require that user has actually scrolled down
+      if (isScrollable && !hasScrolled) {
+        return;
+      }
+
+      let reachedEnd = false;
+
+      // Check if content end sentinel has entered viewport
+      if (contentEndRef.current) {
+        const rect = contentEndRef.current.getBoundingClientRect();
+        if (rect.top <= window.innerHeight + 40) {
+          reachedEnd = true;
+        }
+      }
+
+      // Check if user has scrolled near bottom of page
+      if (!reachedEnd) {
+        const atBottom =
+          window.innerHeight + window.scrollY >=
+          document.documentElement.scrollHeight - 120;
+        if (atBottom) {
+          reachedEnd = true;
+        }
+      }
+
+      if (reachedEnd) {
+        completedTriggeredRef.current.add(activeLesson.id);
+        progressMutation.mutate({
+          lessonId: activeLesson.id,
+          positionSeconds: activeLesson.duration_seconds || 1,
+          completed: true,
+        });
+      }
+    };
+
+    const handleScroll = () => {
+      if (window.scrollY > 40) {
+        hasScrolled = true;
+      }
+      checkAndComplete();
+    };
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
+
+    let observer: IntersectionObserver | null = null;
+    if (contentEndRef.current && typeof IntersectionObserver !== "undefined") {
+      observer = new IntersectionObserver(
+        (entries) => {
+          for (const entry of entries) {
+            if (entry.isIntersecting) {
+              checkAndComplete();
+            }
+          }
+        },
+        { threshold: 0.1 }
+      );
+      observer.observe(contentEndRef.current);
+    }
+
+    // Fallback for short content that fits completely on screen without scrolling
+    const timer = setTimeout(() => {
+      const isScrollable =
+        document.documentElement.scrollHeight > window.innerHeight + 80;
+      if (!isScrollable) {
+        checkAndComplete();
+      }
+    }, 2000);
+
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+      if (observer) observer.disconnect();
+      clearTimeout(timer);
+    };
+  }, [activeLesson, isActiveCompleted, progressMutation]);
+
   const [captionsOn, setCaptionsOn] = React.useState(true);
   const toggleCaptions = () => {
     setCaptionsOn((v) => !v);
@@ -434,47 +483,7 @@ export function PlayerClient({ course }: { course: Course }) {
             Course
           </Link>
         </Button>
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={saveForOffline}
-          disabled={offlineSaving || offlineSaved}
-          aria-label={
-            offlineSaved
-              ? "Course saved for offline reading"
-              : "Save course for offline reading"
-          }
-        >
-          <Download />
-          {offlineSaving
-            ? "Saving..."
-            : offlineSaved
-              ? "Saved offline"
-              : "Save offline"}
-        </Button>
         {activeLesson ? <Button variant="ghost" size="sm" onClick={() => setExplainOpen(true)}><Lightbulb /> Explain this</Button> : null}
-        {offlineSaved ? (
-          <Link
-            href={`/offline/course/${encodeURIComponent(course.id)}`}
-            className="text-xs font-medium text-primary hover:underline"
-          >
-            Open offline
-          </Link>
-        ) : null}
-        <Button
-          variant={bookmarked ? "secondary" : "outline"}
-          size="sm"
-          onClick={handleToggleBookmark}
-          aria-pressed={bookmarked}
-          aria-label={
-            bookmarked
-              ? "Remove course bookmark"
-              : "Bookmark this course"
-          }
-        >
-          <Bookmark className={cn("size-4", bookmarked && "fill-current")} />
-          {bookmarked ? "Bookmarked" : "Bookmark"}
-        </Button>
         {isCourseComplete ? (
           <Button
             variant="gradient"
@@ -525,8 +534,8 @@ export function PlayerClient({ course }: { course: Course }) {
 
       <div className="flex flex-1 flex-col lg:flex-row items-stretch">
         {/* Lesson sidebar */}
-        <aside className="w-full shrink-0 border-b border-border bg-white lg:w-[360px] lg:border-b-0 lg:border-r">
-          <div className="bg-gradient-to-r from-[#008272] to-[#006060] px-6 py-10 text-white">
+        <aside className="w-full shrink-0 border-b border-border bg-card lg:w-[360px] lg:border-b-0 lg:border-r">
+          <div className="bg-gradient-to-r from-primary to-primary-deep px-6 py-10 text-white">
             <h2 className="font-display text-2xl font-bold leading-tight">{course.title}</h2>
             <div className="mt-8">
               <Progress
@@ -544,7 +553,7 @@ export function PlayerClient({ course }: { course: Course }) {
               return (
                 <div key={section.id} className="border-b border-border">
                   <button
-                    className="flex w-full items-center gap-3 px-6 py-5 text-left hover:bg-slate-50"
+                    className="flex w-full items-center gap-3 px-6 py-5 text-left transition-colors hover:bg-secondary"
                     type="button"
                     aria-expanded={!collapsed}
                     aria-controls={sectionContentId}
@@ -557,18 +566,18 @@ export function PlayerClient({ course }: { course: Course }) {
                   >
                     <ChevronDown
                       className={cn(
-                        "size-4 shrink-0 text-slate-800 transition-transform",
+                        "size-4 shrink-0 text-muted-foreground transition-transform",
                         collapsed && "-rotate-90",
                       )}
                     />
-                    <span className="flex-1 text-xs font-bold uppercase tracking-widest text-slate-800">
+                    <span className="flex-1 text-xs font-bold uppercase tracking-widest text-foreground">
                       {section.title}
                     </span>
                   </button>
                   <div
                     id={sectionContentId}
                     hidden={collapsed}
-                    className="flex flex-col bg-white"
+                    className="flex flex-col bg-card"
                   >
                     {section.lessons.map((lesson) => {
                       const active = lesson.id === activeLesson?.id;
@@ -584,15 +593,15 @@ export function PlayerClient({ course }: { course: Course }) {
                           className={cn(
                             "group relative flex w-full items-center justify-between px-6 py-4 text-left transition-colors",
                             active
-                              ? "bg-slate-100 text-slate-900 before:absolute before:inset-y-0 before:left-0 before:w-1.5 before:bg-[#008272]"
-                              : "text-slate-600 hover:bg-slate-50 hover:text-slate-900",
+                              ? "bg-primary/10 text-foreground font-semibold before:absolute before:inset-y-0 before:left-0 before:w-1.5 before:bg-primary"
+                              : "text-muted-foreground hover:bg-secondary hover:text-foreground",
                           )}
                         >
                           <div className="flex flex-1 items-start gap-3 pr-4">
                             {lesson.kind === "article" ? (
-                              <FileText className={cn("mt-0.5 size-4 shrink-0", active ? "text-slate-900" : "text-slate-400")} />
+                              <FileText className={cn("mt-0.5 size-4 shrink-0", active ? "text-primary" : "text-muted-foreground")} />
                             ) : (
-                              <PlayCircle className={cn("mt-0.5 size-4 shrink-0", active ? "text-slate-900" : "text-slate-400")} />
+                              <PlayCircle className={cn("mt-0.5 size-4 shrink-0", active ? "text-primary" : "text-muted-foreground")} />
                             )}
                             <span className={cn("text-sm font-medium leading-tight", active && "font-semibold")}>
                               {lesson.title}
@@ -602,8 +611,8 @@ export function PlayerClient({ course }: { course: Course }) {
                             className={cn(
                               "grid size-[18px] shrink-0 place-items-center rounded-full border-2",
                               done
-                                ? "border-[#008272] bg-[#008272] text-white"
-                                : "border-slate-300",
+                                ? "border-primary bg-primary text-white"
+                                : "border-border",
                             )}
                           >
                             {done && <Check className="size-3" strokeWidth={3} />}
@@ -619,10 +628,10 @@ export function PlayerClient({ course }: { course: Course }) {
         </aside>
 
         {/* Player / article main column */}
-        <div ref={articleRef} className="flex flex-1 flex-col bg-white">
+        <div ref={articleRef} className="flex flex-1 flex-col bg-card">
           {/* Main Content Header Banner */}
           {activeLesson && (
-            <div className="bg-gradient-to-r from-[#008272] to-[#004e6e] px-8 py-16 text-white sm:px-12 lg:px-20">
+            <div className="bg-gradient-to-r from-primary via-primary-deep to-[#2c0509] px-8 py-16 text-white sm:px-12 lg:px-20">
               <div className="flex items-center gap-3 text-sm italic tracking-wide text-white/90">
                 <span>Lesson {activeLessonIndex + 1} of {allLessons.length}</span>
               </div>
@@ -692,26 +701,32 @@ export function PlayerClient({ course }: { course: Course }) {
                   lessonId={activeLesson.id}
                   lessonTitle={activeLesson.title}
                 />
-                <MarkCompleteButton
-                  completed={isActiveCompleted}
-                  pending={progressMutation.isPending}
-                  onComplete={() =>
-                    progressMutation.mutate({
-                      lessonId: activeLesson.id,
-                      positionSeconds: !isActiveCompleted
-                        ? activeLesson.duration_seconds || 1
-                        : 0,
-                      completed: !isActiveCompleted,
-                    })
-                  }
-                />
+                {/* Auto-completion scroll sentinel */}
+                <div ref={contentEndRef} className="h-1 w-full" aria-hidden="true" />
+
+                {/* Show Completed status card when lesson is completed */}
+                {isActiveCompleted ? (
+                  <div className="flex items-center gap-3 rounded-2xl border border-success/30 bg-success/10 p-4 text-success-strong shadow-sm animate-in fade-in duration-300">
+                    <div className="grid size-9 shrink-0 place-items-center rounded-xl bg-success/20 text-success-strong">
+                      <CheckCircle2 className="size-5" />
+                    </div>
+                    <div>
+                      <p className="text-sm font-semibold">Completed</p>
+                      <p className="text-xs text-muted-foreground">You have finished reading this lesson.</p>
+                    </div>
+                  </div>
+                ) : progressMutation.isPending ? (
+                  <div className="flex items-center gap-2 rounded-2xl border border-primary/20 bg-primary/5 p-4 text-sm text-primary">
+                    <LoaderCircle className="size-4 animate-spin shrink-0" />
+                    <span>Marking as completed...</span>
+                  </div>
+                ) : null}
                 <PlayerNotes
                   key={activeLesson.id}
                   courseId={course.id}
                   lessonId={activeLesson.id}
                   lessonTitle={activeLesson.title}
                 />
-                <DiscussionsPanel lessonId={activeLesson.id} />
                 <LessonNavigation previous={previousLesson} next={nextLesson} onSelect={setPickedLessonId} />
               </div>
             ) : null
@@ -786,21 +801,12 @@ export function PlayerClient({ course }: { course: Course }) {
                   </SelectContent>
                 </Select>
 
-                <div className="ml-auto">
-                  <MarkCompleteButton
-                    completed={isActiveCompleted}
-                    pending={progressMutation.isPending}
-                    onComplete={() =>
-                      progressMutation.mutate({
-                        lessonId: activeLessonId!,
-                        positionSeconds: !isActiveCompleted
-                          ? activeLesson?.duration_seconds || 1
-                          : 0,
-                        completed: !isActiveCompleted,
-                      })
-                    }
-                  />
-                </div>
+                {isActiveCompleted ? (
+                  <div className="ml-auto flex items-center gap-1.5 rounded-full border border-success/30 bg-success/10 px-3 py-1 text-xs font-semibold text-success-strong">
+                    <CheckCircle2 className="size-3.5" />
+                    <span>Completed</span>
+                  </div>
+                ) : null}
               </div>
 
               {activeLesson ? (
@@ -812,7 +818,6 @@ export function PlayerClient({ course }: { course: Course }) {
                     lessonTitle={activeLesson.title}
                     currentTime={resumeSeconds}
                    />
-                   <div className="mt-2"><DiscussionsPanel lessonId={activeLesson.id} /></div>
                    <LessonNavigation previous={previousLesson} next={nextLesson} onSelect={setPickedLessonId} />
                    <div className="flex flex-col gap-3 rounded-2xl border border-primary/15 bg-primary/5 p-4 sm:flex-row sm:items-center sm:justify-between">
                      <div className="flex items-start gap-3">
@@ -1002,31 +1007,5 @@ function CourseCompletionSummary({ course, lessonCount }: { course: Course; less
   );
 }
 
-function MarkCompleteButton({
-  completed,
-  pending,
-  onComplete,
-}: {
-  completed: boolean;
-  pending: boolean;
-  onComplete: () => void;
-}) {
-  return (
-    <Button
-      variant={completed ? "outline" : "default"}
-      size="sm"
-      disabled={pending}
-      onClick={onComplete}
-    >
-      {pending ? (
-        <LoaderCircle className="size-4 animate-spin" />
-      ) : completed ? (
-        <CheckCircle2 className="size-4" />
-      ) : (
-        <Check className="size-4" />
-      )}
-      {completed ? "Completed" : "Mark complete"}
-    </Button>
-  );
-}
+
 

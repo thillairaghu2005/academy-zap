@@ -21,7 +21,6 @@ import {
   Hourglass,
   LoaderCircle,
   Lock,
-  MessageCircle,
   Eye,
   PlayCircle,
   Star,
@@ -34,7 +33,6 @@ import {
   getCourseProgress,
   type CourseProgress,
 } from "@/lib/data/demo/content";
-import { CourseReviews } from "@/components/courses/course-reviews";
 import { hasEntitlement } from "@/lib/data/demo/commerce";
 import { AddToCartButton } from "@/components/commerce/add-to-cart-button";
 import { BuyNowButton } from "@/components/commerce/buy-now-button";
@@ -46,7 +44,6 @@ import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { PageContainer } from "@/components/shared/page-container";
 import { ErrorState } from "@/components/shared/error-state";
-import { EmptyState } from "@/components/shared/empty-state";
 import { cn } from "@/lib/utils";
 
 function formatDuration(seconds: number): string {
@@ -501,21 +498,6 @@ export function CourseDetailClient({
         </div>
       </div>
 
-      <div className="mt-12">
-        <h2 className="font-display text-h2">Discussion</h2>
-        <div className="mt-4">
-          <EmptyState
-            icon={MessageCircle}
-            title="No discussion posts yet"
-            description="Be part of the first conversation around this course. Keep questions close to the lesson where they came up."
-            primaryAction={<Button size="sm" asChild><Link href={`/courses/${course.id}/learn`}>Open course lessons</Link></Button>}
-            secondaryAction={<Button size="sm" variant="outline" asChild><Link href="/support/new">Ask support</Link></Button>}
-          />
-        </div>
-      </div>
-
-      {/* Reviews are a paged Content Engine projection. */}
-      <CourseReviews courseId={course.id} rating={course.rating} reviewCount={course.review_count} />
     </PageContainer>
   );
 }

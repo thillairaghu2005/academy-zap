@@ -106,8 +106,12 @@ export function NavLinks({ onNavigate }: { onNavigate?: () => void }) {
 /** Desktop side rail — hidden below lg, replaced by the mobile sheet */
 export function SideNav() {
   const { user } = useSession();
+  const pathname = usePathname();
 
-  if (!user) {
+  // Hide the workspace navigation rail when focused on learning a course
+  const isLearningCourse = pathname ? /^\/courses\/[^/]+\/learn/.test(pathname) : false;
+
+  if (!user || isLearningCourse) {
     return null;
   }
 

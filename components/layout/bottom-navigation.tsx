@@ -16,6 +16,12 @@ const items = [
 
 export function BottomNavigation() {
   const pathname = usePathname();
+  const isLearningCourse = pathname ? /^\/courses\/[^/]+\/learn/.test(pathname) : false;
+
+  if (isLearningCourse) {
+    return null;
+  }
+
   return (
     <nav className="frosted-heavy fixed inset-x-3 bottom-3 z-40 rounded-xl border border-border/70 px-2 pb-[env(safe-area-inset-bottom)] shadow-[0_8px_24px_rgb(23_23_23_/_12%)] lg:hidden" aria-label="Mobile primary navigation">
       <div className="mx-auto grid max-w-md grid-cols-6 gap-1">
