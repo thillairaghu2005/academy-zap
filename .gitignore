@@ -27,6 +27,9 @@
 .DS_Store
 *.pem
 *.bak
+.pytest_cache/
+__pycache__/
+*.pyc
 
 # debug
 npm-debug.log*

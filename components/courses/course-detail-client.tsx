@@ -57,15 +57,15 @@ function formatDuration(seconds: number): string {
 
 function getLessonActivityIcon(lesson: CourseLesson) {
   if (lesson.title.toLowerCase().includes("lab") || lesson.title.toLowerCase().includes("hands-on")) {
-    return <FlaskConical className="size-4 text-amber-500" />;
+    return <FlaskConical className="size-4 text-primary" />;
   }
   if (lesson.title.toLowerCase().includes("quiz") || lesson.title.toLowerCase().includes("knowledge check") || lesson.title.toLowerCase().includes("assessment")) {
-    return <Lightbulb className="size-4 text-emerald-500" />;
+    return <Lightbulb className="size-4 text-primary" />;
   }
   if (lesson.kind === "article") {
-    return <FileText className="size-4 text-blue-400" />;
+    return <FileText className="size-4 text-primary/80" />;
   }
-  return <PlayCircle className="size-4 text-indigo-400" />;
+  return <PlayCircle className="size-4 text-primary/80" />;
 }
 
 function getLessonActivityLabel(lesson: CourseLesson): string {
@@ -274,7 +274,7 @@ export function CourseDetailClient({
         </Link>
 
         <div className="flex items-center gap-2">
-          <Badge variant="outline" className="font-mono text-[11px] text-amber-500 border-amber-500/30 bg-amber-500/10">
+          <Badge variant="outline" className="font-mono text-[11px] text-primary border-primary/30 bg-primary/10">
             {meta.courseCode}
           </Badge>
           <span className="text-xs text-muted-foreground hidden sm:inline">
@@ -310,13 +310,13 @@ export function CourseDetailClient({
           {/* AWS Skill Builder & IBM SkillsBuild Hero Banner */}
           <div className="relative overflow-hidden rounded-2xl border border-border bg-gradient-to-br from-slate-950 via-[#0f172a] to-[#091024] p-7 sm:p-9 shadow-lg">
             {/* Ambient gradients */}
-            <div className="pointer-events-none absolute -right-16 -top-16 size-72 rounded-full bg-amber-500/10 blur-3xl" />
-            <div className="pointer-events-none absolute -bottom-16 -left-16 size-72 rounded-full bg-blue-500/10 blur-3xl" />
+            <div className="pointer-events-none absolute -right-16 -top-16 size-72 rounded-full bg-primary/15 blur-3xl" />
+            <div className="pointer-events-none absolute -bottom-16 -left-16 size-72 rounded-full bg-primary/10 blur-3xl" />
 
             <div className="relative z-10 flex flex-col gap-4">
               {/* Partner Badges */}
               <div className="flex flex-wrap items-center gap-2">
-                <span className="inline-flex items-center gap-1.5 rounded-md bg-amber-500/15 border border-amber-500/30 px-2.5 py-1 text-[11px] font-semibold text-amber-400">
+                <span className="inline-flex items-center gap-1.5 rounded-md bg-primary/20 border border-primary/30 px-2.5 py-1 text-[11px] font-semibold text-primary-light">
                   <ShieldCheck className="size-3.5" />
                   AWS Skill Builder & IBM SkillsBuild Standard
                 </span>
@@ -343,7 +343,7 @@ export function CourseDetailClient({
               {/* Metadata KPI Strip */}
               <div className="flex flex-wrap items-center gap-x-6 gap-y-3 border-y border-slate-800/80 py-4 mt-2 text-xs text-slate-300">
                 <span className="flex items-center gap-1.5">
-                  <Star className="size-4 fill-amber-400 text-amber-400" />
+                  <Star className="size-4 fill-warning text-warning" />
                   <span className="font-bold text-white">
                     {course.rating > 0 ? course.rating.toFixed(1) : "4.9"}
                   </span>
@@ -360,8 +360,8 @@ export function CourseDetailClient({
                   <span>{course.estimated_hours} Hours total</span>
                 </span>
                 <span className="flex items-center gap-1.5">
-                  <Award className="size-4 text-amber-400" />
-                  <span className="text-amber-400 font-medium">{meta.badgeInfo.ceuCredits} CEU Credits</span>
+                  <Award className="size-4 text-primary-light" />
+                  <span className="text-primary-light font-medium">{meta.badgeInfo.ceuCredits} CEU Credits</span>
                 </span>
                 <span className="flex items-center gap-1.5">
                   <CheckCircle2 className="size-4 text-emerald-400" />
@@ -371,7 +371,7 @@ export function CourseDetailClient({
 
               {/* Instructor Tag */}
               <div className="flex items-center gap-3 mt-1">
-                <div className="grid size-10 shrink-0 place-items-center rounded-xl bg-gradient-to-br from-amber-500 to-amber-600 font-bold text-slate-950 text-base shadow">
+                <div className="grid size-10 shrink-0 place-items-center rounded-xl bg-gradient-to-br from-primary to-primary-hover font-bold text-primary-foreground text-base shadow">
                   {course.instructor.display_name.charAt(0)}
                 </div>
                 <div>
@@ -424,7 +424,7 @@ export function CourseDetailClient({
                     : "border-transparent text-muted-foreground hover:text-foreground",
                 )}
               >
-                <Award className="size-4 text-amber-500" />
+                <Award className="size-4 text-primary" />
                 Digital Credential & Badge
               </button>
               <button
@@ -631,17 +631,17 @@ export function CourseDetailClient({
           {activeTab === "badge" && (
             <div className="space-y-6 animate-in fade-in duration-200">
               <div className="rounded-2xl border border-border bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 p-6 sm:p-8 text-white relative overflow-hidden">
-                <div className="absolute top-0 right-0 w-64 h-64 bg-amber-500/10 rounded-full blur-3xl pointer-events-none" />
+                <div className="absolute top-0 right-0 w-64 h-64 bg-primary/15 rounded-full blur-3xl pointer-events-none" />
 
                 <div className="relative z-10 grid md:grid-cols-[220px_1fr] gap-6 items-center">
                   {/* Hexagon Graphic Preview */}
                   <div className="flex flex-col items-center justify-center p-4 rounded-xl bg-slate-900/90 border border-slate-800">
                     <div className="size-36 flex items-center justify-center">
-                      <svg viewBox="0 0 200 230" className="w-full h-full drop-shadow-[0_10px_20px_rgba(245,158,11,0.25)]">
+                      <svg viewBox="0 0 200 230" className="w-full h-full drop-shadow-[0_10px_20px_rgba(217,38,64,0.35)]">
                         <polygon
                           points="100,5 190,57 190,163 100,215 10,163 10,57"
-                          fill="#f59e0b"
-                          stroke="#fbbf24"
+                          fill="#e11d48"
+                          stroke="#fb7185"
                           strokeWidth="2"
                         />
                         <polygon
@@ -650,31 +650,31 @@ export function CourseDetailClient({
                           stroke="#475569"
                           strokeWidth="1.5"
                         />
-                        <text x="100" y="55" textAnchor="middle" fill="#f59e0b" fontSize="10" fontWeight="bold">
+                        <text x="100" y="55" textAnchor="middle" fill="#fb7185" fontSize="10" fontWeight="bold">
                           ZAPSTERS
                         </text>
-                        <circle cx="100" cy="100" r="26" fill="#1e293b" stroke="#f59e0b" strokeWidth="2" />
+                        <circle cx="100" cy="100" r="26" fill="#1e293b" stroke="#e11d48" strokeWidth="2" />
                         <path
                           d="M100 85 L104 95 L115 97 L107 104 L109 115 L100 109 L91 115 L93 104 L85 97 L96 95 Z"
-                          fill="#fbbf24"
+                          fill="#ffffff"
                         />
                         <text x="100" y="145" textAnchor="middle" fill="#ffffff" fontSize="11" fontWeight="bold">
                           {course.category.toUpperCase()}
                         </text>
-                        <rect x="55" y="155" width="90" height="18" rx="4" fill="#f59e0b" />
-                        <text x="100" y="168" textAnchor="middle" fill="#0f172a" fontSize="10" fontWeight="bold">
+                        <rect x="55" y="155" width="90" height="18" rx="4" fill="#e11d48" />
+                        <text x="100" y="168" textAnchor="middle" fill="#ffffff" fontSize="10" fontWeight="bold">
                           {meta.badgeInfo.level.toUpperCase()}
                         </text>
                       </svg>
                     </div>
-                    <Badge variant="outline" className="border-amber-500/30 bg-amber-500/10 text-amber-400 text-[10px] mt-2">
+                    <Badge variant="outline" className="border-primary/30 bg-primary/10 text-primary-light text-[10px] mt-2">
                       Credly-Compatible Badge
                     </Badge>
                   </div>
 
                   {/* Badge Explanation */}
                   <div className="space-y-3">
-                    <span className="text-xs uppercase tracking-widest text-amber-400 font-bold">
+                    <span className="text-xs uppercase tracking-widest text-primary-light font-bold">
                       Official Verifiable Digital Credential
                     </span>
                     <h3 className="text-2xl font-bold font-display text-white">
@@ -691,7 +691,7 @@ export function CourseDetailClient({
                       </div>
                       <div>
                         <span className="text-slate-400 block text-[10px] uppercase">CEU Credits</span>
-                        <span className="font-semibold text-amber-400">{meta.badgeInfo.ceuCredits} Credits</span>
+                        <span className="font-semibold text-primary-light">{meta.badgeInfo.ceuCredits} Credits</span>
                       </div>
                       <div>
                         <span className="text-slate-400 block text-[10px] uppercase">Passing Threshold</span>
@@ -703,7 +703,7 @@ export function CourseDetailClient({
                       <Button
                         size="sm"
                         onClick={() => setBadgeModalOpen(true)}
-                        className="bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold text-xs gap-1.5"
+                        className="font-bold text-xs gap-1.5"
                       >
                         <Award className="size-4" />
                         Preview Digital Badge & Certificate
@@ -737,7 +737,7 @@ export function CourseDetailClient({
             <div className="space-y-6 animate-in fade-in duration-200">
               <div className="rounded-2xl border border-border bg-card p-6 sm:p-8 space-y-4">
                 <div className="flex items-start gap-4">
-                  <div className="grid size-16 shrink-0 place-items-center rounded-2xl bg-gradient-to-br from-amber-500 to-amber-600 text-slate-950 font-bold text-2xl shadow">
+                  <div className="grid size-16 shrink-0 place-items-center rounded-2xl bg-gradient-to-br from-primary to-primary-hover text-primary-foreground font-bold text-2xl shadow">
                     {course.instructor.display_name.charAt(0)}
                   </div>
                   <div>
@@ -805,7 +805,7 @@ export function CourseDetailClient({
                 <Progress
                   value={enrollment.progress_pct}
                   className="h-2 bg-muted"
-                  indicatorClassName="bg-amber-500"
+                  indicatorClassName="bg-primary"
                 />
                 <p className="text-[11px] text-muted-foreground mt-2">
                   {completedCount} of {allLessons.length} topics finished
@@ -831,7 +831,7 @@ export function CourseDetailClient({
             {/* Main Action Button */}
             <div className="space-y-3">
               {!isEnrolledUser ? (
-                <Button className="w-full h-12 text-sm font-bold bg-amber-500 hover:bg-amber-600 text-slate-950" asChild>
+                <Button className="w-full h-12 text-sm font-bold bg-primary hover:bg-primary/90 text-primary-foreground" asChild>
                   <Link href={`/login?next=${encodeURIComponent(`/courses/${course.id}/learn`)}`}>
                     Sign in to Enroll (Free)
                   </Link>
@@ -849,7 +849,7 @@ export function CourseDetailClient({
                 />
               ) : enrollment ? (
                 <div className="space-y-2">
-                  <Button asChild className="w-full h-12 text-sm font-bold bg-amber-500 hover:bg-amber-600 text-slate-950">
+                  <Button asChild className="w-full h-12 text-sm font-bold bg-primary hover:bg-primary/90 text-primary-foreground">
                     <Link href={`/courses/${course.id}/learn`}>
                       {enrollment.progress_pct > 0 ? "Continue Course" : "Start Course"}
                       <ArrowRight className="size-4 ml-2" />
@@ -861,7 +861,7 @@ export function CourseDetailClient({
                     onClick={() => setBadgeModalOpen(true)}
                     className="w-full text-xs gap-1.5"
                   >
-                    <Award className="size-3.5 text-amber-500" />
+                    <Award className="size-3.5 text-primary" />
                     View Skill Badge & Certificate
                   </Button>
                 </div>
@@ -876,7 +876,7 @@ export function CourseDetailClient({
                 </div>
               ) : (
                 <Button
-                  className="w-full h-12 text-sm font-bold bg-amber-500 hover:bg-amber-600 text-slate-950"
+                  className="w-full h-12 text-sm font-bold bg-primary hover:bg-primary/90 text-primary-foreground"
                   disabled={enrollMutation.isPending}
                   onClick={() => enrollMutation.mutate()}
                 >
@@ -902,11 +902,11 @@ export function CourseDetailClient({
               </span>
               <div className="space-y-2">
                 <div className="flex items-center gap-2">
-                  <FlaskConical className="size-4 text-amber-500 shrink-0" />
+                  <FlaskConical className="size-4 text-primary shrink-0" />
                   <span>Hands-on Cloud Sandbox Labs (no AWS account needed)</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <Award className="size-4 text-amber-500 shrink-0" />
+                  <Award className="size-4 text-primary shrink-0" />
                   <span>Verifiable Digital Skill Badge (Credly-compatible)</span>
                 </div>
                 <div className="flex items-center gap-2">

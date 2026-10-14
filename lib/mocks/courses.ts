@@ -115,7 +115,7 @@ function marketplaceCourseFromSpec(spec: MarketplaceCourseSpec): Course {
     career_track: spec.career_track,
     is_project_based: spec.format === "project" || spec.format === "lab",
     certificate_included: true,
-    syllabus,
+    syllabus: [...syllabus, sFinal(spec.id, spec.title, syllabus.length + 1)],
   };
 }
 
@@ -129,7 +129,10 @@ const l = (
 ) => ({ id, title, kind, duration_seconds, position: 0 });
 
 const s = (id: string, title: string, lessons: ReturnType<typeof l>[]) => {
-  const allLessons = [...lessons, l(`${id}-quiz`, 'Quiz: ' + title, 300, 'article')];
+  const allLessons = [
+    ...lessons,
+    l(`${id}-quiz`, `Quiz: ${title} (10 Questions)`, 600, "article"),
+  ];
   return {
     id,
     title,
@@ -138,12 +141,30 @@ const s = (id: string, title: string, lessons: ReturnType<typeof l>[]) => {
       ...lesson,
       position: i + 1,
       isPreview: true,
-      preview_body: lesson.title.startsWith('Quiz:') 
-        ? '\n\n## ' + lesson.title + '\n\nPlease take the knowledge check below to verify your understanding of this module.' 
-        : '\n\n## ' + lesson.title + '\n\nWelcome to this comprehensive module. In this section, we will dive deep into the fundamental concepts and practical applications of this topic. This material has been carefully curated to ensure you build a strong foundation.\n\n### Introduction to the Core Concepts\n\nBefore we explore the advanced mechanisms, it is critical to understand the underlying architecture. Modern systems rely on robust design patterns that ensure scalability and security. By mastering these principles, you will be able to architect solutions that stand the test of time.\n\nHere is a practical example of how this looks in a real-world scenario:\n\n```python\ndef analyze_security_event(event):\n    # Analyze the incoming event for potential threats\n    if event.severity > 7:\n        alert_admin(event)\n    else:\n        log_event(event)\n```\n\n### Key Methodologies\n\nWe utilize several key methodologies in this domain:\n\n1. **Continuous Monitoring:** Always keep an eye on the system state.\n2. **Proactive Defense:** Implement safeguards before vulnerabilities are exploited.\n3. **Rapid Incident Response:** Minimize the blast radius by acting quickly.\n\n### Practical Application and Labs\n\nApplying what you have learned is the most important part of this journey. The theories discussed here translate directly into the interactive labs provided later in this course. You are encouraged to follow along with the provided code snippets and experiment in your own workspace.\n\n> **Note:** Always ensure you have the proper permissions before running diagnostics on production systems.\n\n### Summary and Next Steps\n\nIn summary, the strategies outlined above form the backbone of our methodology. As you proceed to the next section, keep these principles in mind. They will be heavily referenced when we tackle more complex scenarios and case studies.\n\nEnjoy the rest of the course material and proceed to the knowledge check when you are ready.',
+      preview_body:
+        lesson.title.startsWith("Quiz:") || lesson.title.includes("Assessment")
+          ? null
+          : '\n\n## ' + lesson.title + '\n\nWelcome to this comprehensive module. In this section, we will dive deep into the fundamental concepts and practical applications of this topic. This material has been carefully curated to ensure you build a strong foundation.\n\n### Introduction to the Core Concepts\n\nBefore we explore the advanced mechanisms, it is critical to understand the underlying architecture. Modern systems rely on robust design patterns that ensure scalability and security. By mastering these principles, you will be able to architect solutions that stand the test of time.\n\nHere is a practical example of how this looks in a real-world scenario:\n\n```python\ndef analyze_security_event(event):\n    # Analyze the incoming event for potential threats\n    if event.severity > 7:\n        alert_admin(event)\n    else:\n        log_event(event)\n```\n\n### Key Methodologies\n\nWe utilize several key methodologies in this domain:\n\n1. **Continuous Monitoring:** Always keep an eye on the system state.\n2. **Proactive Defense:** Implement safeguards before vulnerabilities are exploited.\n3. **Rapid Incident Response:** Minimize the blast radius by acting quickly.\n\n### Practical Application and Labs\n\nApplying what you have learned is the most important part of this journey. The theories discussed here translate directly into the interactive labs provided later in this course. You are encouraged to follow along with the provided code snippets and experiment in your own workspace.\n\n> **Note:** Always ensure you have the proper permissions before running diagnostics on production systems.\n\n### Summary and Next Steps\n\nIn summary, the strategies outlined above form the backbone of our methodology. As you proceed to the next section, keep these principles in mind. They will be heavily referenced when we tackle more complex scenarios and case studies.\n\nEnjoy the rest of the course material and proceed to the knowledge check when you are ready.',
     })),
   };
 };
+
+export const sFinal = (courseId: string, courseTitle: string, position: number) => ({
+  id: `${courseId}-sec-final`,
+  title: "Course Final Assessment",
+  position,
+  lessons: [
+    {
+      id: `${courseId}-final-assessment`,
+      title: `Final Comprehensive Assessment: ${courseTitle} (10 Questions)`,
+      kind: "article" as const,
+      duration_seconds: 1200,
+      position: 1,
+      isPreview: true,
+      preview_body: null,
+    },
+  ],
+});
 
 /**
  * Last published snapshot per course id (F7 Task 2 diff view).
@@ -540,6 +561,16 @@ setPublishedSnapshot(MOCK_IN_REVIEW_COURSE_ID, {
   price_cents: 199900,
   estimated_hours: 10,
 });
+
+// Ensure every course has a dedicated final assessment after all modules
+for (const course of MOCK_COURSES) {
+  const hasFinal = course.syllabus.some(
+    (sec) => sec.id.includes("final") || sec.title.toLowerCase().includes("final"),
+  );
+  if (!hasFinal) {
+    course.syllabus.push(sFinal(course.id, course.title, course.syllabus.length + 1));
+  }
+}
 
 /** Draft courses exist but are excluded from the public catalog. */
 export const MOCK_COURSES_BY_ID = new Map(
