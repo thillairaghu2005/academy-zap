@@ -141,16 +141,16 @@ export function DigitalBadgeDialog({
         <DialogTitle className="sr-only">Verifiable Digital Skill Credential</DialogTitle>
         <DialogDescription className="sr-only">View and verify your official digital skill badge and certificate.</DialogDescription>
         {/* Header Ribbon */}
-        <div className="bg-gradient-to-r from-slate-900 via-[#111c38] to-[#0a182f] p-6 text-white border-b border-border/40 relative overflow-hidden">
-          <div className="absolute top-0 right-0 w-80 h-80 bg-blue-500/10 rounded-full blur-3xl pointer-events-none" />
+        <div className="bg-gradient-to-r from-slate-950 via-slate-900 to-primary-deep/80 p-6 text-white border-b border-border/40 relative overflow-hidden">
+          <div className="absolute top-0 right-0 w-80 h-80 bg-primary/15 rounded-full blur-3xl pointer-events-none" />
           <div className="relative z-10 flex flex-wrap items-center justify-between gap-4">
             <div className="flex items-center gap-3">
-              <div className="grid size-12 place-items-center rounded-xl bg-gradient-to-br from-amber-500 to-amber-600 text-slate-950 font-bold shadow-lg shadow-amber-500/20">
-                <ShieldCheck className="size-6 text-slate-950" />
+              <div className="grid size-12 place-items-center rounded-xl bg-gradient-to-br from-primary to-primary-deep text-white font-bold shadow-lg shadow-primary/25">
+                <ShieldCheck className="size-6 text-white" />
               </div>
               <div>
                 <div className="flex items-center gap-2">
-                  <span className="text-[10px] font-bold uppercase tracking-widest text-amber-400 bg-amber-400/10 px-2 py-0.5 rounded border border-amber-400/20">
+                  <span className="text-[10px] font-bold uppercase tracking-widest text-primary-light bg-primary/20 px-2 py-0.5 rounded border border-primary/30">
                     Credly-Compatible Badge
                   </span>
                   <span className="text-[10px] text-slate-400 uppercase tracking-wider font-mono">
@@ -171,7 +171,7 @@ export function DigitalBadgeDialog({
                 className={cn(
                   "px-3 py-1.5 rounded-md font-medium transition-colors",
                   activeTab === "badge"
-                    ? "bg-amber-500 text-slate-950 font-semibold shadow"
+                    ? "bg-primary text-primary-foreground font-semibold shadow"
                     : "text-slate-300 hover:text-white"
                 )}
               >
@@ -183,7 +183,7 @@ export function DigitalBadgeDialog({
                 className={cn(
                   "px-3 py-1.5 rounded-md font-medium transition-colors",
                   activeTab === "certificate"
-                    ? "bg-amber-500 text-slate-950 font-semibold shadow"
+                    ? "bg-primary text-primary-foreground font-semibold shadow"
                     : "text-slate-300 hover:text-white"
                 )}
               >
@@ -199,16 +199,16 @@ export function DigitalBadgeDialog({
             <div className="grid md:grid-cols-[280px_1fr] gap-8 items-center">
               {/* 3D Hexagonal Credly Medallion */}
               <div className="flex flex-col items-center justify-center p-6 rounded-2xl bg-gradient-to-b from-slate-900 via-slate-950 to-slate-900 border border-slate-800 shadow-2xl relative group">
-                <div className="absolute -inset-1 rounded-3xl bg-gradient-to-r from-amber-500/20 via-blue-500/20 to-amber-500/20 blur-xl opacity-60 group-hover:opacity-100 transition-opacity" />
+                <div className="absolute -inset-1 rounded-3xl bg-gradient-to-r from-primary/20 via-primary-deep/20 to-primary/20 blur-xl opacity-60 group-hover:opacity-100 transition-opacity" />
 
                 {/* Hexagon SVG Medallion */}
                 <div className="relative z-10 w-48 h-56 flex items-center justify-center">
-                  <svg viewBox="0 0 200 230" className="w-full h-full drop-shadow-[0_15px_25px_rgba(245,158,11,0.25)]">
+                  <svg viewBox="0 0 200 230" className="w-full h-full drop-shadow-[0_15px_25px_rgba(217,38,64,0.35)]">
                     <defs>
                       <linearGradient id="badgeBorderGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                        <stop offset="0%" stopColor="#f59e0b" />
-                        <stop offset="50%" stopColor="#d97706" />
-                        <stop offset="100%" stopColor="#b45309" />
+                        <stop offset="0%" stopColor="#e11d48" />
+                        <stop offset="50%" stopColor="#be123c" />
+                        <stop offset="100%" stopColor="#9f1239" />
                       </linearGradient>
                       <linearGradient id="badgeFillGrad" x1="0%" y1="0%" x2="100%" y2="100%">
                         <stop offset="0%" stopColor="#1e293b" />
@@ -216,8 +216,8 @@ export function DigitalBadgeDialog({
                         <stop offset="100%" stopColor="#020617" />
                       </linearGradient>
                       <linearGradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                        <stop offset="0%" stopColor="#fbbf24" />
-                        <stop offset="100%" stopColor="#f59e0b" />
+                        <stop offset="0%" stopColor="#fb7185" />
+                        <stop offset="100%" stopColor="#e11d48" />
                       </linearGradient>
                     </defs>
 
@@ -225,7 +225,7 @@ export function DigitalBadgeDialog({
                     <polygon
                       points="100,5 190,57 190,163 100,215 10,163 10,57"
                       fill="url(#badgeBorderGrad)"
-                      stroke="#fbbf24"
+                      stroke="#fb7185"
                       strokeWidth="2"
                     />
 
@@ -241,18 +241,18 @@ export function DigitalBadgeDialog({
                     <polygon
                       points="100,22 173,65 173,153 100,196 27,153 27,65"
                       fill="none"
-                      stroke="#f59e0b"
+                      stroke="#e11d48"
                       strokeWidth="1"
                       strokeDasharray="4 3"
                     />
 
                     {/* Top Ribbon text */}
-                    <text x="100" y="52" textAnchor="middle" fill="#f59e0b" fontSize="9" fontWeight="bold" letterSpacing="2">
+                    <text x="100" y="52" textAnchor="middle" fill="#fb7185" fontSize="9" fontWeight="bold" letterSpacing="2">
                       ZAPSTERS · SKILL
                     </text>
 
                     {/* Emblem Icon: Star & Shield */}
-                    <circle cx="100" cy="98" r="30" fill="#1e293b" stroke="#f59e0b" strokeWidth="2" />
+                    <circle cx="100" cy="98" r="30" fill="#1e293b" stroke="#e11d48" strokeWidth="2" />
                     <path
                       d="M100 80 L105 92 L118 94 L108 103 L111 116 L100 109 L89 116 L92 103 L82 94 L95 92 Z"
                       fill="url(#goldGrad)"
@@ -264,8 +264,8 @@ export function DigitalBadgeDialog({
                     </text>
 
                     {/* Level Label */}
-                    <rect x="55" y="152" width="90" height="18" rx="4" fill="#f59e0b" />
-                    <text x="100" y="165" textAnchor="middle" fill="#0f172a" fontSize="10" fontWeight="bold" letterSpacing="1">
+                    <rect x="55" y="152" width="90" height="18" rx="4" fill="#e11d48" />
+                    <text x="100" y="165" textAnchor="middle" fill="#ffffff" fontSize="10" fontWeight="bold" letterSpacing="1">
                       {badge.level.toUpperCase()}
                     </text>
 
@@ -277,7 +277,7 @@ export function DigitalBadgeDialog({
                 </div>
 
                 <div className="mt-3 text-center">
-                  <Badge variant="outline" className="border-amber-500/30 bg-amber-500/10 text-amber-400 text-xs">
+                  <Badge variant="outline" className="border-primary/30 bg-primary/10 text-primary-light text-xs">
                     <Sparkles className="size-3 mr-1" />
                     Issued & Verified
                   </Badge>
@@ -395,7 +395,7 @@ export function DigitalBadgeDialog({
                   onClick={() => setActiveTab("certificate")}
                   className="text-xs gap-1.5"
                 >
-                  <Award className="size-3.5 text-amber-500" />
+                  <Award className="size-3.5 text-primary" />
                   View Certificate
                 </Button>
               </div>
@@ -406,17 +406,17 @@ export function DigitalBadgeDialog({
           <div className="p-6 sm:p-8 space-y-6">
             <div
               ref={certificateRef}
-              className="relative overflow-hidden rounded-2xl border-4 border-double border-amber-600/40 bg-slate-950 p-8 sm:p-12 text-center shadow-2xl"
+              className="relative overflow-hidden rounded-2xl border-4 border-double border-primary/40 bg-slate-950 p-8 sm:p-12 text-center shadow-2xl"
             >
               {/* Background watermark */}
-              <div className="absolute inset-0 opacity-5 bg-[radial-gradient(#f59e0b_1px,transparent_1px)] [background-size:16px_16px] pointer-events-none" />
-              <div className="pointer-events-none absolute -right-20 -top-20 size-64 rounded-full bg-amber-500/10 blur-3xl" />
-              <div className="pointer-events-none absolute -bottom-20 -left-20 size-64 rounded-full bg-blue-500/10 blur-3xl" />
+              <div className="absolute inset-0 opacity-10 bg-[radial-gradient(#e11d48_1px,transparent_1px)] [background-size:16px_16px] pointer-events-none" />
+              <div className="pointer-events-none absolute -right-20 -top-20 size-64 rounded-full bg-primary/20 blur-3xl" />
+              <div className="pointer-events-none absolute -bottom-20 -left-20 size-64 rounded-full bg-primary/15 blur-3xl" />
 
               <div className="relative z-10 space-y-6 max-w-xl mx-auto">
                 {/* Institution Heading */}
                 <div className="space-y-1">
-                  <p className="text-[11px] font-bold uppercase tracking-[0.3em] text-amber-400">
+                  <p className="text-[11px] font-bold uppercase tracking-[0.3em] text-primary-light">
                     Zapsters Enterprise Academy
                   </p>
                   <p className="text-[10px] text-slate-400 uppercase tracking-widest">
@@ -424,7 +424,7 @@ export function DigitalBadgeDialog({
                   </p>
                 </div>
 
-                <div className="h-0.5 w-24 bg-gradient-to-r from-transparent via-amber-400 to-transparent mx-auto" />
+                <div className="h-0.5 w-24 bg-gradient-to-r from-transparent via-primary to-transparent mx-auto" />
 
                 {/* Certificate Title */}
                 <div>
@@ -439,13 +439,13 @@ export function DigitalBadgeDialog({
                 {/* Recipient */}
                 <div className="py-2">
                   <p className="text-xs text-slate-400 uppercase tracking-widest">This certifies that</p>
-                  <h4 className="font-display text-2xl sm:text-3xl font-bold text-amber-300 mt-1">
+                  <h4 className="font-display text-2xl sm:text-3xl font-bold text-white mt-1">
                     {learnerName}
                   </h4>
                   <p className="text-xs text-slate-400 mt-2">
                     has successfully demonstrated hands-on technical proficiency and fulfilled all curriculum requirements for:
                   </p>
-                  <p className="font-display text-xl font-semibold text-white mt-2">
+                  <p className="font-display text-xl font-semibold text-primary-light mt-2">
                     {course.title}
                   </p>
                 </div>
@@ -462,7 +462,7 @@ export function DigitalBadgeDialog({
                   </div>
                   <div>
                     <span className="text-slate-400 text-[10px] uppercase block">CEU Credits</span>
-                    <span className="font-medium text-amber-400">{badge.ceuCredits} Units</span>
+                    <span className="font-medium text-primary-light">{badge.ceuCredits} Units</span>
                   </div>
                   <div>
                     <span className="text-slate-400 text-[10px] uppercase block">Credential ID</span>
@@ -473,22 +473,22 @@ export function DigitalBadgeDialog({
                 {/* Signatures & Seal */}
                 <div className="pt-6 flex items-end justify-between border-t border-slate-800 gap-4">
                   <div className="text-left">
-                    <p className="font-serif italic text-lg text-amber-200">Aris Thorne</p>
+                    <p className="font-serif italic text-lg text-primary-light">Aris Thorne</p>
                     <div className="h-px w-32 bg-slate-700 my-1" />
                     <p className="text-[10px] font-medium text-slate-400">Dr. Aris Thorne</p>
                     <p className="text-[9px] text-slate-500">Director of Academic Affairs</p>
                   </div>
 
-                  {/* Gold Seal Medallion */}
-                  <div className="grid size-16 place-items-center rounded-full border-2 border-amber-400 bg-gradient-to-br from-amber-500 to-amber-700 text-slate-950 font-bold shadow-lg shadow-amber-500/30">
+                  {/* Red/Crimson Seal Medallion */}
+                  <div className="grid size-16 place-items-center rounded-full border-2 border-primary bg-gradient-to-br from-primary to-primary-deep text-white font-bold shadow-lg shadow-primary/30">
                     <div className="text-center">
-                      <Star className="size-4 mx-auto fill-slate-950" />
+                      <Star className="size-4 mx-auto fill-white text-white" />
                       <span className="text-[8px] font-black uppercase tracking-tighter block">VERIFIED</span>
                     </div>
                   </div>
 
                   <div className="text-right">
-                    <p className="font-serif italic text-lg text-amber-200">Priya Nair</p>
+                    <p className="font-serif italic text-lg text-primary-light">Priya Nair</p>
                     <div className="h-px w-32 bg-slate-700 my-1 ml-auto" />
                     <p className="text-[10px] font-medium text-slate-400">Priya Nair</p>
                     <p className="text-[9px] text-slate-500">Lead Curriculum Architect</p>
@@ -521,7 +521,7 @@ export function DigitalBadgeDialog({
                 <Button
                   size="sm"
                   onClick={handleDownload}
-                  className="bg-amber-500 hover:bg-amber-600 text-slate-950 font-semibold text-xs gap-1.5"
+                  className="font-semibold text-xs gap-1.5"
                 >
                   <Download className="size-3.5" />
                   Download Certificate (.txt)

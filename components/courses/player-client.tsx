@@ -8,6 +8,7 @@ import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import rehypeSanitize from "rehype-sanitize";
 import {
+  ArrowDown,
   ArrowLeft,
   ArrowRight,
   Award,
@@ -65,39 +66,39 @@ function getLessonActivityDetails(lesson: CourseLesson) {
     return {
       type: "lab",
       label: "Hands-on Builder Lab",
-      icon: <FlaskConical className="size-4 text-amber-500" />,
-      badgeClass: "border-amber-500/30 bg-amber-500/10 text-amber-500",
+      icon: <FlaskConical className="size-4 text-primary" />,
+      badgeClass: "border-primary/30 bg-primary/10 text-primary",
     };
   }
-  if (title.includes("assessment") || title.includes("capstone")) {
+  if (title.includes("assessment") || title.includes("capstone") || title.includes("final")) {
     return {
-      type: "assessment",
-      label: "Graded Final Assessment",
-      icon: <Award className="size-4 text-amber-400" />,
-      badgeClass: "border-amber-500/30 bg-amber-500/10 text-amber-400",
+      type: "assessment" as const,
+      label: "Graded Final Assessment (10 Questions)",
+      icon: <Award className="size-4 text-primary" />,
+      badgeClass: "border-primary/30 bg-primary/10 text-primary font-bold",
     };
   }
   if (title.includes("quiz") || title.includes("knowledge check")) {
     return {
-      type: "quiz",
-      label: "Knowledge Check Quiz",
-      icon: <Lightbulb className="size-4 text-emerald-500" />,
-      badgeClass: "border-emerald-500/30 bg-emerald-500/10 text-emerald-500",
+      type: "quiz" as const,
+      label: "Module Quiz (10 Questions)",
+      icon: <Lightbulb className="size-4 text-primary" />,
+      badgeClass: "border-primary/30 bg-primary/10 text-primary",
     };
   }
   if (lesson.kind === "article") {
     return {
       type: "guide",
       label: "Interactive Concept Guide",
-      icon: <FileText className="size-4 text-blue-400" />,
-      badgeClass: "border-blue-500/30 bg-blue-500/10 text-blue-400",
+      icon: <FileText className="size-4 text-primary/80" />,
+      badgeClass: "border-border bg-surface-2 text-foreground",
     };
   }
   return {
     type: "video",
     label: "Multimedia Lecture",
-    icon: <PlayCircle className="size-4 text-indigo-400" />,
-    badgeClass: "border-indigo-500/30 bg-indigo-500/10 text-indigo-400",
+    icon: <PlayCircle className="size-4 text-primary/80" />,
+    badgeClass: "border-border bg-surface-2 text-foreground",
   };
 }
 
@@ -177,10 +178,10 @@ Proceed to the **Hands-on Builder Lab** or **Knowledge Check** tabs above to tes
       </div>
 
       {/* Architecture Best Practice Callout Box */}
-      <div className="rounded-xl border border-amber-500/25 bg-amber-500/5 p-4 sm:p-5 text-sm space-y-2">
-        <div className="flex items-center gap-2 text-amber-500 font-bold text-xs uppercase tracking-wider">
+      <div className="rounded-xl border border-primary/25 bg-primary/5 p-4 sm:p-5 text-sm space-y-2">
+        <div className="flex items-center gap-2 text-primary font-bold text-xs uppercase tracking-wider">
           <Lightbulb className="size-4" />
-          <span>AWS / IBM Architecture Best Practice</span>
+          <span>Architecture Best Practice</span>
         </div>
         <p className="text-xs sm:text-sm text-foreground leading-relaxed">
           Always decouple configuration from application binaries. Store secrets in a dedicated Secrets Vault or Key Management Service, and programmatically rotate keys at minimum 90-day intervals.
@@ -254,14 +255,14 @@ function SkillBuildLabSandbox({
 
         <div className="flex items-center gap-3 text-xs">
           <span className="text-slate-400">Time Remaining:</span>
-          <span className="font-mono font-bold text-amber-400 bg-slate-900 px-2.5 py-1 rounded border border-slate-800">
+          <span className="font-mono font-bold text-white bg-slate-900 px-2.5 py-1 rounded border border-slate-800">
             58:45
           </span>
           <Button
             size="sm"
             variant="outline"
             onClick={handleValidateLab}
-            className="text-xs border-amber-500/30 text-amber-400 hover:bg-amber-500/10 gap-1.5"
+            className="text-xs border-primary/30 text-primary hover:bg-primary/10 gap-1.5"
           >
             <ShieldCheck className="size-3.5" />
             Validate Lab
@@ -272,7 +273,7 @@ function SkillBuildLabSandbox({
       {/* Lab Overview Card */}
       <div className="rounded-2xl border border-border bg-card p-6 shadow-sm space-y-4">
         <div>
-          <Badge variant="outline" className="text-[10px] uppercase border-amber-500/30 bg-amber-500/10 text-amber-500 mb-2">
+          <Badge variant="outline" className="text-[10px] uppercase border-primary/30 bg-primary/10 text-primary mb-2">
             Hands-on Lab Exercise
           </Badge>
           <h3 className="font-display text-xl font-bold text-foreground">
@@ -346,7 +347,7 @@ function SkillBuildLabSandbox({
                       {task.description}
                     </p>
                     {task.cliHint && (
-                      <div className="pt-1 flex items-center gap-1.5 font-mono text-[11px] text-amber-500/90">
+                      <div className="pt-1 flex items-center gap-1.5 font-mono text-[11px] text-primary">
                         <Terminal className="size-3" />
                         <code>{task.cliHint}</code>
                       </div>
@@ -362,7 +363,7 @@ function SkillBuildLabSandbox({
         <div className="rounded-xl border border-slate-800 bg-slate-950 overflow-hidden shadow-lg mt-4">
           <div className="flex items-center justify-between bg-slate-900 px-4 py-2.5 border-b border-slate-800 text-xs text-slate-300">
             <div className="flex items-center gap-2 font-mono">
-              <Terminal className="size-3.5 text-amber-400" />
+              <Terminal className="size-3.5 text-primary" />
               <span>cloudshell@zapsters-sandbox:~$ {activeCommand}</span>
             </div>
             <div className="flex items-center gap-2">
@@ -373,7 +374,7 @@ function SkillBuildLabSandbox({
                     key={idx}
                     type="button"
                     onClick={() => runCommand(s.command, s.output)}
-                    className="px-2 py-0.5 rounded bg-slate-800 hover:bg-slate-700 text-[10px] font-mono text-amber-400 border border-slate-700 transition-colors"
+                    className="px-2 py-0.5 rounded bg-slate-800 hover:bg-slate-700 text-[10px] font-mono text-slate-200 hover:text-white border border-slate-700 transition-colors"
                   >
                     CMD {idx + 1}
                   </button>
@@ -394,7 +395,7 @@ function SkillBuildLabSandbox({
           </p>
           <Button
             onClick={handleValidateLab}
-            className="bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold text-xs gap-1.5"
+            className="font-bold text-xs gap-1.5"
           >
             <ShieldCheck className="size-4" />
             {labVerified ? "Lab Completed & Verified ✓" : "Run Automated Verification Check"}
@@ -406,6 +407,7 @@ function SkillBuildLabSandbox({
 }
 
 /** AWS / IBM Scenario-based Knowledge Check & Assessment */
+/** Scenario-based Module Quiz & Comprehensive Final Assessment Engine (10 Questions) */
 function SkillBuildKnowledgeCheck({
   course,
   lesson,
@@ -420,6 +422,12 @@ function SkillBuildKnowledgeCheck({
   const [revealed, setRevealed] = React.useState(false);
   const announce = useAnnounce();
 
+  const isFinal =
+    lesson.title.toLowerCase().includes("final") ||
+    lesson.title.toLowerCase().includes("assessment");
+
+  const answeredCount = Object.keys(selectedAnswers).length;
+
   const handleSelect = (questionId: string, index: number) => {
     if (revealed) return;
     setSelectedAnswers((prev) => ({ ...prev, [questionId]: index }));
@@ -433,12 +441,22 @@ function SkillBuildKnowledgeCheck({
     });
     const scorePct = Math.round((correctCount / questions.length) * 100);
     if (scorePct >= 80) {
-      announce("Knowledge check passed! Minimum 80% score attained.");
-      toast.success(`Passed with ${scorePct}% score! Official checkpoint verified ⚡`);
+      announce(
+        isFinal
+          ? "Final Comprehensive Assessment Passed! Certification Benchmark Attained!"
+          : "Module Quiz Passed! Benchmark Attained.",
+      );
+      feedback.success();
+      feedback.xp(isFinal ? 100 : 50);
+      toast.success(
+        isFinal
+          ? `Congratulations! Passed Final Assessment with ${scorePct}%! 🏆`
+          : `Passed Module Quiz with ${scorePct}% score! ⚡`,
+      );
       onPassed();
     } else {
       announce("Assessment not passed. You can review the rationales and retry.");
-      toast.error(`Scored ${scorePct}%. 80% passing grade required to unlock badge.`);
+      toast.error(`Scored ${scorePct}%. 80% passing grade required (minimum 8 of 10).`);
     }
   };
 
@@ -447,39 +465,77 @@ function SkillBuildKnowledgeCheck({
     setRevealed(false);
   };
 
-  const scorePct = revealed
-    ? Math.round(
-        (questions.filter((q) => selectedAnswers[q.id] === q.correctIndex).length /
-          questions.length) *
-          100,
-      )
+  const correctCount = revealed
+    ? questions.filter((q) => selectedAnswers[q.id] === q.correctIndex).length
     : 0;
+  const scorePct = revealed ? Math.round((correctCount / questions.length) * 100) : 0;
   const isPassed = revealed && scorePct >= 80;
 
   return (
     <div className="space-y-6">
-      {/* Knowledge Check Banner */}
-      <div className="rounded-xl border border-border bg-card p-5 shadow-sm space-y-2">
+      {/* Assessment Header Card */}
+      <div className="rounded-2xl border border-border bg-card p-6 shadow-sm space-y-4">
         <div className="flex flex-wrap items-center justify-between gap-3">
-          <div className="flex items-center gap-2">
-            <Lightbulb className="size-5 text-amber-500" />
-            <h3 className="font-display text-lg font-bold text-foreground">
-              Scenario-Based Knowledge Check
-            </h3>
+          <div className="flex items-center gap-2.5">
+            <div className="grid size-9 place-items-center rounded-xl bg-primary/15 text-primary border border-primary/30">
+              {isFinal ? <Award className="size-5" /> : <Lightbulb className="size-5" />}
+            </div>
+            <div>
+              <h3 className="font-display text-lg sm:text-xl font-bold text-foreground">
+                {isFinal ? `Final Comprehensive Assessment: ${course.title}` : lesson.title}
+              </h3>
+              <p className="text-xs text-muted-foreground mt-0.5">
+                {isFinal
+                  ? "Accredited Capstone Exam · Cross-Module Verification"
+                  : "End-of-Module Verification Quiz · 10 Graded Questions"}
+              </p>
+            </div>
           </div>
-          <Badge variant="outline" className="text-xs border-amber-500/30 bg-amber-500/10 text-amber-500">
-            Passing Threshold: 80% Score
+          <Badge
+            variant="outline"
+            className={cn(
+              "text-xs font-semibold px-2.5 py-1",
+              isFinal
+                ? "border-primary/30 bg-primary/10 text-primary font-bold"
+                : "border-primary/30 bg-primary/10 text-primary",
+            )}
+          >
+            {isFinal ? "Graded Final Assessment · 80% to Pass" : "10 Questions · 80% Benchmark"}
           </Badge>
         </div>
-        <p className="text-xs text-muted-foreground leading-relaxed">
-          Questions reflect official AWS Skill Builder and IBM SkillsBuild competency exams. Review the technical scenario, select the recommended architecture pattern, and verify the rationale.
+
+        <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">
+          {isFinal
+            ? `Demonstrate comprehensive mastery across all curriculum pillars of ${course.title}. Answer all 10 scenario-based questions to earn your official digital credential.`
+            : "Review each realistic enterprise scenario, apply the architectural best practices learned in this module, and select the best technical solution."}
         </p>
+
+        {/* Live Answering Progress Bar */}
+        <div className="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-border/60 text-xs">
+          <span className="text-muted-foreground">
+            Progress:{" "}
+            <strong className="text-foreground">
+              {answeredCount} of {questions.length} Questions Answered
+            </strong>
+          </span>
+          <div className="flex items-center gap-2">
+            <Progress
+              value={(answeredCount / questions.length) * 100}
+              className="w-32 sm:w-40 h-2 bg-muted"
+              indicatorClassName="bg-primary"
+            />
+            <span className="font-mono text-xs font-semibold text-primary">
+              {Math.round((answeredCount / questions.length) * 100)}%
+            </span>
+          </div>
+        </div>
       </div>
 
       {/* Questions list */}
       <div className="space-y-5">
         {questions.map((q, qIndex) => {
           const selected = selectedAnswers[q.id];
+          const isChosen = selected !== undefined;
           const isCorrect = selected === q.correctIndex;
 
           return (
@@ -518,7 +574,7 @@ function SkillBuildKnowledgeCheck({
 
               <div className="space-y-2">
                 {q.options.map((option, optIdx) => {
-                  const isChosen = selected === optIdx;
+                  const isSelected = selected === optIdx;
                   const isOptionCorrect = optIdx === q.correctIndex;
 
                   return (
@@ -529,13 +585,13 @@ function SkillBuildKnowledgeCheck({
                       disabled={revealed}
                       className={cn(
                         "w-full flex items-start gap-3 p-3.5 rounded-xl border text-left text-xs sm:text-sm transition-all",
-                        !revealed && isChosen
+                        !revealed && isSelected
                           ? "border-primary bg-primary/10 text-foreground font-medium"
                           : !revealed
                             ? "border-border bg-surface-1 hover:border-border/80 hover:bg-surface-2 text-muted-foreground hover:text-foreground"
                             : isOptionCorrect
                               ? "border-emerald-500/50 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-medium"
-                              : isChosen && !isOptionCorrect
+                              : isSelected && !isOptionCorrect
                                 ? "border-rose-500/50 bg-rose-500/10 text-rose-600 dark:text-rose-400"
                                 : "border-border bg-card opacity-50",
                       )}
@@ -543,11 +599,11 @@ function SkillBuildKnowledgeCheck({
                       <span
                         className={cn(
                           "grid size-5 shrink-0 place-items-center rounded-full border text-[11px] font-bold mt-0.5",
-                          !revealed && isChosen
+                          !revealed && isSelected
                             ? "border-primary bg-primary text-white"
                             : revealed && isOptionCorrect
                               ? "border-emerald-500 bg-emerald-500 text-white"
-                              : revealed && isChosen
+                              : revealed && isSelected
                                 ? "border-rose-500 bg-rose-500 text-white"
                                 : "border-border text-muted-foreground",
                         )}
@@ -567,14 +623,14 @@ function SkillBuildKnowledgeCheck({
                     "p-4 rounded-xl border text-xs sm:text-sm leading-relaxed space-y-1.5",
                     isCorrect
                       ? "border-emerald-500/30 bg-emerald-500/5 text-foreground"
-                      : "border-amber-500/30 bg-amber-500/5 text-foreground",
+                      : "border-primary/25 bg-primary/5 text-foreground",
                   )}
                 >
                   <div className="flex items-center gap-1.5 font-bold text-xs">
                     {isCorrect ? (
                       <CheckCircle2 className="size-4 text-emerald-500" />
                     ) : (
-                      <HelpCircle className="size-4 text-amber-500" />
+                      <HelpCircle className="size-4 text-primary" />
                     )}
                     <span>Technical Rationale:</span>
                   </div>
@@ -594,16 +650,23 @@ function SkillBuildKnowledgeCheck({
         <div>
           {revealed ? (
             <div className="space-y-0.5">
-              <span className="text-xs text-muted-foreground uppercase tracking-wider">
-                Assessment Result
+              <span className="text-xs text-muted-foreground uppercase tracking-wider font-semibold">
+                {isFinal ? "Final Certification Result" : "Module Quiz Result"}
               </span>
-              <p className={cn("text-lg font-bold font-display", isPassed ? "text-emerald-500" : "text-amber-500")}>
+              <p className={cn("text-lg font-bold font-display", isPassed ? "text-emerald-500" : "text-primary")}>
                 Score: {scorePct}% · {isPassed ? "Passed (>= 80%) ✓" : "Needs Review (< 80%)"}
+              </p>
+              <p className="text-xs text-muted-foreground mt-0.5">
+                {isPassed
+                  ? "Topic verified! Your score has been recorded to your learning record."
+                  : `You answered ${correctCount} of ${questions.length} correctly. Review the technical rationales and retake when ready.`}
               </p>
             </div>
           ) : (
             <p className="text-xs text-muted-foreground">
-              Answer all {questions.length} questions to evaluate your score against the 80% benchmark.
+              {answeredCount === questions.length
+                ? "All 10 questions answered! Click submit to evaluate your score."
+                : `Answer all 10 questions to submit (${answeredCount} of ${questions.length} completed). Minimum 80% required to pass.`}
             </p>
           )}
         </div>
@@ -618,8 +681,8 @@ function SkillBuildKnowledgeCheck({
             <Button
               size="sm"
               onClick={handleCheck}
-              disabled={Object.keys(selectedAnswers).length < questions.length}
-              className="bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold text-xs gap-1.5"
+              disabled={answeredCount < questions.length}
+              className="font-bold text-xs gap-1.5 shadow-sm"
             >
               <CheckCircle2 className="size-4" />
               Submit & Check Answers
@@ -677,6 +740,43 @@ export function PlayerClient({ course }: { course: Course }) {
   );
 
   const activityDetails = activeLesson ? getLessonActivityDetails(activeLesson) : null;
+  const isQuizOrAssessment = activityDetails?.type === "quiz" || activityDetails?.type === "assessment";
+  const isFinalAssessment = activityDetails?.type === "assessment";
+
+  const priorLessons = React.useMemo(
+    () =>
+      allLessons.filter(
+        (l) =>
+          !l.title.toLowerCase().includes("final assessment") &&
+          !l.title.toLowerCase().includes("final comprehensive"),
+      ),
+    [allLessons],
+  );
+
+  const completedPriorCount = React.useMemo(
+    () => priorLessons.filter((l) => completedSet.has(l.id)).length,
+    [priorLessons, completedSet],
+  );
+
+  const areAllPriorModulesComplete =
+    priorLessons.length > 0 && completedPriorCount >= priorLessons.length;
+
+  const firstIncompleteLesson = React.useMemo(
+    () => priorLessons.find((l) => !completedSet.has(l.id)) ?? null,
+    [priorLessons, completedSet],
+  );
+
+  const [readingProgress, setReadingProgress] = React.useState(0);
+  const mainRef = React.useRef<HTMLElement | null>(null);
+  const contentContainerRef = React.useRef<HTMLDivElement | null>(null);
+  const sentinelRef = React.useRef<HTMLDivElement | null>(null);
+  const completedLessonIdsRef = React.useRef<Set<string>>(new Set());
+
+  React.useEffect(() => {
+    if (progress?.completed_lesson_ids) {
+      progress.completed_lesson_ids.forEach((id) => completedLessonIdsRef.current.add(id));
+    }
+  }, [progress?.completed_lesson_ids]);
 
   const progressMutation = useMutation({
     mutationFn: (input: { lessonId: string; completed: boolean }) =>
@@ -701,18 +801,124 @@ export function PlayerClient({ course }: { course: Course }) {
     onError: (err: Error) => toast.error(err.message),
   });
 
-  const handleMarkComplete = () => {
-    if (!activeLesson) return;
-    progressMutation.mutate({ lessonId: activeLesson.id, completed: true });
-    if (nextLesson) {
-      setTimeout(() => {
-        setPickedLessonId(nextLesson.id);
-        setActiveTab("content");
-      }, 400);
-    }
-  };
-
   const isActiveCompleted = activeLesson ? completedSet.has(activeLesson.id) : false;
+
+  const completeCurrentLesson = React.useCallback(() => {
+    if (!activeLesson) return;
+    if (completedSet.has(activeLesson.id)) return;
+    if (completedLessonIdsRef.current.has(activeLesson.id)) return;
+    if (progressMutation.isPending) return;
+
+    completedLessonIdsRef.current.add(activeLesson.id);
+    progressMutation.mutate({ lessonId: activeLesson.id, completed: true });
+  }, [activeLesson, completedSet, progressMutation]);
+
+  // Scroll back to top on lesson switch
+  React.useEffect(() => {
+    if (typeof window !== "undefined") {
+      window.scrollTo({ top: 0, behavior: "instant" });
+    }
+    mainRef.current?.scrollTo({ top: 0, behavior: "instant" });
+
+    if (activeLesson && completedSet.has(activeLesson.id)) {
+      setReadingProgress(100);
+    } else {
+      setReadingProgress(0);
+    }
+  }, [activeLesson?.id]);
+
+  // Track scroll depth and automatically update progress when scrolling down content
+  React.useEffect(() => {
+    if (!activeLesson) return;
+    if (completedSet.has(activeLesson.id)) {
+      setReadingProgress(100);
+      return;
+    }
+
+    const computeProgress = () => {
+      const contentEl = contentContainerRef.current;
+      if (!contentEl) return;
+
+      const rect = contentEl.getBoundingClientRect();
+      const windowHeight = window.innerHeight;
+      const headerOffset = 56;
+      const contentHeight = rect.height;
+      const visibleHeight = windowHeight - headerOffset;
+
+      if (contentHeight <= visibleHeight + 40) {
+        setReadingProgress(100);
+        if (!isQuizOrAssessment) {
+          completeCurrentLesson();
+        }
+        return;
+      }
+
+      const scrolled = Math.max(0, headerOffset - rect.top);
+      const maxScrollable = contentHeight - visibleHeight;
+      const windowPct = Math.min(100, Math.max(0, Math.round((scrolled / maxScrollable) * 100)));
+
+      const mainEl = mainRef.current;
+      const containerPct =
+        mainEl && mainEl.scrollHeight > mainEl.clientHeight
+          ? Math.min(
+              100,
+              Math.max(
+                0,
+                Math.round((mainEl.scrollTop / (mainEl.scrollHeight - mainEl.clientHeight)) * 100),
+              ),
+            )
+          : 0;
+
+      const finalPct = Math.max(windowPct, containerPct);
+      setReadingProgress((prev) => (finalPct > prev ? finalPct : prev));
+
+      if (!isQuizOrAssessment && finalPct >= 75) {
+        completeCurrentLesson();
+      }
+    };
+
+    let observer: IntersectionObserver | null = null;
+    if (typeof IntersectionObserver !== "undefined" && sentinelRef.current) {
+      observer = new IntersectionObserver(
+        (entries) => {
+          for (const entry of entries) {
+            if (entry.isIntersecting) {
+              setReadingProgress(100);
+              if (!isQuizOrAssessment) {
+                completeCurrentLesson();
+              }
+            }
+          }
+        },
+        {
+          root: null,
+          rootMargin: "0px 0px 80px 0px",
+          threshold: 0.1,
+        },
+      );
+      observer.observe(sentinelRef.current);
+    }
+
+    const mainEl = mainRef.current;
+    window.addEventListener("scroll", computeProgress, { passive: true });
+    window.addEventListener("resize", computeProgress, { passive: true });
+    if (mainEl) {
+      mainEl.addEventListener("scroll", computeProgress, { passive: true });
+    }
+
+    computeProgress();
+
+    return () => {
+      window.removeEventListener("scroll", computeProgress);
+      window.removeEventListener("resize", computeProgress);
+      if (mainEl) {
+        mainEl.removeEventListener("scroll", computeProgress);
+      }
+      if (observer) {
+        observer.disconnect();
+      }
+    };
+  }, [activeLesson?.id, completedSet, completeCurrentLesson]);
   const isCourseComplete =
     enrollment?.status === "completed" ||
     (allLessons.length > 0 && completedSet.size >= allLessons.length);
@@ -802,7 +1008,7 @@ export function PlayerClient({ course }: { course: Course }) {
           </Link>
           <span className="text-border">/</span>
           <div className="flex items-center gap-2 truncate text-xs">
-            <span className="font-mono text-amber-500 font-semibold hidden sm:inline">
+            <span className="font-mono text-primary font-semibold hidden sm:inline">
               {meta.courseCode}
             </span>
             <span className="text-muted-foreground truncate hidden lg:inline">
@@ -822,7 +1028,7 @@ export function PlayerClient({ course }: { course: Course }) {
               <span className="text-xs font-medium text-muted-foreground">
                 {completedSet.size}/{allLessons.length} Topics ({enrollment.progress_pct}%)
               </span>
-              <Progress value={enrollment.progress_pct} className="w-24 h-1.5 bg-muted" indicatorClassName="bg-amber-500" />
+              <Progress value={enrollment.progress_pct} className="w-24 h-1.5 bg-muted" indicatorClassName="bg-primary" />
             </div>
           )}
 
@@ -830,7 +1036,7 @@ export function PlayerClient({ course }: { course: Course }) {
             size="sm"
             variant="outline"
             onClick={() => setDigitalBadgeOpen(true)}
-            className="text-xs gap-1.5 border-amber-500/30 text-amber-500 hover:bg-amber-500/10"
+            className="text-xs gap-1.5 border-primary/30 text-primary hover:bg-primary/10"
           >
             <Award className="size-3.5" />
             <span className="hidden md:inline">{isCourseComplete ? "Claim Badge" : "Credential Status"}</span>
@@ -845,6 +1051,19 @@ export function PlayerClient({ course }: { course: Course }) {
             {sidebarOpen ? <X className="size-4" /> : <Layers className="size-4" />}
           </Button>
         </div>
+
+        {/* Scroll-based Reading Progress Line directly attached to header */}
+        <div className="absolute inset-x-0 bottom-0 h-0.5 bg-border/40 overflow-hidden">
+          <div
+            className={cn(
+              "h-full transition-[width] duration-150 ease-out",
+              isActiveCompleted || readingProgress >= 75
+                ? "bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.7)]"
+                : "bg-primary shadow-[0_0_8px_rgba(217,38,64,0.6)]",
+            )}
+            style={{ width: `${isActiveCompleted ? 100 : readingProgress}%` }}
+          />
+        </div>
       </header>
 
       {/* Main LMS Layout: Left Drawer (Curriculum) + Right Learning Canvas */}
@@ -857,9 +1076,9 @@ export function PlayerClient({ course }: { course: Course }) {
           )}
         >
           {/* Drawer Header with Course Code & Progress */}
-          <div className="bg-gradient-to-r from-slate-950 to-[#0e172e] p-5 text-white border-b border-border/40">
+          <div className="bg-gradient-to-br from-primary-deep via-slate-950 to-slate-900 p-5 text-white border-b border-border/40">
             <div className="flex items-center justify-between">
-              <span className="text-[10px] font-bold uppercase tracking-widest text-amber-400 font-mono">
+              <span className="text-[10px] font-bold uppercase tracking-widest text-primary-light font-mono">
                 {meta.courseCode}
               </span>
               <span className="text-[11px] font-bold text-slate-300">
@@ -873,7 +1092,7 @@ export function PlayerClient({ course }: { course: Course }) {
               <Progress
                 value={enrollment?.progress_pct ?? 0}
                 className="h-1 bg-slate-800"
-                indicatorClassName="bg-amber-500"
+                indicatorClassName="bg-primary"
               />
             </div>
           </div>
@@ -950,11 +1169,15 @@ export function PlayerClient({ course }: { course: Course }) {
                               setPickedLessonId(lesson.id);
                               setActiveTab("content");
                               if (window.innerWidth < 1024) setSidebarOpen(false);
+                              if (typeof window !== "undefined") {
+                                window.scrollTo({ top: 0, behavior: "smooth" });
+                              }
+                              mainRef.current?.scrollTo({ top: 0, behavior: "smooth" });
                             }}
                             className={cn(
                               "w-full flex items-center justify-between p-3 text-left transition-colors text-xs relative",
                               active
-                                ? "bg-amber-500/10 text-foreground font-semibold before:absolute before:inset-y-0 before:left-0 before:w-1 before:bg-amber-500"
+                                ? "bg-primary/10 text-foreground font-semibold before:absolute before:inset-y-0 before:left-0 before:w-1 before:bg-primary"
                                 : "text-muted-foreground hover:bg-surface-2 hover:text-foreground",
                             )}
                           >
@@ -985,9 +1208,9 @@ export function PlayerClient({ course }: { course: Course }) {
         </aside>
 
         {/* Center Learning Canvas */}
-        <main className="flex flex-1 flex-col overflow-y-auto">
+        <main ref={mainRef} className="flex flex-1 flex-col overflow-y-auto">
           {activeLesson && (
-            <div className="p-4 sm:p-8 lg:p-10 max-w-5xl mx-auto w-full space-y-6">
+            <div ref={contentContainerRef} className="p-4 sm:p-8 lg:p-10 max-w-5xl mx-auto w-full space-y-6">
               {/* Activity Banner Strip */}
               <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border pb-4">
                 <div className="flex items-center gap-2.5">
@@ -997,164 +1220,226 @@ export function PlayerClient({ course }: { course: Course }) {
                   <span className="text-xs text-muted-foreground">
                     Topic {activeLessonIndex + 1} of {allLessons.length}
                   </span>
+                  {isActiveCompleted ? (
+                    <Badge variant="outline" className="border-emerald-500/30 bg-emerald-500/10 text-emerald-500 text-[11px] font-semibold gap-1">
+                      <CheckCircle2 className="size-3" />
+                      <span>{isQuizOrAssessment ? "Passed" : "Completed"}</span>
+                    </Badge>
+                  ) : isQuizOrAssessment ? (
+                    <Badge variant="outline" className="border-primary/30 text-primary font-mono text-[11px] gap-1">
+                      <span>10 Questions · 80% to Pass</span>
+                    </Badge>
+                  ) : (
+                    <Badge variant="outline" className="border-primary/30 text-primary font-mono text-[11px] gap-1">
+                      <span className="size-1.5 rounded-full bg-primary animate-pulse" />
+                      <span>Scroll Progress: {readingProgress}%</span>
+                    </Badge>
+                  )}
                 </div>
 
-                {/* Sub-Tabs: Content / Lab / Knowledge Check / Resources / Notes */}
-                <div className="flex items-center gap-1 bg-surface-1 p-1 rounded-xl border border-border text-xs">
-                  <button
-                    type="button"
-                    onClick={() => setActiveTab("content")}
-                    className={cn(
-                      "px-3 py-1.5 rounded-lg font-medium transition-colors flex items-center gap-1.5",
-                      activeTab === "content"
-                        ? "bg-card text-foreground font-semibold shadow-sm"
-                        : "text-muted-foreground hover:text-foreground",
+                {/* Sub-Tabs: ONLY for regular reading/lab topics. Quizzes and final assessments render directly on the course page */}
+                {!isQuizOrAssessment && (
+                  <div className="flex items-center gap-1 bg-surface-1 p-1 rounded-xl border border-border text-xs">
+                    <button
+                      type="button"
+                      onClick={() => setActiveTab("content")}
+                      className={cn(
+                        "px-3 py-1.5 rounded-lg font-medium transition-colors flex items-center gap-1.5",
+                        activeTab === "content"
+                          ? "bg-card text-foreground font-semibold shadow-sm"
+                          : "text-muted-foreground hover:text-foreground",
+                      )}
+                    >
+                      <BookOpen className="size-3.5" />
+                      <span>Guide</span>
+                    </button>
+                    {activityDetails?.type === "lab" && (
+                      <button
+                        type="button"
+                        onClick={() => setActiveTab("lab")}
+                        className={cn(
+                          "px-3 py-1.5 rounded-lg font-medium transition-colors flex items-center gap-1.5",
+                          activeTab === "lab"
+                            ? "bg-card text-primary font-semibold shadow-sm"
+                            : "text-muted-foreground hover:text-foreground",
+                        )}
+                      >
+                        <FlaskConical className="size-3.5" />
+                        <span>Cloud Lab</span>
+                      </button>
                     )}
-                  >
-                    <BookOpen className="size-3.5" />
-                    <span>Guide</span>
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setActiveTab("lab")}
-                    className={cn(
-                      "px-3 py-1.5 rounded-lg font-medium transition-colors flex items-center gap-1.5",
-                      activeTab === "lab"
-                        ? "bg-card text-amber-500 font-semibold shadow-sm"
-                        : "text-muted-foreground hover:text-foreground",
-                    )}
-                  >
-                    <FlaskConical className="size-3.5" />
-                    <span>Cloud Lab</span>
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setActiveTab("quiz")}
-                    className={cn(
-                      "px-3 py-1.5 rounded-lg font-medium transition-colors flex items-center gap-1.5",
-                      activeTab === "quiz"
-                        ? "bg-card text-emerald-500 font-semibold shadow-sm"
-                        : "text-muted-foreground hover:text-foreground",
-                    )}
-                  >
-                    <Lightbulb className="size-3.5" />
-                    <span>Knowledge Check</span>
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setActiveTab("resources")}
-                    className={cn(
-                      "px-3 py-1.5 rounded-lg font-medium transition-colors flex items-center gap-1.5",
-                      activeTab === "resources"
-                        ? "bg-card text-foreground font-semibold shadow-sm"
-                        : "text-muted-foreground hover:text-foreground",
-                    )}
-                  >
-                    <Download className="size-3.5" />
-                    <span className="hidden sm:inline">Resources</span>
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setActiveTab("notes")}
-                    className={cn(
-                      "px-3 py-1.5 rounded-lg font-medium transition-colors flex items-center gap-1.5",
-                      activeTab === "notes"
-                        ? "bg-card text-foreground font-semibold shadow-sm"
-                        : "text-muted-foreground hover:text-foreground",
-                    )}
-                  >
-                    <FileText className="size-3.5" />
-                    <span className="hidden sm:inline">Notes</span>
-                  </button>
-                </div>
+                    <button
+                      type="button"
+                      onClick={() => setActiveTab("resources")}
+                      className={cn(
+                        "px-3 py-1.5 rounded-lg font-medium transition-colors flex items-center gap-1.5",
+                        activeTab === "resources"
+                          ? "bg-card text-foreground font-semibold shadow-sm"
+                          : "text-muted-foreground hover:text-foreground",
+                      )}
+                    >
+                      <Download className="size-3.5" />
+                      <span className="hidden sm:inline">Resources</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setActiveTab("notes")}
+                      className={cn(
+                        "px-3 py-1.5 rounded-lg font-medium transition-colors flex items-center gap-1.5",
+                        activeTab === "notes"
+                          ? "bg-card text-foreground font-semibold shadow-sm"
+                          : "text-muted-foreground hover:text-foreground",
+                      )}
+                    >
+                      <FileText className="size-3.5" />
+                      <span className="hidden sm:inline">Notes</span>
+                    </button>
+                  </div>
+                )}
               </div>
 
-              {/* Sub-Tab 1: Learning Article Content */}
-              {activeTab === "content" && (
-                <div className="space-y-6">
-                  <SkillBuildArticleBody lesson={activeLesson} course={course} />
-                </div>
-              )}
-
-              {/* Sub-Tab 2: Hands-on Cloud Sandbox Lab */}
-              {activeTab === "lab" && (
-                <div className="space-y-6">
-                  <SkillBuildLabSandbox
-                    course={course}
-                    lesson={activeLesson}
-                    onCompleteLab={handleMarkComplete}
-                  />
-                </div>
-              )}
-
-              {/* Sub-Tab 3: Knowledge Check / Assessment */}
-              {activeTab === "quiz" && (
-                <div className="space-y-6">
-                  <SkillBuildKnowledgeCheck
-                    course={course}
-                    lesson={activeLesson}
-                    onPassed={handleMarkComplete}
-                  />
-                </div>
-              )}
-
-              {/* Sub-Tab 4: Resources & Reference Guides */}
-              {activeTab === "resources" && (
-                <div className="space-y-6">
-                  <div className="rounded-2xl border border-border bg-card p-6 shadow-sm space-y-4">
-                    <div className="flex items-center gap-2 text-foreground font-bold text-base">
-                      <Download className="size-5 text-primary" />
-                      <h3>Course Resources, Whitepapers & Cheatsheets</h3>
+              {/* MAIN CONTENT REGION */}
+              {isQuizOrAssessment ? (
+                /* QUIZ / FINAL ASSESSMENT VIEW */
+                isFinalAssessment && !areAllPriorModulesComplete ? (
+                  /* Prerequisite locked gate for Final Assessment */
+                  <div className="rounded-2xl border border-primary/30 bg-gradient-to-r from-primary/10 via-primary/5 to-card p-6 sm:p-10 space-y-6 shadow-sm">
+                    <div className="flex items-start gap-4">
+                      <div className="grid size-12 place-items-center rounded-2xl bg-primary/20 text-primary shrink-0 border border-primary/30 shadow">
+                        <ShieldCheck className="size-6" />
+                      </div>
+                      <div className="space-y-1.5 flex-1">
+                        <Badge variant="outline" className="border-primary/30 bg-primary/10 text-primary text-xs font-semibold">
+                          Prerequisite Gate · All Modules Required
+                        </Badge>
+                        <h3 className="font-display text-2xl font-bold text-foreground">
+                          Final Certification Assessment is Locked
+                        </h3>
+                        <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed max-w-2xl">
+                          To take the Comprehensive Final Assessment and earn your credential, you must complete all preceding module topics and their 10-question quizzes.
+                        </p>
+                      </div>
                     </div>
-                    <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">
-                      Download supplementary technical blueprints, security configuration checklists, and examination blueprints for {course.title}.
-                    </p>
 
-                    <div className="grid sm:grid-cols-2 gap-3 pt-2">
-                      <div className="p-4 rounded-xl border border-border bg-surface-1 flex items-start justify-between gap-3">
-                        <div>
-                          <h4 className="text-sm font-semibold text-foreground">
-                            Official Technical Study Guide
-                          </h4>
-                          <p className="text-xs text-muted-foreground mt-0.5">
-                            Comprehensive CLI commands & security architecture notes.
-                          </p>
-                        </div>
-                        <Button size="sm" variant="outline" onClick={downloadResources} className="text-xs shrink-0">
-                          <Download className="size-3.5 mr-1" />
-                          Download
-                        </Button>
+                    <div className="p-4 rounded-xl border border-border bg-surface-1 space-y-2">
+                      <div className="flex items-center justify-between text-xs font-medium">
+                        <span className="text-foreground">Module Curriculum Completion</span>
+                        <span className="text-primary font-mono font-bold">
+                          {completedPriorCount} of {priorLessons.length} Topics Completed ({Math.round((completedPriorCount / Math.max(1, priorLessons.length)) * 100)}%)
+                        </span>
                       </div>
+                      <Progress
+                        value={(completedPriorCount / Math.max(1, priorLessons.length)) * 100}
+                        className="h-2 bg-muted"
+                        indicatorClassName="bg-primary"
+                      />
+                    </div>
 
-                      <div className="p-4 rounded-xl border border-border bg-surface-1 flex items-start justify-between gap-3">
-                        <div>
-                          <h4 className="text-sm font-semibold text-foreground">
-                            CIS Benchmark & Compliance Checklist
-                          </h4>
-                          <p className="text-xs text-muted-foreground mt-0.5">
-                            Verification checklist for IAM, S3, and workload policies.
-                          </p>
-                        </div>
-                        <Button size="sm" variant="outline" onClick={downloadResources} className="text-xs shrink-0">
-                          <Download className="size-3.5 mr-1" />
-                          Download
+                    <div className="flex flex-wrap items-center gap-3 pt-2">
+                      {firstIncompleteLesson && (
+                        <Button
+                          onClick={() => {
+                            setPickedLessonId(firstIncompleteLesson.id);
+                            setActiveTab("content");
+                            if (typeof window !== "undefined") {
+                              window.scrollTo({ top: 0, behavior: "smooth" });
+                            }
+                            mainRef.current?.scrollTo({ top: 0, behavior: "smooth" });
+                          }}
+                          className="font-bold text-xs gap-1.5"
+                        >
+                          <span>Resume Incomplete Topics ({firstIncompleteLesson.title})</span>
+                          <ArrowRight className="size-3.5" />
                         </Button>
-                      </div>
+                      )}
                     </div>
                   </div>
-                </div>
-              )}
+                ) : (
+                  /* Directly render the 10-Question Quiz / Final Assessment on the course page! */
+                  <div className="space-y-6">
+                    <SkillBuildKnowledgeCheck
+                      course={course}
+                      lesson={activeLesson}
+                      onPassed={completeCurrentLesson}
+                    />
+                  </div>
+                )
+              ) : (
+                /* REGULAR LEARNING TOPIC VIEW (Guide / Cloud Lab / Resources / Notes) */
+                <>
+                  {activeTab === "content" && (
+                    <div className="space-y-6">
+                      <SkillBuildArticleBody lesson={activeLesson} course={course} />
+                    </div>
+                  )}
 
-              {/* Sub-Tab 5: Notes */}
-              {activeTab === "notes" && (
-                <div className="space-y-6">
-                  <PlayerNotes
-                    key={activeLesson.id}
-                    courseId={course.id}
-                    lessonId={activeLesson.id}
-                    lessonTitle={activeLesson.title}
-                  />
-                </div>
+                  {activeTab === "lab" && (
+                    <div className="space-y-6">
+                      <SkillBuildLabSandbox
+                        course={course}
+                        lesson={activeLesson}
+                        onCompleteLab={completeCurrentLesson}
+                      />
+                    </div>
+                  )}
+
+                  {activeTab === "resources" && (
+                    <div className="space-y-6">
+                      <div className="rounded-2xl border border-border bg-card p-6 shadow-sm space-y-4">
+                        <div className="flex items-center gap-2 text-foreground font-bold text-base">
+                          <Download className="size-5 text-primary" />
+                          <h3>Course Resources, Whitepapers & Cheatsheets</h3>
+                        </div>
+                        <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">
+                          Download supplementary technical blueprints, security configuration checklists, and examination blueprints for {course.title}.
+                        </p>
+
+                        <div className="grid sm:grid-cols-2 gap-3 pt-2">
+                          <div className="p-4 rounded-xl border border-border bg-surface-1 flex items-start justify-between gap-3">
+                            <div>
+                              <h4 className="text-sm font-semibold text-foreground">
+                                Official Technical Study Guide
+                              </h4>
+                              <p className="text-xs text-muted-foreground mt-0.5">
+                                Comprehensive CLI commands & security architecture notes.
+                              </p>
+                            </div>
+                            <Button size="sm" variant="outline" onClick={downloadResources} className="text-xs shrink-0">
+                              <Download className="size-3.5 mr-1" />
+                              Download
+                            </Button>
+                          </div>
+
+                          <div className="p-4 rounded-xl border border-border bg-surface-1 flex items-start justify-between gap-3">
+                            <div>
+                              <h4 className="text-sm font-semibold text-foreground">
+                                CIS Benchmark & Compliance Checklist
+                              </h4>
+                              <p className="text-xs text-muted-foreground mt-0.5">
+                                Verification checklist for IAM, S3, and workload policies.
+                              </p>
+                            </div>
+                            <Button size="sm" variant="outline" onClick={downloadResources} className="text-xs shrink-0">
+                              <Download className="size-3.5 mr-1" />
+                              Download
+                            </Button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {activeTab === "notes" && (
+                    <div className="space-y-6">
+                      <PlayerNotes
+                        key={activeLesson.id}
+                        courseId={course.id}
+                        lessonId={activeLesson.id}
+                        lessonTitle={activeLesson.title}
+                      />
+                    </div>
+                  )}
+                </>
               )}
 
               {/* Lesson Completion Status Alert */}
@@ -1174,10 +1459,10 @@ export function PlayerClient({ course }: { course: Course }) {
 
               {/* Course Complete Milestone Banner */}
               {isCourseComplete && (
-                <div className="rounded-2xl border border-amber-500/40 bg-gradient-to-r from-amber-500/10 via-amber-500/5 to-slate-900 p-6 sm:p-8 space-y-4 shadow-lg">
+                <div className="rounded-2xl border border-primary/30 bg-gradient-to-r from-primary/15 via-primary/5 to-card p-6 sm:p-8 space-y-4 shadow-md">
                   <div className="flex items-start justify-between gap-4">
                     <div>
-                      <Badge variant="outline" className="text-xs border-amber-500/30 bg-amber-500/20 text-amber-400 font-bold mb-2">
+                      <Badge variant="outline" className="text-xs border-primary/30 bg-primary/20 text-primary font-bold mb-2">
                         Milestone Unlocked · Credential Ready
                       </Badge>
                       <h3 className="font-display text-2xl font-bold text-foreground">
@@ -1187,15 +1472,15 @@ export function PlayerClient({ course }: { course: Course }) {
                         You have met all curriculum requirements and passed the scenario knowledge check. Your official digital credential is ready to be claimed and shared to LinkedIn / Credly.
                       </p>
                     </div>
-                    <div className="grid size-12 place-items-center rounded-2xl bg-amber-500 text-slate-950 font-bold shrink-0 shadow">
-                      <Award className="size-6 text-slate-950" />
+                    <div className="grid size-12 place-items-center rounded-2xl bg-primary text-primary-foreground font-bold shrink-0 shadow">
+                      <Award className="size-6 text-primary-foreground" />
                     </div>
                   </div>
 
                   <div className="flex flex-wrap items-center gap-3 pt-2">
                     <Button
                       onClick={() => setDigitalBadgeOpen(true)}
-                      className="bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold text-xs gap-1.5"
+                      className="font-bold text-xs gap-1.5"
                     >
                       <Award className="size-4" />
                       Claim Digital Credential & Badge
@@ -1207,7 +1492,10 @@ export function PlayerClient({ course }: { course: Course }) {
                 </div>
               )}
 
-              {/* Bottom Navigation Strip (Previous / Mark Complete / Next) */}
+              {/* Reading Sentinel at the end of the content */}
+              <div ref={sentinelRef} className="h-2 w-full" aria-hidden="true" />
+
+              {/* Bottom Navigation Strip (Previous / Next Topic) */}
               <div className="flex flex-wrap items-center justify-between gap-3 pt-6 border-t border-border">
                 {previousLesson ? (
                   <Button
@@ -1216,6 +1504,10 @@ export function PlayerClient({ course }: { course: Course }) {
                     onClick={() => {
                       setPickedLessonId(previousLesson.id);
                       setActiveTab("content");
+                      if (typeof window !== "undefined") {
+                        window.scrollTo({ top: 0, behavior: "smooth" });
+                      }
+                      mainRef.current?.scrollTo({ top: 0, behavior: "smooth" });
                     }}
                     className="text-xs gap-1.5"
                   >
@@ -1226,37 +1518,51 @@ export function PlayerClient({ course }: { course: Course }) {
                   <span />
                 )}
 
-                <div className="flex items-center gap-2">
-                  {!isActiveCompleted && (
-                    <Button
-                      size="sm"
-                      onClick={handleMarkComplete}
-                      disabled={progressMutation.isPending}
-                      className="bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold text-xs gap-1.5"
-                    >
-                      {progressMutation.isPending ? (
-                        <LoaderCircle className="size-3.5 animate-spin" />
-                      ) : (
-                        <Check className="size-3.5 stroke-[3]" />
-                      )}
-                      Mark Complete & Continue
-                    </Button>
+                <div className="flex items-center gap-3">
+                  {/* Reading / Auto-completion / Quiz status */}
+                  {isActiveCompleted ? (
+                    <div className="flex items-center gap-1.5 text-xs text-emerald-500 font-medium">
+                      <CheckCircle2 className="size-3.5" />
+                      <span>{isQuizOrAssessment ? "Assessment Passed" : "Topic Completed"}</span>
+                    </div>
+                  ) : isQuizOrAssessment ? (
+                    <div className="flex items-center gap-1.5 text-xs text-primary font-medium">
+                      <Lightbulb className="size-3.5" />
+                      <span>Pass quiz (&ge; 80%) to complete</span>
+                    </div>
+                  ) : (
+                    <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                      <ArrowDown className="size-3.5 text-primary animate-bounce" />
+                      <span>Scroll to complete ({readingProgress}%)</span>
+                    </div>
                   )}
 
-                  {nextLesson && (
+                  {nextLesson ? (
                     <Button
                       size="sm"
-                      variant="outline"
                       onClick={() => {
                         setPickedLessonId(nextLesson.id);
                         setActiveTab("content");
+                        if (typeof window !== "undefined") {
+                          window.scrollTo({ top: 0, behavior: "smooth" });
+                        }
+                        mainRef.current?.scrollTo({ top: 0, behavior: "smooth" });
                       }}
-                      className="text-xs gap-1.5"
+                      className="font-bold text-xs gap-1.5"
                     >
                       <span>Next Topic</span>
                       <ArrowRight className="size-3.5" />
                     </Button>
-                  )}
+                  ) : isCourseComplete ? (
+                    <Button
+                      size="sm"
+                      onClick={() => setDigitalBadgeOpen(true)}
+                      className="font-bold text-xs gap-1.5"
+                    >
+                      <Award className="size-3.5" />
+                      <span>Claim Credential</span>
+                    </Button>
+                  ) : null}
                 </div>
               </div>
             </div>
