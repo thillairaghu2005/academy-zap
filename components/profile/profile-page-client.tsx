@@ -28,6 +28,9 @@ import { ErrorState } from "@/components/shared/error-state";
 import { PageContainer } from "@/components/shared/page-container";
 import { SkeletonLines } from "@/components/shared/skeletons";
 import { ProfileCompletion } from "@/components/profile/profile-completion";
+import { ProfileTranscript } from "@/components/profile/profile-transcript";
+import { ProfileBadgesGallery } from "@/components/profile/profile-badges-gallery";
+import { ProfileSkillsMatrix } from "@/components/profile/profile-skills-matrix";
 import { OrderHistory } from "@/components/commerce/order-history";
 import { cn, getInitials } from "@/lib/utils";
 
@@ -142,7 +145,11 @@ export function ProfilePageClient() {
 
           {/* History and Saved items */}
           <div className="w-full">
-            <ActivityTabs savedCourseIds={savedCourseIds} labBookmarkIds={labBookmarkIds} />
+            <ActivityTabs
+              savedCourseIds={savedCourseIds}
+              labBookmarkIds={labBookmarkIds}
+              learnerName={profile.display_name}
+            />
           </div>
         </div>
       </div>
@@ -150,17 +157,62 @@ export function ProfilePageClient() {
   );
 }
 
-function ActivityTabs({ savedCourseIds, labBookmarkIds }: { savedCourseIds: string[], labBookmarkIds: string[] }) {
-  const [activeTab, setActiveTab] = React.useState<"saved" | "orders">("saved");
+function ActivityTabs({
+  savedCourseIds,
+  labBookmarkIds,
+  learnerName,
+}: {
+  savedCourseIds: string[];
+  labBookmarkIds: string[];
+  learnerName: string;
+}) {
+  const [activeTab, setActiveTab] = React.useState<
+    "credentials" | "transcript" | "matrix" | "saved" | "orders"
+  >("credentials");
 
   return (
     <div className="flex flex-col gap-4">
-      <div className="flex gap-6 border-b border-border/50 overflow-x-auto scrollbar-hide">
+      <div className="flex gap-4 border-b border-border/50 overflow-x-auto no-scrollbar">
+        <button
+          onClick={() => setActiveTab("credentials")}
+          className={cn(
+            "pb-3 text-xs font-semibold uppercase tracking-wider transition-colors border-b-2 whitespace-nowrap",
+            activeTab === "credentials"
+              ? "border-primary text-primary"
+              : "border-transparent text-muted-foreground hover:text-foreground hover:border-border",
+          )}
+        >
+          Digital Badges &amp; Credentials
+        </button>
+        <button
+          onClick={() => setActiveTab("transcript")}
+          className={cn(
+            "pb-3 text-xs font-semibold uppercase tracking-wider transition-colors border-b-2 whitespace-nowrap",
+            activeTab === "transcript"
+              ? "border-primary text-primary"
+              : "border-transparent text-muted-foreground hover:text-foreground hover:border-border",
+          )}
+        >
+          Official Transcript
+        </button>
+        <button
+          onClick={() => setActiveTab("matrix")}
+          className={cn(
+            "pb-3 text-xs font-semibold uppercase tracking-wider transition-colors border-b-2 whitespace-nowrap",
+            activeTab === "matrix"
+              ? "border-primary text-primary"
+              : "border-transparent text-muted-foreground hover:text-foreground hover:border-border",
+          )}
+        >
+          Skill Competency Matrix
+        </button>
         <button
           onClick={() => setActiveTab("saved")}
           className={cn(
-            "pb-3 text-sm font-semibold transition-colors border-b-2 whitespace-nowrap",
-            activeTab === "saved" ? "border-primary text-foreground" : "border-transparent text-muted-foreground hover:text-foreground hover:border-border"
+            "pb-3 text-xs font-semibold uppercase tracking-wider transition-colors border-b-2 whitespace-nowrap",
+            activeTab === "saved"
+              ? "border-primary text-primary"
+              : "border-transparent text-muted-foreground hover:text-foreground hover:border-border",
           )}
         >
           Saved Learning
@@ -168,8 +220,10 @@ function ActivityTabs({ savedCourseIds, labBookmarkIds }: { savedCourseIds: stri
         <button
           onClick={() => setActiveTab("orders")}
           className={cn(
-            "pb-3 text-sm font-semibold transition-colors border-b-2 whitespace-nowrap",
-            activeTab === "orders" ? "border-primary text-foreground" : "border-transparent text-muted-foreground hover:text-foreground hover:border-border"
+            "pb-3 text-xs font-semibold uppercase tracking-wider transition-colors border-b-2 whitespace-nowrap",
+            activeTab === "orders"
+              ? "border-primary text-primary"
+              : "border-transparent text-muted-foreground hover:text-foreground hover:border-border",
           )}
         >
           Order History
@@ -177,6 +231,9 @@ function ActivityTabs({ savedCourseIds, labBookmarkIds }: { savedCourseIds: stri
       </div>
 
       <div className="pt-2">
+        {activeTab === "credentials" && <ProfileBadgesGallery />}
+        {activeTab === "transcript" && <ProfileTranscript learnerName={learnerName} />}
+        {activeTab === "matrix" && <ProfileSkillsMatrix />}
         {activeTab === "saved" && (
           <div className="grid gap-4 xl:grid-cols-2">
             <SavedCourses courseIds={savedCourseIds} />

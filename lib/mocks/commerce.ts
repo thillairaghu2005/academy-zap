@@ -83,7 +83,7 @@ export const MOCK_CATALOG: CatalogProduct[] = [
   { product_id: "clean-code-software-architecture", kind: "course", title: "Clean Code & Software Architecture", price_cents: 179900, stock: 25 },
   { product_id: "go-concurrency-in-practice", kind: "course", title: "Go Concurrency in Practice", price_cents: 119900, stock: 25 },
   { product_id: "docker-and-kubernetes", kind: "course", title: "Docker & Kubernetes", price_cents: 149900, stock: 25 },
-  { product_id: "aws-cloud-foundations", kind: "course", title: "AWS Cloud Foundations", price_cents: 99900, stock: 25 },
+  { product_id: "aws-cloud-foundations", kind: "course", title: "Cloud Architecture Foundations", price_cents: 99900, stock: 25 },
   { product_id: "cicd-engineering", kind: "course", title: "CI/CD Engineering", price_cents: 129900, stock: 25 },
   { product_id: "terraform-infrastructure-as-code", kind: "course", title: "Terraform Infrastructure as Code", price_cents: 149900, stock: 25 },
   { product_id: "machine-learning-foundations", kind: "course", title: "Machine Learning Foundations", price_cents: 129900, stock: 25 },

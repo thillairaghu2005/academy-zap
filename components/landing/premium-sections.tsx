@@ -113,7 +113,7 @@ export function PricingSection({ standalone = false, headingAs: Heading = "h2" }
                     <Award className="size-3.5" />
                   </div>
                   <span className="text-sm font-medium text-muted-foreground">
-                    <strong className="text-foreground">Certification</strong> prep for AWS, Microsoft, PMI, and more
+                    <strong className="text-foreground">Certification</strong> prep for Zapsters Standards, Microsoft, PMI, and more
                   </span>
                 </div>
               </div>

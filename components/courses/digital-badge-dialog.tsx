@@ -35,6 +35,7 @@ import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import { getCourseSkillBuildMeta } from "@/lib/courses/skillbuild-helpers";
+import { DigitalBadgeMedallion } from "@/components/courses/digital-badge-medallion";
 
 interface DigitalBadgeDialogProps {
   open: boolean;
@@ -69,7 +70,7 @@ export function DigitalBadgeDialog({
   };
 
   const handleShare = () => {
-    const shareText = `I just earned the official "${badge.name}" on Zapsters (Accredited by AWS Skill Builder & IBM SkillsBuild Pathway)! Verify here: ${badge.verificationUrl}`;
+    const shareText = `I just earned the official "${badge.name}" on Zapsters (Accredited under Zapsters Enterprise Standards)! Verify here: ${badge.verificationUrl}`;
     if (typeof navigator !== "undefined" && navigator.share) {
       void navigator.share({ title: badge.name, text: shareText, url: badge.verificationUrl });
     } else {
@@ -95,7 +96,7 @@ export function DigitalBadgeDialog({
     const text = [
       "==================================================================",
       "            ZAPSTERS ENTERPRISE ACADEMY — DIGITAL CREDENTIAL      ",
-      "      ACCREDITED BY AWS SKILL BUILDER & IBM SKILLSBUILD PATHWAY   ",
+      "          ACCREDITED UNDER ZAPSTERS ENTERPRISE STANDARDS          ",
       "==================================================================",
       "",
       `RECIPIENT:         ${learnerName}`,
@@ -193,7 +194,7 @@ export function DigitalBadgeDialog({
           </div>
         </div>
 
-        {/* Tab 1: Credly / AWS Skill Builder / IBM SkillsBuild Hexagonal Digital Badge */}
+        {/* Tab 1: Credly & Zapsters Enterprise Hexagonal Digital Badge */}
         {activeTab === "badge" ? (
           <div className="p-6 sm:p-8 space-y-6">
             <div className="grid md:grid-cols-[280px_1fr] gap-8 items-center">
@@ -202,78 +203,14 @@ export function DigitalBadgeDialog({
                 <div className="absolute -inset-1 rounded-3xl bg-gradient-to-r from-primary/20 via-primary-deep/20 to-primary/20 blur-xl opacity-60 group-hover:opacity-100 transition-opacity" />
 
                 {/* Hexagon SVG Medallion */}
-                <div className="relative z-10 w-48 h-56 flex items-center justify-center">
-                  <svg viewBox="0 0 200 230" className="w-full h-full drop-shadow-[0_15px_25px_rgba(217,38,64,0.35)]">
-                    <defs>
-                      <linearGradient id="badgeBorderGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                        <stop offset="0%" stopColor="#e11d48" />
-                        <stop offset="50%" stopColor="#be123c" />
-                        <stop offset="100%" stopColor="#9f1239" />
-                      </linearGradient>
-                      <linearGradient id="badgeFillGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                        <stop offset="0%" stopColor="#1e293b" />
-                        <stop offset="50%" stopColor="#0f172a" />
-                        <stop offset="100%" stopColor="#020617" />
-                      </linearGradient>
-                      <linearGradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                        <stop offset="0%" stopColor="#fb7185" />
-                        <stop offset="100%" stopColor="#e11d48" />
-                      </linearGradient>
-                    </defs>
-
-                    {/* Outer Hexagon */}
-                    <polygon
-                      points="100,5 190,57 190,163 100,215 10,163 10,57"
-                      fill="url(#badgeBorderGrad)"
-                      stroke="#fb7185"
-                      strokeWidth="2"
-                    />
-
-                    {/* Inner Hexagon */}
-                    <polygon
-                      points="100,15 180,62 180,158 100,205 20,158 20,62"
-                      fill="url(#badgeFillGrad)"
-                      stroke="#475569"
-                      strokeWidth="1.5"
-                    />
-
-                    {/* Inner Accent Ring */}
-                    <polygon
-                      points="100,22 173,65 173,153 100,196 27,153 27,65"
-                      fill="none"
-                      stroke="#e11d48"
-                      strokeWidth="1"
-                      strokeDasharray="4 3"
-                    />
-
-                    {/* Top Ribbon text */}
-                    <text x="100" y="52" textAnchor="middle" fill="#fb7185" fontSize="9" fontWeight="bold" letterSpacing="2">
-                      ZAPSTERS · SKILL
-                    </text>
-
-                    {/* Emblem Icon: Star & Shield */}
-                    <circle cx="100" cy="98" r="30" fill="#1e293b" stroke="#e11d48" strokeWidth="2" />
-                    <path
-                      d="M100 80 L105 92 L118 94 L108 103 L111 116 L100 109 L89 116 L92 103 L82 94 L95 92 Z"
-                      fill="url(#goldGrad)"
-                    />
-
-                    {/* Category Label */}
-                    <text x="100" y="142" textAnchor="middle" fill="#ffffff" fontSize="11" fontWeight="bold">
-                      {course.category.toUpperCase()}
-                    </text>
-
-                    {/* Level Label */}
-                    <rect x="55" y="152" width="90" height="18" rx="4" fill="#e11d48" />
-                    <text x="100" y="165" textAnchor="middle" fill="#ffffff" fontSize="10" fontWeight="bold" letterSpacing="1">
-                      {badge.level.toUpperCase()}
-                    </text>
-
-                    {/* Bottom Verification Label */}
-                    <text x="100" y="188" textAnchor="middle" fill="#94a3b8" fontSize="7" letterSpacing="1">
-                      VERIFIED CREDENTIAL
-                    </text>
-                  </svg>
+                <div className="relative z-10 w-52 h-60 flex items-center justify-center">
+                  <DigitalBadgeMedallion
+                    category={course.category}
+                    level={badge.level}
+                    credentialId={badge.id}
+                    issuer={badge.issuer}
+                    className="w-full h-full"
+                  />
                 </div>
 
                 <div className="mt-3 text-center">
@@ -420,7 +357,7 @@ export function DigitalBadgeDialog({
                     Zapsters Enterprise Academy
                   </p>
                   <p className="text-[10px] text-slate-400 uppercase tracking-widest">
-                    In Partnership with AWS Skill Builder & IBM SkillsBuild Framework
+                    Accredited by Zapsters Engineering Council &amp; Enterprise Standards
                   </p>
                 </div>
 

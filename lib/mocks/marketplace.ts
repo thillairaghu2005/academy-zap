@@ -313,7 +313,7 @@ const METADATA: Record<string, MarketplaceMetadata> = {
     subcategory: "Cloud Platforms",
     skills: ["EC2", "S3", "VPC", "IAM"],
     whatYouWillLearn: [
-      "Navigate core AWS services confidently",
+      "Navigate core cloud architecture and distributed services confidently",
       "Design VPCs with public/private subnets",
       "Apply IAM least privilege",
       "Control spend with budgets and alarms",
