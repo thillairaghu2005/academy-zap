@@ -373,7 +373,7 @@ export const MOCK_COURSES: Course[] = [
   {
     id: "e5f6a7b8-c9d0-4e1f-2a3b-4c5d6e7f8a9b",
     title: "Cloud Security Essentials",
-    subtitle: "IAM, network controls and logging for AWS and GCP.",
+    subtitle: "IAM, network controls and telemetry logging for enterprise cloud platforms.",
     description:
       "Design least-privilege IAM, build VPC/network segmentation, and wire centralized logging — the fundamentals that make cloud environments defensible.",
     category: "Cloud & DevOps",

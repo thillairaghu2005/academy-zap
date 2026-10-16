@@ -102,7 +102,7 @@ function getLessonActivityDetails(lesson: CourseLesson) {
   };
 }
 
-/** AWS / IBM Style Article Lesson Viewer with Architecture Callouts */
+/** Zapsters Enterprise Article Lesson Viewer with Architecture Callouts */
 function SkillBuildArticleBody({ lesson, course }: { lesson: CourseLesson; course: Course }) {
   const body =
     lesson.preview_body?.trim() ||
@@ -149,7 +149,7 @@ Proceed to the **Hands-on Builder Lab** or **Knowledge Check** tabs above to tes
         <div className="flex items-center gap-2">
           <ShieldCheck className="size-4 text-primary" />
           <span className="font-semibold text-foreground">
-            AWS Skill Builder & IBM SkillsBuild Standard
+            Zapsters Enterprise Standard
           </span>
           <span className="text-muted-foreground hidden sm:inline">· Self-Paced Digital Training</span>
         </div>
@@ -191,7 +191,7 @@ Proceed to the **Hands-on Builder Lab** or **Knowledge Check** tabs above to tes
   );
 }
 
-/** AWS Builder Lab / IBM Cloud Sandbox Interactive Simulator */
+/** Zapsters Builder Lab & Cloud Sandbox Interactive Simulator */
 function SkillBuildLabSandbox({
   course,
   lesson,
@@ -406,8 +406,7 @@ function SkillBuildLabSandbox({
   );
 }
 
-/** AWS / IBM Scenario-based Knowledge Check & Assessment */
-/** Scenario-based Module Quiz & Comprehensive Final Assessment Engine (10 Questions) */
+/** Zapsters Scenario-based Knowledge Check & Assessment Engine (10 Questions) */
 function SkillBuildKnowledgeCheck({
   course,
   lesson,
@@ -535,7 +534,7 @@ function SkillBuildKnowledgeCheck({
       <div className="space-y-5">
         {questions.map((q, qIndex) => {
           const selected = selectedAnswers[q.id];
-          const isChosen = selected !== undefined;
+          const _isChosen = selected !== undefined;
           const isCorrect = selected === q.correctIndex;
 
           return (
@@ -694,7 +693,7 @@ function SkillBuildKnowledgeCheck({
   );
 }
 
-/** Main LMS Player Component modeled after AWS Skill Builder & IBM SkillsBuild */
+/** Main LMS Player Component built to Zapsters Enterprise Standards */
 export function PlayerClient({ course }: { course: Course }) {
   const { user } = useSession();
   const queryClient = useQueryClient();
@@ -725,7 +724,11 @@ export function PlayerClient({ course }: { course: Course }) {
   });
 
   const enrollment = progress?.enrollment ?? null;
-  const completedSet = new Set(progress?.completed_lesson_ids ?? []);
+  const completedLessonIds = progress?.completed_lesson_ids;
+  const completedSet = React.useMemo(
+    () => new Set(completedLessonIds ?? []),
+    [completedLessonIds],
+  );
 
   const activeLesson =
     allLessons.find((l) => l.id === pickedLessonId) ??
@@ -820,20 +823,22 @@ export function PlayerClient({ course }: { course: Course }) {
     }
     mainRef.current?.scrollTo({ top: 0, behavior: "instant" });
 
-    if (activeLesson && completedSet.has(activeLesson.id)) {
-      setReadingProgress(100);
-    } else {
-      setReadingProgress(0);
-    }
-  }, [activeLesson?.id]);
+    const rafId = requestAnimationFrame(() => {
+      if (activeLesson && completedSet.has(activeLesson.id)) {
+        setReadingProgress(100);
+      } else {
+        setReadingProgress(0);
+      }
+    });
+
+    return () => {
+      cancelAnimationFrame(rafId);
+    };
+  }, [activeLesson, completedSet]);
 
   // Track scroll depth and automatically update progress when scrolling down content
   React.useEffect(() => {
-    if (!activeLesson) return;
-    if (completedSet.has(activeLesson.id)) {
-      setReadingProgress(100);
-      return;
-    }
+    if (!activeLesson || completedSet.has(activeLesson.id)) return;
 
     const computeProgress = () => {
       const contentEl = contentContainerRef.current;
@@ -918,7 +923,7 @@ export function PlayerClient({ course }: { course: Course }) {
         observer.disconnect();
       }
     };
-  }, [activeLesson?.id, completedSet, completeCurrentLesson]);
+  }, [activeLesson, completedSet, completeCurrentLesson, isQuizOrAssessment]);
   const isCourseComplete =
     enrollment?.status === "completed" ||
     (allLessons.length > 0 && completedSet.size >= allLessons.length);
@@ -953,7 +958,7 @@ export function PlayerClient({ course }: { course: Course }) {
   const downloadResources = () => {
     const text = [
       `ZAPSTERS ENTERPRISE ACADEMY — OFFICIAL STUDY GUIDE & REFERENCE`,
-      `ACCREDITED BY AWS SKILL BUILDER & IBM SKILLSBUILD PATHWAY`,
+      `ACCREDITED UNDER ZAPSTERS ENTERPRISE STANDARDS`,
       `=============================================================`,
       `COURSE:         ${course.title}`,
       `COURSE CODE:    ${meta.courseCode}`,
@@ -961,10 +966,10 @@ export function PlayerClient({ course }: { course: Course }) {
       `=============================================================`,
       ``,
       `QUICK CLI REFERENCE CHEATSHEET:`,
-      `* aws iam get-account-summary`,
-      `* aws s3api get-bucket-encryption --bucket <bucket-name>`,
-      `* aws kms list-aliases`,
-      `* aws cloudtrail describe-trails`,
+      `* zapster iam get-account-summary`,
+      `* zapster storage get-bucket-encryption --bucket <bucket-name>`,
+      `* zapster kms list-keys`,
+      `* zapster telemetry describe-audit-trails`,
       ``,
       `ARCHITECTURE DESIGN RULES:`,
       `1. Least privilege: No wildcard (*) in IAM actions or resources.`,
@@ -995,7 +1000,7 @@ export function PlayerClient({ course }: { course: Course }) {
         learnerName={user?.display_name ?? "Zapster Learner"}
       />
 
-      {/* Enterprise LMS Header Bar (AWS Skill Builder & IBM SkillsBuild standard) */}
+      {/* Enterprise LMS Header Bar (Zapsters Enterprise standard) */}
       <header className="sticky top-0 z-30 flex h-14 items-center justify-between border-b border-border bg-card/95 px-4 backdrop-blur sm:px-6">
         {/* Left: Breadcrumbs & Back link */}
         <div className="flex items-center gap-3 min-w-0">
@@ -1068,7 +1073,7 @@ export function PlayerClient({ course }: { course: Course }) {
 
       {/* Main LMS Layout: Left Drawer (Curriculum) + Right Learning Canvas */}
       <div className="flex flex-1 items-stretch overflow-hidden">
-        {/* Left Drawer / Table of Contents (AWS Skill Builder & IBM SkillsBuild navigation) */}
+        {/* Left Drawer / Table of Contents (Zapsters Enterprise navigation) */}
         <aside
           className={cn(
             "fixed inset-y-14 left-0 z-20 flex w-80 flex-col border-r border-border bg-card transition-transform duration-200 lg:static lg:w-[340px] lg:translate-x-0 shrink-0",

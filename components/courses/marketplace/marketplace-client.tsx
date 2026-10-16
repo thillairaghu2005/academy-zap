@@ -28,6 +28,7 @@ import { useCartQuery } from "@/components/commerce/cart-query";
 import { CourseRail } from "@/components/courses/marketplace/course-rail";
 import { CourseCard } from "@/components/courses/marketplace/course-card";
 import { CourseThumbnail } from "@/components/courses/marketplace/course-thumbnail";
+import { EnterpriseFilterRail } from "@/components/courses/marketplace/enterprise-filter-rail";
 import {
   CourseHoverPreviewProvider,
   MarketplaceStateProvider,
@@ -150,7 +151,18 @@ export function MarketplaceClient() {
   const level = parseLevel(searchParams.get("level"));
   const price = parsePrice(searchParams.get("price"));
   const sort = parseSort(searchParams.get("sort"));
-  const isFiltering = rawQ !== "" || category !== "all" || level !== "all" || price !== "all";
+  const hasBadge = searchParams.get("badge") === "true";
+  const format = searchParams.get("format") ?? "all";
+  const duration = searchParams.get("duration") ?? "all";
+
+  const isFiltering =
+    rawQ !== "" ||
+    category !== "all" ||
+    level !== "all" ||
+    price !== "all" ||
+    hasBadge ||
+    format !== "all" ||
+    duration !== "all";
 
   const setParam = React.useCallback(
     (key: string, value: string, fallback: string) => {
@@ -179,6 +191,16 @@ export function MarketplaceClient() {
         if (level !== "all" && course.level !== level) return false;
         if (price === "free" && !course.isFree) return false;
         if (price === "paid" && course.isFree) return false;
+        if (hasBadge && !course.badge) return false;
+
+        if (duration === "under-2" && course.durationHours >= 2) return false;
+        if (duration === "2-to-5" && (course.durationHours < 2 || course.durationHours > 5)) return false;
+        if (duration === "5-to-10" && (course.durationHours < 5 || course.durationHours > 10)) return false;
+        if (duration === "over-10" && course.durationHours <= 10) return false;
+
+        if (format === "lab" && !course.title.toLowerCase().includes("lab") && !course.description.toLowerCase().includes("lab")) return false;
+        if (format === "exam" && !course.title.toLowerCase().includes("quiz") && !course.title.toLowerCase().includes("exam")) return false;
+
         if (needle) {
           const haystack =
             `${course.title} ${course.description} ${course.instructor} ${course.category} ${course.subcategory}`.toLowerCase();
@@ -206,7 +228,7 @@ export function MarketplaceClient() {
         sorted.sort((a, b) => b.studentCount - a.studentCount);
     }
     return sorted;
-  }, [category, courses, isFiltering, level, price, rawQ, sort]);
+  }, [category, courses, duration, format, hasBadge, isFiltering, level, price, rawQ, sort]);
 
   /* Render ---------------------------------------------------------------- */
 
@@ -222,6 +244,9 @@ export function MarketplaceClient() {
               category={category}
               level={level}
               price={price}
+              hasBadge={hasBadge}
+              format={format}
+              duration={duration}
               sort={sort}
               onSearch={setParam}
               onSelect={setParam}
@@ -275,8 +300,14 @@ function MarketplaceHero() {
 
           <div className="flex flex-wrap items-center justify-center gap-2">
             <span className="text-caption font-medium uppercase tracking-[0.14em] text-muted-foreground">
-              Popular:
+              Accredited Tracks:
             </span>
+            <Button variant="secondary" size="sm" className="rounded-full border border-primary/20 bg-primary/10 text-primary hover:bg-primary/20" asChild>
+              <Link href="/learning-paths">Role Pathways</Link>
+            </Button>
+            <Button variant="secondary" size="sm" className="rounded-full border border-primary/20 bg-primary/10 text-primary hover:bg-primary/20" asChild>
+              <Link href="/courses?badge=true">Verifiable Badges</Link>
+            </Button>
             {CATEGORY_CHIPS.map((chip) => (
               <Button key={chip} variant="secondary" size="sm" className="rounded-full" asChild>
                 <Link href={`/courses?category=${encodeURIComponent(chip)}`}>{chip}</Link>
@@ -287,15 +318,15 @@ function MarketplaceHero() {
           <div className="flex flex-wrap items-center justify-center gap-x-8 gap-y-3 text-sm font-medium text-muted-foreground">
             <span className="inline-flex items-center gap-2 text-foreground font-semibold">
               <GraduationCap className="size-5 text-primary drop-shadow-sm" strokeWidth={2.5} aria-hidden="true" />
-              Industry instructors
+              Zapsters Enterprise Framework
             </span>
             <span className="inline-flex items-center gap-2 text-foreground font-semibold">
               <Sparkles className="size-5 text-primary drop-shadow-sm" strokeWidth={2.5} aria-hidden="true" />
-              Labs &amp; assessments
+              Hands-on Sandboxes
             </span>
             <span className="inline-flex items-center gap-2 text-foreground font-semibold">
               <ShieldCheck className="size-5 text-primary drop-shadow-sm" strokeWidth={2.5} aria-hidden="true" />
-              30-day refund guarantee
+              Credly Verifiable Badges
             </span>
           </div>
         </div>
@@ -399,6 +430,9 @@ interface ResultsViewProps {
   category: string;
   level: LevelFilter;
   price: PriceFilter;
+  hasBadge: boolean;
+  format: string;
+  duration: string;
   sort: SortKey;
   onSearch: (key: string, value: string, fallback: string) => void;
   onSelect: (key: string, value: string, fallback: string) => void;
@@ -412,6 +446,9 @@ function ResultsView({
   category,
   level,
   price,
+  hasBadge,
+  format,
+  duration,
   sort,
   onSearch,
   onSelect,
@@ -436,27 +473,58 @@ function ResultsView({
     return () => window.clearTimeout(timer);
   }, [onSearch, q, searchInput]);
 
-  const hasActiveFilters = q !== "" || category !== "all" || level !== "all" || price !== "all";
+  const hasActiveFilters =
+    q !== "" ||
+    category !== "all" ||
+    level !== "all" ||
+    price !== "all" ||
+    hasBadge ||
+    format !== "all" ||
+    duration !== "all";
 
   return (
-    <div className="flex flex-col gap-5 pt-2">
-      {/* Toolbar */}
-      <div className="flex flex-col gap-3 xl:flex-row xl:items-center">
-        <div className="relative w-full max-w-md flex-1">
-          <Search
-            className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground"
-            aria-hidden="true"
-          />
-          <Input
-            value={searchInput}
-            onChange={(event) => setSearchInput(event.target.value)}
-            placeholder="Search courses…"
-            aria-label="Search courses"
-            className="pl-9"
+    <div className="flex flex-col gap-6 pt-2">
+      <div className="grid grid-cols-1 lg:grid-cols-[280px_1fr] gap-8 items-start">
+        {/* Left: Zapsters Enterprise Faceted Filter Rail */}
+        <div className="sticky top-28 hidden lg:block">
+          <EnterpriseFilterRail
+            filters={{
+              domain: category,
+              format,
+              level,
+              hasBadge,
+              duration,
+              price,
+            }}
+            onFilterChange={(key, val) => {
+              if (key === "domain") onSelect("category", String(val), "all");
+              else if (key === "hasBadge") onSelect("badge", val ? "true" : "", "");
+              else onSelect(key, String(val), "all");
+            }}
+            onClearFilters={onClear}
+            totalResults={results.length}
           />
         </div>
 
-        <div className="flex flex-wrap items-center gap-2">
+        {/* Right: Results Content Area */}
+        <div className="flex flex-col gap-5 min-w-0">
+          {/* Toolbar */}
+          <div className="flex flex-col gap-3 xl:flex-row xl:items-center">
+            <div className="relative w-full max-w-md flex-1">
+              <Search
+                className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground"
+                aria-hidden="true"
+              />
+              <Input
+                value={searchInput}
+                onChange={(event) => setSearchInput(event.target.value)}
+                placeholder="Search accredited courses & skills…"
+                aria-label="Search courses"
+                className="pl-9"
+              />
+            </div>
+
+            <div className="flex flex-wrap items-center gap-2">
           <Select value={category === "all" ? "all" : category} onValueChange={(value) => onSelect("category", value, "all")}>
             <SelectTrigger className="w-[180px]" aria-label="Filter by category">
               <SelectValue placeholder="Category" />
@@ -540,15 +608,17 @@ function ResultsView({
         ) : null}
       </p>
 
-      {results.length === 0 ? (
-        <EmptyResults onClear={onClear} />
-      ) : (
-        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-          {results.map((course) => (
-            <CourseCard key={course.id} course={course} className="flex-1" />
-          ))}
+          {results.length === 0 ? (
+            <EmptyResults onClear={onClear} />
+          ) : (
+            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3">
+              {results.map((course) => (
+                <CourseCard key={course.id} course={course} className="flex-1" />
+              ))}
+            </div>
+          )}
         </div>
-      )}
+      </div>
     </div>
   );
 }

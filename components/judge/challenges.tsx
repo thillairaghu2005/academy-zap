@@ -46,32 +46,41 @@ export function Challenges() {
   const reducedMotion = useReducedMotion() ?? false;
 
   return (
-    <PageContainer className="pt-8 sm:pt-10">
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-8">
-        <div className="max-w-2xl">
-          <div className="flex items-center gap-2 mb-3">
-            <span className="flex items-center gap-1.5 rounded-full border border-warning/40 bg-warning/10 px-2.5 py-1 text-xs font-semibold text-warning-strong uppercase tracking-wider">
-              <Flame className="size-3.5" />
-              Season 4 Active
-            </span>
+    <PageContainer className="pt-6 sm:pt-8 pb-16">
+      <div className="relative overflow-hidden rounded-3xl border border-border/80 bg-gradient-to-br from-card via-background to-card p-6 sm:p-8 mb-8 shadow-sm">
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
+          <div className="max-w-2xl space-y-3">
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="flex items-center gap-1.5 rounded-full border border-primary/30 bg-primary/10 px-3 py-1 text-xs font-semibold text-primary">
+                <Flame className="size-3.5" />
+                Zapsters Cyber Jam &amp; Competitive Arena
+              </span>
+              <span className="text-xs text-muted-foreground font-mono">
+                Season 4 Live
+              </span>
+            </div>
+            <h1 className="font-display text-2xl font-bold tracking-tight sm:text-4xl text-foreground">
+              Hands-on Coding &amp; Architecture Arena
+            </h1>
+            <p className="text-sm text-muted-foreground leading-relaxed">
+              Solve real-world system bottlenecks, algorithm constraints, and distributed race conditions. Clues carry XP penalties — test your architectural mettle and climb the season rankings.
+            </p>
           </div>
-          <h1 className="font-display text-3xl font-semibold tracking-tight sm:text-4xl">
-            Coding Challenges
-          </h1>
-          <p className="mt-3 text-base text-muted-foreground">
-            Prove your skills in isolated environments. Earn mastery XP, climb the leaderboards, and unlock exclusive badges.
-          </p>
-        </div>
-        
-        <div className="flex items-center gap-3 shrink-0">
-          <Button variant="outline" className="gap-2">
-            <ChartColumn className="size-4" />
-            Leaderboards
-          </Button>
-          <Button className="gap-2">
-            <Play className="size-4" />
-            Daily Challenge
-          </Button>
+          
+          <div className="flex items-center gap-3 shrink-0">
+            <Button variant="outline" size="sm" className="gap-2 text-xs font-semibold h-9" asChild>
+              <Link href="/leaderboards">
+                <ChartColumn className="size-4 text-primary" />
+                Leaderboards
+              </Link>
+            </Button>
+            <Button size="sm" className="gap-2 text-xs font-semibold h-9 bg-primary text-primary-foreground hover:bg-primary/90" asChild>
+              <Link href="/challenges/chal-1">
+                <Play className="size-4" />
+                Launch Jam Challenge
+              </Link>
+            </Button>
+          </div>
         </div>
       </div>
 

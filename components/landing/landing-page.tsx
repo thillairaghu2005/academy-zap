@@ -38,7 +38,7 @@ function LandingSections({ courses, catalogUnavailable = false }: LandingPagePro
     { value: "Excel", label: "Microsoft Excel" },
     { value: "Agentic", label: "AI Agents & Agentic AI" },
     { value: "Marketing", label: "Digital Marketing" },
-    { value: "AWS", label: "Amazon AWS" },
+    { value: "Cloud", label: "Cloud Infrastructure" },
   ];
   const [activeCategory, setActiveCategory] = React.useState("AI");
 

@@ -18,6 +18,7 @@ import {
   Play,
   RotateCcw,
   ShieldAlert,
+  ShieldCheck,
   ShieldQuestion,
   Sparkles,
 } from "lucide-react";
@@ -139,8 +140,12 @@ export function AssessmentDetailClient({
         {/* Left — description + question list */}
         <div className="flex flex-col gap-6">
           <div>
-            <div className="flex flex-wrap items-center gap-2">
-              <span className="text-xs font-medium uppercase tracking-wide text-warning-strong">
+            <div className="flex flex-wrap items-center gap-2 mb-2">
+              <span className="flex items-center gap-1 rounded-full border border-primary/30 bg-primary/10 px-2.5 py-0.5 text-[10px] font-mono font-semibold uppercase tracking-wider text-primary">
+                <Sparkles className="size-3" />
+                Accredited Exam Blueprint
+              </span>
+              <span className="text-xs font-mono uppercase tracking-wide text-muted-foreground/80">
                 {assessment.category}
               </span>
               <Badge variant="outline" className="font-mono text-[10px]">
@@ -154,12 +159,41 @@ export function AssessmentDetailClient({
                 combo meter active
               </Badge>
             </div>
-            <h1 className="mt-1.5 font-display text-h1">
+            <h1 className="mt-1.5 font-display text-2xl font-bold sm:text-3xl text-foreground">
               {assessment.title}
             </h1>
             <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
               {assessment.description}
             </p>
+          </div>
+
+          {/* Exam Blueprint Weighting Table */}
+          <div className="rounded-2xl border border-border/70 bg-card/60 p-5 space-y-3">
+            <div className="flex items-center justify-between border-b border-border/40 pb-2">
+              <h2 className="text-xs font-bold font-mono uppercase tracking-wider text-primary flex items-center gap-1.5">
+                <ShieldCheck className="size-3.5" />
+                Enterprise Competency Blueprint
+              </h2>
+              <span className="text-[10px] text-muted-foreground font-mono">100% Weight Total</span>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 text-xs text-muted-foreground">
+              <div className="flex items-center justify-between p-2 rounded-lg bg-surface-1 border border-border/40">
+                <span>Domain 1: Resilient Systems Architecture</span>
+                <span className="font-mono font-bold text-foreground">30%</span>
+              </div>
+              <div className="flex items-center justify-between p-2 rounded-lg bg-surface-1 border border-border/40">
+                <span>Domain 2: Event Pipelines &amp; Async Consensus</span>
+                <span className="font-mono font-bold text-foreground">28%</span>
+              </div>
+              <div className="flex items-center justify-between p-2 rounded-lg bg-surface-1 border border-border/40">
+                <span>Domain 3: Zero-Trust Security &amp; Identity</span>
+                <span className="font-mono font-bold text-foreground">24%</span>
+              </div>
+              <div className="flex items-center justify-between p-2 rounded-lg bg-surface-1 border border-border/40">
+                <span>Domain 4: Performance, DB Sharding &amp; SRE</span>
+                <span className="font-mono font-bold text-foreground">18%</span>
+              </div>
+            </div>
           </div>
 
           <div className="flex flex-wrap gap-4 border-y border-border py-3 text-xs text-muted-foreground">

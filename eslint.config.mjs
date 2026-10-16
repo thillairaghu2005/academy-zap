@@ -30,6 +30,8 @@ const eslintConfig = defineConfig([
     // The backend has its own Python quality gates. Its virtualenv and generated
     // third-party assets are outside this frontend lint boundary.
     "backend/**",
+    ".pytest_cache/**",
+    ".pytest_cache",
   ]),
 ]);
 

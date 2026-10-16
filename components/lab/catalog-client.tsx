@@ -9,11 +9,11 @@ import {
   FlaskConical,
   Bookmark,
   BookmarkCheck,
-  Hourglass,
   LoaderCircle,
   Monitor,
   Search,
   ShieldCheck,
+  Sparkles,
   X,
 } from "lucide-react";
 
@@ -100,21 +100,32 @@ function LabCard({
       transition={reducedMotion ? undefined : { delay: 0.04 * index, duration: 0.35, ease: "easeOut" }}
       className="group h-full"
     >
-      <Card className="relative flex h-full flex-col overflow-hidden transition-[transform,border-color,box-shadow] duration-200 group-hover:-translate-y-0.5 group-hover:border-primary-border group-hover:shadow-[0_8px_24px_rgb(16_24_40_/_6%)]">
+      <Card className="relative flex h-full flex-col overflow-hidden border border-border/70 bg-card/90 transition-all duration-300 group-hover:-translate-y-1 group-hover:border-primary/50 group-hover:shadow-[0_12px_36px_rgba(245,158,11,0.1)]">
+        {/* Accreditation header */}
+        <div className="border-b border-border/40 bg-surface-1/60 px-4 py-2 flex items-center justify-between">
+          <span className="text-[10px] font-mono font-semibold uppercase tracking-wider text-primary flex items-center gap-1.5">
+            <span className="size-1.5 rounded-full bg-primary animate-pulse" />
+            Interactive Cloud Sandbox
+          </span>
+          <span className="text-[10px] text-muted-foreground font-mono">
+            TTL: ~{lab.estimated_minutes}m
+          </span>
+        </div>
+
         <Link
           href={`/labs/${lab.id}`}
           className="flex-1 outline-none focus-visible:ring-2 focus-visible:ring-ring"
         >
-          <div className="relative h-32 w-full overflow-hidden bg-surface-1">
-            <div className="absolute inset-0 aurora opacity-70" aria-hidden="true" />
-            <div className="absolute inset-0 bg-grid opacity-60" aria-hidden="true" />
+          <div className="relative h-28 w-full overflow-hidden bg-surface-1">
+            <div className="absolute inset-0 aurora opacity-50" aria-hidden="true" />
+            <div className="absolute inset-0 bg-grid opacity-40" aria-hidden="true" />
             <div className="absolute bottom-3 left-4 right-4 flex items-end justify-between gap-2">
-              <h3 className="font-display text-h3 text-foreground">
+              <h3 className="font-display font-bold text-base text-foreground group-hover:text-primary transition-colors">
                 {lab.title}
               </h3>
               <span
                 className={cn(
-                  "shrink-0 rounded-full border px-2 py-0.5 text-caption font-semibold uppercase tracking-wide backdrop-blur-sm",
+                  "shrink-0 rounded-full border px-2 py-0.5 text-[10px] font-semibold uppercase font-mono tracking-wide backdrop-blur-sm",
                   diff.className,
                 )}
               >
@@ -124,39 +135,39 @@ function LabCard({
             {lab.requires_gui ? (
               <Badge
                 variant="secondary"
-                className="absolute right-3 top-3 bg-white/80 text-foreground backdrop-blur-sm"
+                className="absolute right-3 top-3 bg-surface-1/90 text-foreground text-[10px] border border-border/50"
               >
-                <Monitor className="size-3" /> GUI
+                <Monitor className="size-3 mr-1" /> GUI Desktop
               </Badge>
             ) : null}
           </div>
 
-          <CardContent className="flex flex-col gap-2.5 p-4">
-            <p className="line-clamp-2 text-sm leading-relaxed text-muted-foreground">
+          <CardContent className="flex flex-col gap-3 p-4">
+            <p className="line-clamp-2 text-xs leading-relaxed text-muted-foreground">
               {lab.description}
             </p>
 
-            <div className="flex items-center gap-3 text-xs text-muted-foreground">
-              <span className="flex items-center gap-1">
-                <FlaskConical className="size-3.5" />
-                {lab.objectives.length}{" "}
-                {lab.objectives.length === 1 ? "objective" : "objectives"}
-              </span>
-              <span className="flex items-center gap-1">
-                <Hourglass className="size-3.5" />
-                ~{lab.estimated_minutes} min
-              </span>
-              <Badge variant="outline" className="text-caption">
-                <ShieldCheck className="size-3" /> {lab.success_rate_pct}% success
-              </Badge>
+            <div className="grid grid-cols-3 gap-2 py-2 border-y border-border/40 text-center text-[11px] text-muted-foreground">
+              <div className="flex flex-col items-center">
+                <span className="text-[9px] font-mono uppercase text-muted-foreground/80">Checkpoints</span>
+                <span className="font-semibold text-foreground">{lab.objectives.length} Objectives</span>
+              </div>
+              <div className="flex flex-col items-center">
+                <span className="text-[9px] font-mono uppercase text-muted-foreground/80">Success Rate</span>
+                <span className="font-semibold text-foreground">{lab.success_rate_pct}%</span>
+              </div>
+              <div className="flex flex-col items-center">
+                <span className="text-[9px] font-mono uppercase text-muted-foreground/80">Environment</span>
+                <span className="font-semibold text-primary truncate max-w-[70px]">{lab.category}</span>
+              </div>
             </div>
 
-            <div className="flex items-center justify-between border-t border-border pt-2.5">
-              <span className="flex items-center gap-1 text-xs text-muted-foreground">
-                <ShieldCheck className="size-3.5 text-success-strong" />
-                Isolated sandbox
+            <div className="flex items-center justify-between text-xs text-muted-foreground pt-1">
+              <span className="flex items-center gap-1 text-[11px] text-primary font-medium">
+                <ShieldCheck className="size-3.5" />
+                Live Verification Check
               </span>
-              <span className="text-xs text-muted-foreground">{lab.category}</span>
+              <span className="text-[11px] font-mono text-muted-foreground/70">Terminal &amp; Cloud CLI</span>
             </div>
           </CardContent>
         </Link>
@@ -228,15 +239,27 @@ export function LabCatalogClient({ initialData }: { initialData?: Lab[] }) {
   );
 
   return (
-    <PageContainer>
-      <div className="flex flex-col gap-2">
-        <h1 className="font-display text-h1">
-          Virtual labs
-        </h1>
-        <p className="text-sm text-muted-foreground">
-          Hands-on, time-boxed sandboxes. Drive a real terminal, capture flags,
-          and prove the work — objectives are verified by the demo service.
-        </p>
+    <PageContainer className="pt-6 sm:pt-8 pb-16">
+      <div className="relative overflow-hidden rounded-3xl border border-border/80 bg-gradient-to-br from-card via-background to-card p-6 sm:p-10 mb-8 shadow-sm">
+        <div className="relative z-10 max-w-3xl space-y-3">
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="flex items-center gap-1.5 rounded-full border border-primary/30 bg-primary/10 px-3 py-1 text-xs font-semibold text-primary">
+              <Sparkles className="size-3.5" />
+              Zapsters Cloud Sandbox &amp; Builder Labs Standard
+            </span>
+            <span className="text-xs text-muted-foreground font-mono">
+              Dedicated Container Pods
+            </span>
+          </div>
+
+          <h1 className="font-display text-3xl font-bold tracking-tight sm:text-4xl text-foreground">
+            Virtual Hands-on Sandboxes
+          </h1>
+
+          <p className="text-sm text-muted-foreground leading-relaxed">
+            Practice real infrastructure scenarios in isolated cloud environments. Provision containerized microservices, execute diagnostic CLI operations, and earn automated objective verification.
+          </p>
+        </div>
       </div>
 
       <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:items-center">

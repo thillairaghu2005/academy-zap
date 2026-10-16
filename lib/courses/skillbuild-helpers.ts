@@ -38,15 +38,15 @@ export interface KnowledgeCheckQuestion {
 }
 
 /**
- * Derives official AWS Skill Builder / IBM SkillsBuild enterprise metadata
+ * Derives official Zapsters Enterprise metadata
  * for any course across the platform.
  */
 export function getCourseSkillBuildMeta(course: Course) {
-  // Course Code like "SB-AWS-SEC-204" or "IBM-SB-AI-102"
+  // Course Code like "ZAP-SEC-204" or "ZAP-AI-102"
   const catCode = course.category.toUpperCase().slice(0, 3);
   const hash = Math.abs(course.id.split("").reduce((acc, c) => (acc * 31 + c.charCodeAt(0)) | 0, 0));
   const codeNum = 100 + (hash % 899);
-  const courseCode = `SB-${catCode}-${codeNum}`;
+  const courseCode = `ZAP-${catCode}-${codeNum}`;
 
   const levelTag: SkillBadgeInfo["level"] =
     course.level === "advanced" ? "Professional" : course.level === "intermediate" ? "Associate" : "Foundational";
@@ -57,7 +57,7 @@ export function getCourseSkillBuildMeta(course: Course) {
     name: `${course.title} — Verified Skill Credential`,
     tagline: `Demonstrated competency in ${course.category} architectures, applied best practices, and verified lab implementation.`,
     issuer: "Zapsters Enterprise Academy",
-    partner: "AWS Skill Builder & IBM SkillsBuild Accredited Pathway",
+    partner: "Zapsters Engineering Council & Enterprise Standards",
     level: levelTag,
     ceuCredits: Math.max(0.5, Number((course.estimated_hours * 0.1).toFixed(1))),
     passingScorePct: 80,
@@ -88,7 +88,7 @@ export function getCourseSkillBuildMeta(course: Course) {
 
   const targetAudience = [
     { role: "Cloud & Security Engineers", desc: "Professionals implementing scalable cloud workloads and access control." },
-    { role: "Solutions Architects", desc: "Engineers designing resilient architectures aligned to AWS / IBM best practices." },
+    { role: "Solutions Architects", desc: "Engineers designing resilient architectures aligned to Zapsters Enterprise best practices." },
     { role: "DevSecOps & Operations", desc: "Practitioners managing deployment pipelines, telemetry, and automated mitigation." },
   ];
 
@@ -130,19 +130,19 @@ export function getLabScenario(course: Course, lesson: CourseLesson): LabScenari
         id: "task-1",
         title: "Task 1: Inspect Baseline IAM Policy and Role Bindings",
         description: "Review current access policies and identify permissive wildcard actions that violate least privilege.",
-        cliHint: "aws iam get-role-policy --role-name app-execution-role",
+        cliHint: "zapster iam get-role-policy --role-name app-execution-role",
       },
       {
         id: "task-2",
         title: "Task 2: Apply Scoped Least-Privilege Policy",
-        description: "Deploy the hardened JSON access policy restricting S3 and KMS key operations to explicit resource ARNs.",
-        cliHint: "aws iam put-role-policy --role-name app-execution-role --policy-name scoped-access",
+        description: "Deploy the hardened JSON access policy restricting storage and KMS key operations to explicit resource URIs.",
+        cliHint: "zapster iam put-role-policy --role-name app-execution-role --policy-name scoped-access",
       },
       {
         id: "task-3",
         title: "Task 3: Verify Audit Logging & Ingress Controls",
-        description: "Query CloudTrail / Event Streams to confirm unauthorized attempts are rejected with 403 Forbidden.",
-        cliHint: "aws cloudtrail lookup-events --lookup-attributes AttributeKey=EventName,AttributeValue=AccessDenied",
+        description: "Query event streams to confirm unauthorized attempts are rejected with 403 Forbidden.",
+        cliHint: "zapster telemetry lookup-events --lookup-attributes AttributeKey=EventName,AttributeValue=AccessDenied",
       },
       {
         id: "task-4",
@@ -153,11 +153,11 @@ export function getLabScenario(course: Course, lesson: CourseLesson): LabScenari
     ],
     cliSamples: [
       {
-        command: "aws iam get-role-policy --role-name app-execution-role",
-        output: `{\n  "RoleName": "app-execution-role",\n  "PolicyName": "legacy-policy",\n  "PolicyDocument": {\n    "Version": "2012-10-17",\n    "Statement": [{\n      "Effect": "Allow",\n      "Action": ["s3:GetObject", "s3:PutObject"],\n      "Resource": "arn:aws:s3:::corporate-data/*"\n    }]\n  }\n}`,
+        command: "zapster iam get-role-policy --role-name app-execution-role",
+        output: `{\n  "RoleName": "app-execution-role",\n  "PolicyName": "legacy-policy",\n  "PolicyDocument": {\n    "Version": "2026-10-01",\n    "Statement": [{\n      "Effect": "Allow",\n      "Action": ["storage:GetObject", "storage:PutObject"],\n      "Resource": "urn:zapster:storage:::corporate-data/*"\n    }]\n  }\n}`,
       },
       {
-        command: "aws s3 ls s3://corporate-data/audit-logs/",
+        command: "zapster storage ls storage://corporate-data/audit-logs/",
         output: `2026-10-12 14:02:11   49152   access_log_2026-10-12.json.gz\n2026-10-13 08:30:45   65536   access_log_2026-10-13.json.gz\n2026-10-13 18:22:19   32768   current_active_session.log`,
       },
       {
@@ -169,12 +169,8 @@ export function getLabScenario(course: Course, lesson: CourseLesson): LabScenari
 }
 
 /**
- * Generates realistic scenario-based knowledge check questions modeled after
- * AWS Skill Builder & IBM SkillsBuild certification prep exams.
- */
-/**
  * Generates 10 realistic scenario-based knowledge check questions modeled after
- * AWS Skill Builder & IBM SkillsBuild certification prep exams.
+ * Zapsters Enterprise certification prep exams.
  * Every module quiz and final assessment provides exactly 10 questions.
  */
 export function getKnowledgeCheckQuestions(course: Course, lesson: CourseLesson): KnowledgeCheckQuestion[] {
@@ -188,7 +184,6 @@ export function getKnowledgeCheckQuestions(course: Course, lesson: CourseLesson)
   );
 
   const courseTitleLower = course.title.toLowerCase();
-  const lessonTitleLower = lesson.title.toLowerCase();
 
   // Comprehensive bank of realistic, accredited technical scenario questions
   const cyberQuestions: KnowledgeCheckQuestion[] = [
@@ -210,17 +205,17 @@ export function getKnowledgeCheckQuestions(course: Course, lesson: CourseLesson)
     {
       id: "cyb-2",
       domain: "Identity & Access Boundaries",
-      scenario: "An enterprise Python daemon deployed on an EC2 instance must query private Amazon S3 threat intel buckets. Corporate policy strictly forbids static API keys.",
+      scenario: "An enterprise Python daemon deployed on a cloud virtual machine must query private object storage threat intel buckets. Corporate policy strictly forbids static API keys.",
       question: "How should authentication and authorization be architected in compliance with least privilege?",
       options: [
-        "Hardcode AWS credentials in an encrypted .env file checked into version control",
-        "Attach an IAM Role with an Amazon S3 read-only policy via an EC2 Instance Profile using IMDSv2",
+        "Hardcode cloud credentials in an encrypted .env file checked into version control",
+        "Attach an IAM Role with read-only bucket policy via an Instance Profile using token-based metadata (IMDSv2)",
         "Generate 365-day presigned URLs using root credentials",
         "Configure bucket access to allow anonymous public GET requests restricted by CIDR block",
       ],
       correctIndex: 1,
-      explanation: "IAM Roles paired with Instance Profiles eliminate hardcoded credentials by delivering temporary, automatically rotated credentials via the instance metadata service (IMDSv2).",
-      documentationRef: "AWS Well-Architected Security Pillar §4: Permissions Management",
+      explanation: "IAM Roles paired with Instance Profiles eliminate hardcoded credentials by delivering temporary, automatically rotated credentials via the instance metadata service.",
+      documentationRef: "Zapsters Well-Architected Security Pillar §4: Permissions Management",
     },
     {
       id: "cyb-3",
@@ -250,7 +245,7 @@ export function getKnowledgeCheckQuestions(course: Course, lesson: CourseLesson)
       ],
       correctIndex: 1,
       explanation: "Hash-based sets and radix tries provide average O(1) membership lookups. Converting dotted-quad strings to 32-bit integer representations also dramatically reduces memory overhead for millions of indicators.",
-      documentationRef: "IBM SkillsBuild: Big-O Data Structures in High-Volume Security Ingestion",
+      documentationRef: "Zapsters Algorithms & Systems Standard: Big-O Data Structures in High-Volume Security Ingestion",
     },
     {
       id: "cyb-5",
@@ -259,24 +254,24 @@ export function getKnowledgeCheckQuestions(course: Course, lesson: CourseLesson)
       question: "Which XML parsing approach in Python ensures memory-efficient event-driven stream parsing?",
       options: [
         "xml.dom.minidom.parse() loading the entire DOM tree into memory",
-        "xml.etree.ElementTree.iterparse() clearing processed element references as tags close",
-        "Regular expressions with re.findall() across the entire 500MB string",
-        "Converting the XML to a single JSON string using eval()",
+        "xml.etree.ElementTree.iterparse() clearing processed elements with elem.clear() after reading",
+        "Regular expression string searches across the raw XML file",
+        "Convert the XML to JSON in memory using an external parser",
       ],
       correctIndex: 1,
-      explanation: "ElementTree.iterparse() processes XML elements incrementally as they are encountered in the stream. Calling elem.clear() after extracting data frees memory, maintaining a constant low memory footprint.",
-      documentationRef: "Python Library Reference §20.5: Incremental XML Parsing with iterparse",
+      explanation: "Using ElementTree.iterparse() reads XML tags sequentially as streaming events. Calling elem.clear() disposes of processed elements, keeping memory consumption near constant O(1) regardless of file size.",
+      documentationRef: "Python Standard Library: XML Processing Modules Security & Performance",
     },
     {
       id: "cyb-6",
-      domain: "Anomaly Detection & Baseline Thresholding",
-      scenario: "A detection engineer needs to identify outbound data exfiltration without using complex black-box machine learning models.",
-      question: "Which statistical approach effectively identifies anomalous upload volume outliers for specific endpoints?",
+      domain: "Traffic Analytics & Anomaly Detection",
+      scenario: "A network telemetry pipeline monitors HTTP request volumes to identify stealthy data exfiltration. Occasional traffic spikes cause excessive false positives when using a static threshold.",
+      question: "Which algorithmic baseline technique best accommodates expected traffic fluctuations while isolating genuine anomalies?",
       options: [
-        "Flag every endpoint uploading more than 10MB as an active breach",
-        "Compute rolling 14-day median and interquartile range (IQR) or Z-score (> 3 standard deviations)",
-        "Hardcode a static threshold based on yesterday's average transfer",
-        "Disable egress telemetry to reduce SIEM ingestion costs",
+        "Fixed hardcoded threshold: flag any window exceeding 1,000 requests",
+        "Moving average with dynamic standard deviation bands (Bollinger / Z-Score) or Interquartile Range (IQR)",
+        "Random sampling of 5% of network packets",
+        "Check request volume only during business hours and disable alerts at night",
       ],
       correctIndex: 1,
       explanation: "Median with Interquartile Range (IQR) or rolling Z-scores establishes an adaptive, statistically sound baseline robust against noise and skew, alerting only on genuine anomalous deviations.",
@@ -289,7 +284,7 @@ export function getKnowledgeCheckQuestions(course: Course, lesson: CourseLesson)
       question: "Which implementation aligns with enterprise compliance standards such as PCI-DSS and SOC 2?",
       options: [
         "Base64-encode credentials and commit them to the internal Git repository",
-        "Fetch secrets at runtime from AWS Secrets Manager or HashiCorp Vault with KMS envelope encryption",
+        "Fetch secrets at runtime from HashiCorp Vault or Cloud Secrets Manager with KMS envelope encryption",
         "Store the plaintext AES key in a local SQLite file in /tmp",
         "Pass passwords via plaintext HTTP GET query parameters",
       ],
@@ -315,17 +310,17 @@ export function getKnowledgeCheckQuestions(course: Course, lesson: CourseLesson)
     {
       id: "cyb-9",
       domain: "Incident Response & Telemetry Ingestion",
-      scenario: "During an active malware investigation, an endpoint agent isolates a compromised host and streams forensic memory artifacts to an S3 bucket.",
-      question: "Which Amazon S3 configuration ensures uploaded forensic evidence cannot be deleted or altered by unauthorized users or malware?",
+      scenario: "During an active malware investigation, an endpoint agent isolates a compromised host and streams forensic memory artifacts to an object storage bucket.",
+      question: "Which object storage configuration ensures uploaded forensic evidence cannot be deleted or altered by unauthorized users or malware?",
       options: [
-        "S3 Bucket Versioning with Object Lock enabled in Compliance Mode",
-        "Standard S3 bucket with private ACLs and no MFA delete",
+        "Bucket Versioning with Object Lock enabled in Compliance Mode",
+        "Standard storage bucket with private ACLs and no MFA delete",
         "Enable website hosting on the bucket with directory index disabled",
-        "Store artifacts in S3 Reduced Redundancy storage class",
+        "Store artifacts in Reduced Redundancy storage class",
       ],
       correctIndex: 0,
-      explanation: "S3 Object Lock in Compliance Mode enforces WORM (Write Once, Read Many) storage, preventing object deletion or modification even by the root account for the configured retention period.",
-      documentationRef: "AWS S3 User Guide: Locking Objects with S3 Object Lock Compliance Mode",
+      explanation: "Object Lock in Compliance Mode enforces WORM (Write Once, Read Many) storage, preventing object deletion or modification even by administrative accounts for the retention period.",
+      documentationRef: "Zapsters Cloud Storage Guide: Locking Objects with Compliance Retention Mode",
     },
     {
       id: "cyb-10",
@@ -348,62 +343,62 @@ export function getKnowledgeCheckQuestions(course: Course, lesson: CourseLesson)
     {
       id: "cld-1",
       domain: "Cloud Architecture & Multi-AZ Resilience",
-      scenario: "A Tier-1 financial ledger application deployed in AWS experiences an AZ outage. Client database writes fail because the primary RDS instance is in the impaired zone.",
+      scenario: "A Tier-1 financial ledger application deployed in a multi-region cloud experiences an Availability Zone outage. Client database writes fail because the primary database instance is in the impaired zone.",
       question: "Which database configuration provides automatic, sub-minute failover without manual administrator intervention?",
       options: [
-        "Amazon RDS Multi-AZ deployment with synchronous standby replication and automatic DNS failover",
+        "Managed Multi-AZ deployment with synchronous standby replication and automatic DNS failover",
         "Single-AZ instance with nightly automated snapshots restored to a new region",
         "Read-replica deployed in another region requiring manual promotion and application reconfiguration",
-        "Export database tables to S3 every 30 minutes using cron jobs",
+        "Export database tables to object storage every 30 minutes using cron jobs",
       ],
       correctIndex: 0,
-      explanation: "Amazon RDS Multi-AZ synchronously replicates data to a hot standby in an independent Availability Zone, automatically flipping DNS endpoints in 60-120 seconds during infrastructure impairment.",
-      documentationRef: "AWS Well-Architected Reliability Pillar §3: Disaster Recovery Objectives",
+      explanation: "Managed Multi-AZ synchronously replicates data to a hot standby in an independent Availability Zone, automatically flipping DNS endpoints in 60-120 seconds during infrastructure impairment.",
+      documentationRef: "Zapsters Resilient Systems Framework §3: Disaster Recovery Objectives",
     },
     {
       id: "cld-2",
       domain: "Network Isolation & VPC Security",
-      scenario: "Backend database servers in an Amazon VPC must never be reachable directly from the public internet, but must pull OS security patches from external vendor repositories.",
+      scenario: "Backend database servers in a Virtual Private Cloud (VPC) must never be reachable directly from the public internet, but must pull OS security patches from external vendor repositories.",
       question: "Which VPC architecture satisfies both security requirements?",
       options: [
         "Assign public IPv4 addresses to the database instances and allow 0.0.0.0/0 on port 80",
         "Place databases in private subnets with default route to a NAT Gateway located in a public subnet",
         "Attach an Internet Gateway directly to the private subnet route table",
-        "Disable all firewall rules on the EC2 instances",
+        "Disable all firewall rules on the virtual instances",
       ],
       correctIndex: 1,
       explanation: "Placing resources in private subnets prevents inbound internet routing. Routing outbound traffic through a managed NAT Gateway in a public subnet allows outbound patch updates while denying unsolicited inbound connections.",
-      documentationRef: "AWS VPC Architecture Guide: Recommended Subnet Isolation Patterns",
+      documentationRef: "Zapsters VPC Architecture Guide: Recommended Subnet Isolation Patterns",
     },
     {
       id: "cld-3",
       domain: "Continuous Compliance & Drift Detection",
-      scenario: "An enterprise auditor discovers that an engineer manually created a security group permitting unrestricted SSH (0.0.0.0/0 port 22) through the web management console.",
-      question: "Which automated AWS service combination detects this drift and immediately remediates the rule?",
+      scenario: "An enterprise auditor discovers that an engineer manually created a firewall rule permitting unrestricted SSH (0.0.0.0/0 port 22) through the web management console.",
+      question: "Which automated compliance rule combination detects this drift and immediately remediates the rule?",
       options: [
-        "AWS Config rule 'restricted-ssh' triggering an AWS Systems Manager Automation runbook",
+        "Continuous compliance rule 'restricted-ssh' triggering an automated remediation runbook",
         "Weekly billing alarm checking for cost anomalies",
-        "Route 53 health check pinging port 22",
-        "S3 lifecycle policy expiring objects older than 30 days",
+        "DNS health check pinging port 22",
+        "Storage lifecycle policy expiring objects older than 30 days",
       ],
       correctIndex: 0,
-      explanation: "AWS Config continuously monitors resource configurations against compliance rules. Upon detecting a non-compliant security group, it invokes automated remediation runbooks to revoke the open ingress rule.",
-      documentationRef: "CIS AWS Foundations Benchmark v1.4.0 §4.1: Ensure no SG allows ingress from 0.0.0.0/0 to port 22",
+      explanation: "Continuous compliance tooling monitors resource configurations against baseline rules. Upon detecting a non-compliant security group, it invokes automated remediation runbooks to revoke the open ingress rule.",
+      documentationRef: "Zapsters Security Benchmark §4.1: Ensure no security group allows public ingress to port 22",
     },
     {
       id: "cld-4",
       domain: "Microservices & Boundary Isolation",
-      scenario: "A containerized Kubernetes application in EKS processes sensitive medical records. The cluster administrator must ensure compromised containers cannot access AWS host instance credentials.",
+      scenario: "A containerized Kubernetes application in a managed cloud cluster processes sensitive medical records. The cluster administrator must ensure compromised containers cannot access host instance credentials.",
       question: "Which identity architecture should be deployed for the container pods?",
       options: [
-        "Assign full administrator IAM access to the EC2 worker node role",
-        "Implement IAM Roles for Service Accounts (IRSA) with OIDC federation and IMDS hop limits set to 1",
-        "Mount AWS root credentials inside an unencrypted ConfigMap",
-        "Store the AWS secret access key in a public Docker Hub image layer",
+        "Assign full administrator access to the container worker node role",
+        "Implement Workload Identity / IRSA with OIDC token federation and IMDS hop limits set to 1",
+        "Mount root cloud credentials inside an unencrypted ConfigMap",
+        "Store the cloud secret access key in a public Docker Hub image layer",
       ],
       correctIndex: 1,
-      explanation: "IRSA leverages Kubernetes Service Accounts mapped to scoped IAM roles via OIDC token federation. Restricting IMDSv2 hop limits prevents container pods from stealing host-level node credentials.",
-      documentationRef: "AWS EKS Best Practices Guide: Security & Pod Identity Federation",
+      explanation: "Workload Identity leverages Kubernetes Service Accounts mapped to scoped cloud roles via OIDC token federation. Restricting metadata service (IMDSv2) hop limits prevents container pods from accessing host-level node credentials.",
+      documentationRef: "Zapsters Kubernetes Security Guide: Security & Pod Identity Federation",
     },
     {
       id: "cld-5",
@@ -411,29 +406,29 @@ export function getKnowledgeCheckQuestions(course: Course, lesson: CourseLesson)
       scenario: "Security operations requires an alert within 60 seconds whenever root user credentials are used to sign into the cloud environment.",
       question: "Which architecture achieves this near-real-time SLA?",
       options: [
-        "CloudTrail event trail streaming management events to EventBridge with an SNS topic subscriber",
-        "Download CloudTrail logs monthly and run manual Excel spreadsheet filters",
-        "Query CloudWatch Logs Insights using a scheduled cron job every 24 hours",
+        "Audit event trail streaming management events to an Event Bus with an instant notification topic subscriber",
+        "Download audit logs monthly and run manual Excel spreadsheet filters",
+        "Query logs using a scheduled cron job every 24 hours",
         "Rely on email notifications sent from the billing department",
       ],
       correctIndex: 0,
-      explanation: "CloudTrail events streamed directly to EventBridge trigger pattern-matching rules in sub-second latency, notifying incident response channels via SNS without delay.",
-      documentationRef: "IBM SkillsBuild Cloud Architecture: Real-time Incident Notification Pipelines",
+      explanation: "Audit events streamed directly to a real-time event router trigger pattern-matching rules in sub-second latency, notifying incident response channels without delay.",
+      documentationRef: "Zapsters Cloud Architecture: Real-time Incident Notification Pipelines",
     },
     {
       id: "cld-6",
       domain: "Data Protection & KMS Envelope Encryption",
-      scenario: "A compliance framework mandates that data stored in Amazon S3 must be encrypted using customer-managed keys rotated annually, with audited cryptographic access.",
-      question: "Which AWS KMS key configuration fulfills this mandate?",
+      scenario: "A compliance framework mandates that data stored in cloud object storage must be encrypted using customer-managed keys rotated annually, with audited cryptographic access.",
+      question: "Which Key Management Service (KMS) key configuration fulfills this mandate?",
       options: [
-        "Default S3 managed keys (SSE-S3) with Amazon-managed rotation",
+        "Default cloud-provider managed keys with provider-controlled rotation",
         "Customer Managed Key (CMK) with Automatic Key Rotation enabled and strict key policy access audits",
         "Client-side encryption using a static password embedded in source code",
         "Unencrypted storage backed by client-side browser cookies",
       ],
       correctIndex: 1,
-      explanation: "Customer Managed Keys (CMKs) in KMS allow explicit access policies, annual automatic rotation, and full CloudTrail audit trails for every encrypt and decrypt operation.",
-      documentationRef: "AWS KMS Developer Guide: Key Management Best Practices & Key Rotation",
+      explanation: "Customer Managed Keys (CMKs) in KMS allow explicit access policies, annual automatic rotation, and full audit trails for every encrypt and decrypt operation.",
+      documentationRef: "Zapsters Key Management Standard: Key Management Best Practices & Automated Key Rotation",
     },
     {
       id: "cld-7",
@@ -441,14 +436,14 @@ export function getKnowledgeCheckQuestions(course: Course, lesson: CourseLesson)
       scenario: "A critical customer portal experiences distributed HTTP flood attacks overwhelming backend application servers.",
       question: "Which edge protection architecture mitigates application-layer (Layer 7) DDoS attacks before traffic reaches compute nodes?",
       options: [
-        "Deploy AWS WAF with rate-based rules attached to Amazon CloudFront and Application Load Balancer",
+        "Deploy a Web Application Firewall (WAF) with rate-based rules attached to Global CDN and Application Load Balancer",
         "Increase the CPU core count on backend servers to absorb traffic",
         "Disable DNS servers during the peak attack window",
-        "Allow all traffic through a single EC2 proxy server",
+        "Allow all traffic through a single proxy server",
       ],
       correctIndex: 0,
-      explanation: "AWS WAF integrated with CloudFront and ALB enforces rate-based limiting and managed OWASP threat rules globally at edge PoPs, absorbing and dropping malicious Layer 7 floods before backend saturation.",
-      documentationRef: "AWS Best Practices for DDoS Resiliency §3.2: Edge Protection with WAF",
+      explanation: "A Web Application Firewall integrated with edge CDN and Application Load Balancers enforces rate-based limiting and managed OWASP threat rules globally, absorbing and dropping malicious Layer 7 floods before backend saturation.",
+      documentationRef: "Zapsters Best Practices for DDoS Resiliency §3.2: Edge Protection with WAF",
     },
     {
       id: "cld-8",
@@ -457,7 +452,7 @@ export function getKnowledgeCheckQuestions(course: Course, lesson: CourseLesson)
       question: "Which pattern enforces mutual identity verification and encryption at transit between services?",
       options: [
         "Unencrypted plain HTTP over internal private IP addresses",
-        "Mutual TLS (mTLS) with short-lived X.509 certificates managed by a service mesh (e.g. Istio / AWS App Mesh)",
+        "Mutual TLS (mTLS) with short-lived X.509 certificates managed by a service mesh (e.g. Istio / Linkerd)",
         "Single-factor password authentication cached in memory",
         "IP address whitelisting with unencrypted TCP sockets",
       ],
@@ -468,17 +463,17 @@ export function getKnowledgeCheckQuestions(course: Course, lesson: CourseLesson)
     {
       id: "cld-9",
       domain: "Serverless Security & Execution Boundaries",
-      scenario: "An AWS Lambda function processes untrusted user image uploads from S3. The security team wants to minimize blast radius in case of an image parsing exploit.",
-      question: "Which configuration principle restricts the Lambda function's blast radius?",
+      scenario: "A serverless function processes untrusted user image uploads from object storage. The security team wants to minimize blast radius in case of an image parsing exploit.",
+      question: "Which configuration principle restricts the serverless function's blast radius?",
       options: [
-        "Grant the Lambda execution role AdministratorAccess so it never fails with permissions errors",
-        "Scoped execution role with s3:GetObject on the specific input prefix only, read-only root filesystem, and strict memory/timeout limits",
-        "Run the Lambda function with root privileges inside a public subnet with no security groups",
-        "Hardcode database root passwords in the Lambda environment variables in plaintext",
+        "Grant the function execution role AdministratorAccess so it never fails with permissions errors",
+        "Scoped execution role with storage:GetObject on the specific input prefix only, read-only root filesystem, and strict memory/timeout limits",
+        "Run the serverless function with root privileges inside a public subnet with no security groups",
+        "Hardcode database root passwords in the environment variables in plaintext",
       ],
       correctIndex: 1,
       explanation: "Enforcing least-privilege IAM policies, read-only root filesystem flags, and tight memory/timeout limits prevents arbitrary file persistence and lateral movement in the event of code execution vulnerabilities.",
-      documentationRef: "AWS Lambda Security Guide: Least Privilege Function Execution Roles",
+      documentationRef: "Zapsters Serverless Security Guide: Least Privilege Function Execution Roles",
     },
     {
       id: "cld-10",
@@ -487,20 +482,20 @@ export function getKnowledgeCheckQuestions(course: Course, lesson: CourseLesson)
       question: "How should infrastructure deployments be modernized to prevent configuration drift?",
       options: [
         "Grant all developers root SSH access to production instances",
-        "Adopt Immutable Infrastructure using HashiCorp Terraform and automated AMI/container builds via hardened CI/CD pipelines with zero manual SSH",
+        "Adopt Immutable Infrastructure using HashiCorp Terraform and automated container builds via hardened CI/CD pipelines with zero manual SSH",
         "Install automated team chat alerts asking engineers not to modify servers",
         "Disable security patching to maintain identical system states",
       ],
       correctIndex: 1,
       explanation: "Immutable infrastructure treats servers as disposable artifacts. Changes are applied via declarative IaC through automated CI/CD pipelines, completely deprecating manual in-place SSH updates.",
-      documentationRef: "AWS Well-Architected Operational Excellence Pillar §2: Automating Deployment",
+      documentationRef: "Zapsters Well-Architected Operational Excellence Pillar §2: Automating Deployment",
     },
   ];
 
   // Base pool selection: Choose domain-focused questions based on course category
   const sourcePool =
     courseTitleLower.includes("cloud") ||
-    courseTitleLower.includes("aws") ||
+    courseTitleLower.includes("infra") ||
     courseTitleLower.includes("network") ||
     course.category.toLowerCase().includes("cloud")
       ? cloudQuestions
@@ -526,4 +521,3 @@ export function getKnowledgeCheckQuestions(course: Course, lesson: CourseLesson)
 
   return questions;
 }
-

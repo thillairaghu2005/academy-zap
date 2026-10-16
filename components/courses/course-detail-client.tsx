@@ -48,6 +48,7 @@ import { ErrorState } from "@/components/shared/error-state";
 import { cn } from "@/lib/utils";
 import { getCourseSkillBuildMeta } from "@/lib/courses/skillbuild-helpers";
 import { DigitalBadgeDialog } from "@/components/courses/digital-badge-dialog";
+import { DigitalBadgeMedallion } from "@/components/courses/digital-badge-medallion";
 import { CourseReviews } from "@/components/courses/course-reviews";
 
 function formatDuration(seconds: number): string {
@@ -213,7 +214,7 @@ export function CourseDetailClient({
   const downloadSyllabus = () => {
     const text = [
       `ZAPSTERS ENTERPRISE ACADEMY — OFFICIAL COURSE SYLLABUS`,
-      `CURRICULUM ACCREDITED: AWS SKILL BUILDER & IBM SKILLSBUILD PATHWAY`,
+      `CURRICULUM ACCREDITED: ZAPSTERS ENTERPRISE STANDARDS`,
       `===================================================================`,
       `COURSE:         ${course.title}`,
       `COURSE CODE:    ${meta.courseCode}`,
@@ -307,7 +308,7 @@ export function CourseDetailClient({
       {/* Main Grid: Enterprise Content (Left) + Sticky Enrollment Card (Right) */}
       <div className="mt-6 grid gap-8 lg:grid-cols-[minmax(0,1fr)_390px] lg:items-start">
         <div className="flex flex-col gap-6">
-          {/* AWS Skill Builder & IBM SkillsBuild Hero Banner */}
+          {/* Zapsters Enterprise Hero Banner */}
           <div className="relative overflow-hidden rounded-2xl border border-border bg-gradient-to-br from-slate-950 via-[#0f172a] to-[#091024] p-7 sm:p-9 shadow-lg">
             {/* Ambient gradients */}
             <div className="pointer-events-none absolute -right-16 -top-16 size-72 rounded-full bg-primary/15 blur-3xl" />
@@ -318,7 +319,7 @@ export function CourseDetailClient({
               <div className="flex flex-wrap items-center gap-2">
                 <span className="inline-flex items-center gap-1.5 rounded-md bg-primary/20 border border-primary/30 px-2.5 py-1 text-[11px] font-semibold text-primary-light">
                   <ShieldCheck className="size-3.5" />
-                  AWS Skill Builder & IBM SkillsBuild Standard
+                  Zapsters Enterprise Standard
                 </span>
                 <Badge variant="outline" className="uppercase tracking-wider text-[11px] border-slate-700 bg-slate-900/80 text-slate-300">
                   {course.category}
@@ -636,36 +637,13 @@ export function CourseDetailClient({
                 <div className="relative z-10 grid md:grid-cols-[220px_1fr] gap-6 items-center">
                   {/* Hexagon Graphic Preview */}
                   <div className="flex flex-col items-center justify-center p-4 rounded-xl bg-slate-900/90 border border-slate-800">
-                    <div className="size-36 flex items-center justify-center">
-                      <svg viewBox="0 0 200 230" className="w-full h-full drop-shadow-[0_10px_20px_rgba(217,38,64,0.35)]">
-                        <polygon
-                          points="100,5 190,57 190,163 100,215 10,163 10,57"
-                          fill="#e11d48"
-                          stroke="#fb7185"
-                          strokeWidth="2"
-                        />
-                        <polygon
-                          points="100,15 180,62 180,158 100,205 20,158 20,62"
-                          fill="#0f172a"
-                          stroke="#475569"
-                          strokeWidth="1.5"
-                        />
-                        <text x="100" y="55" textAnchor="middle" fill="#fb7185" fontSize="10" fontWeight="bold">
-                          ZAPSTERS
-                        </text>
-                        <circle cx="100" cy="100" r="26" fill="#1e293b" stroke="#e11d48" strokeWidth="2" />
-                        <path
-                          d="M100 85 L104 95 L115 97 L107 104 L109 115 L100 109 L91 115 L93 104 L85 97 L96 95 Z"
-                          fill="#ffffff"
-                        />
-                        <text x="100" y="145" textAnchor="middle" fill="#ffffff" fontSize="11" fontWeight="bold">
-                          {course.category.toUpperCase()}
-                        </text>
-                        <rect x="55" y="155" width="90" height="18" rx="4" fill="#e11d48" />
-                        <text x="100" y="168" textAnchor="middle" fill="#ffffff" fontSize="10" fontWeight="bold">
-                          {meta.badgeInfo.level.toUpperCase()}
-                        </text>
-                      </svg>
+                    <div className="w-36 h-40 flex items-center justify-center">
+                      <DigitalBadgeMedallion
+                        category={course.category}
+                        level={meta.badgeInfo.level}
+                        issuer="Zapsters"
+                        className="w-full h-full"
+                      />
                     </div>
                     <Badge variant="outline" className="border-primary/30 bg-primary/10 text-primary-light text-[10px] mt-2">
                       Credly-Compatible Badge
@@ -749,7 +727,7 @@ export function CourseDetailClient({
                     </div>
                     <p className="text-sm text-muted-foreground">{course.instructor.title}</p>
                     <p className="text-xs text-muted-foreground mt-0.5">
-                      AWS Training & Certification Ambassador · IBM SkillsBuild Subject Matter Expert
+                      Zapsters Principal Fellow · Enterprise Cloud &amp; Systems Subject Matter Expert
                     </p>
                   </div>
                 </div>
@@ -903,7 +881,7 @@ export function CourseDetailClient({
               <div className="space-y-2">
                 <div className="flex items-center gap-2">
                   <FlaskConical className="size-4 text-primary shrink-0" />
-                  <span>Hands-on Cloud Sandbox Labs (no AWS account needed)</span>
+                  <span>Hands-on Cloud Sandbox Labs (isolated cloud runtime included)</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <Award className="size-4 text-primary shrink-0" />

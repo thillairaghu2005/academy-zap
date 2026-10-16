@@ -2,10 +2,6 @@
 
 import * as React from "react";
 import Link from "next/link";
-import {
-  Check,
-  LoaderCircle,
-} from "lucide-react";
 
 import type { MarketplaceCourse } from "@/lib/mocks/marketplace";
 import {
@@ -61,53 +57,63 @@ export const CourseCard = React.memo(function CourseCard({
         className="absolute inset-0 z-0 rounded-[28px] focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-ring"
       />
 
-      {/* Header section (Avatar) */}
-      <div className="relative z-10 mb-5 flex items-center justify-between">
-        <div className="flex size-[42px] shrink-0 items-center justify-center rounded-full bg-primary/10 font-bold text-lg text-primary">
-          {course.instructor.charAt(0)}
+      {/* Header accreditation ribbon (Zapsters Enterprise standard) */}
+      <div className="relative z-10 mb-4 flex items-center justify-between border-b border-border/40 pb-3">
+        <div className="flex items-center gap-1.5 text-[10px] font-mono uppercase tracking-wider text-primary">
+          <span className="flex size-1.5 rounded-full bg-primary animate-pulse" />
+          <span>Accredited Curriculum</span>
+        </div>
+        <div className="flex items-center gap-1 text-[10px] font-semibold text-muted-foreground/80 bg-surface-1 px-2 py-0.5 rounded-full border border-border/40">
+          <span>0.5 CEU</span>
         </div>
       </div>
 
       {/* Body */}
       <div className="relative z-10 flex flex-1 flex-col">
-        <div className="mb-1 flex items-baseline gap-2">
-           <span className="text-sm font-semibold text-foreground">{course.instructor}</span>
-           <span className="text-[11px] text-muted-foreground/60">5 days ago</span>
+        <div className="mb-2 flex items-center justify-between gap-2">
+          <div className="flex items-center gap-2">
+            <div className="flex size-7 shrink-0 items-center justify-center rounded-full bg-primary/10 font-bold text-xs text-primary">
+              {course.instructor.charAt(0)}
+            </div>
+            <span className="text-xs font-semibold text-foreground/90 truncate max-w-[140px]">{course.instructor}</span>
+          </div>
+          <span className="text-[10px] text-muted-foreground/60 font-mono">Self-Paced</span>
         </div>
         
-        <h3 className="mb-3.5 line-clamp-2 min-h-[2.6em] font-display text-lg font-bold leading-snug tracking-tight text-foreground">
+        <h3 className="mb-3 line-clamp-2 min-h-[2.6em] font-display text-base font-bold leading-snug tracking-tight text-foreground group-hover:text-primary transition-colors">
           {course.title}
         </h3>
 
-        <div className="mb-5 flex flex-wrap items-center gap-2 text-[11px]">
-          <div className="rounded-full bg-muted/60 px-3 py-1 font-medium text-muted-foreground">
+        <div className="mb-4 flex flex-wrap items-center gap-1.5 text-[10px]">
+          <div className="rounded-md bg-surface-1 px-2.5 py-1 font-medium text-muted-foreground border border-border/50">
              <span className="capitalize">{course.level}</span>
           </div>
-          <div className="rounded-full bg-muted/60 px-3 py-1 font-medium text-muted-foreground">
+          <div className="rounded-md bg-surface-1 px-2.5 py-1 font-medium text-muted-foreground border border-border/50">
              {course.durationHours}h
           </div>
           {course.badge && (
-            <div className="rounded-full bg-primary/10 px-3 py-1 font-medium text-primary">
-               <span className="capitalize">{course.badge.toLowerCase()}</span>
+            <div className="rounded-md bg-primary/10 px-2.5 py-1 font-medium text-primary border border-primary/20 flex items-center gap-1">
+               <span className="size-1.5 rounded-full bg-primary" />
+               <span className="capitalize">{course.badge.toLowerCase()} Badge</span>
             </div>
           )}
           {course.isFree && !course.badge && (
-            <div className="rounded-full bg-success/10 px-3 py-1 font-medium text-success-strong">
-               Free
+            <div className="rounded-md bg-success/10 px-2 py-1 font-medium text-success-strong border border-success/20">
+               Free Access
             </div>
           )}
         </div>
         
         {/* Progress bar if enrolled */}
         {enrolled && (
-          <div className="mb-5 flex items-center gap-2">
+          <div className="mb-4 flex items-center gap-2">
             <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-muted">
               <div
-                className="h-full bg-primary"
+                className="h-full bg-primary transition-all duration-300"
                 style={{ width: `${Math.round((course.progressPercent ?? 0) * 100)}%` }}
               />
             </div>
-            <span className="text-[11px] font-medium text-muted-foreground">
+            <span className="text-[11px] font-medium text-primary font-mono">
               {Math.round((course.progressPercent ?? 0) * 100)}%
             </span>
           </div>
