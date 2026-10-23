@@ -206,7 +206,7 @@ function SectionIntro() {
     <div className="flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
       <div>
         <p className="font-mono text-xs uppercase tracking-widest text-muted-foreground">Proof, not promises</p>
-        <h2 className="mt-3 font-display text-3xl font-light tracking-tight text-foreground sm:text-4xl">
+        <h2 className="mt-3 font-display text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
           See who is climbing with you.
         </h2>
       </div>

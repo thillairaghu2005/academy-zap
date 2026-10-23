@@ -25,7 +25,7 @@ export default function FaqPage() {
             <p className="text-xs font-semibold uppercase tracking-[0.16em] text-muted-foreground">
               Questions, answered
             </p>
-            <h1 className="mt-3 font-display font-light text-4xl tracking-[-0.045em] sm:text-5xl">
+            <h1 className="mt-3 font-display font-bold text-4xl tracking-[-0.045em] sm:text-5xl">
               A clear start, without the fine print.
             </h1>
             <p className="mx-auto mt-4 max-w-xl text-sm leading-6 text-muted-foreground">

@@ -26,7 +26,7 @@ export function TestimonialWall() {
   return (
     <section className="bg-background">
       <div className="mx-auto max-w-7xl px-5 py-16 sm:px-8 sm:py-20 lg:px-10">
-        <div className="flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between"><div><p className="text-xs font-semibold uppercase tracking-[0.16em] text-muted-foreground">Learner signal</p><h2 className="mt-3 font-display font-light text-3xl tracking-[-0.045em]">Progress is measured in shipped code and active defense.</h2></div><p className="max-w-md text-sm leading-6 text-muted-foreground">A rigorous environment for engineers who demand hands-on practice, verified skills, and absolute clarity on what to learn next.</p></div>
+        <div className="flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between"><div><p className="text-xs font-semibold uppercase tracking-[0.16em] text-muted-foreground">Learner signal</p><h2 className="mt-3 font-display font-semibold text-3xl tracking-[-0.045em]">Progress is measured in shipped code and active defense.</h2></div><p className="max-w-md text-sm leading-6 text-muted-foreground">A rigorous environment for engineers who demand hands-on practice, verified skills, and absolute clarity on what to learn next.</p></div>
         <div className="mt-9 grid gap-4 lg:grid-cols-3">
           {MARKETING_TESTIMONIALS.map((testimonial) => (
             <Card key={testimonial.name} className={cn("p-6", testimonial.featured && "border-border bg-surface-2")}>
@@ -54,7 +54,7 @@ export function FaqSection() {
         <div className="grid gap-12 lg:grid-cols-[1fr_1.5fr] lg:gap-16 items-start">
           <div>
             <p className="text-xs font-semibold uppercase tracking-[0.16em] text-muted-foreground">Questions, answered</p>
-            <h2 className="mt-3 font-display font-light text-3xl tracking-[-0.045em]">A clear start, without the fine print.</h2>
+            <h2 className="mt-3 font-display font-semibold text-3xl tracking-[-0.045em]">A clear start, without the fine print.</h2>
           </div>
           <div className="space-y-2 rounded-xl border border-border bg-card p-2">
             {MARKETING_FAQ.map((item, index) => { const expanded = open === index; return <div key={item.question} className="rounded-lg overflow-hidden"><button type="button" aria-expanded={expanded} onClick={() => setOpen(expanded ? -1 : index)} className="flex min-h-14 w-full items-center justify-between gap-4 rounded-lg px-5 py-4 text-left text-sm font-semibold outline-none transition-colors hover:bg-surface-1 hover:text-primary focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring sm:px-6"><span className="leading-snug">{item.question}</span><ChevronDown className={cn("size-4 shrink-0 text-muted-foreground transition-transform", expanded && "rotate-180 text-primary")} /></button>{expanded ? <div className="px-5 pb-5 text-sm leading-6 text-muted-foreground sm:px-6 sm:pb-6">{item.answer}</div> : null}</div>; })}
@@ -107,7 +107,7 @@ export function DetailedPricingSection({ standalone = false, headingAs: Heading 
           <div>
             <p className="text-xs font-semibold uppercase tracking-[0.16em] text-muted-foreground">Simple plans, serious practice</p>
             <Heading
-              className="mt-3 max-w-2xl font-display font-light text-3xl tracking-[-0.045em] sm:text-4xl"
+              className="mt-3 max-w-2xl font-display font-semibold text-3xl tracking-[-0.045em] sm:text-4xl"
             >Choose the amount of structure you need.</Heading>
             <p className="mt-3 max-w-xl text-sm leading-6 text-muted-foreground">Start free, build a rhythm, and upgrade when the next level of feedback is worth it.</p>
           </div>

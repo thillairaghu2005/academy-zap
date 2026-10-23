@@ -47,7 +47,7 @@ export function PersonalizedHero() {
       <div className="relative mx-auto grid max-w-7xl gap-8 px-4 py-12 sm:px-6 sm:py-16 lg:grid-cols-[1fr_1.15fr] lg:items-center lg:gap-16 lg:px-8 lg:py-20">
         <div className="max-w-2xl motion-safe:animate-fade-up">
           <p className="font-mono text-xs font-medium uppercase tracking-widest text-muted-foreground">Welcome back, {user.display_name.split(" ")[0]}</p>
-          <h1 className="mt-5 max-w-xl font-display font-light text-4xl sm:text-5xl lg:text-6xl tracking-tight text-foreground">
+          <h1 className="mt-5 max-w-xl font-display font-bold text-4xl sm:text-5xl lg:text-6xl tracking-tight text-foreground">
             Resume your active<br />
             <span>lab session.</span>
           </h1>

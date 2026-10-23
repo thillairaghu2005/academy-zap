@@ -5,16 +5,14 @@ import { MarketplaceClient } from "@/components/courses/marketplace/marketplace-
 import { CourseCatalogLoading } from "@/components/shared/route-loading";
 
 export const metadata: Metadata = {
-  title: "Course marketplace",
+  title: "Explore Courses",
   description:
-    "Browse the Zapsters marketplace — curated course collections, hover previews, and instant checkout across security, engineering and AI.",
+    "Explore enterprise technical courses, hands-on virtual labs, role learning pathways, and verified skill credentials across cloud, cyber defense, systems, and AI.",
   alternates: { canonical: "/courses" },
   robots: { index: true, follow: true },
 };
 
 export default function CoursesPage() {
-  // MarketplaceClient reads useSearchParams (URL-synced search/filters) — it
-  // must be inside a Suspense boundary for static prerendering.
   return (
     <Suspense fallback={<CourseCatalogLoading />}>
       <MarketplaceClient />
