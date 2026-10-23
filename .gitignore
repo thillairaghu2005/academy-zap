@@ -52,11 +52,20 @@ next-env.d.ts
 # docs
 /design-ref/
 audit.md
-errors.txt
-UI.md
-report.md
-result.md
-session.md
 /SKILL.md
 E2-frontend-SOP.md
 fastapi-backend-sop.md
+
+# agent, workflow and project docs
+.agent/workflows
+.agents
+.gemini
+.gsd
+AGENTS.md
+CLAUDE.md
+GSD-STYLE.md
+PROJECT_RULES.md
+VERSION
+ZAPSTERS_GAMIFICATION_ENGINE.md
+ZAPSTERS_PLATFORM_FULL_ARCHITECTURE.md
+build.md
