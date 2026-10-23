@@ -15,6 +15,8 @@ import {
   BookOpen,
   Check,
   CheckCircle2,
+  ChevronDown,
+  ChevronUp,
   Clock,
   Compass,
   Download,
@@ -29,6 +31,7 @@ import {
   Users,
 } from "lucide-react";
 
+import { MARKETPLACE_COURSES } from "@/lib/mocks/marketplace";
 import type { Course, CourseLesson } from "@/lib/contracts/content";
 import {
   enroll,
@@ -171,9 +174,30 @@ export function CourseDetailClient({
     "overview" | "syllabus" | "badge" | "instructor" | "reviews"
   >("overview");
   const [badgeModalOpen, setBadgeModalOpen] = React.useState(false);
+  const [collapsedSections, setCollapsedSections] = React.useState<Record<string, boolean>>({});
+
+  const toggleSection = React.useCallback((sectionId: string) => {
+    setCollapsedSections((prev) => ({
+      ...prev,
+      [sectionId]: !prev[sectionId],
+    }));
+  }, []);
+
+  const toggleAllSections = React.useCallback((collapse: boolean) => {
+    const updated: Record<string, boolean> = {};
+    for (const sec of course.syllabus) {
+      updated[sec.id] = collapse;
+    }
+    setCollapsedSections(updated);
+  }, [course.syllabus]);
 
   const allLessons = course.syllabus.flatMap((section) => section.lessons);
   const meta = React.useMemo(() => getCourseSkillBuildMeta(course), [course]);
+  const relatedCourses = React.useMemo(() => {
+    return MARKETPLACE_COURSES.filter(
+      (c) => c.category === course.category && c.id !== course.id,
+    ).slice(0, 3);
+  }, [course.category, course.id]);
 
   const {
     data: progress,
@@ -307,70 +331,66 @@ export function CourseDetailClient({
       <div className="mt-6 grid gap-8 lg:grid-cols-[minmax(0,1fr)_390px] lg:items-start">
         <div className="flex flex-col gap-6">
           {/* Zapsters Enterprise Hero Banner */}
-          <div className="relative overflow-hidden rounded-2xl border border-border bg-gradient-to-br from-slate-950 via-[#0f172a] to-[#091024] p-7 sm:p-9 shadow-lg">
-            {/* Ambient gradients */}
-            <div className="pointer-events-none absolute -right-16 -top-16 size-72 rounded-full bg-primary/15 blur-3xl" />
-            <div className="pointer-events-none absolute -bottom-16 -left-16 size-72 rounded-full bg-primary/10 blur-3xl" />
-
+          <div className="relative overflow-hidden rounded-xl border border-neutral-800 bg-neutral-900 p-6 sm:p-8 shadow-sm">
             <div className="relative z-10 flex flex-col gap-4">
               {/* Partner Badges */}
               <div className="flex flex-wrap items-center gap-2">
-                <span className="inline-flex items-center gap-1.5 rounded-md bg-primary/20 border border-primary/30 px-2.5 py-1 text-[11px] font-semibold text-primary-light">
-                  <ShieldCheck className="size-3.5" />
+                <span className="inline-flex items-center gap-1.5 rounded-md bg-neutral-800 border border-neutral-700 px-2.5 py-1 text-[11px] font-semibold text-neutral-200">
+                  <ShieldCheck className="size-3.5 text-primary" />
                   Zapsters Enterprise Standard
                 </span>
-                <Badge variant="outline" className="uppercase tracking-wider text-[11px] border-slate-700 bg-slate-900/80 text-slate-300">
+                <Badge variant="outline" className="uppercase tracking-wider text-[11px] border-neutral-700 bg-neutral-800 text-neutral-300">
                   {course.category}
                 </Badge>
-                <Badge variant="outline" className="uppercase tracking-wider text-[11px] border-slate-700 bg-slate-900/80 text-slate-300">
+                <Badge variant="outline" className="uppercase tracking-wider text-[11px] border-neutral-700 bg-neutral-800 text-neutral-300">
                   {course.level} Level
                 </Badge>
-                <span className="inline-flex items-center gap-1 text-[11px] text-slate-400 ml-auto">
+                <span className="inline-flex items-center gap-1 text-[11px] text-neutral-400 ml-auto">
                   <Globe className="size-3" />
                   {course.language}
                 </span>
               </div>
 
               {/* Title & Subtitle */}
-              <h1 className="font-display text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-white leading-tight">
+              <h1 className="font-display text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight text-white leading-tight">
                 {course.title}
               </h1>
-              <p className="text-base sm:text-lg text-slate-300 leading-relaxed max-w-3xl">
+              <p className="text-sm sm:text-base text-neutral-300 leading-relaxed max-w-3xl">
                 {course.subtitle}
               </p>
 
               {/* Metadata KPI Strip */}
-              <div className="flex flex-wrap items-center gap-x-6 gap-y-3 py-2 mt-2 text-xs text-slate-300">
+              <div className="flex flex-wrap items-center gap-x-6 gap-y-2 py-2 text-xs text-neutral-300">
                 <span className="flex items-center gap-1.5">
-                  <Star className="size-4 fill-primary text-primary" />
-                  <span className="font-bold text-white">
+                  <Star className="size-3.5 fill-primary text-primary" />
+                  <span className="font-semibold text-white">
                     {course.rating > 0 ? course.rating.toFixed(1) : "4.9"}
                   </span>
-                  <span className="text-slate-400">
+                  <span className="text-neutral-400">
                     ({(course.review_count || 184).toLocaleString()} reviews)
                   </span>
                 </span>
                 <span className="flex items-center gap-1.5">
-                  <Users className="size-4 text-slate-400" />
+                  <Users className="size-3.5 text-neutral-400" />
                   <span>{(course.enrolled_count || 12450).toLocaleString()} enrolled learners</span>
                 </span>
                 <span className="flex items-center gap-1.5">
-                  <Clock className="size-4 text-slate-400" />
+                  <Clock className="size-3.5 text-neutral-400" />
                   <span>{course.estimated_hours} Hours total</span>
                 </span>
                 <span className="flex items-center gap-1.5">
-                  <Award className="size-4 text-primary-light" />
-                  <span className="text-primary-light font-medium">{meta.badgeInfo.ceuCredits} CEU Credits</span>
+                  <Award className="size-3.5 text-neutral-300" />
+                  <span className="text-neutral-200 font-medium">{meta.badgeInfo.ceuCredits} CEU Credits</span>
                 </span>
                 <span className="flex items-center gap-1.5">
-                  <CheckCircle2 className="size-4 text-primary" />
-                  <span>80% Passing Score</span>
+                  <CheckCircle2 className="size-3.5 text-primary" />
+                  <span>80% Passing Threshold</span>
                 </span>
               </div>
 
               {/* Instructor Tag */}
-              <div className="flex items-center gap-3 mt-1">
-                <div className="grid size-10 shrink-0 place-items-center rounded-xl bg-gradient-to-br from-primary to-primary-hover font-bold text-primary-foreground text-base shadow">
+              <div className="flex items-center gap-3 mt-1 border-t border-neutral-800 pt-3">
+                <div className="grid size-9 shrink-0 place-items-center rounded-lg bg-neutral-800 border border-neutral-700 font-bold text-white text-sm">
                   {course.instructor.display_name.charAt(0)}
                 </div>
                 <div>
@@ -378,7 +398,7 @@ export function CourseDetailClient({
                     <p className="text-sm font-semibold text-white">{course.instructor.display_name}</p>
                     <ShieldCheck className="size-3.5 text-primary" />
                   </div>
-                  <p className="text-xs text-slate-400">
+                  <p className="text-xs text-neutral-400">
                     {course.instructor.title} · Certified Enterprise Instructor
                   </p>
                 </div>
@@ -536,6 +556,53 @@ export function CourseDetailClient({
                   ))}
                 </div>
               </section>
+
+              {/* Related Courses & Next Learning Path (Requirement 5.E) */}
+              {relatedCourses.length > 0 && (
+                <section className="space-y-4 pt-6 border-t border-border/60">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <h3 className="font-display text-base font-bold text-foreground">
+                        Recommended Next in {course.category}
+                      </h3>
+                      <p className="text-xs text-muted-foreground">
+                        Continue expanding your expertise with related curriculum modules.
+                      </p>
+                    </div>
+                    <Button variant="ghost" size="sm" asChild className="text-xs">
+                      <Link href={`/courses?category=${encodeURIComponent(course.category)}`}>
+                        View all <ArrowRight className="size-3.5 ml-1" />
+                      </Link>
+                    </Button>
+                  </div>
+
+                  <div className="grid gap-4 sm:grid-cols-3">
+                    {relatedCourses.map((rel) => (
+                      <Link
+                        key={rel.id}
+                        href={`/courses/${rel.id}`}
+                        className="group flex flex-col justify-between rounded-xl border border-border bg-card p-4 transition-colors hover:border-border-strong hover:shadow-xs"
+                      >
+                        <div>
+                          <span className="text-[10px] font-mono uppercase tracking-wider text-muted-foreground font-semibold">
+                            {rel.level}
+                          </span>
+                          <h4 className="mt-1 font-display text-sm font-bold text-foreground line-clamp-2 group-hover:text-primary transition-colors">
+                            {rel.title}
+                          </h4>
+                          <p className="mt-1 text-xs text-muted-foreground line-clamp-2">
+                            {rel.description}
+                          </p>
+                        </div>
+                        <div className="mt-4 flex items-center justify-between text-xs text-muted-foreground pt-2 border-t border-border/50">
+                          <span>{rel.durationHours} Hours</span>
+                          <span className="text-primary font-semibold group-hover:underline">Explore</span>
+                        </div>
+                      </Link>
+                    ))}
+                  </div>
+                </section>
+              )}
             </div>
           )}
 
@@ -552,32 +619,53 @@ export function CourseDetailClient({
                     {course.estimated_hours} Hours total
                   </p>
                 </div>
-                <Button
-                  size="sm"
-                  variant="outline"
-                  onClick={downloadSyllabus}
-                  className="text-xs gap-1.5"
-                >
-                  <Download className="size-3.5" />
-                  Download Syllabus (PDF/TXT)
-                </Button>
+                <div className="flex items-center gap-2">
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    onClick={() => {
+                      const allCollapsed = Object.values(collapsedSections).filter(Boolean).length === course.syllabus.length;
+                      toggleAllSections(!allCollapsed);
+                    }}
+                    className="text-xs"
+                  >
+                    {Object.values(collapsedSections).filter(Boolean).length === course.syllabus.length
+                      ? "Expand All"
+                      : "Collapse All"}
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={downloadSyllabus}
+                    className="text-xs gap-1.5"
+                  >
+                    <Download className="size-3.5" />
+                    Download Syllabus
+                  </Button>
+                </div>
               </div>
 
-              <div className="space-y-4">
+              <div className="space-y-3">
                 {course.syllabus.map((section, si) => {
+                  const isCollapsed = Boolean(collapsedSections[section.id]);
                   const sectionCompleted = section.lessons.filter(
                     (l) => completedSet.has(l.id),
                   ).length;
                   return (
-                    <div key={section.id} className="rounded-xl border border-border bg-card overflow-hidden shadow-sm">
-                      {/* Section Header */}
-                      <div className="flex items-center justify-between bg-surface-1/80 border-b border-border/60 p-4 sm:p-5">
-                        <div className="flex items-center gap-3">
-                          <span className="grid size-7 place-items-center rounded-lg bg-primary/10 text-primary text-xs font-bold font-mono">
+                    <div key={section.id} className="rounded-xl border border-border bg-card overflow-hidden shadow-xs">
+                      {/* Collapsible Section Header */}
+                      <button
+                        type="button"
+                        onClick={() => toggleSection(section.id)}
+                        className="w-full flex items-center justify-between bg-surface-1/80 border-b border-border/60 p-4 text-left transition-colors hover:bg-surface-2"
+                        aria-expanded={!isCollapsed}
+                      >
+                        <div className="flex items-center gap-3 min-w-0">
+                          <span className="grid size-7 place-items-center rounded-lg bg-secondary text-foreground text-xs font-bold font-mono shrink-0">
                             {String(si + 1).padStart(2, "0")}
                           </span>
-                          <div>
-                            <h4 className="font-semibold text-foreground text-sm sm:text-base">
+                          <div className="min-w-0">
+                            <h4 className="font-semibold text-foreground text-sm truncate">
                               {section.title}
                             </h4>
                             <p className="text-xs text-muted-foreground mt-0.5">
@@ -586,35 +674,44 @@ export function CourseDetailClient({
                           </div>
                         </div>
 
-                        {enrollment && sectionCompleted > 0 && (
-                          <Badge variant="outline" className="border-primary/30 bg-primary/10 text-primary text-xs font-semibold">
-                            {sectionCompleted} / {section.lessons.length} Completed
-                          </Badge>
-                        )}
-                      </div>
+                        <div className="flex items-center gap-2.5 shrink-0 ml-3">
+                          {enrollment && sectionCompleted > 0 && (
+                            <Badge variant="outline" className="border-border bg-secondary text-foreground text-xs font-semibold">
+                              {sectionCompleted} / {section.lessons.length} Completed
+                            </Badge>
+                          )}
+                          {isCollapsed ? (
+                            <ChevronDown className="size-4 text-muted-foreground" />
+                          ) : (
+                            <ChevronUp className="size-4 text-muted-foreground" />
+                          )}
+                        </div>
+                      </button>
 
                       {/* Section Lessons */}
-                      <div className="p-2 space-y-1">
-                        {section.lessons.map((lesson, li) => (
-                          <LessonRow
-                            key={lesson.id}
-                            lesson={lesson}
-                            index={li}
-                            completed={completedSet.has(lesson.id)}
-                            onPreview={
-                              lesson.isPreview
-                                ? () => {
-                                    if (enrollment) {
-                                      window.location.href = `/courses/${course.id}/learn`;
-                                    } else {
-                                      toast.info(`Previewing: ${lesson.title}`);
+                      {!isCollapsed && (
+                        <div className="p-2 space-y-1">
+                          {section.lessons.map((lesson, li) => (
+                            <LessonRow
+                              key={lesson.id}
+                              lesson={lesson}
+                              index={li}
+                              completed={completedSet.has(lesson.id)}
+                              onPreview={
+                                lesson.isPreview
+                                  ? () => {
+                                      if (enrollment) {
+                                        window.location.href = `/courses/${course.id}/learn`;
+                                      } else {
+                                        toast.info(`Previewing: ${lesson.title}`);
+                                      }
                                     }
-                                  }
-                                : undefined
-                            }
-                          />
-                        ))}
-                      </div>
+                                  : undefined
+                              }
+                            />
+                          ))}
+                        </div>
+                      )}
                     </div>
                   );
                 })}
@@ -625,12 +722,10 @@ export function CourseDetailClient({
           {/* TAB CONTENT 3: DIGITAL BADGE & CREDENTIAL */}
           {activeTab === "badge" && (
             <div className="space-y-6 animate-in fade-in duration-200">
-              <div className="rounded-2xl border border-border bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 p-6 sm:p-8 text-white relative overflow-hidden">
-                <div className="absolute top-0 right-0 w-64 h-64 bg-primary/15 rounded-full blur-3xl pointer-events-none" />
-
+              <div className="rounded-xl border border-neutral-800 bg-neutral-900 p-6 sm:p-8 text-white relative overflow-hidden">
                 <div className="relative z-10 grid md:grid-cols-[220px_1fr] gap-6 items-center">
                   {/* Hexagon Graphic Preview */}
-                  <div className="flex flex-col items-center justify-center p-4 rounded-xl bg-slate-900/90 border border-slate-800">
+                  <div className="flex flex-col items-center justify-center p-4 rounded-xl bg-neutral-950 border border-neutral-800">
                     <div className="w-36 h-40 flex items-center justify-center">
                       <DigitalBadgeMedallion
                         category={course.category}
@@ -707,14 +802,14 @@ export function CourseDetailClient({
           {/* TAB CONTENT 4: INSTRUCTOR & ACCREDITATION */}
           {activeTab === "instructor" && (
             <div className="space-y-6 animate-in fade-in duration-200">
-              <div className="rounded-2xl border border-border bg-card p-6 sm:p-8 space-y-4">
+              <div className="rounded-xl border border-border bg-card p-6 sm:p-8 space-y-4">
                 <div className="flex items-start gap-4">
-                  <div className="grid size-16 shrink-0 place-items-center rounded-2xl bg-gradient-to-br from-primary to-primary-hover text-primary-foreground font-bold text-2xl shadow">
+                  <div className="grid size-14 shrink-0 place-items-center rounded-xl bg-neutral-900 border border-neutral-800 text-white font-bold text-xl shadow-xs">
                     {course.instructor.display_name.charAt(0)}
                   </div>
                   <div>
                     <div className="flex items-center gap-2">
-                      <h3 className="font-display text-xl font-bold text-foreground">
+                      <h3 className="font-display text-lg font-bold text-foreground">
                         {course.instructor.display_name}
                       </h3>
                       <ShieldCheck className="size-4 text-primary" />

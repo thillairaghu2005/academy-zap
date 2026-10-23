@@ -6,31 +6,32 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
 import {
   ArrowRight,
-  Clock3,
+  BookOpen,
+  ChevronLeft,
+  ChevronRight,
+  Compass,
+  Filter,
   GraduationCap,
   PlayCircle,
+  RotateCcw,
   Search,
   SearchX,
-  Sparkles,
-  ShieldCheck,
+  X,
 } from "lucide-react";
 
 import type { MarketplaceCourse } from "@/lib/mocks/marketplace";
 import {
-  MARKETPLACE_CATEGORIES,
-  MARKETPLACE_COLLECTIONS,
   MARKETPLACE_COURSES,
-  resolveCollection,
 } from "@/lib/mocks/marketplace";
 import { listMyLearning } from "@/lib/data/demo/content";
 import { useSession } from "@/components/providers/session-provider";
 import { useCartQuery } from "@/components/commerce/cart-query";
-import { CourseRail } from "@/components/courses/marketplace/course-rail";
 import { CourseCard } from "@/components/courses/marketplace/course-card";
-import { CourseThumbnail } from "@/components/courses/marketplace/course-thumbnail";
-import { EnterpriseFilterRail } from "@/components/courses/marketplace/enterprise-filter-rail";
 import {
-  CourseHoverPreviewProvider,
+  EnterpriseFilterRail,
+  type EnterpriseFilterState,
+} from "@/components/courses/marketplace/enterprise-filter-rail";
+import {
   MarketplaceStateProvider,
   type MarketplaceState,
 } from "@/components/courses/marketplace/hover-preview";
@@ -43,46 +44,53 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
 import { cn } from "@/lib/utils";
 
 /**
- * Courses marketplace (Udemy-style) — the interactive composition behind
- * app/(app)/courses/page.tsx.
+ * Zapsters Academy Course Discovery & Catalog.
  *
- * Two modes driven entirely by URL state:
- * - Browse (default): merchandised hero + "continue learning" strip +
- *   curated collection rails with floating hover previews.
- * - Results (any ?q/?category/?level/?price present): filter toolbar +
- *   responsive card grid.
+ * Modeled after AWS Skill Builder and IBM SkillsBuild:
+ * - Enterprise header with search and domain shortcuts
+ * - Active "Continue Learning" strip for enrolled learners
+ * - Faceted filter rail with domain, skill level, format, duration, credential, and price
+ * - Active filter chips with individual dismiss and clear-all
+ * - 10-point information hierarchy course cards in responsive grid
+ * - Pagination controls supporting full catalog exploration
+ * - Restrained, monochromatic design system (Geist & Inter)
  */
 
 const SORT_OPTIONS = [
   { value: "popular", label: "Most popular" },
   { value: "rating", label: "Highest rated" },
   { value: "newest", label: "Newest" },
-  { value: "price-asc", label: "Price: low to high" },
-  { value: "price-desc", label: "Price: high to low" },
+  { value: "title-asc", label: "Title: A to Z" },
+  { value: "duration-asc", label: "Duration: Shortest" },
+  { value: "duration-desc", label: "Duration: Longest" },
+  { value: "price-asc", label: "Price: Low to high" },
 ] as const;
 
 type SortKey = (typeof SORT_OPTIONS)[number]["value"];
-type LevelFilter = "all" | "beginner" | "intermediate" | "advanced" | "expert";
+type LevelFilter = "all" | "beginner" | "intermediate" | "advanced";
 type PriceFilter = "all" | "free" | "paid";
 
-const LEVELS: { value: LevelFilter; label: string }[] = [
-  { value: "all", label: "All levels" },
-  { value: "beginner", label: "Beginner" },
-  { value: "intermediate", label: "Intermediate" },
-  { value: "advanced", label: "Advanced" },
-  { value: "expert", label: "Expert" },
+const DOMAIN_SHORTCUTS = [
+  { value: "all", label: "All Domains" },
+  { value: "Cloud & DevOps", label: "Cloud & Infrastructure" },
+  { value: "Cybersecurity", label: "Cyber Defense" },
+  { value: "AI & ML", label: "AI & Machine Learning" },
+  { value: "Systems", label: "Systems Architecture" },
+  { value: "Web Development", label: "Full-Stack Web" },
 ];
 
-const PRICE_OPTIONS: { value: PriceFilter; label: string }[] = [
-  { value: "all", label: "All" },
-  { value: "free", label: "Free" },
-  { value: "paid", label: "Paid" },
-];
-
-const CATEGORY_CHIPS = MARKETPLACE_CATEGORIES.filter((c) => c !== "All").slice(0, 5);
+const COURSES_PER_PAGE = 12;
 
 export function MarketplaceClient() {
   const router = useRouter();
@@ -90,6 +98,8 @@ export function MarketplaceClient() {
   const searchParams = useSearchParams();
   const { user } = useSession();
   const userId = user?.id ?? "";
+
+  const [mobileFilterOpen, setMobileFilterOpen] = React.useState(false);
 
   const cartQuery = useCartQuery(userId);
   const learningQuery = useQuery({
@@ -133,7 +143,7 @@ export function MarketplaceClient() {
     return (learningQuery.data ?? [])
       .filter((item) => item.enrollment.status === "active")
       .sort((a, b) => b.enrollment.updated_at.localeCompare(a.enrollment.updated_at))
-      .slice(0, 8)
+      .slice(0, 4)
       .map((item) => {
         const course = courses.find((c) => c.id === item.enrollment.course_id);
         if (!course) return null;
@@ -145,7 +155,6 @@ export function MarketplaceClient() {
   /* URL-synced filters --------------------------------------------------- */
 
   const rawQ = searchParams.get("q")?.trim() ?? "";
-  // "All" is the display label; "all" is the URL sentinel — accept both.
   const rawCategory = searchParams.get("category");
   const category = !rawCategory || rawCategory === "All" ? "all" : rawCategory;
   const level = parseLevel(searchParams.get("level"));
@@ -154,15 +163,15 @@ export function MarketplaceClient() {
   const hasBadge = searchParams.get("badge") === "true";
   const format = searchParams.get("format") ?? "all";
   const duration = searchParams.get("duration") ?? "all";
+  const currentPage = Math.max(1, parseInt(searchParams.get("page") ?? "1", 10) || 1);
 
-  const isFiltering =
-    rawQ !== "" ||
-    category !== "all" ||
-    level !== "all" ||
-    price !== "all" ||
-    hasBadge ||
-    format !== "all" ||
-    duration !== "all";
+  const [searchInput, setSearchInput] = React.useState(rawQ);
+  const [prevQuery, setPrevQuery] = React.useState(rawQ);
+
+  if (rawQ !== prevQuery) {
+    setPrevQuery(rawQ);
+    setSearchInput(rawQ);
+  }
 
   const setParam = React.useCallback(
     (key: string, value: string, fallback: string) => {
@@ -172,6 +181,10 @@ export function MarketplaceClient() {
       } else {
         params.set(key, value);
       }
+      // Reset page to 1 when filters change (unless page itself is changing)
+      if (key !== "page") {
+        params.delete("page");
+      }
       const qs = params.toString();
       router.replace(qs ? `${pathname}?${qs}` : pathname, { scroll: false });
     },
@@ -180,35 +193,50 @@ export function MarketplaceClient() {
 
   const clearFilters = React.useCallback(() => {
     router.replace(pathname, { scroll: false });
+    setSearchInput("");
   }, [pathname, router]);
+
+  // Debounced search input sync
+  React.useEffect(() => {
+    if (searchInput.trim() === rawQ) return;
+    const timer = window.setTimeout(() => {
+      setParam("q", searchInput.trim(), "");
+    }, 250);
+    return () => window.clearTimeout(timer);
+  }, [rawQ, searchInput, setParam]);
+
+  /* Filtering & sorting -------------------------------------------------- */
 
   const results = React.useMemo(() => {
     let list = courses;
-    if (isFiltering) {
-      const needle = rawQ.toLowerCase();
-      list = list.filter((course) => {
-        if (category !== "all" && course.category !== category) return false;
-        if (level !== "all" && course.level !== level) return false;
-        if (price === "free" && !course.isFree) return false;
-        if (price === "paid" && course.isFree) return false;
-        if (hasBadge && !course.badge) return false;
+    const needle = rawQ.toLowerCase();
 
-        if (duration === "under-2" && course.durationHours >= 2) return false;
-        if (duration === "2-to-5" && (course.durationHours < 2 || course.durationHours > 5)) return false;
-        if (duration === "5-to-10" && (course.durationHours < 5 || course.durationHours > 10)) return false;
-        if (duration === "over-10" && course.durationHours <= 10) return false;
+    list = list.filter((course) => {
+      if (category !== "all") {
+        if (course.category.toLowerCase() !== category.toLowerCase()) return false;
+      }
+      if (level !== "all" && course.level !== level) return false;
+      if (price === "free" && !course.isFree) return false;
+      if (price === "paid" && course.isFree) return false;
+      if (hasBadge && !course.badge) return false;
 
-        if (format === "lab" && !course.title.toLowerCase().includes("lab") && !course.description.toLowerCase().includes("lab")) return false;
-        if (format === "exam" && !course.title.toLowerCase().includes("quiz") && !course.title.toLowerCase().includes("exam")) return false;
+      if (duration === "under-2" && course.durationHours >= 2) return false;
+      if (duration === "2-to-5" && (course.durationHours < 2 || course.durationHours > 5)) return false;
+      if (duration === "5-to-10" && (course.durationHours < 5 || course.durationHours > 10)) return false;
+      if (duration === "over-10" && course.durationHours <= 10) return false;
 
-        if (needle) {
-          const haystack =
-            `${course.title} ${course.description} ${course.instructor} ${course.category} ${course.subcategory}`.toLowerCase();
-          if (!haystack.includes(needle)) return false;
-        }
-        return true;
-      });
-    }
+      if (format === "lab" && course.type !== "lab" && !course.title.toLowerCase().includes("lab")) return false;
+      if (format === "digital" && course.type !== "video") return false;
+      if (format === "project" && course.type !== "project") return false;
+      if (format === "assessment" && course.type !== "assessment") return false;
+
+      if (needle) {
+        const haystack =
+          `${course.title} ${course.description} ${course.instructor} ${course.category} ${course.subcategory} ${(course.skills || []).join(" ")}`.toLowerCase();
+        if (!haystack.includes(needle)) return false;
+      }
+      return true;
+    });
 
     const sorted = [...list];
     switch (sort) {
@@ -218,260 +246,44 @@ export function MarketplaceClient() {
       case "newest":
         sorted.sort((a, b) => b.createdAt.localeCompare(a.createdAt));
         break;
+      case "title-asc":
+        sorted.sort((a, b) => a.title.localeCompare(b.title));
+        break;
+      case "duration-asc":
+        sorted.sort((a, b) => a.durationHours - b.durationHours);
+        break;
+      case "duration-desc":
+        sorted.sort((a, b) => b.durationHours - a.durationHours);
+        break;
       case "price-asc":
         sorted.sort((a, b) => a.priceCents - b.priceCents);
-        break;
-      case "price-desc":
-        sorted.sort((a, b) => b.priceCents - a.priceCents);
         break;
       default:
         sorted.sort((a, b) => b.studentCount - a.studentCount);
     }
     return sorted;
-  }, [category, courses, duration, format, hasBadge, isFiltering, level, price, rawQ, sort]);
+  }, [category, courses, duration, format, hasBadge, level, price, rawQ, sort]);
 
-  /* Render ---------------------------------------------------------------- */
+  // Category counts based on active search
+  const categoryCounts = React.useMemo(() => {
+    const counts: Record<string, number> = {};
+    for (const c of courses) {
+      counts[c.category] = (counts[c.category] || 0) + 1;
+    }
+    return counts;
+  }, [courses]);
 
-  return (
-    <MarketplaceStateProvider value={marketplaceState}>
-      <CourseHoverPreviewProvider>
-        <div className="mx-auto w-full max-w-7xl flex flex-col gap-8 px-4 pb-16 pt-6 sm:px-6 lg:px-8">
-          {isFiltering ? (
-            <ResultsView
-              results={results}
-              totalCount={courses.length}
-              q={rawQ}
-              category={category}
-              level={level}
-              price={price}
-              hasBadge={hasBadge}
-              format={format}
-              duration={duration}
-              sort={sort}
-              onSearch={setParam}
-              onSelect={setParam}
-              onClear={clearFilters}
-            />
-          ) : (
-            <>
-              <MarketplaceHero />
-              {continueLearning.length > 0 ? (
-                <ContinueLearningStrip entries={continueLearning} />
-              ) : null}
-              <div className="flex flex-col gap-12 sm:gap-16">
-                {MARKETPLACE_COLLECTIONS.map((collection) => (
-                  <CourseRail
-                    key={collection.id}
-                    title={collection.title}
-                    description={collection.subtitle}
-                    courses={resolveCollection(collection)}
-                  />
-                ))}
-              </div>
-            </>
-          )}
-        </div>
-      </CourseHoverPreviewProvider>
-    </MarketplaceStateProvider>
-  );
-}
-
-/* ------------------------------------------------------------------ */
-/*  Hero                                                               */
-/* ------------------------------------------------------------------ */
-
-function MarketplaceHero() {
-
-  return (
-    <section className="rounded-3xl border border-border bg-card">
-      <div className="flex flex-col items-center text-center gap-8 p-7 sm:p-10 lg:p-12">
-        <div className="max-w-2xl flex flex-col items-center gap-8 py-2">
-          <div>
-            <h1 className="font-display text-h1 font-semibold leading-none tracking-tight text-foreground">
-              Go beyond courses. <br className="hidden sm:inline" />
-              <span className="bg-gradient-to-r from-primary via-primary-deep to-primary bg-[length:200%_auto] bg-clip-text text-transparent animate-gradient-x">
-                Build expertise.
-              </span>
-            </h1>
-            <p className="mt-4 max-w-xl text-body leading-relaxed text-muted-foreground">
-              Master in-demand skills with expert-led learning, hands-on labs, and real-world challenges built to prepare you for what&apos;s next.
-            </p>
-          </div>
-
-          <div className="flex flex-wrap items-center justify-center gap-2">
-            <span className="text-caption font-medium uppercase tracking-[0.14em] text-muted-foreground">
-              Accredited Tracks:
-            </span>
-            <Button variant="secondary" size="sm" className="rounded-full border border-primary/20 bg-primary/10 text-primary hover:bg-primary/20" asChild>
-              <Link href="/learning-paths">Role Pathways</Link>
-            </Button>
-            <Button variant="secondary" size="sm" className="rounded-full border border-primary/20 bg-primary/10 text-primary hover:bg-primary/20" asChild>
-              <Link href="/courses?badge=true">Verifiable Badges</Link>
-            </Button>
-            {CATEGORY_CHIPS.map((chip) => (
-              <Button key={chip} variant="secondary" size="sm" className="rounded-full" asChild>
-                <Link href={`/courses?category=${encodeURIComponent(chip)}`}>{chip}</Link>
-              </Button>
-            ))}
-          </div>
-
-          <div className="flex flex-wrap items-center justify-center gap-x-8 gap-y-3 text-sm font-medium text-muted-foreground">
-            <span className="inline-flex items-center gap-2 text-foreground font-semibold">
-              <GraduationCap className="size-5 text-primary drop-shadow-sm" strokeWidth={2.5} aria-hidden="true" />
-              Zapsters Enterprise Framework
-            </span>
-            <span className="inline-flex items-center gap-2 text-foreground font-semibold">
-              <Sparkles className="size-5 text-primary drop-shadow-sm" strokeWidth={2.5} aria-hidden="true" />
-              Hands-on Sandboxes
-            </span>
-            <span className="inline-flex items-center gap-2 text-foreground font-semibold">
-              <ShieldCheck className="size-5 text-primary drop-shadow-sm" strokeWidth={2.5} aria-hidden="true" />
-              Credly Verifiable Badges
-            </span>
-          </div>
-        </div>
-
-
-
-      </div>
-    </section>
-  );
-}
-
-/* ------------------------------------------------------------------ */
-/*  Continue learning                                                  */
-/* ------------------------------------------------------------------ */
-
-function ContinueLearningStrip({
-  entries,
-}: {
-  entries: { course: MarketplaceCourse; progressPct: number }[];
-}) {
-  if (entries.length === 0) return null;
-
-  return (
-    <section aria-label="Continue learning" className="rounded-2xl border border-border bg-card p-5">
-      <div className="mb-3 flex items-center justify-between gap-4">
-        <h2 className="font-display text-h4 font-semibold tracking-tight text-foreground">
-          Continue learning
-        </h2>
-        <Button variant="ghost" size="sm" asChild>
-          <Link href="/my-learning">
-            My learning
-            <ArrowRight className="size-4" />
-          </Link>
-        </Button>
-      </div>
-
-      <div className="rail-scroll -mx-1 flex snap-x gap-3 overflow-x-auto px-1 pb-1">
-        {entries.map(({ course, progressPct }) => (
-          <div
-            key={course.id}
-            className="group/tile flex w-[320px] shrink-0 snap-start items-center gap-3 rounded-xl border border-border bg-background p-3 transition-[border-color,box-shadow] hover:border-border-strong hover:shadow-[0_10px_28px_rgb(17_24_39_/_0.12)]"
-          >
-            <Link
-              href={`/courses/${course.id}/learn`}
-              className="relative block w-24 shrink-0 overflow-hidden rounded-lg"
-              aria-label={`Resume ${course.title}`}
-            >
-              <div className="aspect-video">
-                <CourseThumbnail courseId={course.id} category={course.category} />
-              </div>
-              <span className="absolute inset-0 grid place-items-center bg-black/25 opacity-0 transition-opacity group-hover/tile:opacity-100">
-                <PlayCircle className="size-7 text-white drop-shadow" aria-hidden="true" />
-              </span>
-            </Link>
-
-            <div className="min-w-0 flex-1">
-              <h3 className="truncate text-small font-semibold text-foreground">{course.title}</h3>
-              <p className="mt-0.5 flex items-center gap-1 text-caption text-muted-foreground">
-                <Clock3 className="size-3" aria-hidden="true" />
-                {Math.max(course.durationHours - (course.durationHours * progressPct) / 100, 0.5).toFixed(1)}h
-                left · {progressPct}%
-              </p>
-              <div
-                className="mt-2 h-1.5 overflow-hidden rounded-full bg-muted"
-                role="progressbar"
-                aria-valuenow={progressPct}
-                aria-valuemin={0}
-                aria-valuemax={100}
-                aria-label={`${course.title} progress`}
-              >
-                <div
-                  className="h-full rounded-full transition-[width] bg-primary"
-                  style={{ width: `${progressPct}%` }}
-                />
-              </div>
-            </div>
-
-            <Button size="icon-sm" className="shrink-0 rounded-full" asChild>
-              <Link href={`/courses/${course.id}/learn`} aria-label={`Resume ${course.title}`}>
-                <PlayCircle className="size-4" />
-              </Link>
-            </Button>
-          </div>
-        ))}
-      </div>
-    </section>
-  );
-}
-
-/* ------------------------------------------------------------------ */
-/*  Results (filtered) view                                            */
-/* ------------------------------------------------------------------ */
-
-interface ResultsViewProps {
-  results: MarketplaceCourse[];
-  totalCount: number;
-  q: string;
-  category: string;
-  level: LevelFilter;
-  price: PriceFilter;
-  hasBadge: boolean;
-  format: string;
-  duration: string;
-  sort: SortKey;
-  onSearch: (key: string, value: string, fallback: string) => void;
-  onSelect: (key: string, value: string, fallback: string) => void;
-  onClear: () => void;
-}
-
-function ResultsView({
-  results,
-  totalCount,
-  q,
-  category,
-  level,
-  price,
-  hasBadge,
-  format,
-  duration,
-  sort,
-  onSearch,
-  onSelect,
-  onClear,
-}: ResultsViewProps) {
-  const [searchInput, setSearchInput] = React.useState(q);
-  const [prevQuery, setPrevQuery] = React.useState(q);
-
-  // Keep the field in sync with external URL changes (clear-all, back nav).
-  // Render-time adjustment — the documented alternative to setState-in-effect.
-  if (q !== prevQuery) {
-    setPrevQuery(q);
-    setSearchInput(q);
-  }
-
-  // Debounced commit so typing feels live without spamming history.
-  React.useEffect(() => {
-    if (searchInput.trim() === q) return;
-    const timer = window.setTimeout(() => {
-      onSearch("q", searchInput.trim(), "");
-    }, 250);
-    return () => window.clearTimeout(timer);
-  }, [onSearch, q, searchInput]);
+  // Pagination calculation
+  const totalCourses = results.length;
+  const totalPages = Math.max(1, Math.ceil(totalCourses / COURSES_PER_PAGE));
+  const safePage = Math.min(currentPage, totalPages);
+  const pagedCourses = React.useMemo(() => {
+    const start = (safePage - 1) * COURSES_PER_PAGE;
+    return results.slice(start, start + COURSES_PER_PAGE);
+  }, [results, safePage]);
 
   const hasActiveFilters =
-    q !== "" ||
+    rawQ !== "" ||
     category !== "all" ||
     level !== "all" ||
     price !== "all" ||
@@ -479,159 +291,449 @@ function ResultsView({
     format !== "all" ||
     duration !== "all";
 
-  return (
-    <div className="flex flex-col gap-6 pt-2">
-      <div className="grid grid-cols-1 lg:grid-cols-[280px_1fr] gap-8 items-start">
-        {/* Left: Zapsters Enterprise Faceted Filter Rail */}
-        <div className="sticky top-28 hidden lg:block">
-          <EnterpriseFilterRail
-            filters={{
-              domain: category,
-              format,
-              level,
-              hasBadge,
-              duration,
-              price,
-            }}
-            onFilterChange={(key, val) => {
-              if (key === "domain") onSelect("category", String(val), "all");
-              else if (key === "hasBadge") onSelect("badge", val ? "true" : "", "");
-              else onSelect(key, String(val), "all");
-            }}
-            onClearFilters={onClear}
-            totalResults={results.length}
-          />
-        </div>
+  const filterState: EnterpriseFilterState = {
+    domain: category,
+    format,
+    level,
+    hasBadge,
+    duration,
+    price,
+  };
 
-        {/* Right: Results Content Area */}
-        <div className="flex flex-col gap-5 min-w-0">
-          {/* Toolbar */}
-          <div className="flex flex-col gap-3 xl:flex-row xl:items-center">
-            <div className="relative w-full max-w-md flex-1">
+  const handleFilterChange = (key: keyof EnterpriseFilterState, val: string | boolean) => {
+    if (key === "domain") setParam("category", String(val), "all");
+    else if (key === "hasBadge") setParam("badge", val ? "true" : "", "");
+    else setParam(key, String(val), "all");
+  };
+
+  return (
+    <MarketplaceStateProvider value={marketplaceState}>
+      <div className="mx-auto w-full max-w-7xl flex flex-col gap-8 px-4 pb-20 pt-6 sm:px-6 lg:px-8">
+        {/* A. Page Header (Enterprise restrained layout) */}
+        <section aria-labelledby="catalog-heading" className="flex flex-col gap-6">
+          <div className="flex flex-col gap-2">
+            <div className="flex flex-wrap items-center justify-between gap-4">
+              <div>
+                <h1
+                  id="catalog-heading"
+                  className="font-display text-2xl font-bold tracking-tight text-foreground sm:text-3xl lg:text-4xl"
+                >
+                  Explore Courses
+                </h1>
+                <p className="mt-1.5 max-w-2xl text-sm text-muted-foreground leading-relaxed sm:text-base">
+                  Explore accredited engineering courses, interactive labs, and verified skill credentials across cloud, cyber defense, systems, and AI.
+                </p>
+              </div>
+
+              {/* Secondary Navigation shortcuts */}
+              <div className="flex items-center gap-2">
+                <Button variant="outline" size="sm" asChild>
+                  <Link href="/learning-paths" className="inline-flex items-center gap-1.5 text-xs font-semibold">
+                    <Compass className="size-3.5" aria-hidden="true" />
+                    Role Pathways
+                  </Link>
+                </Button>
+                {userId && (
+                  <Button variant="outline" size="sm" asChild>
+                    <Link href="/dashboard" className="inline-flex items-center gap-1.5 text-xs font-semibold">
+                      <GraduationCap className="size-3.5" aria-hidden="true" />
+                      My Learning
+                    </Link>
+                  </Button>
+                )}
+              </div>
+            </div>
+
+            {/* Prominent Search Bar */}
+            <div className="relative mt-4 w-full">
               <Search
-                className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground"
+                className="pointer-events-none absolute left-3.5 top-1/2 size-4 -translate-y-1/2 text-muted-foreground"
                 aria-hidden="true"
               />
               <Input
                 value={searchInput}
-                onChange={(event) => setSearchInput(event.target.value)}
-                placeholder="Search accredited courses & skills…"
+                onChange={(e) => setSearchInput(e.target.value)}
+                placeholder="Search courses by title, topic, skill, or instructor…"
                 aria-label="Search courses"
-                className="pl-9"
+                className="h-11 w-full pl-10 pr-10 text-sm bg-card border-border shadow-xs"
               />
+              {searchInput && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setSearchInput("");
+                    setParam("q", "", "");
+                  }}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                  aria-label="Clear search input"
+                >
+                  <X className="size-4" />
+                </button>
+              )}
             </div>
 
-            <div className="flex flex-wrap items-center gap-2">
-          <Select value={category === "all" ? "all" : category} onValueChange={(value) => onSelect("category", value, "all")}>
-            <SelectTrigger className="w-[180px]" aria-label="Filter by category">
-              <SelectValue placeholder="Category" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All categories</SelectItem>
-              {MARKETPLACE_CATEGORIES.filter((name) => name !== "All").map((name) => (
-                <SelectItem key={name} value={name}>
-                  {name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+            {/* Category Shortcuts / Quick Domain Tabs */}
+            <div className="flex items-center gap-1.5 overflow-x-auto pb-1 pt-1 -mx-1 px-1 text-xs">
+              {DOMAIN_SHORTCUTS.map((item) => {
+                const isSelected = category.toLowerCase() === item.value.toLowerCase();
+                return (
+                  <button
+                    key={item.value}
+                    type="button"
+                    onClick={() => setParam("category", item.value, "all")}
+                    className={cn(
+                      "shrink-0 rounded-full px-3.5 py-1.5 text-xs font-medium transition-colors border",
+                      isSelected
+                        ? "border-foreground bg-foreground text-background font-semibold"
+                        : "border-border bg-card text-muted-foreground hover:border-border-strong hover:text-foreground",
+                    )}
+                  >
+                    {item.label}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        </section>
 
-          <Select value={level} onValueChange={(value) => onSelect("level", value, "all")}>
-            <SelectTrigger className="w-[160px]" aria-label="Filter by level">
-              <SelectValue placeholder="Level" />
-            </SelectTrigger>
-            <SelectContent>
-              {LEVELS.map((option) => (
-                <SelectItem key={option.value} value={option.value}>
-                  {option.label}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-
-          <div
-            role="group"
-            aria-label="Filter by price"
-            className="flex items-center gap-0.5 rounded-lg border border-border bg-muted/60 p-0.5"
+        {/* Continue Learning Strip (if enrolled courses exist) */}
+        {continueLearning.length > 0 && !hasActiveFilters && (
+          <section
+            aria-label="Continue your in-progress courses"
+            className="rounded-xl border border-border bg-card p-5"
           >
-            {PRICE_OPTIONS.map((option) => (
-              <button
-                key={option.value}
-                type="button"
-                aria-pressed={price === option.value}
-                onClick={() => onSelect("price", option.value, "all")}
-                className={cn(
-                  "rounded-md px-3 py-1.5 text-caption font-medium transition-colors",
-                  price === option.value
-                    ? "bg-card text-foreground shadow-sm"
-                    : "text-muted-foreground hover:text-foreground",
-                )}
+            <div className="mb-3.5 flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <BookOpen className="size-4 text-foreground" aria-hidden="true" />
+                <h2 className="font-display text-sm font-bold tracking-tight text-foreground">
+                  In Progress ({continueLearning.length})
+                </h2>
+              </div>
+              <Link
+                href="/dashboard"
+                className="text-xs font-semibold text-primary hover:underline inline-flex items-center gap-1"
               >
-                {option.label}
-              </button>
-            ))}
+                All enrolled courses <ArrowRight className="size-3" />
+              </Link>
+            </div>
+
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
+              {continueLearning.map(({ course, progressPct }) => (
+                <div
+                  key={course.id}
+                  className="group flex flex-col justify-between rounded-lg border border-border/80 bg-surface-1 p-3.5 transition-colors hover:border-border-strong"
+                >
+                  <div className="space-y-1">
+                    <span className="text-[10px] font-mono uppercase tracking-wider text-muted-foreground">
+                      {course.category}
+                    </span>
+                    <h3 className="line-clamp-1 font-display text-xs font-bold text-foreground group-hover:text-primary transition-colors">
+                      {course.title}
+                    </h3>
+                  </div>
+
+                  <div className="mt-3 space-y-2">
+                    <div className="flex items-center justify-between text-[11px] text-muted-foreground">
+                      <span>{progressPct}% completed</span>
+                      <span className="font-medium text-foreground">{course.durationHours}h total</span>
+                    </div>
+                    <Button size="sm" variant="default" className="w-full text-xs h-7 font-semibold" asChild>
+                      <Link href={`/courses/${course.id}/learn`}>
+                        <PlayCircle className="size-3.5 mr-1" />
+                        Resume
+                      </Link>
+                    </Button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </section>
+        )}
+
+        {/* B. Course Discovery Controls & Catalog Grid */}
+        <div className="grid grid-cols-1 lg:grid-cols-[260px_1fr] gap-8 items-start">
+          {/* Desktop Filter Sidebar */}
+          <div className="sticky top-20 hidden lg:block">
+            <EnterpriseFilterRail
+              filters={filterState}
+              onFilterChange={handleFilterChange}
+              onClearFilters={clearFilters}
+              totalResults={courses.length}
+              categoryCounts={categoryCounts}
+            />
           </div>
 
-          <Select value={sort} onValueChange={(value) => onSelect("sort", value, "popular")}>
-            <SelectTrigger className="ml-auto w-[190px]" aria-label="Sort results">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent align="end">
-              {SORT_OPTIONS.map((option) => (
-                <SelectItem key={option.value} value={option.value}>
-                  {option.label}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+          {/* Catalog Main Content */}
+          <div className="flex flex-col gap-5 min-w-0">
+            {/* Discovery Control Toolbar */}
+            <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border/60 pb-3">
+              {/* Mobile Filter Sheet Trigger */}
+              <div className="lg:hidden">
+                <Sheet open={mobileFilterOpen} onOpenChange={setMobileFilterOpen}>
+                  <SheetTrigger asChild>
+                    <Button variant="outline" size="sm" className="gap-2 text-xs font-medium">
+                      <Filter className="size-3.5" />
+                      Filter Courses
+                      {hasActiveFilters && (
+                        <span className="size-2 rounded-full bg-primary" />
+                      )}
+                    </Button>
+                  </SheetTrigger>
+                  <SheetContent side="left" className="w-full max-w-xs p-5 overflow-y-auto">
+                    <SheetHeader className="mb-4 text-left">
+                      <SheetTitle className="font-display text-base">Filter Courses</SheetTitle>
+                      <SheetDescription className="text-xs">
+                        Refine results by domain, level, format, and duration.
+                      </SheetDescription>
+                    </SheetHeader>
+                    <EnterpriseFilterRail
+                      filters={filterState}
+                      onFilterChange={(k, v) => {
+                        handleFilterChange(k, v);
+                        setMobileFilterOpen(false);
+                      }}
+                      onClearFilters={() => {
+                        clearFilters();
+                        setMobileFilterOpen(false);
+                      }}
+                      totalResults={courses.length}
+                      categoryCounts={categoryCounts}
+                      className="border-0 p-0 shadow-none bg-transparent"
+                    />
+                  </SheetContent>
+                </Sheet>
+              </div>
 
-          {hasActiveFilters ? (
-            <Button variant="ghost" size="sm" onClick={onClear}>
-              Clear all
-            </Button>
-          ) : null}
-        </div>
-      </div>
+              {/* Course match count */}
+              <div className="text-xs text-muted-foreground" aria-live="polite">
+                {totalCourses === 0 ? (
+                  <span>No courses found</span>
+                ) : (
+                  <span>
+                    Showing{" "}
+                    <strong className="font-semibold text-foreground">
+                      {(safePage - 1) * COURSES_PER_PAGE + 1}–
+                      {Math.min(safePage * COURSES_PER_PAGE, totalCourses)}
+                    </strong>{" "}
+                    of <strong className="font-semibold text-foreground">{totalCourses}</strong> courses
+                    {rawQ && (
+                      <>
+                        {" "}
+                        matching &ldquo;<span className="text-foreground">{rawQ}</span>&rdquo;
+                      </>
+                    )}
+                  </span>
+                )}
+              </div>
 
-      <p className="text-small text-muted-foreground" aria-live="polite">
-        {results.length === 0
-          ? "No courses match your filters."
-          : `${results.length} of ${totalCount} course${totalCount === 1 ? "" : "s"}`}
-        {q ? (
-          <>
-            {" "}
-            for <span className="font-semibold text-foreground">&ldquo;{q}&rdquo;</span>
-          </>
-        ) : null}
-      </p>
-
-          {results.length === 0 ? (
-            <EmptyResults onClear={onClear} />
-          ) : (
-            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3">
-              {results.map((course) => (
-                <CourseCard key={course.id} course={course} className="flex-1" />
-              ))}
+              {/* Sort selector */}
+              <div className="flex items-center gap-2 ml-auto">
+                <span className="text-xs text-muted-foreground hidden sm:inline">Sort:</span>
+                <Select value={sort} onValueChange={(val) => setParam("sort", val, "popular")}>
+                  <SelectTrigger className="h-8 w-[170px] text-xs bg-card" aria-label="Sort courses">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent align="end">
+                    {SORT_OPTIONS.map((opt) => (
+                      <SelectItem key={opt.value} value={opt.value} className="text-xs">
+                        {opt.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
-          )}
+
+            {/* Active Filter Chips */}
+            {hasActiveFilters && (
+              <div className="flex flex-wrap items-center gap-2">
+                <span className="text-xs text-muted-foreground">Active:</span>
+
+                {rawQ && (
+                  <span className="inline-flex items-center gap-1 rounded-md bg-secondary px-2.5 py-1 text-xs text-foreground">
+                    Keyword: &ldquo;{rawQ}&rdquo;
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setSearchInput("");
+                        setParam("q", "", "");
+                      }}
+                      className="text-muted-foreground hover:text-foreground"
+                    >
+                      <X className="size-3" />
+                    </button>
+                  </span>
+                )}
+
+                {category !== "all" && (
+                  <span className="inline-flex items-center gap-1 rounded-md bg-secondary px-2.5 py-1 text-xs text-foreground">
+                    Domain: {category}
+                    <button
+                      type="button"
+                      onClick={() => setParam("category", "all", "all")}
+                      className="text-muted-foreground hover:text-foreground"
+                    >
+                      <X className="size-3" />
+                    </button>
+                  </span>
+                )}
+
+                {level !== "all" && (
+                  <span className="inline-flex items-center gap-1 rounded-md bg-secondary px-2.5 py-1 text-xs text-foreground capitalize">
+                    Level: {level}
+                    <button
+                      type="button"
+                      onClick={() => setParam("level", "all", "all")}
+                      className="text-muted-foreground hover:text-foreground"
+                    >
+                      <X className="size-3" />
+                    </button>
+                  </span>
+                )}
+
+                {format !== "all" && (
+                  <span className="inline-flex items-center gap-1 rounded-md bg-secondary px-2.5 py-1 text-xs text-foreground capitalize">
+                    Format: {format}
+                    <button
+                      type="button"
+                      onClick={() => setParam("format", "all", "all")}
+                      className="text-muted-foreground hover:text-foreground"
+                    >
+                      <X className="size-3" />
+                    </button>
+                  </span>
+                )}
+
+                {duration !== "all" && (
+                  <span className="inline-flex items-center gap-1 rounded-md bg-secondary px-2.5 py-1 text-xs text-foreground">
+                    Duration: {duration}
+                    <button
+                      type="button"
+                      onClick={() => setParam("duration", "all", "all")}
+                      className="text-muted-foreground hover:text-foreground"
+                    >
+                      <X className="size-3" />
+                    </button>
+                  </span>
+                )}
+
+                {hasBadge && (
+                  <span className="inline-flex items-center gap-1 rounded-md bg-secondary px-2.5 py-1 text-xs text-foreground">
+                    Verifiable Badge
+                    <button
+                      type="button"
+                      onClick={() => setParam("badge", "", "")}
+                      className="text-muted-foreground hover:text-foreground"
+                    >
+                      <X className="size-3" />
+                    </button>
+                  </span>
+                )}
+
+                {price !== "all" && (
+                  <span className="inline-flex items-center gap-1 rounded-md bg-secondary px-2.5 py-1 text-xs text-foreground capitalize">
+                    {price}
+                    <button
+                      type="button"
+                      onClick={() => setParam("price", "all", "all")}
+                      className="text-muted-foreground hover:text-foreground"
+                    >
+                      <X className="size-3" />
+                    </button>
+                  </span>
+                )}
+
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={clearFilters}
+                  className="h-6 px-2 text-xs text-muted-foreground hover:text-foreground"
+                >
+                  Clear all
+                </Button>
+              </div>
+            )}
+
+            {/* C & D. Course Cards Grid / Empty State */}
+            {results.length === 0 ? (
+              <div className="flex flex-col items-center gap-3 rounded-xl border border-dashed border-border bg-card/60 py-16 text-center">
+                <SearchX className="size-10 text-muted-foreground/60" aria-hidden="true" />
+                <h2 className="font-display text-base font-bold text-foreground">
+                  No courses match your criteria
+                </h2>
+                <p className="max-w-md text-xs text-muted-foreground leading-relaxed">
+                  Try broadening your search keywords or resetting some filters to explore our full curriculum of engineering and cloud courses.
+                </p>
+                <Button variant="outline" size="sm" onClick={clearFilters} className="mt-2 text-xs">
+                  <RotateCcw className="mr-1.5 size-3" />
+                  Clear all filters
+                </Button>
+              </div>
+            ) : (
+              <>
+                <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-3">
+                  {pagedCourses.map((course) => (
+                    <CourseCard key={course.id} course={course} />
+                  ))}
+                </div>
+
+                {/* Pagination Controls */}
+                {totalPages > 1 && (
+                  <nav
+                    aria-label="Catalog pagination"
+                    className="mt-8 flex flex-wrap items-center justify-between gap-4 border-t border-border/60 pt-6"
+                  >
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      disabled={safePage <= 1}
+                      onClick={() => setParam("page", String(safePage - 1), "1")}
+                      className="text-xs gap-1"
+                    >
+                      <ChevronLeft className="size-3.5" />
+                      Previous
+                    </Button>
+
+                    <div className="flex items-center gap-1 text-xs">
+                      {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => {
+                        const isCurrent = p === safePage;
+                        return (
+                          <button
+                            key={p}
+                            type="button"
+                            onClick={() => setParam("page", String(p), "1")}
+                            className={cn(
+                              "size-8 rounded-md text-xs font-medium transition-colors",
+                              isCurrent
+                                ? "bg-foreground text-background font-bold"
+                                : "text-muted-foreground hover:bg-secondary hover:text-foreground",
+                            )}
+                            aria-current={isCurrent ? "page" : undefined}
+                          >
+                            {p}
+                          </button>
+                        );
+                      })}
+                    </div>
+
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      disabled={safePage >= totalPages}
+                      onClick={() => setParam("page", String(safePage + 1), "1")}
+                      className="text-xs gap-1"
+                    >
+                      Next
+                      <ChevronRight className="size-3.5" />
+                    </Button>
+                  </nav>
+                )}
+              </>
+            )}
+          </div>
         </div>
       </div>
-    </div>
-  );
-}
-
-function EmptyResults({ onClear }: { onClear: () => void }) {
-  return (
-    <div className="flex flex-col items-center gap-3 rounded-2xl border border-dashed border-border bg-card/50 py-20 text-center">
-      <SearchX className="size-10 text-muted-foreground/60" aria-hidden="true" />
-      <h2 className="font-display text-h4 font-semibold text-foreground">No matching courses</h2>
-      <p className="max-w-sm text-small text-muted-foreground">
-        Try different keywords, or remove some filters to browse the full catalog.
-      </p>
-      <Button variant="outline" size="sm" onClick={onClear} className="mt-1">
-        Clear filters
-      </Button>
-    </div>
+    </MarketplaceStateProvider>
   );
 }
 
@@ -640,7 +742,9 @@ function EmptyResults({ onClear }: { onClear: () => void }) {
 /* ------------------------------------------------------------------ */
 
 function parseLevel(value: string | null): LevelFilter {
-  return LEVELS.some((l) => l.value === value) ? (value as LevelFilter) : "all";
+  return value === "beginner" || value === "intermediate" || value === "advanced"
+    ? value
+    : "all";
 }
 
 function parsePrice(value: string | null): PriceFilter {

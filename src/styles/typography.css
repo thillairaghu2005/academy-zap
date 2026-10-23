@@ -22,12 +22,12 @@
   --font-heading: "Geist Variable", "Geist", system-ui, sans-serif;
   --font-body: "Inter Variable", "Inter", system-ui, sans-serif;
   /*
-   * --font-mono-stack: monospace stack used by the IDE and code blocks.
-   * Geist Mono is not loaded here — the IDE loads its own Monaco stack.
-   * We fall through to system monospace rather than repurposing Inter.
+   * Strict two-font system:
+   * Primary: Geist (--font-heading)
+   * Secondary: Inter (--font-body)
+   * Fallback aliases ensure no third font family is ever loaded on the site.
    */
-  --font-mono: ui-monospace, "SFMono-Regular", "Consolas", "Liberation Mono",
-    "Menlo", monospace;
+  --font-mono: var(--font-body);
 
   /* ------------------------------------------------------------------ */
   /* Fluid type scale — clamp(min, fluid, max) so text breathes across   */
@@ -84,7 +84,8 @@
 @theme inline {
   --font-sans: var(--font-body);
   --font-display: var(--font-heading);
-  --font-mono: var(--font-mono);
+  --font-serif: var(--font-heading);
+  --font-mono: var(--font-body);
 
   /* Text utilities: each size carries its own line-height, weight, and
      letter-spacing so a single class sets the complete type role.       */
@@ -142,6 +143,15 @@ p,
 
 h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-heading);
+  font-weight: var(--fw-heading);
+}
+
+.font-display {
+  font-family: var(--font-heading);
+}
+
+.font-sans {
+  font-family: var(--font-body);
 }
 
 /* ------------------------------------------------------------------ */
@@ -153,4 +163,5 @@ h1, h2, h3, h4, h5, h6 {
 @layer utilities {
   .font-display.font-semibold { font-weight: 600; }
   .font-display.font-bold     { font-weight: 700; }
+  .font-display.font-extrabold { font-weight: 800; }
 }

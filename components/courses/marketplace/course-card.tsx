@@ -2,25 +2,30 @@
 
 import * as React from "react";
 import Link from "next/link";
+import { ArrowRight, CheckCircle2, Clock, PlayCircle } from "lucide-react";
 
 import type { MarketplaceCourse } from "@/lib/mocks/marketplace";
-import {
-  PriceDisplay,
-  useCourseActions,
-  useCourseHoverPreview,
-  useMarketplaceState,
-} from "@/components/courses/marketplace/hover-preview";
+import { useMarketplaceState } from "@/components/courses/marketplace/hover-preview";
+import { CourseThumbnail } from "@/components/courses/marketplace/course-thumbnail";
 import { Button } from "@/components/ui/button";
+import { Progress } from "@/components/ui/progress";
 import { cn } from "@/lib/utils";
 
 /**
- * Compact marketplace course card (Udemy-style rail tile).
+ * Enterprise Course Card.
  *
- * The whole card is a click target via a stretched link, while the action
- * buttons sit above it in stacking order so they remain real, focusable
- * buttons. Hovering schedules the floating preview; leaving revokes it.
- * All commerce state (in cart / enrolled) is read from page-level context
- * so a cart mutation re-renders every card consistently.
+ * Implements the 10-point information hierarchy required for Zapsters Academy,
+ * inspired by AWS Skill Builder and IBM SkillsBuild:
+ * 1. Restrained thumbnail or category visual
+ * 2. Course title
+ * 3. Short course description
+ * 4. Category or subject
+ * 5. Difficulty level
+ * 6. Course duration
+ * 7. Learning format
+ * 8. Instructor or provider
+ * 9. Enrollment or progress status
+ * 10. Clear action ("View Course", "Start Learning", or "Continue Learning")
  */
 
 export const CourseCard = React.memo(function CourseCard({
@@ -30,161 +35,171 @@ export const CourseCard = React.memo(function CourseCard({
   course: MarketplaceCourse;
   className?: string;
 }) {
-  const preview = useCourseHoverPreview();
   const { enrolledCourseIds } = useMarketplaceState();
-  const cardRef = React.useRef<HTMLDivElement | null>(null);
   const enrolled = enrolledCourseIds.has(course.id);
+  const progressPct = Math.round((course.progressPercent ?? 0) * 100);
+  const isCompleted = progressPct >= 100;
+
+  // Format label mapping
+  const formatLabel =
+    course.type === "lab"
+      ? "Hands-on Lab"
+      : course.type === "assessment"
+        ? "Skill Assessment"
+        : course.type === "project"
+          ? "Guided Project"
+          : "Digital Training";
+
+  // Level label
+  const levelLabel =
+    course.level === "advanced"
+      ? "Professional"
+      : course.level === "intermediate"
+        ? "Associate"
+        : "Foundational";
+
+  // Action destination and label
+  const targetUrl = enrolled ? `/courses/${course.id}/learn` : `/courses/${course.id}`;
+  const actionLabel = enrolled
+    ? isCompleted
+      ? "Review Course"
+      : progressPct > 0
+        ? "Continue Learning"
+        : "Start Learning"
+    : "View Course";
 
   return (
-    <div
-      ref={cardRef}
+    <article
       data-course-card={course.id}
-      onMouseEnter={() => {
-        if (cardRef.current) preview.schedule(course, cardRef.current);
-      }}
-      onMouseLeave={preview.revoke}
       className={cn(
-        "group relative flex h-full flex-col overflow-hidden rounded-xl border border-border bg-card p-5 sm:p-6 transition-[box-shadow,border-color] duration-150 ease-out",
-        "hover:border-border-strong hover:shadow-md",
-        "focus-within:border-ring focus-within:shadow-md",
+        "group relative flex h-full flex-col overflow-hidden rounded-xl border border-border bg-card shadow-sm transition-[border-color,box-shadow] duration-150 ease-out",
+        "hover:border-border-strong hover:shadow-md focus-within:border-ring focus-within:shadow-md",
         className,
       )}
     >
-      {/* Stretched link */}
-      <Link
-        href={enrolled ? `/courses/${course.id}/learn` : `/courses/${course.id}`}
-        aria-label={course.title}
-        className="absolute inset-0 z-0 rounded-xl focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-ring"
-      />
-
-      {/* Header track & format metadata */}
-      <div className="relative z-10 mb-3 flex items-center justify-between">
-        <span className="text-[11px] font-mono uppercase tracking-wider text-muted-foreground font-semibold truncate max-w-[170px]">
-          {course.category}
-        </span>
-        <span className="rounded-md border border-border/60 bg-surface-1 px-2 py-0.5 text-[10px] font-medium capitalize text-muted-foreground">
-          {course.type} track
-        </span>
+      {/* 1. Restrained thumbnail / category visual */}
+      <div className="relative aspect-[16/9] w-full overflow-hidden bg-neutral-900">
+        <CourseThumbnail courseId={course.id} category={course.category} />
       </div>
 
-      {/* Body */}
-      <div className="relative z-10 flex flex-1 flex-col">
-        <div className="mb-2 flex items-center justify-between gap-2">
-          <span className="text-xs font-semibold text-foreground/90 truncate max-w-[180px]">{course.instructor}</span>
-          <span className="text-[10px] text-muted-foreground/70 font-mono capitalize">{course.level}</span>
+      {/* Main card body with strictly aligned vertical layout */}
+      <div className="flex flex-1 flex-col p-5">
+        {/* 4 & 7. Category & Learning format */}
+        <div className="mb-2 flex items-center justify-between gap-2 text-[11px]">
+          <span className="font-mono text-xs font-semibold uppercase tracking-wider text-muted-foreground truncate">
+            {course.category}
+          </span>
+          <span className="shrink-0 rounded bg-secondary px-2 py-0.5 text-[10px] font-medium text-secondary-foreground">
+            {formatLabel}
+          </span>
         </div>
-        
-        <h3 className="mb-3 line-clamp-2 min-h-[2.6em] font-display text-base font-semibold leading-snug tracking-tight text-foreground group-hover:text-primary transition-colors">
-          {course.title}
+
+        {/* 2. Course title */}
+        <h3 className="line-clamp-2 min-h-[3rem] font-display text-base font-bold leading-snug tracking-tight text-foreground group-hover:text-primary transition-colors">
+          <Link
+            href={targetUrl}
+            className="outline-none focus-visible:underline"
+          >
+            {course.title}
+          </Link>
         </h3>
 
-        <div className="mb-4 flex flex-wrap items-center gap-1.5 text-[10px]">
-          <div className="rounded-md bg-surface-1 px-2.5 py-1 font-medium text-muted-foreground border border-border/50">
-             {course.durationHours}h estimated
-          </div>
-          {course.badge && (
-            <div className="rounded-md bg-surface-1 px-2.5 py-1 font-medium text-muted-foreground border border-border/50">
-               <span className="capitalize">{course.badge.toLowerCase()}</span>
+        {/* 3. Short course description */}
+        <p className="mt-1.5 line-clamp-2 text-xs leading-relaxed text-muted-foreground flex-1">
+          {course.description}
+        </p>
+
+        {/* 5, 6 & 8. Difficulty level, Duration, Instructor */}
+        <div className="mt-4 flex flex-wrap items-center gap-x-2.5 gap-y-1 text-xs text-muted-foreground border-t border-border/50 pt-3">
+          <span className="font-medium text-foreground">{levelLabel}</span>
+          <span className="text-border" aria-hidden="true">·</span>
+          <span className="inline-flex items-center gap-1">
+            <Clock className="size-3 text-muted-foreground" aria-hidden="true" />
+            {course.durationHours} Hours
+          </span>
+          <span className="text-border" aria-hidden="true">·</span>
+          <span className="truncate max-w-[140px] text-muted-foreground">
+            {course.instructor || "Zapsters Academy"}
+          </span>
+        </div>
+
+        {/* 9. Enrollment or progress status */}
+        <div className="mt-3.5 pt-1">
+          {enrolled ? (
+            <div className="space-y-1.5">
+              <div className="flex items-center justify-between text-xs">
+                {isCompleted ? (
+                  <span className="inline-flex items-center gap-1 font-semibold text-foreground">
+                    <CheckCircle2 className="size-3.5 text-primary" aria-hidden="true" />
+                    Completed
+                  </span>
+                ) : (
+                  <span className="text-muted-foreground">Progress</span>
+                )}
+                <span className="font-mono text-xs font-semibold tabular-nums text-foreground">
+                  {progressPct}%
+                </span>
+              </div>
+              <Progress
+                value={progressPct}
+                className="h-1.5 rounded-full bg-secondary"
+                indicatorClassName="bg-primary"
+              />
             </div>
-          )}
-          {course.isFree && !course.badge && (
-            <div className="rounded-md bg-surface-1 px-2.5 py-1 font-medium text-muted-foreground border border-border/50">
-               Free Access
+          ) : (
+            <div className="flex items-center justify-between text-xs text-muted-foreground">
+              <span>{course.isFree ? "Free Access" : `₹${(course.priceCents / 100).toLocaleString("en-IN")}`}</span>
+              {course.badge && (
+                <span className="text-[11px] font-medium text-foreground">
+                  Skill Credential
+                </span>
+              )}
             </div>
           )}
         </div>
-        
-        {/* Progress bar if enrolled */}
-        {enrolled && (
-          <div className="mb-4 flex items-center gap-2">
-            <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-muted">
-              <div
-                className="h-full bg-primary transition-all duration-300"
-                style={{ width: `${Math.round((course.progressPercent ?? 0) * 100)}%` }}
-              />
-            </div>
-            <span className="text-[11px] font-medium text-muted-foreground font-mono">
-              {Math.round((course.progressPercent ?? 0) * 100)}%
-            </span>
-          </div>
-        )}
-      </div>
 
-      {/* Footer */}
-      <div className="relative z-10 mt-auto flex items-end justify-between pt-3">
-         <div className="flex flex-col gap-0.5">
-            <PriceDisplay course={course} />
-            <span className="text-[11px] font-medium text-muted-foreground/70">
-              Rating: {course.rating.toFixed(1)} ({course.reviewCount.toLocaleString()})
-            </span>
-         </div>
-         <CardActions course={course} enrolled={enrolled} />
+        {/* 10. Clear primary action */}
+        <div className="mt-4 pt-2">
+          <Button
+            variant={enrolled ? "default" : "outline"}
+            size="sm"
+            className="w-full justify-center gap-1.5 font-semibold"
+            asChild
+          >
+            <Link href={targetUrl}>
+              {enrolled && <PlayCircle className="size-3.5" aria-hidden="true" />}
+              <span>{actionLabel}</span>
+              {!enrolled && <ArrowRight className="size-3.5" aria-hidden="true" />}
+            </Link>
+          </Button>
+        </div>
       </div>
-    </div>
+    </article>
   );
 });
 
-function CardActions({ course, enrolled }: { course: MarketplaceCourse; enrolled: boolean }) {
-  const actions = useCourseActions(course);
-  const isLoggedIn = !!actions.userId;
-
-  if (course.comingSoon) {
-    return (
-      <Button variant="secondary" size="sm" disabled className="h-9 px-5 rounded-lg text-xs font-semibold">
-        Coming soon
-      </Button>
-    );
-  }
-
-  if (!isLoggedIn) {
-    return (
-      <Button size="sm" className="h-9 px-5 rounded-lg text-xs font-semibold shadow-none bg-primary text-primary-foreground hover:bg-primary/90" asChild>
-        <Link href={`/login?callbackUrl=/courses/${course.id}`}>
-          Enroll
-        </Link>
-      </Button>
-    );
-  }
-
-  if (enrolled) {
-    const hasProgress = (course.progressPercent ?? 0) > 0;
-    return (
-      <Button size="sm" className="h-9 px-5 rounded-lg text-xs font-semibold shadow-none bg-primary text-primary-foreground hover:bg-primary/90" asChild>
-        <Link href={`/courses/${course.id}/learn`}>
-          {hasProgress ? "Resume" : "Start"}
-        </Link>
-      </Button>
-    );
-  }
-
-  return (
-    <Button size="sm" className="h-9 px-5 rounded-lg text-xs font-semibold shadow-none bg-primary text-primary-foreground hover:bg-primary/90" asChild>
-      <Link href={`/courses/${course.id}`}>
-        Enroll
-      </Link>
-    </Button>
-  );
-}
-
-/** Skeleton placeholder used while rails lazy-mount. */
+/** Skeleton placeholder used while catalog results load. */
 export function CourseCardSkeleton({ className }: { className?: string }) {
   return (
-    <div className={cn("flex h-[280px] flex-col overflow-hidden rounded-xl border border-border bg-card p-6", className)}>
-      <div className="mb-4 flex items-center justify-between">
-        <div className="size-10 animate-pulse rounded-full bg-muted" />
-        <div className="size-8 animate-pulse rounded-full bg-muted" />
-      </div>
-      <div className="flex flex-1 flex-col">
-        <div className="mb-2 h-3 w-1/3 animate-pulse rounded bg-muted" />
-        <div className="mb-4 h-5 w-4/5 animate-pulse rounded bg-muted" />
-        <div className="flex gap-2">
-          <div className="h-5 w-16 animate-pulse rounded bg-muted" />
-          <div className="h-5 w-12 animate-pulse rounded bg-muted" />
+    <div
+      className={cn(
+        "flex h-[420px] flex-col overflow-hidden rounded-xl border border-border bg-card",
+        className,
+      )}
+    >
+      <div className="aspect-[16/9] w-full bg-muted animate-pulse" />
+      <div className="flex flex-1 flex-col p-5 space-y-3">
+        <div className="flex justify-between">
+          <div className="h-3 w-24 bg-muted rounded animate-pulse" />
+          <div className="h-3 w-16 bg-muted rounded animate-pulse" />
         </div>
-      </div>
-      <div className="mt-auto flex items-end justify-between border-t border-border/60 pt-4">
-        <div className="h-6 w-16 animate-pulse rounded bg-muted" />
-        <div className="h-9 w-24 animate-pulse rounded-xl bg-muted" />
+        <div className="h-5 w-4/5 bg-muted rounded animate-pulse" />
+        <div className="h-3.5 w-full bg-muted rounded animate-pulse" />
+        <div className="h-3.5 w-2/3 bg-muted rounded animate-pulse" />
+        <div className="mt-auto space-y-2 pt-4 border-t border-border/50">
+          <div className="h-3 w-32 bg-muted rounded animate-pulse" />
+          <div className="h-8 w-full bg-muted rounded animate-pulse" />
+        </div>
       </div>
     </div>
   );

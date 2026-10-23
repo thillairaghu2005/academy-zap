@@ -57,7 +57,7 @@ export function Challenges() {
 
   return (
     <PageContainer className="pt-6 sm:pt-8 pb-16">
-      <div className="relative overflow-hidden rounded-xl border border-border/80 bg-gradient-to-br from-card via-background to-card p-6 sm:p-8 mb-8 shadow-sm">
+      <div className="relative overflow-hidden rounded-xl border border-border bg-card p-6 sm:p-8 mb-8 shadow-xs">
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
           <div className="max-w-2xl space-y-3">
             <div className="flex flex-wrap items-center gap-2">

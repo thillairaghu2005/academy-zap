@@ -19,7 +19,7 @@ export function SectionTitle({
   return (
     <div className={cn("flex flex-wrap items-end justify-between gap-4", className)}>
       <div className="max-w-2xl">
-        <h2 className="font-display font-light text-h1 tracking-tight">
+        <h2 className="font-display text-h1 tracking-tight">
           {title}
         </h2>
         {description ? (

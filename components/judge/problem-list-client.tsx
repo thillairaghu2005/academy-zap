@@ -292,9 +292,8 @@ export function ProblemListClient() {
 
       {/* 2. Hero Next Action + Stats Strip */}
       <section className="mb-14">
-        <Card className="relative overflow-hidden rounded-3xl border-primary/20 bg-primary/5 shadow-sm">
-          <div className="absolute right-0 top-0 h-full w-1/2 bg-gradient-to-l from-primary/10 to-transparent blur-3xl pointer-events-none" />
-          <div className="relative p-7 sm:p-10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-8">
+        <Card className="relative overflow-hidden rounded-xl border border-border bg-card shadow-xs">
+          <div className="relative p-6 sm:p-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-8">
             <div className="flex-1 min-w-0">
               <div className="inline-flex items-center gap-1.5 rounded-full border border-primary/20 bg-primary/10 px-3.5 py-1.5 text-[13px] font-semibold text-primary mb-5 shadow-sm">
                 <Target className="size-4" /> Your next challenge
@@ -366,8 +365,7 @@ export function ProblemListClient() {
         </h3>
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
           {/* Event Card 1 */}
-          <Card className="relative overflow-hidden group border-primary/20 bg-gradient-to-br from-surface-1 to-surface-2 shadow-sm hover:shadow-md transition-all">
-            <div className="absolute inset-0 bg-primary/5 opacity-0 group-hover:opacity-100 transition-opacity" />
+          <Card className="relative overflow-hidden group border border-border bg-card shadow-xs hover:border-border-strong transition-colors">
             <div className="p-6 relative z-10 flex flex-col h-full">
               <div className="flex justify-between items-start mb-4">
                 <div className="inline-flex items-center gap-1.5 rounded-md bg-primary/10 px-2.5 py-1 text-[11px] font-bold uppercase tracking-wider text-primary">
@@ -393,7 +391,7 @@ export function ProblemListClient() {
           </Card>
 
           {/* Event Card 2 */}
-          <Card className="relative overflow-hidden group border-border bg-gradient-to-br from-surface-1 to-surface-2 shadow-sm hover:shadow-md transition-all">
+          <Card className="relative overflow-hidden group border border-border bg-card shadow-xs hover:border-border-strong transition-colors">
             <div className="p-6 relative z-10 flex flex-col h-full">
               <div className="flex justify-between items-start mb-4">
                 <div className="inline-flex items-center gap-1.5 rounded-md bg-secondary px-2.5 py-1 text-[11px] font-bold uppercase tracking-wider text-secondary-foreground">
@@ -419,7 +417,7 @@ export function ProblemListClient() {
           </Card>
 
           {/* Event Card 3 */}
-          <Card className="relative overflow-hidden group border-border bg-gradient-to-br from-surface-1 to-surface-2 shadow-sm hover:shadow-md transition-all hidden lg:flex flex-col">
+          <Card className="relative overflow-hidden group border border-border bg-card shadow-xs hover:border-border-strong transition-colors hidden lg:flex flex-col">
             <div className="p-6 relative z-10 flex flex-col h-full">
               <div className="flex justify-between items-start mb-4">
                 <div className="inline-flex items-center gap-1.5 rounded-md border border-primary/40 bg-primary/10 px-2.5 py-1 text-[11px] font-bold uppercase tracking-wider text-primary">

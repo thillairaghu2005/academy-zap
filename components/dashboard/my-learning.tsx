@@ -17,7 +17,6 @@ import {
 
 import { listMyLearning, type MyLearningItem } from "@/lib/data/demo/content";
 import { useSession } from "@/components/providers/session-provider";
-import { hueForId } from "@/lib/visual";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -26,10 +25,6 @@ import { EmptyState } from "@/components/shared/empty-state";
 import { ErrorState } from "@/components/shared/error-state";
 import { cn } from "@/lib/utils";
 import { LearningInsights } from "@/components/dashboard/learning-insights";
-
-function coverGradient(hue: number): string {
-  return `linear-gradient(135deg, oklch(0.94 0.045 ${hue}), oklch(0.985 0.012 ${hue}))`;
-}
 
 function lessonCount(item: MyLearningItem): number {
   return item.course.total_lessons === 0
@@ -102,10 +97,7 @@ function ContinueLearning({ item }: { item: MyLearningItem }) {
   const ctaLabel = progress > 0 ? "Resume course" : "Start course";
 
   return (
-    <Card variant="glow" className="group relative overflow-hidden rounded-xl border-primary-border bg-primary-muted shadow-sm transition-[border-color,box-shadow] duration-200 hover:border-primary/30 hover:shadow-md">
-      <div className="pointer-events-none absolute -right-24 -top-28 size-72 rounded-full bg-primary/10 blur-3xl transition-opacity duration-300 group-hover:opacity-80" />
-      <div className="pointer-events-none absolute inset-y-0 right-0 hidden w-1/3 bg-primary-muted/60 lg:block" />
-
+    <Card className="group relative overflow-hidden rounded-xl border border-border bg-card shadow-xs transition-colors hover:border-border-strong">
       <div className="relative grid gap-7 p-5 sm:p-7 lg:grid-cols-[minmax(0,1fr)_minmax(250px,0.72fr)] lg:items-center lg:gap-12 lg:p-9">
         <div>
           <div className="flex flex-wrap items-center gap-2">
@@ -145,12 +137,12 @@ function ContinueLearning({ item }: { item: MyLearningItem }) {
             </div>
             <Progress
               value={progress}
-              className="h-2 rounded-full bg-primary/10"
-               indicatorClassName="bg-primary"
+              className="h-2 rounded-full bg-secondary"
+              indicatorClassName="bg-primary"
             />
           </div>
 
-          <Button className="mt-7 rounded-lg px-4 shadow-sm" asChild>
+          <Button className="mt-7 rounded-lg px-4 shadow-xs" asChild>
             <Link href={`/courses/${course.id}/learn`}>
               <Play className="size-4 fill-current" />
               {ctaLabel}
@@ -159,13 +151,12 @@ function ContinueLearning({ item }: { item: MyLearningItem }) {
           </Button>
         </div>
 
-        <div className="relative flex min-h-[180px] items-end overflow-hidden rounded-xl border border-primary/10 p-5 shadow-inner lg:min-h-[220px] lg:p-6" style={{ background: coverGradient(hueForId(course.id)) }}>
-          <div className="absolute inset-0 bg-primary-light/50" />
-          <div className="absolute right-5 top-5 rounded-md border border-primary/20 bg-card/90 px-2.5 py-1 text-xs font-medium text-foreground backdrop-blur-sm">
+        <div className="relative flex min-h-[180px] items-end overflow-hidden rounded-xl border border-border bg-surface-1 p-5 lg:min-h-[220px] lg:p-6">
+          <div className="absolute right-5 top-5 rounded-md border border-border bg-card px-2.5 py-1 text-xs font-medium text-foreground">
             {course.level} level
           </div>
           <div className="relative z-10">
-            <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-primary">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-foreground">
               Your next milestone
             </p>
             <p className="mt-2 max-w-[17rem] font-display text-lg font-semibold leading-snug text-foreground">
@@ -213,16 +204,16 @@ function LearningJourney({ items }: { items: MyLearningItem[] }) {
   ];
 
   return (
-    <Card variant="glass" className="mt-8 overflow-hidden rounded-xl p-5 sm:p-7">
+    <Card className="mt-8 overflow-hidden rounded-xl border border-border bg-card p-5 sm:p-7 shadow-xs">
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.14em] text-primary">Learning journey</p>
+          <p className="text-xs font-semibold uppercase tracking-[0.14em] text-foreground">Learning journey</p>
           <h3 className="mt-2 font-display text-2xl font-semibold tracking-[-0.035em]">Small steps, visible momentum.</h3>
           <p className="mt-2 max-w-xl text-sm leading-relaxed text-muted-foreground">The platform keeps the next action close. Follow the line, finish the work, and let each verified effort open the next door.</p>
         </div>
-        <div className="rounded-2xl bg-primary/5 px-4 py-3 text-right">
+        <div className="rounded-xl border border-border bg-surface-1 px-4 py-3 text-right">
           <p className="text-[11px] font-medium uppercase tracking-[0.1em] text-muted-foreground">Library average</p>
-          <p className="mt-1 font-display text-2xl font-semibold tabular-nums text-primary">{totalProgress}%</p>
+          <p className="mt-1 font-display text-2xl font-semibold tabular-nums text-foreground">{totalProgress}%</p>
         </div>
       </div>
 

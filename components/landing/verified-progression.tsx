@@ -7,7 +7,7 @@ export function VerifiedProgression() {
       <div className="grid gap-10 px-5 py-10 sm:px-8 sm:py-12 lg:grid-cols-[0.75fr_1.25fr] lg:items-center lg:px-12">
         <div>
           <p className="font-mono text-xs uppercase tracking-widest text-muted-foreground">F5 / ProgressContext</p>
-          <h2 className="mt-4 max-w-md font-display font-light text-h2 tracking-tight">
+          <h2 className="mt-4 max-w-md font-display text-h2 tracking-tight">
             Your rank is two tracks, not one score.
           </h2>
           <p className="mt-4 max-w-md text-sm leading-7 text-muted-foreground">

@@ -1074,12 +1074,12 @@ export function PlayerClient({ course }: { course: Course }) {
           )}
         >
           {/* Drawer Header with Course Code & Progress */}
-          <div className="bg-gradient-to-br from-primary-deep via-slate-950 to-slate-900 p-5 text-white border-b border-border/40">
+          <div className="bg-neutral-900 p-5 text-white border-b border-neutral-800">
             <div className="flex items-center justify-between">
-              <span className="text-[10px] font-bold uppercase tracking-widest text-primary-light font-mono">
+              <span className="text-[10px] font-bold uppercase tracking-widest text-neutral-300 font-mono">
                 {meta.courseCode}
               </span>
-              <span className="text-[11px] font-bold text-slate-300">
+              <span className="text-[11px] font-bold text-neutral-300">
                 {enrollment?.progress_pct ?? 0}% COMPLETED
               </span>
             </div>
@@ -1295,9 +1295,9 @@ export function PlayerClient({ course }: { course: Course }) {
                 /* QUIZ / FINAL ASSESSMENT VIEW */
                 isFinalAssessment && !areAllPriorModulesComplete ? (
                   /* Prerequisite locked gate for Final Assessment */
-                  <div className="rounded-2xl border border-primary/30 bg-gradient-to-r from-primary/10 via-primary/5 to-card p-6 sm:p-10 space-y-6 shadow-sm">
+                  <div className="rounded-xl border border-border bg-card p-6 sm:p-8 space-y-5 shadow-xs">
                     <div className="flex items-start gap-4">
-                      <ShieldCheck className="size-8 text-primary shrink-0 mt-1" />
+                      <ShieldCheck className="size-6 text-foreground shrink-0 mt-0.5" />
                       <div className="space-y-1.5 flex-1">
                         <Badge variant="outline" className="border-primary/30 bg-primary/10 text-primary text-xs font-semibold">
                           Prerequisite Gate · All Modules Required
@@ -1449,7 +1449,7 @@ export function PlayerClient({ course }: { course: Course }) {
 
               {/* Course Complete Milestone Banner */}
               {isCourseComplete && (
-                <div className="rounded-2xl border border-primary/30 bg-gradient-to-r from-primary/15 via-primary/5 to-card p-6 sm:p-8 space-y-4 shadow-md">
+                <div className="rounded-xl border border-border bg-card p-6 sm:p-8 space-y-4 shadow-xs">
                   <div className="flex items-start justify-between gap-4">
                     <div>
                       <Badge variant="outline" className="text-xs border-primary/30 bg-primary/20 text-primary font-bold mb-2">

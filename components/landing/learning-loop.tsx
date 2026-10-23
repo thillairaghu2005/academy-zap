@@ -57,7 +57,7 @@ export function LearningLoop() {
         <div className="flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
           <div>
             <h2
-              className="font-display font-light text-h2 tracking-[-0.03em]"
+              className="font-display text-h2 tracking-[-0.03em]"
             >Learn. Build. Climb.</h2>
           </div>
           <p className="max-w-xl text-sm leading-relaxed text-muted-foreground">
@@ -105,7 +105,7 @@ export function LearningLoop() {
                     </motion.div>
 
                     <h3
-                      className="mt-4 font-display font-light text-h3 tracking-[-0.02em]"
+                      className="mt-4 font-display text-h3 tracking-[-0.02em]"
                     >
                       {step.title}
                     </h3>

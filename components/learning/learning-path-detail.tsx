@@ -175,7 +175,7 @@ export function LearningPathDetail({ id: _id }: { id: string }) {
       </div>
 
       {/* Hero Overview */}
-      <div className="relative overflow-hidden rounded-3xl border border-border/70 bg-gradient-to-br from-card via-background to-card p-6 sm:p-8 mb-10 shadow-sm">
+      <div className="relative overflow-hidden rounded-xl border border-border bg-card p-6 sm:p-8 mb-8 shadow-xs">
         <div className="flex flex-col lg:flex-row lg:items-start justify-between gap-8">
           <div className="max-w-3xl space-y-4">
             <div className="flex flex-wrap items-center gap-2">

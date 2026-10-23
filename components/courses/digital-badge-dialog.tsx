@@ -142,12 +142,11 @@ export function DigitalBadgeDialog({
         <DialogTitle className="sr-only">Verifiable Digital Skill Credential</DialogTitle>
         <DialogDescription className="sr-only">View and verify your official digital skill badge and certificate.</DialogDescription>
         {/* Header Ribbon */}
-        <div className="bg-gradient-to-r from-slate-950 via-slate-900 to-primary-deep/80 p-6 text-white border-b border-border/40 relative overflow-hidden">
-          <div className="absolute top-0 right-0 w-80 h-80 bg-primary/15 rounded-full blur-3xl pointer-events-none" />
+        <div className="bg-neutral-900 p-6 text-white border-b border-neutral-800 relative overflow-hidden">
           <div className="relative z-10 flex flex-wrap items-center justify-between gap-4">
             <div className="flex items-center gap-3">
-              <div className="grid size-12 place-items-center rounded-xl bg-gradient-to-br from-primary to-primary-deep text-white font-bold shadow-lg shadow-primary/25">
-                <ShieldCheck className="size-6 text-white" />
+              <div className="grid size-11 place-items-center rounded-xl bg-neutral-800 border border-neutral-700 text-white font-bold shadow-xs">
+                <ShieldCheck className="size-5 text-primary" />
               </div>
               <div>
                 <div className="flex items-center gap-2">
@@ -199,9 +198,7 @@ export function DigitalBadgeDialog({
           <div className="p-6 sm:p-8 space-y-6">
             <div className="grid md:grid-cols-[280px_1fr] gap-8 items-center">
               {/* 3D Hexagonal Credly Medallion */}
-              <div className="flex flex-col items-center justify-center p-6 rounded-2xl bg-gradient-to-b from-slate-900 via-slate-950 to-slate-900 border border-slate-800 shadow-2xl relative group">
-                <div className="absolute -inset-1 rounded-3xl bg-gradient-to-r from-primary/20 via-primary-deep/20 to-primary/20 blur-xl opacity-60 group-hover:opacity-100 transition-opacity" />
-
+              <div className="flex flex-col items-center justify-center p-6 rounded-2xl bg-neutral-950 border border-neutral-800 shadow-md relative group">
                 {/* Hexagon SVG Medallion */}
                 <div className="relative z-10 w-52 h-60 flex items-center justify-center">
                   <DigitalBadgeMedallion
@@ -347,25 +344,22 @@ export function DigitalBadgeDialog({
             >
               {/* Background watermark */}
               <div className="absolute inset-0 opacity-10 bg-[radial-gradient(#e11d48_1px,transparent_1px)] [background-size:16px_16px] pointer-events-none" />
-              <div className="pointer-events-none absolute -right-20 -top-20 size-64 rounded-full bg-primary/20 blur-3xl" />
-              <div className="pointer-events-none absolute -bottom-20 -left-20 size-64 rounded-full bg-primary/15 blur-3xl" />
-
               <div className="relative z-10 space-y-6 max-w-xl mx-auto">
                 {/* Institution Heading */}
                 <div className="space-y-1">
-                  <p className="text-[11px] font-bold uppercase tracking-[0.3em] text-primary-light">
+                  <p className="text-[11px] font-bold uppercase tracking-[0.3em] text-neutral-300">
                     Zapsters Enterprise Academy
                   </p>
-                  <p className="text-[10px] text-slate-400 uppercase tracking-widest">
+                  <p className="text-[10px] text-neutral-400 uppercase tracking-widest">
                     Accredited by Zapsters Engineering Council &amp; Enterprise Standards
                   </p>
                 </div>
 
-                <div className="h-0.5 w-24 bg-gradient-to-r from-transparent via-primary to-transparent mx-auto" />
+                <div className="h-px w-24 bg-neutral-700 mx-auto" />
 
                 {/* Certificate Title */}
                 <div>
-                  <h3 className="font-serif text-3xl sm:text-4xl font-bold tracking-tight text-white">
+                  <h3 className="font-display text-3xl sm:text-4xl font-bold tracking-tight text-white">
                     Certificate of Competency
                   </h3>
                   <p className="text-xs text-slate-400 mt-1 uppercase tracking-wider">
@@ -410,22 +404,22 @@ export function DigitalBadgeDialog({
                 {/* Signatures & Seal */}
                 <div className="pt-6 flex items-end justify-between border-t border-slate-800 gap-4">
                   <div className="text-left">
-                    <p className="font-serif italic text-lg text-primary-light">Aris Thorne</p>
+                    <p className="font-display italic text-lg text-primary-light">Aris Thorne</p>
                     <div className="h-px w-32 bg-slate-700 my-1" />
                     <p className="text-[10px] font-medium text-slate-400">Dr. Aris Thorne</p>
                     <p className="text-[9px] text-slate-500">Director of Academic Affairs</p>
                   </div>
 
                   {/* Red/Crimson Seal Medallion */}
-                  <div className="grid size-16 place-items-center rounded-full border-2 border-primary bg-gradient-to-br from-primary to-primary-deep text-white font-bold shadow-lg shadow-primary/30">
+                  <div className="grid size-14 place-items-center rounded-full border-2 border-primary bg-primary text-primary-foreground font-bold shadow-md">
                     <div className="text-center">
-                      <Star className="size-4 mx-auto fill-white text-white" />
-                      <span className="text-[8px] font-black uppercase tracking-tighter block">VERIFIED</span>
+                      <Star className="size-3.5 mx-auto fill-current text-white" />
+                      <span className="text-[7px] font-black uppercase tracking-tighter block">VERIFIED</span>
                     </div>
                   </div>
 
                   <div className="text-right">
-                    <p className="font-serif italic text-lg text-primary-light">Priya Nair</p>
+                    <p className="font-display italic text-lg text-primary-light">Priya Nair</p>
                     <div className="h-px w-32 bg-slate-700 my-1 ml-auto" />
                     <p className="text-[10px] font-medium text-slate-400">Priya Nair</p>
                     <p className="text-[9px] text-slate-500">Lead Curriculum Architect</p>

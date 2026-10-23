@@ -110,7 +110,7 @@ The interface is engineered to adhere to strict institutional design principles:
 
 | Principle | Specification |
 |:---|:---|
-| **Typography System** | Strict two-font system. Primary: **Geist** (`--font-heading`) for titles, display, and CTAs. Secondary: **Inter** (`--font-body`) for body copy, data tables, and UI labels. Monospace code handled via native system stacks. |
+| **Typography System** | Strict two-font system. Primary: **Geist** (`--font-heading`) for titles, display, and CTAs with consistent scale and weights. Secondary: **Inter** (`--font-body`) for body copy, data tables, and UI labels with consistent body thickness. |
 | **Color System** | Built on perceptual OKLCH color spaces. High-contrast neutral surfaces (`surface-1`, `surface-2`, `surface-3`) with a single crimson brand accent (`#D92640`). |
 | **Monochrome Iconography** | Strictly unified Lucide icons. Eliminates arbitrary multi-color icons in favor of monochrome foreground, muted foreground, or primary brand tokens. |
 | **Clean Surfaces** | Removed artificial icon background boxes, divided border lines (`divide-y`), and blinking status dots. Icons and data points render cleanly and directly. |
