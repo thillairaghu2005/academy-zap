@@ -29,28 +29,28 @@ const STATUS_META = {
   verified: {
     label: "Verified credential",
     icon: BadgeCheck,
-    text: "text-success-strong",
-    ink: "text-success-on-dark",
-    ring: "border-success/40 bg-success/10",
+    text: "text-foreground",
+    ink: "text-foreground",
+    ring: "border-primary/40 bg-primary/10",
     art: "bg-primary",
     description: "This credential is valid and backed by an intact Zapsters ledger.",
   },
   flagged: {
     label: "Pending integrity review",
     icon: ShieldQuestion,
-    text: "text-warning-strong",
-    ink: "text-warning-on-dark",
-    ring: "border-warning/40 bg-warning/10",
-    art: "bg-warning",
+    text: "text-foreground",
+    ink: "text-foreground",
+    ring: "border-border bg-secondary",
+    art: "bg-muted",
     description: "Public trust is paused while the underlying activity is reviewed.",
   },
   revoked: {
     label: "Credential revoked",
     icon: BadgeX,
-    text: "text-primary",
-    ink: "text-primary-light",
-    ring: "border-primary-border bg-primary-muted",
-    art: "bg-primary-deep",
+    text: "text-muted-foreground",
+    ink: "text-muted-foreground",
+    ring: "border-border bg-secondary",
+    art: "bg-muted",
     description: "This credential no longer certifies the underlying achievement.",
   },
 } as const;
@@ -203,9 +203,7 @@ export function VerifyClient({ credentialId }: { credentialId: string }) {
 
         <footer className="grid gap-5 border-t border-border bg-secondary/20 px-5 py-5 sm:grid-cols-[1fr_auto] sm:items-center sm:px-8">
           <div className="flex items-center gap-3">
-            <div className="grid size-10 place-items-center rounded-xl border border-primary/20 bg-primary/10 text-primary">
-              <ShieldCheck className="size-5" />
-            </div>
+            <ShieldCheck className="size-6 text-primary shrink-0" />
             <div>
               <p className="text-sm font-semibold">Issued and verified by Zapsters</p>
               <p className="mt-0.5 text-xs text-muted-foreground">Independent re-verification against current ledger truth</p>

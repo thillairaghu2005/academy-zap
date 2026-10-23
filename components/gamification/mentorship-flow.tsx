@@ -38,12 +38,10 @@ export function MentorshipFlow() {
 
   if (step === "completed") {
     return (
-      <Card className="p-8 flex flex-col items-center justify-center text-center gap-4 bg-success/5 border-success/20">
-        <div className="rounded-full bg-success/20 p-4 text-success-strong">
-          <CheckCircle2 className="size-10" />
-        </div>
+      <Card className="p-8 flex flex-col items-center justify-center text-center gap-4 border-border bg-card">
+        <CheckCircle2 className="size-12 text-primary" />
         <div>
-          <h3 className="text-xl font-bold text-success-strong">Session Complete!</h3>
+          <h3 className="text-xl font-bold font-display text-foreground">Session Complete!</h3>
           <p className="mt-2 text-muted-foreground">You and your mentor both earned 250 XP.</p>
         </div>
         <Button onClick={() => setStep("find")} variant="outline" className="mt-4">Find another mentor</Button>
@@ -63,12 +61,12 @@ export function MentorshipFlow() {
             <h3 className="font-bold text-lg">{selectedMentor?.name}</h3>
             <p className="text-sm text-muted-foreground">{selectedMentor?.rank}</p>
           </div>
-          <Badge className="bg-success text-success-foreground hover:bg-success">Active Session</Badge>
+          <Badge variant="outline" className="border-primary/30 text-primary">Active Session</Badge>
         </div>
         
         {step === "matched" ? (
           <div className="flex flex-col gap-4 items-center justify-center py-4">
-             <MessageSquare className="size-12 text-primary/40 animate-pulse" />
+             <MessageSquare className="size-12 text-primary/40" />
              <p className="text-center text-sm font-medium">Your mentor is ready. Jump into the chat or video call.</p>
              <Button onClick={() => setStep("session")} className="w-full sm:w-auto">Start Session <ArrowRight className="size-4 ml-2"/></Button>
           </div>
@@ -114,7 +112,7 @@ export function MentorshipFlow() {
             </div>
             <div className="mt-5 flex items-center justify-between border-t border-border pt-4">
                <div className="flex items-center gap-1 text-sm font-medium">
-                 <Star className="size-4 text-warning fill-warning" />
+                 <Star className="size-4 text-primary fill-primary" />
                  {mentor.rating}
                </div>
                <Button size="sm" onClick={() => handleMatch(mentor)} disabled={step === "matching"}>

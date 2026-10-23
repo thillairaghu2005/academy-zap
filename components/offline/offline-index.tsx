@@ -58,12 +58,12 @@ export function OfflineIndex() {
       <p className="flex items-center gap-2 font-display text-h1">
         {online ? (
           <>
-            <WifiOff className="size-8 text-warning-strong" />
+            <WifiOff className="size-8 text-primary" />
             Offline reading
           </>
         ) : (
           <>
-            <WifiOff className="size-8 text-warning-strong" />
+            <WifiOff className="size-8 text-primary" />
             You are offline
           </>
         )}
@@ -107,9 +107,7 @@ export function OfflineIndex() {
                 key={course.course_id}
                 className="flex items-center gap-3 rounded-2xl border border-border bg-card px-4 py-3"
               >
-                <span className="grid size-9 shrink-0 place-items-center rounded-lg bg-primary/10 text-primary">
-                  <Download className="size-4" />
-                </span>
+                <Download className="size-5 shrink-0 text-primary" />
                   <span className="min-w-0 flex-1">
                    <span className="block truncate text-sm font-medium">
                      {course.title}

@@ -7,29 +7,22 @@ import { cva } from "class-variance-authority";
  * (e.g. to compute a className for a non-React context).
  */
 export const badgeVariants = cva(
-  "inline-flex w-fit shrink-0 items-center justify-center gap-1 overflow-hidden whitespace-nowrap rounded-full border px-2.5 py-1 text-caption font-semibold transition-colors [&>svg]:pointer-events-none [&>svg]:size-3 [&>svg]:shrink-0",
+  "inline-flex w-fit shrink-0 items-center justify-center gap-1 overflow-hidden whitespace-nowrap rounded-md border px-2 py-0.5 text-caption font-medium transition-colors [&>svg]:pointer-events-none [&>svg]:size-3 [&>svg]:shrink-0",
   {
     variants: {
       variant: {
-         default: "border-primary-border bg-primary-light text-primary",
-        secondary: "border-transparent bg-secondary text-secondary-foreground",
-        destructive:
-          "border-transparent bg-destructive text-destructive-foreground",
+        default: "border-border bg-secondary text-foreground font-medium",
+        secondary: "border-border bg-secondary text-secondary-foreground",
+        destructive: "border-border bg-secondary text-foreground",
         outline: "border-border text-foreground",
-        // Small text on white cards needs the darker -strong shade for WCAG AA.
-        success: "border-transparent bg-success/10 text-success-strong",
-        warning: "border-transparent bg-warning/10 text-warning-strong",
-        info: "border-transparent bg-info/10 text-info-strong",
-        // Verdict literals (F2) — styled distinctly, used verbatim
-        accepted: "border-transparent bg-verdict-accepted/10 text-success-strong",
-        "wrong-answer":
-          "border-transparent bg-verdict-wrong-answer/10 text-danger-strong",
-        "time-limit-exceeded":
-          "border-transparent bg-verdict-time-limit-exceeded/10 text-warning-strong",
-        "runtime-error":
-          "border-transparent bg-verdict-runtime-error/10 text-danger-strong",
-        "compile-error":
-          "border-transparent bg-verdict-compile-error/10 text-muted-foreground",
+        success: "border-border bg-secondary text-foreground",
+        warning: "border-border bg-secondary text-foreground",
+        info: "border-border bg-secondary text-foreground",
+        accepted: "border-border bg-secondary text-foreground font-semibold",
+        "wrong-answer": "border-border bg-secondary text-foreground font-semibold",
+        "time-limit-exceeded": "border-border bg-secondary text-foreground",
+        "runtime-error": "border-border bg-secondary text-foreground",
+        "compile-error": "border-border bg-secondary text-muted-foreground",
       },
     },
     defaultVariants: {

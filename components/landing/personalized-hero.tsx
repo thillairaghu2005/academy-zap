@@ -47,10 +47,7 @@ export function PersonalizedHero() {
       <div className="relative mx-auto grid max-w-7xl gap-8 px-4 py-12 sm:px-6 sm:py-16 lg:grid-cols-[1fr_1.15fr] lg:items-center lg:gap-16 lg:px-8 lg:py-20">
         <div className="max-w-2xl motion-safe:animate-fade-up">
           <p className="font-mono text-xs font-medium uppercase tracking-widest text-muted-foreground">Welcome back, {user.display_name.split(" ")[0]}</p>
-          <h1
-            className="mt-5 max-w-xl text-hero text-foreground"
-            style={{ fontFamily: "'Geist Variable', sans-serif", fontWeight: 300, letterSpacing: "-0.03em" }}
-          >
+          <h1 className="mt-5 max-w-xl font-display font-light text-4xl sm:text-5xl lg:text-6xl tracking-tight text-foreground">
             Resume your active<br />
             <span>lab session.</span>
           </h1>
@@ -62,9 +59,9 @@ export function PersonalizedHero() {
         </div>
 
         <motion.div
-          initial={reducedMotion ? false : { opacity: 0, scale: 0.99, x: 32, y: 16 }}
-          animate={reducedMotion ? undefined : { opacity: 1, scale: 1.2, x: 0, y: 0 }}
-          transition={{ delay: reducedMotion ? 0 : 0.1, duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+          initial={reducedMotion ? false : { opacity: 0, scale: 0.98 }}
+          animate={reducedMotion ? undefined : { opacity: 1, scale: 1 }}
+          transition={{ delay: reducedMotion ? 0 : 0.1, duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
           className="flex items-end justify-center lg:justify-end"
         >
           <Image

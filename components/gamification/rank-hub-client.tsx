@@ -157,11 +157,11 @@ export function RankHubClient() {
               initial={{ opacity: 0, y: -8 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.3, ease: "easeOut" }}
-              className="mb-6 flex items-start gap-3 rounded-xl border border-warning/40 bg-warning/10 p-4"
+              className="mb-6 flex items-start gap-3 rounded-xl border border-primary/30 bg-primary/5 p-4"
             >
-              <ShieldAlert className="mt-0.5 size-5 shrink-0 text-warning-strong" />
+              <ShieldAlert className="mt-0.5 size-5 shrink-0 text-primary" />
               <div>
-                <p className="font-display text-small font-semibold text-warning-strong">
+                <p className="font-display text-small font-semibold text-foreground">
                   Progress frozen pending review
                 </p>
                 <p className="mt-0.5 text-xs leading-relaxed text-muted-foreground">
@@ -360,20 +360,20 @@ function DualXpTracks({
         />
       </div>
       <div className="flex items-center justify-between text-xs">
-        <span className="flex items-center gap-1.5 font-medium text-xp-mastery">
+        <span className="flex items-center gap-1.5 font-medium text-primary">
           <Sparkles className="size-3.5" /> Mastery XP
         </span>
         <span className="font-mono text-muted-foreground">
           <AnimatedNumber value={mastery} countUpOnMount /> · {mPct.toFixed(0)}%
         </span>
       </div>
-      <div className="h-2 overflow-hidden rounded-full bg-xp-mastery/15">
+      <div className="h-2 overflow-hidden rounded-full bg-secondary">
         <motion.div
           initial={{ scaleX: 0 }}
           animate={{ scaleX: 1 }}
           transition={{ duration: 0.8, ease: "easeOut", delay: 0.1 }}
           style={{ width: `${mPct}%`, originX: 0 }}
-          className="pattern-stripes h-full rounded-full bg-xp-mastery"
+          className="pattern-stripes h-full rounded-full bg-primary/70"
         />
       </div>
       <p className="text-caption text-muted-foreground">
@@ -418,7 +418,7 @@ function StreakWidget({
     <div className="rounded-xl border border-border bg-card p-4">
       <div className="flex items-center justify-between">
         <p className="flex items-center gap-2 font-display text-small font-semibold">
-          <Flame className="size-4 text-warning-strong" />
+          <Flame className="size-4 text-primary" />
           Streak
         </p>
         {!isLoading && !isError && streak ? (
@@ -463,11 +463,11 @@ function StreakWidget({
             </span>
           </div>
           <div className="mt-3 flex flex-wrap gap-2 text-caption">
-            <span className="rounded-md bg-warning/10 px-2 py-1 font-medium text-warning-strong">
+            <span className="rounded-md bg-secondary px-2 py-1 font-medium text-foreground">
               ×{streak.momentum_multiplier.toFixed(2)} momentum
             </span>
             <span className="rounded-md bg-secondary px-2 py-1 font-medium text-muted-foreground">
-              ❄ {streak.freeze_tokens_available} freeze{" "}
+              {streak.freeze_tokens_available} freeze{" "}
               {streak.freeze_tokens_available === 1 ? "token" : "tokens"}
             </span>
           </div>
@@ -531,8 +531,8 @@ function LeagueWidget({
           </div>
           <div className="mt-3 flex flex-wrap gap-2 text-caption">
             {league.promotion_zone ? (
-              <span className="flex items-center gap-1 rounded-md bg-success/10 px-2 py-1 font-medium text-success-strong">
-                <TrendingUp className="size-3" /> Promotion zone
+              <span className="flex items-center gap-1 rounded-md bg-secondary px-2 py-1 font-medium text-foreground">
+                <TrendingUp className="size-3 text-primary" /> Promotion zone
               </span>
             ) : null}
             {league.relegation_zone ? (
@@ -718,9 +718,7 @@ function QuickLink({
       onClick={onClick}
       className="group flex items-center gap-3 rounded-xl border border-border bg-card p-4 text-left transition-colors hover:border-primary-border hover:bg-secondary"
     >
-      <span className="grid size-10 shrink-0 place-items-center rounded-lg bg-secondary text-muted-foreground transition-colors group-hover:bg-primary-light group-hover:text-primary">
-        <Icon className="size-5" />
-      </span>
+      <Icon className="size-5 shrink-0 text-primary transition-transform group-hover:scale-105" />
       <span>
         <span className="block font-display text-small font-semibold">{title}</span>
         <span className="block text-xs text-muted-foreground">{subtitle}</span>

@@ -1,6 +1,8 @@
 "use client";
 
 import * as React from "react";
+import Link from "next/link";
+import { ArrowRight } from "lucide-react";
 
 import type { CourseSummary } from "@/lib/contracts/content";
 import { FeaturedCourseCard } from "@/components/landing/featured-course-card";
@@ -12,11 +14,13 @@ import { MarketingNav } from "@/components/landing/marketing-nav";
 import { PersonalizedHero } from "@/components/landing/personalized-hero";
 import { useSession } from "@/components/providers/session-provider";
 import { AmbientSection } from "@/components/ui/ambient-section";
+import { Button } from "@/components/ui/button";
 import {
   CaseStudySection,
   ComparisonSection,
   StatsBand,
 } from "@/components/landing/conversion-sections";
+import { SocialProof } from "@/components/landing/social-proof";
 import { ErrorState } from "@/components/shared/error-state";
 import { MobileCtaBar } from "@/components/shared/mobile-cta-bar";
 import {
@@ -32,37 +36,45 @@ export interface LandingPageProps {
 }
 
 function LandingSections({ courses, catalogUnavailable = false }: LandingPageProps) {
-  const udemyTabs = [
-    { value: "AI", label: "Artificial Intelligence (AI)" },
-    { value: "Python", label: "Python" },
-    { value: "Excel", label: "Microsoft Excel" },
-    { value: "Agentic", label: "AI Agents & Agentic AI" },
-    { value: "Marketing", label: "Digital Marketing" },
-    { value: "Cloud", label: "Cloud Infrastructure" },
+  const tracks = [
+    { value: "all", label: "All Specializations" },
+    { value: "Cybersecurity", label: "Cybersecurity & Defense" },
+    { value: "Web Development", label: "Systems & Web" },
+    { value: "Cloud & DevOps", label: "Cloud & Infrastructure" },
   ];
-  const [activeCategory, setActiveCategory] = React.useState("AI");
+  const [activeCategory, setActiveCategory] = React.useState("all");
 
-  // Determine which 4 courses to show based on the active tab index
-  const activeTabIndex = Math.max(0, udemyTabs.findIndex(t => t.value === activeCategory));
-  // Ensure we don't go out of bounds of the courses array
-  const maxStartIndex = Math.max(0, courses.length - 4);
-  const startIndex = (activeTabIndex * 4) % (maxStartIndex || 1);
-  const demoCourses = courses.slice(startIndex, startIndex + 4);
+  const filteredCourses = React.useMemo(() => {
+    if (activeCategory === "all") return courses.slice(0, 8);
+    const matched = courses.filter((c) =>
+      c.category.toLowerCase().includes(activeCategory.toLowerCase()),
+    );
+    return (matched.length > 0 ? matched : courses).slice(0, 8);
+  }, [courses, activeCategory]);
 
   return (
     <AmbientSection id="featured-courses" tone="subtle" className="scroll-mt-24 bg-background">
       <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 sm:py-20 lg:px-8">
-        <div className="mb-8">
-          <h2 className="font-display text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
-            Skills to transform your career and life
-          </h2>
-          <p className="mt-4 text-lg text-muted-foreground">
-            From critical workplace skills to technical topics, Udemy supports your professional development.
-          </p>
+        <div className="mb-8 flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-[0.16em] text-primary">Technical Specializations</p>
+            <h2 className="mt-2 font-display text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">
+              Curated engineering curriculums
+            </h2>
+            <p className="mt-3 max-w-2xl text-base text-muted-foreground">
+              Built by senior practitioners with hands-on labs, interactive challenges, and verified skill milestones.
+            </p>
+          </div>
+          <Button variant="outline" asChild className="hidden sm:inline-flex shrink-0">
+            <Link href="/courses">
+              Explore catalog
+              <ArrowRight className="size-4" />
+            </Link>
+          </Button>
         </div>
         
-        <div className="mt-8">
-          <FilterTabs tabs={udemyTabs} value={activeCategory} onChange={setActiveCategory} label="Filter courses by category" />
+        <div className="mt-6">
+          <FilterTabs tabs={tracks} value={activeCategory} onChange={setActiveCategory} label="Filter courses by track" />
         </div>
         
         {catalogUnavailable ? (
@@ -71,19 +83,25 @@ function LandingSections({ courses, catalogUnavailable = false }: LandingPagePro
             message="The catalog could not be reached. Retry shortly to request the latest courses."
           />
         ) : (
-          <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            {demoCourses.map((course, index) => {
-              // Override category to match the selected tab just for visual effect
-              const displayCourse = { ...course, category: udemyTabs.find(t => t.value === activeCategory)?.label || course.category };
-              return (
+          <>
+            <div className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+              {filteredCourses.map((course, index) => (
                 <FeaturedCourseCard
-                  key={`${activeCategory}-${course.id}`} // ensure remounting if id is the same to trigger animations
-                  course={displayCourse}
+                  key={course.id}
+                  course={course}
                   index={index}
                 />
-              );
-            })}
-          </div>
+              ))}
+            </div>
+            <div className="mt-8 flex justify-center sm:hidden">
+              <Button variant="outline" asChild className="w-full">
+                <Link href="/courses">
+                  Explore full catalog
+                  <ArrowRight className="size-4" />
+                </Link>
+              </Button>
+            </div>
+          </>
         )}
       </div>
     </AmbientSection>
@@ -107,6 +125,7 @@ export function LandingPage({ courses, catalogUnavailable = false }: LandingPage
         <LandingSections courses={courses} catalogUnavailable={catalogUnavailable} />
         <StatsBand />
         <ComparisonSection />
+        <SocialProof />
         <CaseStudySection />
         <PricingSection />
         <TestimonialWall />

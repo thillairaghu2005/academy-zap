@@ -254,7 +254,6 @@ export function LearningPaths() {
                 {/* Top Role Header */}
                 <div className="border-b border-border/40 bg-surface-1/50 px-5 py-3 flex items-center justify-between">
                   <div className="flex items-center gap-2">
-                    <span className="size-2 rounded-full bg-primary animate-pulse" />
                     <span className="text-[11px] font-mono uppercase tracking-wider text-primary font-semibold">
                       {path.role}
                     </span>
@@ -264,9 +263,7 @@ export function LearningPaths() {
                     className={cn(
                       "text-[10px] uppercase font-mono font-medium px-2 py-0 border",
                       path.difficulty === "Professional"
-                        ? "border-danger/30 text-danger-strong bg-danger/5"
-                        : path.difficulty === "Associate"
-                        ? "border-primary/30 text-primary bg-primary/5"
+                        ? "border-primary/40 text-primary bg-primary/5 font-semibold"
                         : "border-border text-muted-foreground bg-surface-1",
                     )}
                   >

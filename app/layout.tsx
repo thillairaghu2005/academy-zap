@@ -25,7 +25,7 @@ export const metadata: Metadata = {
     template: "%s · Zapsters",
   },
   description:
-    "Zapsters is a learning platform: Udemy-shaped courses, a HackerRank-shaped code judge, TryHackMe-shaped virtual labs, and a full gamification layer.",
+    "Zapsters Academy is an advanced technical learning platform featuring curated engineering courses, a deterministic code judge, hands-on virtual labs, and verified skill progression.",
   keywords: ["Zapsters", "cybersecurity courses", "coding judge", "virtual labs", "learning platform"],
   robots: { index: true, follow: true },
   metadataBase: getSiteUrl(),
@@ -44,6 +44,7 @@ export const metadata: Metadata = {
   },
   icons: {
     icon: [
+      { url: "/favicon.svg", type: "image/svg+xml" },
       { url: "/favicon.ico" },
       { url: "/icons/favicon-16x16.png", sizes: "16x16", type: "image/png" },
       { url: "/icons/favicon-32x32.png", sizes: "32x32", type: "image/png" },

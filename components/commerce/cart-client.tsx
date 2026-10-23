@@ -35,7 +35,6 @@ import { MockDataError } from "@/lib/data/demo/errors";
 import { formatMoney } from "@/lib/format";
 import { DEMO_MODE } from "@/lib/config";
 import { CheckoutOutage } from "@/components/commerce/checkout-outage";
-import { cn } from "@/lib/utils";
 import {
   cartItemCount,
   cartQueryKey,
@@ -222,7 +221,7 @@ export function CartClient() {
           </p>
         </div>
         <div className="hidden items-center gap-2 text-caption text-muted-foreground sm:flex">
-          <ShieldCheck className="size-4 text-success-strong" />
+          <ShieldCheck className="size-4 text-primary" />
           Secure payment
         </div>
       </div>
@@ -236,21 +235,12 @@ export function CartClient() {
               className="group overflow-hidden hover:border-primary/25 hover:shadow-[0_6px_18px_rgb(16_24_40_/_6%)]"
             >
               <CardContent className="grid gap-5 p-4 sm:p-5 md:grid-cols-[minmax(0,1fr)_auto_auto] md:items-center">
-                <div className="flex min-w-0 items-center gap-4">
-                  <div
-                    className={cn(
-                      "flex size-14 shrink-0 items-center justify-center rounded-xl border",
-                      item.kind === "lab"
-                        ? "border-success/25 bg-success/10 text-success-strong"
-                        : "border-primary-border bg-primary-muted text-primary",
-                    )}
-                  >
-                    {item.kind === "lab" ? (
-                      <FlaskConical className="size-5" />
-                    ) : (
-                      <BookOpen className="size-5" />
-                    )}
-                  </div>
+                <div className="flex min-w-0 items-center gap-3">
+                  {item.kind === "lab" ? (
+                    <FlaskConical className="size-5 shrink-0 text-primary" />
+                  ) : (
+                    <BookOpen className="size-5 shrink-0 text-primary" />
+                  )}
 
                   <div className="min-w-0">
                     <Badge variant="outline" className="border-primary/15 px-2 py-0.5 text-[10px] uppercase tracking-[0.13em] text-primary">
@@ -335,9 +325,7 @@ export function CartClient() {
                   <p className="font-display text-xl font-semibold tracking-[-0.02em]">Summary</p>
                   <p className="mt-1 text-xs text-muted-foreground">Your learning access, ready when you are.</p>
                 </div>
-                <span className="grid size-9 place-items-center rounded-lg bg-primary-muted text-primary">
-                  <ReceiptText className="size-4" />
-                </span>
+                <ReceiptText className="size-5 text-primary shrink-0" />
               </div>
               <div className="flex items-center justify-between text-sm text-muted-foreground">
                 <span>Subtotal</span>
@@ -352,7 +340,7 @@ export function CartClient() {
               </div>
 
               {(cart as { discount_cents?: number }).discount_cents ? (
-                <div className="flex items-center justify-between text-sm text-success-strong">
+                <div className="flex items-center justify-between text-sm text-foreground">
                   <span>Discount</span>
                   <span className="font-medium">−{formatMoney((cart as { discount_cents?: number }).discount_cents ?? 0)}</span>
                 </div>
@@ -434,7 +422,7 @@ export function CartClient() {
               : null}
 
               <p className="flex items-center gap-1.5 text-caption leading-relaxed text-muted-foreground">
-                <ShieldCheck className="size-3.5 shrink-0 text-success-strong" />
+                <ShieldCheck className="size-3.5 shrink-0 text-primary" />
                 Payment happens on the provider&apos;s hosted page — Zapsters
                 never touches card numbers (PCI scope stays with Razorpay /
                 Stripe).
@@ -512,9 +500,9 @@ function CouponField({
 }) {
   if (appliedCode) {
     return (
-      <div className="flex items-center justify-between gap-2 rounded-lg border border-success/25 bg-success/5 px-3 py-2 text-xs">
-        <span className="flex min-w-0 items-center gap-1.5 font-medium text-success-strong">
-          <TicketPercent className="size-3.5 shrink-0" />
+      <div className="flex items-center justify-between gap-2 rounded-lg border border-border bg-secondary/50 px-3 py-2 text-xs">
+        <span className="flex min-w-0 items-center gap-1.5 font-medium text-foreground">
+          <TicketPercent className="size-3.5 shrink-0 text-primary" />
           <span className="truncate">{appliedCode}</span>
           <span className="text-muted-foreground">· −{formatMoney(discountCents)}</span>
         </span>

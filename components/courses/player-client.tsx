@@ -26,6 +26,7 @@ import {
   PlayCircle,
   RefreshCw,
   Search,
+  Server,
   ShieldCheck,
   Terminal,
   X,
@@ -228,7 +229,7 @@ function SkillBuildLabSandbox({
       `$ zapsters-audit --evaluate --standard CIS-v1.4\n\n[SANDBOX VALIDATOR] Evaluating state on ${labData.region}...\n[PASS] All 4 Lab Objectives Verified!\n[SUCCESS] Lab Environment Passed with 100% Score.`,
     );
     setLabVerified(true);
-    toast.success("All lab tasks verified! Great job ⚡");
+    toast.success("All lab tasks verified.");
     onCompleteLab();
   };
 
@@ -237,13 +238,12 @@ function SkillBuildLabSandbox({
       {/* Sandbox Status Bar */}
       <div className="rounded-xl border border-border bg-slate-950 p-4 text-white flex flex-wrap items-center justify-between gap-4 shadow-sm">
         <div className="flex items-center gap-3">
-          <div className="size-3 rounded-full bg-emerald-500 animate-pulse" />
           <div>
             <div className="flex items-center gap-2">
               <span className="text-xs font-bold text-white uppercase tracking-wider">
                 Cloud Sandbox Session Active
               </span>
-              <Badge variant="outline" className="text-[10px] border-emerald-500/40 text-emerald-400 bg-emerald-500/10">
+              <Badge variant="outline" className="text-[10px] border-primary/30 text-primary bg-primary/10">
                 Connected
               </Badge>
             </div>
@@ -293,7 +293,7 @@ function SkillBuildLabSandbox({
             {labData.topologyNodes.map((node, i) => (
               <React.Fragment key={node.id}>
                 <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg border border-border bg-card text-xs font-medium text-foreground">
-                  <div className="size-2 rounded-full bg-primary" />
+                  <Server className="size-3 text-primary shrink-0" />
                   <span>{node.label}</span>
                 </div>
                 {i < labData.topologyNodes.length - 1 && (
@@ -310,7 +310,7 @@ function SkillBuildLabSandbox({
             <span className="text-xs font-bold uppercase tracking-wider text-foreground">
               Step-by-Step Lab Tasks ({completedTasks.size} of {labData.tasks.length} Completed)
             </span>
-            <span className="text-xs font-medium text-emerald-500">
+            <span className="text-xs font-medium text-foreground">
               {Math.round((completedTasks.size / labData.tasks.length) * 100)}% Complete
             </span>
           </div>
@@ -325,7 +325,7 @@ function SkillBuildLabSandbox({
                   className={cn(
                     "flex items-start gap-3 p-3.5 rounded-xl border cursor-pointer transition-colors",
                     isDone
-                      ? "border-emerald-500/30 bg-emerald-500/5 text-foreground"
+                      ? "border-primary/40 bg-primary/5 text-foreground"
                       : "border-border bg-surface-1 hover:bg-surface-2/60 text-muted-foreground",
                   )}
                 >
@@ -333,7 +333,7 @@ function SkillBuildLabSandbox({
                     className={cn(
                       "grid size-5 shrink-0 place-items-center rounded-md border text-xs mt-0.5 transition-colors",
                       isDone
-                        ? "border-emerald-500 bg-emerald-500 text-white"
+                        ? "border-primary bg-primary text-primary-foreground"
                         : "border-border bg-card text-transparent",
                     )}
                   >
@@ -383,7 +383,7 @@ function SkillBuildLabSandbox({
             </div>
           </div>
 
-          <div className="p-4 font-mono text-xs text-emerald-400 whitespace-pre-wrap leading-relaxed max-h-64 overflow-y-auto">
+          <div className="p-4 font-mono text-xs text-zinc-300 whitespace-pre-wrap leading-relaxed max-h-64 overflow-y-auto">
             {terminalOutput}
           </div>
         </div>
@@ -398,7 +398,7 @@ function SkillBuildLabSandbox({
             className="font-bold text-xs gap-1.5"
           >
             <ShieldCheck className="size-4" />
-            {labVerified ? "Lab Completed & Verified ✓" : "Run Automated Verification Check"}
+            {labVerified ? "Lab Completed & Verified" : "Run Automated Verification Check"}
           </Button>
         </div>
       </div>
@@ -449,8 +449,8 @@ function SkillBuildKnowledgeCheck({
       feedback.xp(isFinal ? 100 : 50);
       toast.success(
         isFinal
-          ? `Congratulations! Passed Final Assessment with ${scorePct}%! 🏆`
-          : `Passed Module Quiz with ${scorePct}% score! ⚡`,
+          ? `Congratulations! Passed Final Assessment with ${scorePct}%.`
+          : `Passed Module Quiz with ${scorePct}% score.`,
       );
       onPassed();
     } else {
@@ -475,10 +475,8 @@ function SkillBuildKnowledgeCheck({
       {/* Assessment Header Card */}
       <div className="rounded-2xl border border-border bg-card p-6 shadow-sm space-y-4">
         <div className="flex flex-wrap items-center justify-between gap-3">
-          <div className="flex items-center gap-2.5">
-            <div className="grid size-9 place-items-center rounded-xl bg-primary/15 text-primary border border-primary/30">
-              {isFinal ? <Award className="size-5" /> : <Lightbulb className="size-5" />}
-            </div>
+          <div className="flex items-center gap-3">
+            {isFinal ? <Award className="size-7 text-primary shrink-0" /> : <Lightbulb className="size-7 text-primary shrink-0" />}
             <div>
               <h3 className="font-display text-lg sm:text-xl font-bold text-foreground">
                 {isFinal ? `Final Comprehensive Assessment: ${course.title}` : lesson.title}
@@ -549,11 +547,11 @@ function SkillBuildKnowledgeCheck({
                     className={cn(
                       "text-xs font-semibold",
                       isCorrect
-                        ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-500"
-                        : "border-rose-500/30 bg-rose-500/10 text-rose-500",
+                        ? "border-primary/40 bg-primary/10 text-primary"
+                        : "border-border bg-secondary text-muted-foreground",
                     )}
                   >
-                    {isCorrect ? "Correct ✓" : "Incorrect ✕"}
+                    {isCorrect ? "Correct" : "Incorrect"}
                   </Badge>
                 )}
               </div>
@@ -589,9 +587,9 @@ function SkillBuildKnowledgeCheck({
                           : !revealed
                             ? "border-border bg-surface-1 hover:border-border/80 hover:bg-surface-2 text-muted-foreground hover:text-foreground"
                             : isOptionCorrect
-                              ? "border-emerald-500/50 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-medium"
+                              ? "border-primary/50 bg-primary/10 text-foreground font-medium"
                               : isSelected && !isOptionCorrect
-                                ? "border-rose-500/50 bg-rose-500/10 text-rose-600 dark:text-rose-400"
+                                ? "border-border bg-secondary/50 text-muted-foreground"
                                 : "border-border bg-card opacity-50",
                       )}
                     >
@@ -599,11 +597,11 @@ function SkillBuildKnowledgeCheck({
                         className={cn(
                           "grid size-5 shrink-0 place-items-center rounded-full border text-[11px] font-bold mt-0.5",
                           !revealed && isSelected
-                            ? "border-primary bg-primary text-white"
+                            ? "border-primary bg-primary text-primary-foreground"
                             : revealed && isOptionCorrect
-                              ? "border-emerald-500 bg-emerald-500 text-white"
+                              ? "border-primary bg-primary text-primary-foreground"
                               : revealed && isSelected
-                                ? "border-rose-500 bg-rose-500 text-white"
+                                ? "border-border bg-secondary text-muted-foreground"
                                 : "border-border text-muted-foreground",
                         )}
                       >
@@ -621,13 +619,13 @@ function SkillBuildKnowledgeCheck({
                   className={cn(
                     "p-4 rounded-xl border text-xs sm:text-sm leading-relaxed space-y-1.5",
                     isCorrect
-                      ? "border-emerald-500/30 bg-emerald-500/5 text-foreground"
-                      : "border-primary/25 bg-primary/5 text-foreground",
+                      ? "border-primary/30 bg-primary/5 text-foreground"
+                      : "border-border bg-secondary/30 text-foreground",
                   )}
                 >
                   <div className="flex items-center gap-1.5 font-bold text-xs">
                     {isCorrect ? (
-                      <CheckCircle2 className="size-4 text-emerald-500" />
+                      <CheckCircle2 className="size-4 text-primary" />
                     ) : (
                       <HelpCircle className="size-4 text-primary" />
                     )}
@@ -652,8 +650,8 @@ function SkillBuildKnowledgeCheck({
               <span className="text-xs text-muted-foreground uppercase tracking-wider font-semibold">
                 {isFinal ? "Final Certification Result" : "Module Quiz Result"}
               </span>
-              <p className={cn("text-lg font-bold font-display", isPassed ? "text-emerald-500" : "text-primary")}>
-                Score: {scorePct}% · {isPassed ? "Passed (>= 80%) ✓" : "Needs Review (< 80%)"}
+              <p className="text-lg font-bold font-display text-foreground">
+                Score: {scorePct}% · {isPassed ? "Passed (>= 80%)" : "Needs Review (< 80%)"}
               </p>
               <p className="text-xs text-muted-foreground mt-0.5">
                 {isPassed
@@ -798,7 +796,7 @@ export function PlayerClient({ course }: { course: Course }) {
         announce("Topic marked complete and verified");
         feedback.success();
         feedback.xp(25);
-        toast.success("Topic marked complete ⚡", { position: "top-center" });
+        toast.success("Topic marked complete", { position: "top-center" });
       }
     },
     onError: (err: Error) => toast.error(err.message),
@@ -1060,12 +1058,7 @@ export function PlayerClient({ course }: { course: Course }) {
         {/* Scroll-based Reading Progress Line directly attached to header */}
         <div className="absolute inset-x-0 bottom-0 h-0.5 bg-border/40 overflow-hidden">
           <div
-            className={cn(
-              "h-full transition-[width] duration-150 ease-out",
-              isActiveCompleted || readingProgress >= 75
-                ? "bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.7)]"
-                : "bg-primary shadow-[0_0_8px_rgba(217,38,64,0.6)]",
-            )}
+            className="h-full transition-[width] duration-150 ease-out bg-primary"
             style={{ width: `${isActiveCompleted ? 100 : readingProgress}%` }}
           />
         </div>
@@ -1117,13 +1110,13 @@ export function PlayerClient({ course }: { course: Course }) {
           </div>
 
           {/* Curriculum Module Accordion */}
-          <div className="flex-1 overflow-y-auto divide-y divide-border/60">
+          <div className="flex-1 overflow-y-auto space-y-1.5 p-2">
             {course.syllabus.map((section, si) => {
               const isCollapsed = collapsedSections[section.id] === true;
               const sectionCompleted = section.lessons.filter((l) => completedSet.has(l.id)).length;
 
               return (
-                <div key={section.id}>
+                <div key={section.id} className="rounded-xl overflow-hidden border border-border/50">
                   {/* Module Header Button */}
                   <button
                     type="button"
@@ -1158,7 +1151,7 @@ export function PlayerClient({ course }: { course: Course }) {
 
                   {/* Module Topics */}
                   {!isCollapsed && (
-                    <div className="bg-surface-1/40 divide-y divide-border/30">
+                    <div className="bg-surface-1/40 space-y-0.5 p-1 border-t border-border/40">
                       {section.lessons.map((lesson) => {
                         if (filteredLessons && !filteredLessons.has(lesson.id)) return null;
 
@@ -1191,16 +1184,11 @@ export function PlayerClient({ course }: { course: Course }) {
                               <span className="truncate">{lesson.title}</span>
                             </div>
 
-                            <div
-                              className={cn(
-                                "grid size-4 shrink-0 place-items-center rounded-full border text-[10px]",
-                                done
-                                  ? "border-emerald-500 bg-emerald-500 text-white"
-                                  : "border-border text-transparent",
-                              )}
-                            >
-                              {done && <Check className="size-2.5 stroke-[3]" />}
-                            </div>
+                            {done ? (
+                              <Check className="size-4 shrink-0 text-primary stroke-[2.5]" />
+                            ) : (
+                              <span className="size-4 shrink-0" />
+                            )}
                           </button>
                         );
                       })}
@@ -1226,7 +1214,7 @@ export function PlayerClient({ course }: { course: Course }) {
                     Topic {activeLessonIndex + 1} of {allLessons.length}
                   </span>
                   {isActiveCompleted ? (
-                    <Badge variant="outline" className="border-emerald-500/30 bg-emerald-500/10 text-emerald-500 text-[11px] font-semibold gap-1">
+                    <Badge variant="outline" className="border-primary/30 bg-primary/10 text-primary text-[11px] font-semibold gap-1">
                       <CheckCircle2 className="size-3" />
                       <span>{isQuizOrAssessment ? "Passed" : "Completed"}</span>
                     </Badge>
@@ -1236,7 +1224,6 @@ export function PlayerClient({ course }: { course: Course }) {
                     </Badge>
                   ) : (
                     <Badge variant="outline" className="border-primary/30 text-primary font-mono text-[11px] gap-1">
-                      <span className="size-1.5 rounded-full bg-primary animate-pulse" />
                       <span>Scroll Progress: {readingProgress}%</span>
                     </Badge>
                   )}
@@ -1310,9 +1297,7 @@ export function PlayerClient({ course }: { course: Course }) {
                   /* Prerequisite locked gate for Final Assessment */
                   <div className="rounded-2xl border border-primary/30 bg-gradient-to-r from-primary/10 via-primary/5 to-card p-6 sm:p-10 space-y-6 shadow-sm">
                     <div className="flex items-start gap-4">
-                      <div className="grid size-12 place-items-center rounded-2xl bg-primary/20 text-primary shrink-0 border border-primary/30 shadow">
-                        <ShieldCheck className="size-6" />
-                      </div>
+                      <ShieldCheck className="size-8 text-primary shrink-0 mt-1" />
                       <div className="space-y-1.5 flex-1">
                         <Badge variant="outline" className="border-primary/30 bg-primary/10 text-primary text-xs font-semibold">
                           Prerequisite Gate · All Modules Required
@@ -1449,10 +1434,10 @@ export function PlayerClient({ course }: { course: Course }) {
 
               {/* Lesson Completion Status Alert */}
               {isActiveCompleted && (
-                <div className="flex items-center gap-3 rounded-xl border border-emerald-500/30 bg-emerald-500/10 p-4 text-emerald-500">
-                  <CheckCircle2 className="size-5 shrink-0" />
+                <div className="flex items-center gap-3 rounded-xl border border-primary/30 bg-primary/5 p-4 text-foreground">
+                  <CheckCircle2 className="size-5 shrink-0 text-primary" />
                   <div className="text-xs sm:text-sm">
-                    <p className="font-semibold text-emerald-600 dark:text-emerald-400">
+                    <p className="font-semibold text-foreground">
                       Topic Completed & Verified
                     </p>
                     <p className="text-muted-foreground text-xs mt-0.5">
@@ -1477,9 +1462,7 @@ export function PlayerClient({ course }: { course: Course }) {
                         You have met all curriculum requirements and passed the scenario knowledge check. Your official digital credential is ready to be claimed and shared to LinkedIn / Credly.
                       </p>
                     </div>
-                    <div className="grid size-12 place-items-center rounded-2xl bg-primary text-primary-foreground font-bold shrink-0 shadow">
-                      <Award className="size-6 text-primary-foreground" />
-                    </div>
+                    <Award className="size-10 text-primary shrink-0" />
                   </div>
 
                   <div className="flex flex-wrap items-center gap-3 pt-2">
@@ -1526,8 +1509,8 @@ export function PlayerClient({ course }: { course: Course }) {
                 <div className="flex items-center gap-3">
                   {/* Reading / Auto-completion / Quiz status */}
                   {isActiveCompleted ? (
-                    <div className="flex items-center gap-1.5 text-xs text-emerald-500 font-medium">
-                      <CheckCircle2 className="size-3.5" />
+                    <div className="flex items-center gap-1.5 text-xs text-foreground font-medium">
+                      <CheckCircle2 className="size-3.5 text-primary" />
                       <span>{isQuizOrAssessment ? "Assessment Passed" : "Topic Completed"}</span>
                     </div>
                   ) : isQuizOrAssessment ? (

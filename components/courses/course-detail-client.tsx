@@ -106,7 +106,7 @@ function LessonRow({
           className={cn(
             "grid size-6 shrink-0 place-items-center rounded-full border text-[11px] font-semibold",
             completed
-              ? "border-transparent bg-emerald-500/15 text-emerald-500"
+              ? "border-primary/20 bg-primary/10 text-primary"
               : "border-border text-muted-foreground",
           )}
         >
@@ -192,7 +192,7 @@ export function CourseDetailClient({
         ["course-progress", course.id, userId],
         { enrollment, completed_lesson_ids: [] },
       );
-      toast.success("Enrolled successfully! Ready to begin your skill path ⚡");
+      toast.success("Enrolled successfully! Ready to begin your skill path.");
     },
     onError: (error: Error) => {
       toast.error(error.message);
@@ -286,12 +286,10 @@ export function CourseDetailClient({
 
       {/* Preview banner */}
       {isPreview ? (
-        <div className="mt-4 flex items-start gap-3 rounded-xl border border-warning/30 bg-warning/10 px-4 py-3">
-          <span className="mt-0.5 grid size-5 shrink-0 place-items-center rounded-full bg-warning/20 text-warning-strong">
-            <Clock className="size-3" />
-          </span>
+        <div className="mt-4 flex items-start gap-3 rounded-xl border border-primary/30 bg-primary/5 px-4 py-3">
+          <Clock className="mt-0.5 size-4 shrink-0 text-primary" />
           <div className="text-sm">
-            <p className="font-medium text-warning-strong">
+            <p className="font-medium text-foreground">
               {isDraft
                 ? "Draft course — author preview"
                 : previewMode
@@ -342,9 +340,9 @@ export function CourseDetailClient({
               </p>
 
               {/* Metadata KPI Strip */}
-              <div className="flex flex-wrap items-center gap-x-6 gap-y-3 border-y border-slate-800/80 py-4 mt-2 text-xs text-slate-300">
+              <div className="flex flex-wrap items-center gap-x-6 gap-y-3 py-2 mt-2 text-xs text-slate-300">
                 <span className="flex items-center gap-1.5">
-                  <Star className="size-4 fill-warning text-warning" />
+                  <Star className="size-4 fill-primary text-primary" />
                   <span className="font-bold text-white">
                     {course.rating > 0 ? course.rating.toFixed(1) : "4.9"}
                   </span>
@@ -365,7 +363,7 @@ export function CourseDetailClient({
                   <span className="text-primary-light font-medium">{meta.badgeInfo.ceuCredits} CEU Credits</span>
                 </span>
                 <span className="flex items-center gap-1.5">
-                  <CheckCircle2 className="size-4 text-emerald-400" />
+                  <CheckCircle2 className="size-4 text-primary" />
                   <span>80% Passing Score</span>
                 </span>
               </div>
@@ -378,7 +376,7 @@ export function CourseDetailClient({
                 <div>
                   <div className="flex items-center gap-1.5">
                     <p className="text-sm font-semibold text-white">{course.instructor.display_name}</p>
-                    <ShieldCheck className="size-3.5 text-blue-400" />
+                    <ShieldCheck className="size-3.5 text-primary" />
                   </div>
                   <p className="text-xs text-slate-400">
                     {course.instructor.title} · Certified Enterprise Instructor
@@ -478,10 +476,8 @@ export function CourseDetailClient({
                 </div>
                 <div className="grid gap-3.5 sm:grid-cols-2">
                   {meta.learningObjectives.map((obj, i) => (
-                    <div key={i} className="flex items-start gap-3">
-                      <div className="grid size-5 shrink-0 place-items-center rounded-full bg-emerald-500/15 text-emerald-500 mt-0.5">
-                        <Check className="size-3.5 stroke-[2.5]" />
-                      </div>
+                    <div key={i} className="flex items-start gap-2.5">
+                      <Check className="size-4 shrink-0 text-primary mt-0.5" />
                       <span className="text-xs sm:text-sm text-muted-foreground leading-relaxed">
                         {obj}
                       </span>
@@ -498,9 +494,7 @@ export function CourseDetailClient({
                 <div className="grid gap-3 sm:grid-cols-3">
                   {meta.targetAudience.map((role, i) => (
                     <div key={i} className="rounded-xl border border-border bg-surface-1 p-4">
-                      <div className="grid size-8 place-items-center rounded-lg bg-primary/10 text-primary mb-2.5">
-                        <Users className="size-4" />
-                      </div>
+                      <Users className="size-5 text-primary mb-2.5" />
                       <h4 className="text-sm font-semibold text-foreground">{role.role}</h4>
                       <p className="text-xs text-muted-foreground mt-1 leading-relaxed">
                         {role.desc}
@@ -518,7 +512,7 @@ export function CourseDetailClient({
                 <ul className="space-y-2 text-xs sm:text-sm text-muted-foreground">
                   {meta.prerequisites.map((req, i) => (
                     <li key={i} className="flex items-start gap-2.5">
-                      <span className="size-1.5 rounded-full bg-primary mt-2 shrink-0" />
+                      <Check className="size-3.5 text-primary mt-1 shrink-0" />
                       <span>{req}</span>
                     </li>
                   ))}
@@ -593,14 +587,14 @@ export function CourseDetailClient({
                         </div>
 
                         {enrollment && sectionCompleted > 0 && (
-                          <Badge variant="outline" className="border-emerald-500/30 bg-emerald-500/10 text-emerald-500 text-xs">
+                          <Badge variant="outline" className="border-primary/30 bg-primary/10 text-primary text-xs font-semibold">
                             {sectionCompleted} / {section.lessons.length} Completed
                           </Badge>
                         )}
                       </div>
 
                       {/* Section Lessons */}
-                      <div className="p-2 divide-y divide-border/40">
+                      <div className="p-2 space-y-1">
                         {section.lessons.map((lesson, li) => (
                           <LessonRow
                             key={lesson.id}
@@ -673,7 +667,7 @@ export function CourseDetailClient({
                       </div>
                       <div>
                         <span className="text-slate-400 block text-[10px] uppercase">Passing Threshold</span>
-                        <span className="font-semibold text-emerald-400">80% on Assessment</span>
+                        <span className="font-semibold text-foreground">80% on Assessment</span>
                       </div>
                     </div>
 
@@ -801,7 +795,7 @@ export function CourseDetailClient({
                   {isFree ? "Free Access" : `$${(course.price_cents / 100).toFixed(0)}`}
                 </span>
               </div>
-              <Badge variant="outline" className="border-emerald-500/30 bg-emerald-500/10 text-emerald-500 text-xs">
+              <Badge variant="outline" className="border-primary/20 bg-primary/10 text-primary text-xs">
                 Digital Badge Included
               </Badge>
             </div>
@@ -888,7 +882,7 @@ export function CourseDetailClient({
                   <span>Verifiable Digital Skill Badge (Credly-compatible)</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <BookOpen className="size-4 text-emerald-500 shrink-0" />
+                  <BookOpen className="size-4 text-primary shrink-0" />
                   <span>{meta.badgeInfo.ceuCredits} Continuing Education Units (CEU)</span>
                 </div>
                 <div className="flex items-center gap-2">
@@ -896,7 +890,7 @@ export function CourseDetailClient({
                   <span>Scenario-based Knowledge Checks (80% passing threshold)</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <Check className="size-4 text-emerald-500 shrink-0" />
+                  <Check className="size-4 text-primary shrink-0" />
                   <span>Permanent 100% Free Lifetime Access</span>
                 </div>
               </div>

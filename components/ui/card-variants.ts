@@ -5,15 +5,18 @@ import { cva } from "class-variance-authority";
  * and card-variants.ts (non-component) form two clean Fast-Refresh modules.
  */
 export const cardVariants = cva(
-       "rounded-xl border text-card-foreground transition-[border-color,background-color,box-shadow,transform] duration-200",
+  "rounded-xl border text-card-foreground transition-[border-color,background-color,box-shadow] duration-200",
   {
     variants: {
       variant: {
-         default: "border-border bg-card shadow-sm hover:shadow-lg hover:-translate-y-0.5",
-         glass: "bg-card border-border shadow-sm hover:shadow-lg hover:-translate-y-0.5",
-         glow: "border-border bg-card shadow-sm hover:shadow-lg hover:border-primary-border hover:-translate-y-0.5",
+        default: "border-border bg-card shadow-sm",
+        interactive:
+          "border-border bg-card shadow-sm hover:border-border-strong hover:shadow-md transition-[border-color,box-shadow] duration-200 cursor-pointer",
+        glass: "bg-card border-border shadow-sm",
+        glow: "border-border bg-card shadow-sm hover:border-primary-border transition-colors duration-200",
         bento: "border-border bg-surface-2 shadow-none",
         outline: "border-border bg-transparent shadow-none",
+        muted: "border-border bg-muted/40 shadow-none",
       },
     },
     defaultVariants: {

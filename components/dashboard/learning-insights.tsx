@@ -70,7 +70,7 @@ function WeeklyGoal({ activity }: { activity: DemoActivity[] }) {
           <p className="text-xs font-semibold uppercase tracking-[0.12em] text-primary">Weekly goal</p>
           <CardTitle className="mt-1 text-lg">Build the habit</CardTitle>
         </div>
-        <div className="grid size-9 place-items-center rounded-xl bg-primary/10 text-primary"><Target className="size-4" /></div>
+        <Target className="size-5 text-muted-foreground" />
       </CardHeader>
       <CardContent>
         <div className="flex items-end justify-between gap-3">
@@ -115,8 +115,8 @@ function RecentActivity({ activity }: { activity: DemoActivity[] }) {
       <CardHeader className="flex-row items-center gap-2 space-y-0"><CalendarDays className="size-4 text-primary" /><CardTitle className="text-lg">Recent activity</CardTitle></CardHeader>
       <CardContent>
         {entries.length ? (
-          <div className="divide-y divide-border">
-            {entries.map((entry) => <div key={`${entry.created_at}-${entry.label}`} className="flex items-center gap-3 py-2.5 first:pt-0 last:pb-0"><span className="grid size-7 shrink-0 place-items-center rounded-full bg-primary/10 text-primary"><Flame className="size-3.5" /></span><span className="min-w-0 flex-1 truncate text-xs font-medium">{entry.label}</span><span className="shrink-0 text-[10px] text-muted-foreground">{formatShortMonthDay(entry.created_at)}</span></div>)}
+          <div className="space-y-2">
+            {entries.map((entry) => <div key={`${entry.created_at}-${entry.label}`} className="flex items-center gap-3 py-1.5"><Flame className="size-4 shrink-0 text-muted-foreground" /><span className="min-w-0 flex-1 truncate text-xs font-medium">{entry.label}</span><span className="shrink-0 text-[10px] text-muted-foreground">{formatShortMonthDay(entry.created_at)}</span></div>)}
           </div>
         ) : <p className="text-sm leading-relaxed text-muted-foreground">Your completed lessons, labs, assessments, and Judge attempts will appear here.</p>}
         <Button variant="ghost" size="sm" className="mt-4 px-0 text-primary" asChild><Link href="/rank">View your progress <ArrowRight /></Link></Button>

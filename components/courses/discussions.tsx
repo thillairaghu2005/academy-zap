@@ -113,7 +113,7 @@ export function DiscussionsPanel({ lessonId }: { lessonId: string }) {
                         <span className="text-xs text-muted-foreground flex items-center gap-1"><Clock className="size-3" /> {formatDistanceToNow(new Date(thread.created_at))} ago</span>
                       </div>
                     </div>
-                    {thread.is_resolved && <Badge variant="default" className="bg-success text-success-foreground hover:bg-success">Resolved</Badge>}
+                    {thread.is_resolved && <Badge variant="secondary">Resolved</Badge>}
                   </div>
                   <p className="text-sm mt-3 leading-relaxed text-foreground">{thread.content}</p>
                   
@@ -141,7 +141,7 @@ export function DiscussionsPanel({ lessonId }: { lessonId: string }) {
                                 <span className="text-xs text-muted-foreground">{formatDistanceToNow(new Date(reply.created_at))} ago</span>
                               </div>
                               <div className="flex items-center gap-2">
-                                {reply.is_accepted_answer && <span className="flex items-center gap-1 text-xs text-success-strong font-medium"><CheckCircle className="size-3" /> Answer</span>}
+                                {reply.is_accepted_answer && <span className="flex items-center gap-1 text-xs text-foreground font-medium"><CheckCircle className="size-3 text-primary" /> Answer</span>}
                                 <Button 
                                   variant="ghost" 
                                   size="icon" 

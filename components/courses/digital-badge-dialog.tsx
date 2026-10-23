@@ -256,7 +256,7 @@ export function DigitalBadgeDialog({
                   </div>
                   <div>
                     <span className="text-[11px] text-muted-foreground block">Validity</span>
-                    <span className="text-sm font-semibold text-emerald-500">Permanent</span>
+                    <span className="text-sm font-semibold text-foreground">Permanent</span>
                   </div>
                 </div>
 
@@ -285,7 +285,7 @@ export function DigitalBadgeDialog({
                   <ul className="space-y-1.5 text-xs text-muted-foreground">
                     {badge.criteria.map((item, i) => (
                       <li key={i} className="flex items-start gap-2">
-                        <CheckCircle2 className="size-3.5 text-emerald-500 shrink-0 mt-0.5" />
+                        <CheckCircle2 className="size-3.5 text-primary shrink-0 mt-0.5" />
                         <span>{item}</span>
                       </li>
                     ))}
@@ -303,7 +303,7 @@ export function DigitalBadgeDialog({
                   onClick={handleCopyLink}
                   className="text-xs gap-1.5"
                 >
-                  {copiedLink ? <Check className="size-3.5 text-emerald-500" /> : <Copy className="size-3.5" />}
+                  {copiedLink ? <Check className="size-3.5 text-primary" /> : <Copy className="size-3.5" />}
                   {copiedLink ? "Link Copied!" : "Copy Verification URL"}
                 </Button>
                 <Button

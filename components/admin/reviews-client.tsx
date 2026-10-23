@@ -28,9 +28,9 @@ import { apiErrorMessage } from "@/lib/api/client";
 
 function StatusPill({ status }: { status: CredentialReview["status"] }) {
   const styles: Record<string, string> = {
-    verified: "border-success/40 bg-success/10 text-success-strong",
-    flagged: "border-warning/40 bg-warning/10 text-warning-strong",
-    revoked: "border-primary-border bg-primary-light text-primary",
+    verified: "border-border bg-secondary text-foreground",
+    flagged: "border-primary/40 bg-primary/10 text-primary font-semibold",
+    revoked: "border-border bg-secondary text-muted-foreground line-through",
   };
   return (
     <span
@@ -183,7 +183,7 @@ export function AdminReviewsClient() {
         <section className="min-w-0 rounded-xl border border-border bg-card">
           <div className="border-b border-border px-4 py-3">
             <h2 className="flex items-center gap-2 text-sm font-semibold text-foreground">
-              <ShieldAlert className="size-4 text-warning-strong" />
+              <ShieldAlert className="size-4 text-primary" />
               Flagged queue
               <span className="ml-auto rounded-full bg-secondary px-2 py-0.5 text-caption font-medium text-muted-foreground">
                 {queueQuery.data?.length ?? 0}
@@ -212,13 +212,13 @@ export function AdminReviewsClient() {
               />
             </div>
           ) : (
-            <ul className="divide-y divide-border">
+            <ul className="space-y-1 p-2">
               {reviews.map((review) => (
                 <li key={review.id}>
                   <button
                     type="button"
                     onClick={() => openReview(review.id)}
-                    className={`flex w-full flex-col gap-1 px-4 py-3 text-left transition-colors outline-none hover:bg-surface-1 focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring ${
+                    className={`flex w-full flex-col gap-1 rounded-lg px-4 py-3 text-left transition-colors outline-none hover:bg-surface-1 focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring ${
                       selectedId === review.id ? "bg-primary/5" : ""
                     }`}
                   >

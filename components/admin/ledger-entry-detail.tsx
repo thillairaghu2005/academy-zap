@@ -15,9 +15,9 @@ import { ErrorState } from "@/components/shared/error-state";
 import { cn } from "@/lib/utils";
 
 const INTEGRITY_STYLES: Record<IntegrityStatus, string> = {
-  verified: "border-success/40 bg-success/10 text-success-strong",
-  flagged: "border-warning/40 bg-warning/10 text-warning-strong",
-  reversed: "border-primary-border bg-primary-light text-primary",
+  verified: "border-primary/40 bg-primary/10 text-primary font-semibold",
+  flagged: "border-border bg-secondary text-foreground",
+  reversed: "border-border bg-secondary text-muted-foreground",
 };
 
 /**
@@ -58,16 +58,11 @@ export function LedgerEntryDetail({ ledgerEntryId }: { ledgerEntryId: string }) 
       <div className="flex flex-wrap items-center gap-x-6 gap-y-2">
         <div className="flex items-center gap-2">
           {positive ? (
-            <ArrowUpRight className="size-4 text-success-strong" />
+            <ArrowUpRight className="size-4 text-primary" />
           ) : (
-            <ArrowDownRight className="size-4 text-primary" />
+            <ArrowDownRight className="size-4 text-muted-foreground" />
           )}
-          <span
-            className={cn(
-              "font-display text-h3",
-              positive ? "text-success-strong" : "text-primary",
-            )}
-          >
+          <span className="font-display text-h3 text-foreground">
             {positive ? "+" : ""}
             {entry.xp_delta} XP
           </span>

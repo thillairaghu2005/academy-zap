@@ -19,10 +19,7 @@ export function SectionTitle({
   return (
     <div className={cn("flex flex-wrap items-end justify-between gap-4", className)}>
       <div className="max-w-2xl">
-        <h2
-          className="text-h1"
-          style={{ fontFamily: "'Geist Variable', sans-serif", fontWeight: 300, letterSpacing: "-0.03em" }}
-        >
+        <h2 className="font-display font-light text-h1 tracking-tight">
           {title}
         </h2>
         {description ? (

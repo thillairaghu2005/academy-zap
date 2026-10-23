@@ -9,20 +9,20 @@ import type { ProblemDifficulty } from "@/lib/contracts/judge";
 /** Shared status badges for the admin tables (F7). */
 
 const COURSE_STATUS_STYLES: Record<ContentStatus, string> = {
-  draft: "border-slate-400/40 bg-slate-500/10 text-slate-500",
-  in_review: "border-warning/40 bg-warning/10 text-warning-strong",
-  published: "border-success/40 bg-success/10 text-success-strong",
+  draft: "border-border bg-secondary text-muted-foreground",
+  in_review: "border-border bg-secondary text-foreground",
+  published: "border-primary/40 bg-primary/10 text-primary font-semibold",
 };
 const COURSE_STATUS_LABELS: Record<ContentStatus, string> = { draft: "Draft", in_review: "In review", published: "Published" };
 const ORDER_STATUS_STYLES: Record<Order["status"], string> = {
-  paid: "border-success/40 bg-success/10 text-success-strong",
-  failed: "border-primary-border bg-primary-light text-primary",
-  refunded: "border-slate-400/40 bg-slate-500/10 text-slate-500",
+  paid: "border-primary/40 bg-primary/10 text-primary font-semibold",
+  failed: "border-border bg-secondary text-muted-foreground",
+  refunded: "border-border bg-secondary text-muted-foreground",
 };
 const DIFFICULTY_STYLES: Record<string, string> = {
-  easy: "border-success/40 bg-success/10 text-success-strong", beginner: "border-success/40 bg-success/10 text-success-strong",
-  medium: "border-warning/40 bg-warning/10 text-warning-strong", intermediate: "border-warning/40 bg-warning/10 text-warning-strong",
-  hard: "border-primary-border bg-primary-light text-primary", advanced: "border-primary-border bg-primary-light text-primary",
+  easy: "border-border bg-secondary text-foreground", beginner: "border-border bg-secondary text-foreground",
+  medium: "border-border bg-secondary text-foreground", intermediate: "border-border bg-secondary text-foreground",
+  hard: "border-primary/40 bg-primary/10 text-primary font-semibold", advanced: "border-primary/40 bg-primary/10 text-primary font-semibold",
 };
 
 export function CourseStatusBadge({ status }: { status: ContentStatus }) {

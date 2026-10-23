@@ -57,15 +57,15 @@ const DIFFICULTY_STYLES: Record<
 > = {
   beginner: {
     label: "Beginner",
-    className: "border-success/40 bg-success/10 text-success-strong",
+    className: "border-border bg-secondary text-foreground",
   },
   intermediate: {
     label: "Intermediate",
-    className: "border-warning/40 bg-warning/10 text-warning-strong",
+    className: "border-border bg-secondary text-foreground",
   },
   advanced: {
     label: "Advanced",
-    className: "border-primary-border bg-primary-light text-primary",
+    className: "border-primary/40 bg-primary/10 text-primary font-semibold",
   },
 };
 
@@ -188,7 +188,7 @@ export function LabDetailClient({
         <div className="flex flex-col gap-6">
           <div>
             <div className="flex flex-wrap items-center gap-2">
-              <span className="text-xs font-medium uppercase tracking-wide text-success-strong">
+              <span className="text-xs font-semibold uppercase tracking-wide text-primary">
                 {lab.category}
               </span>
               <span
@@ -319,7 +319,7 @@ export function LabDetailClient({
           <Card className="flex flex-col gap-4 p-5">
             <div className="flex items-center justify-between">
               <span className="text-sm font-semibold">Start the lab</span>
-              <ShieldCheck className="size-4 text-success-strong" />
+              <ShieldCheck className="size-4 text-primary" />
             </div>
             <p className="text-xs leading-relaxed text-muted-foreground">
               A dedicated sandbox is provisioned on a session-private network.
@@ -327,15 +327,15 @@ export function LabDetailClient({
             </p>
             <ul className="flex flex-col gap-1.5 text-xs text-muted-foreground">
               <li className="flex items-center gap-1.5">
-                <CheckCircle2 className="size-3.5 text-success-strong" />
+                <CheckCircle2 className="size-3.5 text-primary" />
                 Isolated microVM — no internet egress
               </li>
               <li className="flex items-center gap-1.5">
-                <CheckCircle2 className="size-3.5 text-success-strong" />
+                <CheckCircle2 className="size-3.5 text-primary" />
                 Objectives verified by the demo service
               </li>
               <li className="flex items-center gap-1.5">
-                <CheckCircle2 className="size-3.5 text-success-strong" />
+                <CheckCircle2 className="size-3.5 text-primary" />
                 Hints tracked ({lab.hard_timeout_minutes} min hard stop)
               </li>
             </ul>
@@ -393,7 +393,7 @@ export function LabDetailClient({
 
             {isLocked ? (
               <p className="flex items-start gap-1.5 text-xs leading-relaxed text-muted-foreground">
-                <Lock className="mt-0.5 size-3.5 shrink-0 text-warning-strong" />
+                <Lock className="mt-0.5 size-3.5 shrink-0 text-muted-foreground" />
                 This lab requires a lab pass. Payment happens on the
                 provider&apos;s hosted page — no card data touches Zapsters.
               </p>
@@ -406,14 +406,14 @@ export function LabDetailClient({
                 className="flex flex-col gap-2 rounded-lg border border-border bg-muted/40 p-3"
               >
                 <div className="flex items-center gap-2 text-xs">
-                  <LoaderCircle className="size-3.5 animate-spin text-success-strong" />
+                  <LoaderCircle className="size-3.5 animate-spin text-primary" />
                   <span className="font-medium">Spinning up sandbox…</span>
                 </div>
                 <div className="flex h-1 w-full gap-0.5 overflow-hidden">
                   {Array.from({ length: 6 }).map((_, i) => (
                     <motion.span
                       key={i}
-                      className="h-full flex-1 rounded-full bg-success/70"
+                      className="h-full flex-1 rounded-full bg-primary/70"
                       animate={{ opacity: [0.2, 1, 0.2] }}
                       transition={{
                         duration: 1,

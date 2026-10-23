@@ -44,9 +44,9 @@ export const CourseCard = React.memo(function CourseCard({
       }}
       onMouseLeave={preview.revoke}
       className={cn(
-        "group relative flex h-full flex-col overflow-hidden rounded-[28px] border border-border bg-card p-6 transition-[box-shadow,border-color,transform] duration-200 ease-out",
-        "hover:-translate-y-0.5 hover:border-border-strong hover:shadow-[0_12px_32px_rgb(17_24_39_/_0.08)]",
-        "focus-within:border-ring focus-within:shadow-[0_12px_32px_rgb(17_24_39_/_0.08)]",
+        "group relative flex h-full flex-col overflow-hidden rounded-xl border border-border bg-card p-5 sm:p-6 transition-[box-shadow,border-color] duration-150 ease-out",
+        "hover:border-border-strong hover:shadow-md",
+        "focus-within:border-ring focus-within:shadow-md",
         className,
       )}
     >
@@ -54,51 +54,41 @@ export const CourseCard = React.memo(function CourseCard({
       <Link
         href={enrolled ? `/courses/${course.id}/learn` : `/courses/${course.id}`}
         aria-label={course.title}
-        className="absolute inset-0 z-0 rounded-[28px] focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-ring"
+        className="absolute inset-0 z-0 rounded-xl focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-ring"
       />
 
-      {/* Header accreditation ribbon (Zapsters Enterprise standard) */}
-      <div className="relative z-10 mb-4 flex items-center justify-between border-b border-border/40 pb-3">
-        <div className="flex items-center gap-1.5 text-[10px] font-mono uppercase tracking-wider text-primary">
-          <span className="flex size-1.5 rounded-full bg-primary animate-pulse" />
-          <span>Accredited Curriculum</span>
-        </div>
-        <div className="flex items-center gap-1 text-[10px] font-semibold text-muted-foreground/80 bg-surface-1 px-2 py-0.5 rounded-full border border-border/40">
-          <span>0.5 CEU</span>
-        </div>
+      {/* Header track & format metadata */}
+      <div className="relative z-10 mb-3 flex items-center justify-between">
+        <span className="text-[11px] font-mono uppercase tracking-wider text-muted-foreground font-semibold truncate max-w-[170px]">
+          {course.category}
+        </span>
+        <span className="rounded-md border border-border/60 bg-surface-1 px-2 py-0.5 text-[10px] font-medium capitalize text-muted-foreground">
+          {course.type} track
+        </span>
       </div>
 
       {/* Body */}
       <div className="relative z-10 flex flex-1 flex-col">
         <div className="mb-2 flex items-center justify-between gap-2">
-          <div className="flex items-center gap-2">
-            <div className="flex size-7 shrink-0 items-center justify-center rounded-full bg-primary/10 font-bold text-xs text-primary">
-              {course.instructor.charAt(0)}
-            </div>
-            <span className="text-xs font-semibold text-foreground/90 truncate max-w-[140px]">{course.instructor}</span>
-          </div>
-          <span className="text-[10px] text-muted-foreground/60 font-mono">Self-Paced</span>
+          <span className="text-xs font-semibold text-foreground/90 truncate max-w-[180px]">{course.instructor}</span>
+          <span className="text-[10px] text-muted-foreground/70 font-mono capitalize">{course.level}</span>
         </div>
         
-        <h3 className="mb-3 line-clamp-2 min-h-[2.6em] font-display text-base font-bold leading-snug tracking-tight text-foreground group-hover:text-primary transition-colors">
+        <h3 className="mb-3 line-clamp-2 min-h-[2.6em] font-display text-base font-semibold leading-snug tracking-tight text-foreground group-hover:text-primary transition-colors">
           {course.title}
         </h3>
 
         <div className="mb-4 flex flex-wrap items-center gap-1.5 text-[10px]">
           <div className="rounded-md bg-surface-1 px-2.5 py-1 font-medium text-muted-foreground border border-border/50">
-             <span className="capitalize">{course.level}</span>
-          </div>
-          <div className="rounded-md bg-surface-1 px-2.5 py-1 font-medium text-muted-foreground border border-border/50">
-             {course.durationHours}h
+             {course.durationHours}h estimated
           </div>
           {course.badge && (
-            <div className="rounded-md bg-primary/10 px-2.5 py-1 font-medium text-primary border border-primary/20 flex items-center gap-1">
-               <span className="size-1.5 rounded-full bg-primary" />
-               <span className="capitalize">{course.badge.toLowerCase()} Badge</span>
+            <div className="rounded-md bg-surface-1 px-2.5 py-1 font-medium text-muted-foreground border border-border/50">
+               <span className="capitalize">{course.badge.toLowerCase()}</span>
             </div>
           )}
           {course.isFree && !course.badge && (
-            <div className="rounded-md bg-success/10 px-2 py-1 font-medium text-success-strong border border-success/20">
+            <div className="rounded-md bg-surface-1 px-2.5 py-1 font-medium text-muted-foreground border border-border/50">
                Free Access
             </div>
           )}
@@ -113,7 +103,7 @@ export const CourseCard = React.memo(function CourseCard({
                 style={{ width: `${Math.round((course.progressPercent ?? 0) * 100)}%` }}
               />
             </div>
-            <span className="text-[11px] font-medium text-primary font-mono">
+            <span className="text-[11px] font-medium text-muted-foreground font-mono">
               {Math.round((course.progressPercent ?? 0) * 100)}%
             </span>
           </div>
@@ -121,10 +111,12 @@ export const CourseCard = React.memo(function CourseCard({
       </div>
 
       {/* Footer */}
-      <div className="relative z-10 mt-auto flex items-end justify-between border-t border-border/40 pt-5">
+      <div className="relative z-10 mt-auto flex items-end justify-between pt-3">
          <div className="flex flex-col gap-0.5">
             <PriceDisplay course={course} />
-            <span className="text-[11px] font-medium text-muted-foreground/60">Remote, Online</span>
+            <span className="text-[11px] font-medium text-muted-foreground/70">
+              Rating: {course.rating.toFixed(1)} ({course.reviewCount.toLocaleString()})
+            </span>
          </div>
          <CardActions course={course} enrolled={enrolled} />
       </div>
@@ -177,7 +169,7 @@ function CardActions({ course, enrolled }: { course: MarketplaceCourse; enrolled
 /** Skeleton placeholder used while rails lazy-mount. */
 export function CourseCardSkeleton({ className }: { className?: string }) {
   return (
-    <div className={cn("flex h-[280px] flex-col overflow-hidden rounded-[28px] border border-border bg-card p-6", className)}>
+    <div className={cn("flex h-[280px] flex-col overflow-hidden rounded-xl border border-border bg-card p-6", className)}>
       <div className="mb-4 flex items-center justify-between">
         <div className="size-10 animate-pulse rounded-full bg-muted" />
         <div className="size-8 animate-pulse rounded-full bg-muted" />

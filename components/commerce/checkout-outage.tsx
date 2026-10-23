@@ -23,9 +23,7 @@ export function CheckoutOutage({
       role="alert"
       className="flex flex-col items-center gap-3 rounded-xl border border-primary-border bg-primary-muted px-6 py-8 text-center"
     >
-      <div className="grid size-12 place-items-center rounded-full border border-primary-border bg-primary-light text-primary">
-        <ServerCrash className="size-5" />
-      </div>
+      <ServerCrash className="size-9 text-primary" />
       <div>
         <h3 className="font-display text-h3">
           Checkout service is temporarily unavailable.

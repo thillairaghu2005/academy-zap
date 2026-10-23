@@ -107,7 +107,7 @@ export function SocialProof() {
                   >
                     <span className="grid size-8 shrink-0 place-items-center rounded-full bg-secondary font-mono text-xs font-semibold text-muted-foreground">
                       {entry.rank === 1 ? (
-                        <Crown className="size-4 text-warning-strong" />
+                        <Crown className="size-4 text-primary" />
                       ) : (
                         entry.rank
                       )}
@@ -206,10 +206,9 @@ function SectionIntro() {
     <div className="flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
       <div>
         <p className="font-mono text-xs uppercase tracking-widest text-muted-foreground">Proof, not promises</p>
-        <h2
-          className="mt-3 text-h2"
-          style={{ fontFamily: "'Geist Variable', sans-serif", fontWeight: 300, letterSpacing: "-0.03em" }}
-        >See who is climbing with you.</h2>
+        <h2 className="mt-3 font-display text-3xl font-light tracking-tight text-foreground sm:text-4xl">
+          See who is climbing with you.
+        </h2>
       </div>
       <p className="max-w-xl text-sm leading-relaxed text-muted-foreground">
         Live-feeling projections make the loop social: individual progress has

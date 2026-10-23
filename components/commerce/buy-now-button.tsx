@@ -122,7 +122,7 @@ export function BuyNowButton({
           Out of stock — check back later.
         </p>
       ) : lowStock > 0 ? (
-        <p className="text-caption font-medium text-warning-strong">
+        <p className="text-caption font-medium text-muted-foreground">
           Only {lowStock} left in stock.
         </p>
       ) : null}

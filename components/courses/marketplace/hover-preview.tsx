@@ -267,13 +267,13 @@ export function PreviewBody({ course }: { course: MarketplaceCourse }) {
 
       <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-caption text-muted-foreground">
         {course.rating > 0 ? (
-          <span className="inline-flex items-center gap-1 font-semibold text-warning-strong">
-            <Star className="size-3.5 fill-warning-strong text-warning-strong" aria-hidden="true" />
+          <span className="inline-flex items-center gap-1 font-semibold text-foreground">
+            <Star className="size-3.5 fill-primary text-primary" aria-hidden="true" />
             {course.rating.toFixed(1)}
             <span className="font-normal text-muted-foreground">({course.reviewCount.toLocaleString()})</span>
           </span>
         ) : (
-          <span className="font-semibold text-success-strong">New course</span>
+          <span className="font-semibold text-primary">New course</span>
         )}
         <span className="inline-flex items-center gap-1">
           <Users className="size-3.5" aria-hidden="true" />
@@ -292,7 +292,7 @@ export function PreviewBody({ course }: { course: MarketplaceCourse }) {
         <ul className="mt-2 space-y-1.5">
           {course.whatYouWillLearn.slice(0, 4).map((item) => (
             <li key={item} className="flex items-start gap-2 text-caption leading-snug text-foreground-secondary">
-              <Check className="mt-0.5 size-3.5 shrink-0 text-success-strong" aria-hidden="true" />
+              <Check className="mt-0.5 size-3.5 shrink-0 text-primary" aria-hidden="true" />
               {item}
             </li>
           ))}
@@ -318,7 +318,7 @@ export function PriceDisplay({
     return (
       <span
         className={cn(
-          "font-display font-bold tracking-tight text-success-strong",
+          "font-display font-bold tracking-tight text-foreground",
           size === "lg" ? "text-h3" : "text-base",
         )}
       >
@@ -341,7 +341,7 @@ export function PriceDisplay({
           <span className="text-caption text-muted-foreground line-through">
             {formatMarketPrice(course.originalPriceCents)}
           </span>
-          <span className="text-caption font-semibold text-success-strong">{course.discountPercent}% OFF</span>
+          <span className="text-caption font-semibold text-primary">{course.discountPercent}% OFF</span>
         </>
       ) : null}
     </span>
@@ -483,7 +483,7 @@ export function PreviewCta({ course }: { course: MarketplaceCourse }) {
       ) : cartProductIds.has(course.id) ? (
         <Button size="sm" variant="secondary" asChild>
           <Link href="/cart">
-            <Check className="size-4 text-success-strong" />
+            <Check className="size-4 text-primary" />
             In cart
           </Link>
         </Button>

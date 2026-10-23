@@ -60,7 +60,7 @@ export function LabReportModal({
           <div className="py-4">
             {submitted ? (
               <div className="flex flex-col items-center justify-center py-8 text-center animate-fade-in">
-                <CheckCircle className="h-12 w-12 text-success mb-4" />
+                <CheckCircle className="size-12 text-primary mb-4" />
                 <h3 className="font-semibold text-lg">Report Submitted!</h3>
                 <p className="text-sm text-muted-foreground mt-2">Your writeup is pending review by an instructor.</p>
               </div>

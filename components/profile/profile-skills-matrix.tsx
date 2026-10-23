@@ -6,7 +6,6 @@ import { Sparkles } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
-import { cn } from "@/lib/utils";
 
 interface SkillDomain {
   domain: string;
@@ -93,12 +92,7 @@ export function ProfileSkillsMatrix() {
               <div className="flex items-center gap-3 shrink-0">
                 <Badge
                   variant="outline"
-                  className={cn(
-                    "font-mono text-[10px] uppercase",
-                    domain.level === "Professional"
-                      ? "border-danger/30 text-danger-strong bg-danger/5"
-                      : "border-primary/30 text-primary bg-primary/5",
-                  )}
+                  className="border-primary/30 text-primary bg-primary/5 font-mono text-[10px] uppercase"
                 >
                   {domain.level}
                 </Badge>

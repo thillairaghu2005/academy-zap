@@ -1,7 +1,6 @@
 import { Check, CircleSlash, Construction } from "lucide-react";
 
 import type { SurfaceMeta } from "@/lib/surfaces";
-import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { PageContainer } from "@/components/shared/page-container";
 import { EmptyState } from "@/components/shared/empty-state";
@@ -24,20 +23,14 @@ export function SurfaceStub({ surface }: { surface: SurfaceMeta }) {
       {/* Header */}
       <div className="animate-fade-up">
         <div className="flex flex-wrap items-center gap-3">
-          <div
-            className={cn(
-              "grid size-12 place-items-center rounded-2xl bg-primary/10 text-primary shadow-sm",
-            )}
-          >
-            <Icon className="size-6" />
-          </div>
+          <Icon className="size-8 text-primary shrink-0" />
           <div>
             <div className="flex flex-wrap items-center gap-2">
               <h1 className="font-display text-h1">
                 {surface.title}
               </h1>
               <Badge variant="outline">{surface.stage}</Badge>
-              <Badge variant={surface.status === "next" ? "success" : "secondary"}>
+              <Badge variant="secondary">
                 {statusLabel[surface.status]}
               </Badge>
             </div>
@@ -55,7 +48,7 @@ export function SurfaceStub({ surface }: { surface: SurfaceMeta }) {
           title="Shell is live — the surface isn't built yet"
           description={`${surface.description} The local demo data module for this subsystem ships with its contract types.`}
           action={
-            <Badge variant="info" className="px-3 py-1">
+            <Badge variant="outline" className="px-3 py-1">
               Build order: {surface.stage} comes after everything before it
             </Badge>
           }
@@ -71,7 +64,7 @@ export function SurfaceStub({ surface }: { surface: SurfaceMeta }) {
           <ul className="mt-4 flex flex-col gap-2.5">
             {surface.planned.map((item) => (
               <li key={item} className="flex items-start gap-2.5 text-sm">
-                <Check className="mt-0.5 size-4 shrink-0 text-success-strong" />
+                <Check className="mt-0.5 size-4 shrink-0 text-primary" />
                 <span className="text-foreground/90">{item}</span>
               </li>
             ))}

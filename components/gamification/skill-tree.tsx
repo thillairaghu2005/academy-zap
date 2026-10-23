@@ -102,12 +102,9 @@ export function SkillTree() {
       .append("circle")
       .attr("r", RADIUS)
       .attr("fill", (d) => {
-        // Resolved from design tokens so the tree follows the theme.
-        if (!d.parent) return "var(--color-card-tint)";
+        if (!d.parent) return "var(--color-secondary)";
         const p = d.data.progress ?? 0;
-        // Completion green ≥85%, warning amber ≥50%, error red below —
-        // lightness + hue differ at every step (colorblind-safe).
-        return p >= 0.85 ? "var(--color-success)" : p >= 0.5 ? "var(--color-warning)" : "var(--color-danger)";
+        return p >= 0.85 ? "var(--color-primary)" : "var(--color-secondary)";
       })
       .attr("fill-opacity", 0.85)
       .attr("stroke", "var(--color-foreground)")

@@ -150,9 +150,7 @@ export function ContestClient({
       <div className="flex flex-col gap-6">
         <div className="flex items-center justify-between rounded-xl border border-border bg-card p-4">
           <div className="flex items-center gap-3">
-            <div className="rounded-full bg-primary/10 p-2 text-primary">
-              <Trophy className="h-5 w-5" />
-            </div>
+            <Trophy className="size-6 text-primary" />
             <div>
               <h2 className="font-display font-semibold">Weekly Contest 42</h2>
               <p className="text-xs text-muted-foreground">3 Problems • Ends in {formatTime(timeLeft)}</p>

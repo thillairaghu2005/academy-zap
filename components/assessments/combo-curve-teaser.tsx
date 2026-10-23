@@ -38,10 +38,10 @@ export function ComboCurveTeaser() {
   const maxCount = data[data.length - 1]?.count ?? 8;
 
   return (
-    <div className="rounded-xl border border-warning/25 bg-warning/5 p-4">
+    <div className="rounded-xl border border-border bg-card p-4">
       <div className="flex items-center justify-between">
         <p className="flex items-center gap-2 font-display text-small font-semibold">
-          <Flame className="size-4 text-warning-strong" />
+          <Flame className="size-4 text-primary" />
           Combo curve
         </p>
           <span className="flex items-center gap-1 text-caption text-muted-foreground">
@@ -68,8 +68,8 @@ export function ComboCurveTeaser() {
                 className={cn(
                   "w-full rounded-t-sm",
                   maxed
-                    ? "bg-gradient-to-t from-orange-500 to-amber-400"
-                    : "bg-gradient-to-t from-amber-600/80 to-amber-400/70",
+                    ? "bg-primary"
+                    : "bg-primary/50",
                 )}
               />
             </div>
@@ -82,14 +82,14 @@ export function ComboCurveTeaser() {
         <span>
           ×{(data.find((s) => s.count === 4)?.multiplier ?? 2).toFixed(2)} at 4
         </span>
-        <span className="text-warning-strong">
+        <span className="text-foreground font-semibold">
           ×{maxMultiplier.toFixed(2)} at {maxCount}
         </span>
       </div>
 
       <p className="mt-2 text-caption leading-relaxed text-muted-foreground">
         Consecutive correct answers raise the multiplier up to{" "}
-        <span className="font-semibold text-warning-strong">
+        <span className="font-semibold text-foreground">
           ×{maxMultiplier.toFixed(2)}
         </span>
         . A wrong answer resets the run — the meter you see is a preview; the

@@ -118,11 +118,11 @@ export function AttemptsTracker({
                 <div className="flex shrink-0 items-center gap-2.5 font-mono text-[11px] text-muted-foreground">
                   {attempt.status === "submitted" ? (
                     <>
-                      <span className="text-success-strong">
+                      <span className="text-foreground">
                         {attempt.score} pts · {attempt.correct_count}/
                         {attempt.question_count} correct
                         {attempt.max_combo > 1 ? (
-                          <span className="ml-2 text-warning-strong">
+                          <span className="ml-2 text-primary font-semibold">
                             best {attempt.max_combo}-combo
                           </span>
                         ) : null}
@@ -130,7 +130,7 @@ export function AttemptsTracker({
                       <Button variant="ghost" size="sm" className="h-7 px-2 text-[11px]" onClick={() => setReviewAttemptId(attempt.attempt_id)}>Review</Button>
                     </>
                   ) : attempt.status === "expired" ? (
-                    <span className="flex items-center gap-1 text-warning-strong">
+                    <span className="flex items-center gap-1 text-muted-foreground">
                       <TimerReset className="size-3" />
                       timed out
                     </span>
@@ -152,8 +152,8 @@ export function AttemptsTracker({
                  Attempts used up — further attempts are blocked by the server.
               </p>
             ) : lastPassed ? (
-              <p className="flex items-center gap-1.5 font-medium text-success-strong">
-                <CheckCircle2 className="size-3.5" />
+              <p className="flex items-center gap-1.5 font-medium text-foreground">
+                <CheckCircle2 className="size-3.5 text-primary" />
                 You passed a previous attempt — retakes still allowed.
               </p>
             ) : (
@@ -212,9 +212,11 @@ function AttemptReview({
               return (
                 <div key={question.id} className="rounded-xl border border-border bg-surface-1 p-4">
                   <div className="flex items-start gap-3">
-                    <span className={cn("grid size-6 shrink-0 place-items-center rounded-full text-xs", answer?.correct ? "bg-success/15 text-success-strong" : "bg-danger/10 text-danger-strong")}>
-                      {answer?.correct ? <CheckCircle2 className="size-3.5" /> : <AlertTriangle className="size-3.5" />}
-                    </span>
+                    {answer?.correct ? (
+                      <CheckCircle2 className="size-4 shrink-0 text-primary mt-0.5" />
+                    ) : (
+                      <AlertTriangle className="size-4 shrink-0 text-muted-foreground mt-0.5" />
+                    )}
                     <div className="min-w-0 flex-1">
                       <p className="text-sm font-medium">{index + 1}. {question.prompt}</p>
                       <p className="mt-2 text-xs leading-relaxed text-muted-foreground">

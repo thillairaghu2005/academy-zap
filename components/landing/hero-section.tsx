@@ -5,7 +5,6 @@ import Image from "next/image";
 import { m as motion, useReducedMotion, type Variants } from "framer-motion";
 import { Check } from "lucide-react";
 
-import { Magnetic } from "@/components/motion/magnetic";
 import { Parallax } from "@/components/motion/parallax";
 import { TextReveal } from "@/components/motion/text-reveal";
 import { motionDurations, motionEasings, motionSprings } from "@/components/motion/motion-tokens";
@@ -36,8 +35,6 @@ export function HeroSection() {
 
   return (
     <section className="relative isolate overflow-hidden bg-background text-foreground">
-      <div className="pointer-events-none absolute inset-0 bg-grid opacity-30" />
-
       <div className="relative mx-auto grid max-w-7xl items-center gap-8 px-5 py-6 sm:px-8 sm:py-8 lg:grid-cols-[0.88fr_1.12fr] lg:gap-12 lg:px-10 lg:py-10">
         <motion.div
           initial={reducedMotion ? false : "hidden"}
@@ -47,7 +44,7 @@ export function HeroSection() {
         >
           <motion.h1
             variants={itemVariants}
-            className="mt-5 max-w-2xl font-display font-light leading-[1.05] tracking-[-0.05em] text-[clamp(2.2rem,4.5vw,4rem)]"
+            className="mt-5 max-w-2xl font-display font-bold leading-[1.08] tracking-[-0.04em] text-[clamp(2.2rem,4.5vw,3.75rem)]"
           >
             <TextReveal text="Code. Defend. Advance." mode="words" delay={0.1} />
             {" "}
@@ -57,7 +54,7 @@ export function HeroSection() {
                 initial={reducedMotion ? false : { opacity: 0, y: "100%" }}
                 animate={reducedMotion ? undefined : { opacity: 1, y: 0 }}
                 transition={{ duration: motionDurations.slow, ease: motionEasings.out, delay: 0.5 }}
-                className="inline-block font-medium text-primary"
+                className="inline-block font-semibold text-primary"
               >
                 in real environments.
               </motion.span>
@@ -67,19 +64,17 @@ export function HeroSection() {
             Immersive labs, automated grading, and real-world scenarios designed to level up your engineering and security skills.
           </motion.p>
           <motion.div variants={itemVariants} className="mt-6 flex flex-col gap-3 sm:flex-row">
-            <Magnetic>
-              <Button size="lg" asChild>
-                <Link href="/courses" onClick={() => trackConversion("hero_start_learning", "landing_hero")}>Start learning</Link>
-              </Button>
-            </Magnetic>
+            <Button size="lg" asChild>
+              <Link href="/courses" onClick={() => trackConversion("hero_start_learning", "landing_hero")}>Start learning</Link>
+            </Button>
             <Button variant="outline" size="lg" asChild>
               <Link href="#how-it-works">See how it works</Link>
             </Button>
           </motion.div>
           <motion.div variants={itemVariants} className="mt-6 flex flex-wrap gap-x-5 gap-y-2 text-xs text-muted-foreground">
-            <span className="inline-flex items-center gap-2"><Check className="size-3.5 text-success-strong" /> Short, focused lessons</span>
-            <span className="inline-flex items-center gap-2"><Check className="size-3.5 text-success-strong" /> Hands-on practice</span>
-            <span className="inline-flex items-center gap-2"><Check className="size-3.5 text-success-strong" /> Progress you can see</span>
+            <span className="inline-flex items-center gap-2"><Check className="size-3.5 text-primary" /> Short, focused lessons</span>
+            <span className="inline-flex items-center gap-2"><Check className="size-3.5 text-primary" /> Hands-on practice</span>
+            <span className="inline-flex items-center gap-2"><Check className="size-3.5 text-primary" /> Progress you can see</span>
           </motion.div>
         </motion.div>
 

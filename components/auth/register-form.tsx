@@ -30,6 +30,7 @@ import { Logo } from "@/components/layout/logo";
 import { useSession } from "@/components/providers/session-provider";
 import { safeNext } from "@/components/auth/safe-redirect";
 import { trackConversion } from "@/lib/analytics";
+import { cn } from "@/lib/utils";
 
 const registerSchema = z.object({
   display_name: z
@@ -166,7 +167,41 @@ export function RegisterForm({ next }: { next?: string }) {
                     />
                   </FormControl>
                   <FormMessage />
-                  {field.value ? <div className="mt-3" aria-live="polite"><div className="flex items-center justify-between text-[11px]"><span className="text-muted-foreground">Password strength</span><span className={strength >= 3 ? "font-semibold text-success-strong" : "font-semibold text-warning-strong"}>{strengthLabel}</span></div><div className="mt-1.5 grid grid-cols-4 gap-1" aria-hidden="true">{checks.map((check) => <span key={check.label} className={`h-1 rounded-full ${check.valid ? strength === 4 ? "bg-success" : "bg-warning" : "bg-border"}`} />)}</div><div className="mt-2 flex flex-wrap gap-1.5">{checks.map((check) => <span key={check.label} className={`inline-flex items-center gap-1 rounded-full border px-2 py-1 text-[10px] ${check.valid ? "border-success/20 bg-success/5 text-success-strong" : "border-border text-muted-foreground"}`}><Check className="size-3" />{check.label}</span>)}</div></div> : null}
+                  {field.value ? (
+                    <div className="mt-3" aria-live="polite">
+                      <div className="flex items-center justify-between text-[11px]">
+                        <span className="text-muted-foreground">Password strength</span>
+                        <span className="font-semibold text-primary">{strengthLabel}</span>
+                      </div>
+                      <div className="mt-1.5 grid grid-cols-4 gap-1" aria-hidden="true">
+                        {checks.map((check) => (
+                          <span
+                            key={check.label}
+                            className={cn(
+                              "h-1 rounded-full",
+                              check.valid ? "bg-primary" : "bg-border",
+                            )}
+                          />
+                        ))}
+                      </div>
+                      <div className="mt-2 flex flex-wrap gap-1.5">
+                        {checks.map((check) => (
+                          <span
+                            key={check.label}
+                            className={cn(
+                              "inline-flex items-center gap-1 rounded-full border px-2 py-1 text-[10px]",
+                              check.valid
+                                ? "border-primary/40 bg-primary/10 text-primary font-medium"
+                                : "border-border text-muted-foreground",
+                            )}
+                          >
+                            <Check className="size-3" />
+                            {check.label}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  ) : null}
                 </FormItem>
               )}
             />

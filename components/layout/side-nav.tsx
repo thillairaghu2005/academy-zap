@@ -64,8 +64,10 @@ function NavLink({
       {unread ? (
         <span
           aria-hidden="true"
-          className="relative z-[1] size-1.5 rounded-full bg-primary"
-        />
+          className="relative z-[1] rounded px-1 text-[10px] font-semibold text-primary"
+        >
+          New
+        </span>
       ) : null}
     </Link>
   );

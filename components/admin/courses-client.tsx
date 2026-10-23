@@ -105,7 +105,7 @@ export function AdminCoursesClient() {
       sortValue: (c) => c.price_cents,
       cell: (c) =>
         c.price_cents === 0 ? (
-          <span className="font-medium text-success-strong">Free</span>
+          <span className="font-medium text-foreground">Free</span>
         ) : (
           <span className="font-medium">
             ${(c.price_cents / 100).toFixed(0)}
@@ -211,7 +211,7 @@ export function AdminCoursesClient() {
                   title="Review & publish (second reviewer)"
                 >
                   <Link href={`/admin/courses/${course.id}/edit`}>
-                    <UploadCloud className="size-4 text-success-strong" />
+                    <UploadCloud className="size-4 text-primary" />
                   </Link>
                 </Button>
               ) : null}

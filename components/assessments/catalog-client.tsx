@@ -70,7 +70,6 @@ function AssessmentCard({
             {/* Header Track Ribbon (Certification Practice Exam vs Diagnostic Check) */}
             <div className="border-b border-border/40 bg-surface-1/50 px-5 py-3 flex items-center justify-between">
               <div className="flex items-center gap-1.5 text-[10px] font-mono font-semibold uppercase tracking-wider text-primary">
-                <span className="size-1.5 rounded-full bg-primary animate-pulse" />
                 <span>
                   {isTrackPracticeExam
                     ? "Official Practice Exam"
@@ -97,7 +96,7 @@ function AssessmentCard({
 
           <div className="p-5 pt-0 space-y-4">
             {/* Stats Row */}
-            <div className="grid grid-cols-3 gap-2 py-3 border-y border-border/40 text-center text-xs">
+            <div className="grid grid-cols-3 gap-2 p-2.5 bg-surface-1/50 rounded-lg text-center text-xs">
               <div className="space-y-0.5">
                 <span className="text-[10px] font-mono uppercase text-muted-foreground">Passing</span>
                 <p className="font-semibold text-foreground font-mono">{assessment.passing_percent}%</p>

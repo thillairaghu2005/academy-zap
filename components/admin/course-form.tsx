@@ -330,10 +330,10 @@ export function CourseForm({ courseId }: { courseId?: string }) {
           {status === "in_review" ? (
             <>
               <CourseReviewDiffCard courseId={course.id} />
-              <Card className="border-success/25">
+              <Card className="border-border">
                 <CardHeader className="p-4 pb-2">
                   <CardTitle className="flex items-center gap-2 font-display text-small">
-                    <CheckCircle2 className="size-4 text-success-strong" />
+                    <CheckCircle2 className="size-4 text-primary" />
                     Second-reviewer approval
                   </CardTitle>
                 </CardHeader>
@@ -607,8 +607,8 @@ export function CourseForm({ courseId }: { courseId?: string }) {
                         Saving draft…
                       </span>
                     ) : autosaveState === "saved" ? (
-                      <span className="inline-flex items-center gap-1.5 text-success-strong">
-                        <CheckCircle2 className="size-3" />
+                      <span className="inline-flex items-center gap-1.5 text-foreground">
+                        <CheckCircle2 className="size-3 text-primary" />
                         Draft saved
                       </span>
                     ) : autosaveState === "error" ? (

@@ -11,35 +11,45 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 
 const MOCK_CHALLENGES = [
   {
-    id: "chal-1",
+    id: "p-two-sum",
+    title: "Two Sum",
+    description: "Given an array of integers and a target, return indices of the two numbers that add up to target.",
+    difficulty: "Easy",
+    xpReward: 100,
+    tags: ["Arrays", "Hash Map"],
+    status: "completed",
+    completions: 18420,
+  },
+  {
+    id: "p-valid-parens",
+    title: "Valid Parentheses",
+    description: "Determine if input string containing brackets is correctly ordered and closed.",
+    difficulty: "Easy",
+    xpReward: 120,
+    tags: ["Stack", "Strings"],
+    status: "attempted",
+    completions: 14210,
+  },
+  {
+    id: "p-reverse-linked-list",
     title: "Reverse a Linked List",
     description: "Given the head of a singly linked list, reverse the list, and return the reversed list.",
     difficulty: "Easy",
     xpReward: 100,
-    tags: ["Data Structures", "Pointers"],
-    status: "completed",
+    tags: ["Linked List", "Pointers"],
+    status: "available",
     completions: 12543,
   },
   {
-    id: "chal-2",
-    title: "LRU Cache Implementation",
-    description: "Design a data structure that follows the constraints of a Least Recently Used (LRU) cache.",
+    id: "p-max-subarray",
+    title: "Maximum Subarray",
+    description: "Find the contiguous subarray containing at least one number with the largest sum.",
     difficulty: "Medium",
-    xpReward: 350,
-    tags: ["System Design", "Hash Map"],
-    status: "attempted",
-    completions: 4892,
-  },
-  {
-    id: "chal-3",
-    title: "Distributed Lock with Redis",
-    description: "Implement a robust distributed lock mechanism using Redis with automatic TTL extension.",
-    difficulty: "Hard",
-    xpReward: 800,
-    tags: ["Redis", "Distributed Systems"],
+    xpReward: 250,
+    tags: ["Arrays", "Dynamic Programming"],
     status: "available",
-    completions: 984,
-  }
+    completions: 8920,
+  },
 ];
 
 export function Challenges() {
@@ -47,7 +57,7 @@ export function Challenges() {
 
   return (
     <PageContainer className="pt-6 sm:pt-8 pb-16">
-      <div className="relative overflow-hidden rounded-3xl border border-border/80 bg-gradient-to-br from-card via-background to-card p-6 sm:p-8 mb-8 shadow-sm">
+      <div className="relative overflow-hidden rounded-xl border border-border/80 bg-gradient-to-br from-card via-background to-card p-6 sm:p-8 mb-8 shadow-sm">
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
           <div className="max-w-2xl space-y-3">
             <div className="flex flex-wrap items-center gap-2">
@@ -75,9 +85,9 @@ export function Challenges() {
               </Link>
             </Button>
             <Button size="sm" className="gap-2 text-xs font-semibold h-9 bg-primary text-primary-foreground hover:bg-primary/90" asChild>
-              <Link href="/challenges/chal-1">
+              <Link href="/judge/p-two-sum">
                 <Play className="size-4" />
-                Launch Jam Challenge
+                Launch Arena Challenge
               </Link>
             </Button>
           </div>
@@ -112,19 +122,19 @@ export function Challenges() {
                     </div>
                     <h3 className="font-semibold text-base mb-1 truncate flex items-center gap-2">
                       {chal.title}
-                      {chal.status === "completed" && <CheckCircle2 className="size-4 text-success-strong" />}
+                      {chal.status === "completed" && <CheckCircle2 className="size-4 text-primary" />}
                     </h3>
                     <p className="text-sm text-muted-foreground line-clamp-1">{chal.description}</p>
                   </div>
                   <div className="flex items-center gap-4 shrink-0 w-full sm:w-auto justify-between sm:justify-end border-t border-border sm:border-0 pt-4 sm:pt-0">
                     <div className="text-right">
                       <p className="text-xs text-muted-foreground mb-0.5">Reward</p>
-                      <p className="font-semibold text-mastery flex items-center gap-1 text-sm">
+                      <p className="font-semibold text-foreground flex items-center gap-1 text-sm">
                         +{chal.xpReward} XP
                       </p>
                     </div>
                     <Button variant={chal.status === "completed" ? "outline" : "default"} size="sm" className="gap-2 shrink-0" asChild>
-                      <Link href={`/challenges/${chal.id}`}>
+                      <Link href={`/judge/${chal.id}`}>
                         {chal.status === "completed" ? "Review" : chal.status === "attempted" ? "Resume" : "Solve"}
                         <ArrowRight className="size-3.5" />
                       </Link>
@@ -139,12 +149,12 @@ export function Challenges() {
         {/* Sidebar / Leaderboard Preview */}
         <div className="flex flex-col gap-4">
           <h2 className="text-lg font-semibold flex items-center gap-2">
-            <Trophy className="size-5 text-warning-strong" />
+            <Trophy className="size-5 text-primary" />
             Top Hackers (This Week)
           </h2>
           <Card className="overflow-hidden">
             <CardContent className="p-0">
-              <div className="divide-y divide-border">
+              <div className="space-y-1 p-2">
                 {[
                   { rank: 1, name: "Alex Chen", xp: 12450, avatar: "AC" },
                   { rank: 2, name: "Samira Jones", xp: 11200, avatar: "SJ" },
@@ -152,8 +162,8 @@ export function Challenges() {
                   { rank: 4, name: "Elena R.", xp: 9500, avatar: "ER" },
                   { rank: 5, name: "Michael T.", xp: 8900, avatar: "MT" },
                 ].map((user) => (
-                  <div key={user.rank} className="flex items-center gap-3 p-3 transition-colors hover:bg-muted/50">
-                    <span className={`w-5 text-center font-mono text-xs font-semibold ${user.rank <= 3 ? "text-warning-strong" : "text-muted-foreground"}`}>
+                  <div key={user.rank} className="flex items-center gap-3 rounded-lg p-2.5 transition-colors hover:bg-muted/50">
+                    <span className={`w-5 text-center font-mono text-xs font-semibold ${user.rank <= 3 ? "text-foreground font-bold" : "text-muted-foreground"}`}>
                       {user.rank}
                     </span>
                     <Avatar className="size-8 rounded-lg">

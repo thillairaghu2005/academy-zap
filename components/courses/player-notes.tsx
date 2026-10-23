@@ -102,7 +102,7 @@ export function PlayerNotes({
                   <Clock className="size-3" />
                   {Math.floor(note.timeSeconds / 60)}:{Math.floor(note.timeSeconds % 60).toString().padStart(2, "0")}
                 </button>
-                <button onClick={() => deleteNote(note.id)} className="opacity-0 group-hover:opacity-100 text-muted-foreground hover:text-danger transition-opacity">
+                <button onClick={() => deleteNote(note.id)} className="opacity-0 group-hover:opacity-100 text-muted-foreground hover:text-destructive transition-opacity">
                   <Trash2 className="size-3.5" />
                 </button>
               </div>

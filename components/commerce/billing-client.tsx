@@ -37,22 +37,19 @@ import { SkeletonCard, SkeletonLines } from "@/components/shared/skeletons";
 
 const SEAT_STATUS_STYLES: Record<
   SeatStatus,
-  { label: string; className: string; dot: string }
+  { label: string; className: string }
 > = {
   active: {
     label: "Active",
-    className: "border-success bg-success/10 text-success-strong",
-    dot: "bg-success",
+    className: "border-primary/40 bg-primary/10 text-primary font-semibold",
   },
   invited: {
     label: "Invited",
-    className: "border-warning bg-warning/10 text-warning-strong",
-    dot: "bg-warning",
+    className: "border-border bg-secondary text-foreground",
   },
   suspended: {
     label: "Suspended",
-    className: "border-primary bg-primary/10 text-primary",
-    dot: "bg-primary",
+    className: "border-border bg-secondary text-muted-foreground",
   },
 };
 
@@ -157,18 +154,12 @@ export function BillingClient() {
         <Badge
           variant="outline"
           className={cn(
-            "gap-1.5 px-3 py-1 shadow-sm transition-colors",
+            "px-3 py-1 shadow-sm transition-colors",
             subscription.active
-              ? "border-success bg-success/10 text-success-strong"
-               : "border-primary bg-primary/10 text-primary",
+              ? "border-primary/30 bg-primary/10 text-primary"
+              : "border-border bg-secondary text-muted-foreground",
           )}
         >
-          <span
-            className={cn(
-              "size-2 rounded-full",
-               subscription.active ? "bg-success" : "bg-primary",
-            )}
-          />
           {subscription.active ? "Active" : "Suspended"}
         </Badge>
       </div>
@@ -208,7 +199,7 @@ export function BillingClient() {
                 {subscription.seats.map((seat) => {
                   const style =
                     SEAT_STATUS_STYLES[seat.status] ??
-                    ({ label: seat.status, className: "", dot: "bg-muted" } as const);
+                    ({ label: seat.status, className: "border-border bg-secondary text-muted-foreground" } as const);
                   return (
                     <tr
                       key={seat.seat_id}
@@ -224,11 +215,10 @@ export function BillingClient() {
                       <td className="px-4 py-3">
                         <span
                           className={cn(
-                            "inline-flex items-center gap-1.5 rounded-full border px-2 py-0.5 text-caption font-semibold uppercase tracking-wide",
+                            "inline-flex items-center rounded-full border px-2 py-0.5 text-caption font-semibold uppercase tracking-wide",
                             style.className,
                           )}
                         >
-                          <span className={cn("size-1.5 rounded-full", style.dot)} />
                           {style.label}
                         </span>
                       </td>
@@ -254,9 +244,7 @@ export function BillingClient() {
         <Card className="mt-6 border-border bg-muted/20 shadow-sm">
           <CardContent className="flex flex-col gap-4 p-5 sm:flex-row sm:items-center sm:justify-between">
             <div className="flex items-center gap-3">
-              <div className="grid size-10 place-items-center rounded-lg bg-primary/10 text-primary">
-                <CreditCard className="size-5" />
-              </div>
+              <CreditCard className="size-6 text-primary shrink-0" />
               <div>
                 <p className="text-sm font-medium">Next invoice</p>
                 <p className="flex items-center gap-1.5 text-sm text-muted-foreground">
@@ -312,9 +300,7 @@ function renderPlans(plans: Plan[], currentPlanId?: string) {
                 <Badge className="absolute -top-2.5 right-4">Current plan</Badge>
               ) : null}
               <div className="flex items-center gap-3">
-                <div className="grid size-9 place-items-center rounded-lg bg-primary/10 text-primary">
-                  <Building2 className="size-4" />
-                </div>
+                <Building2 className="size-5 text-primary shrink-0" />
                 <div>
                   <p className="font-display text-small font-semibold">{plan.name}</p>
                   <p className="text-xs text-muted-foreground capitalize">
