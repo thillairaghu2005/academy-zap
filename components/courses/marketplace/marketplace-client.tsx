@@ -398,10 +398,7 @@ function ContinueLearningStrip({
                 aria-label={`${course.title} progress`}
               >
                 <div
-                  className={cn(
-                    "h-full rounded-full transition-[width]",
-                    progressPct >= 100 ? "bg-success-strong" : "bg-primary",
-                  )}
+                  className="h-full rounded-full transition-[width] bg-primary"
                   style={{ width: `${progressPct}%` }}
                 />
               </div>

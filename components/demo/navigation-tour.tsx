@@ -18,6 +18,7 @@ import {
 import { DEMO_STORAGE_KEYS, writeDemoStorage } from "@/lib/demo/storage";
 import { useAnnounce } from "@/components/providers/live-region-provider";
 import { Button } from "@/components/ui/button";
+import { Progress } from "@/components/ui/progress";
 import {
   Dialog,
   DialogContent,
@@ -25,7 +26,6 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { cn } from "@/lib/utils";
 
 /**
  * One-click navigation tour (Task 4 — demo flows). A step-through overlay of
@@ -121,9 +121,7 @@ export function NavigationTour() {
 
         <div className="flex flex-col gap-4">
           <div className="flex items-start gap-3 rounded-2xl border border-border bg-surface-1 p-4">
-            <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-primary/10 text-primary">
-              <CurrentIcon className="size-5" />
-            </span>
+            <CurrentIcon className="size-6 shrink-0 text-primary mt-0.5" />
             <div>
               <p className="text-sm font-semibold">{current.title}</p>
               <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
@@ -132,22 +130,7 @@ export function NavigationTour() {
             </div>
           </div>
 
-          {/* Progress dots */}
-          <div className="flex items-center justify-center gap-1.5" aria-hidden="true">
-            {TOUR_STEPS.map((item, index) => (
-              <span
-                key={item.title}
-                className={cn(
-                  "h-1.5 rounded-full transition-all",
-                  index === step
-                    ? "w-5 bg-primary"
-                    : index < step
-                      ? "w-1.5 bg-primary/40"
-                      : "w-1.5 bg-border",
-                )}
-              />
-            ))}
-          </div>
+          <Progress value={((step + 1) / stepCount) * 100} className="h-1.5" />
 
           <div className="flex flex-wrap items-center justify-between gap-2">
             <div className="flex gap-2">

@@ -183,7 +183,7 @@ export function LearningPathDetail({ id: _id }: { id: string }) {
                 <Sparkles className="size-3.5" />
                 Accredited by Zapsters Engineering Council
               </span>
-              <Badge variant="outline" className="border-danger/30 text-danger-strong bg-danger/5 text-[11px] font-mono">
+              <Badge variant="outline" className="border-border bg-secondary text-foreground text-[11px] font-mono">
                 Professional Level
               </Badge>
             </div>
@@ -311,14 +311,7 @@ export function LearningPathDetail({ id: _id }: { id: string }) {
                             <Badge
                               variant="outline"
                               className={cn(
-                                "text-[10px] uppercase font-mono font-medium px-2 py-0 border",
-                                item.type === "course"
-                                  ? "border-primary/30 text-primary bg-primary/5"
-                                  : item.type === "lab"
-                                  ? "border-warning/30 text-warning-strong bg-warning/5"
-                                  : item.type === "assessment"
-                                  ? "border-success/30 text-success-strong bg-success/5"
-                                  : "border-border text-muted-foreground",
+                                "text-[10px] uppercase font-mono font-medium px-2 py-0 border border-border bg-secondary text-foreground",
                               )}
                             >
                               {item.type}
@@ -330,13 +323,12 @@ export function LearningPathDetail({ id: _id }: { id: string }) {
                           </div>
 
                           {isCompleted ? (
-                            <span className="flex items-center gap-1 text-[11px] font-semibold text-success-strong">
-                              <CheckCircle2 className="size-3.5" />
+                            <span className="flex items-center gap-1 text-[11px] font-semibold text-foreground">
+                              <CheckCircle2 className="size-3.5 text-primary" />
                               Completed
                             </span>
                           ) : isInProgress ? (
                             <span className="flex items-center gap-1 text-[11px] font-semibold text-primary">
-                              <span className="size-1.5 rounded-full bg-primary animate-pulse" />
                               In Progress
                             </span>
                           ) : (
@@ -439,19 +431,10 @@ export function LearningPathDetail({ id: _id }: { id: string }) {
                 <h4 className="text-xs font-semibold uppercase tracking-wider text-primary font-mono">
                   Prerequisites &amp; Prior Knowledge
                 </h4>
-                <ul className="space-y-2 text-xs text-muted-foreground">
-                  <li className="flex items-start gap-2">
-                    <span className="size-1.5 rounded-full bg-primary mt-1.5 shrink-0" />
-                    <span>Familiarity with HTTP/2, REST APIs, and relational SQL database modeling.</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <span className="size-1.5 rounded-full bg-primary mt-1.5 shrink-0" />
-                    <span>Working knowledge of containerization concepts (Docker runtime, port bindings).</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <span className="size-1.5 rounded-full bg-primary mt-1.5 shrink-0" />
-                    <span>Basic comprehension of public key cryptography (Ed25519, TLS certificates).</span>
-                  </li>
+                <ul className="space-y-2 text-xs text-muted-foreground list-disc pl-4">
+                  <li>Familiarity with HTTP/2, REST APIs, and relational SQL database modeling.</li>
+                  <li>Working knowledge of containerization concepts (Docker runtime, port bindings).</li>
+                  <li>Basic comprehension of public key cryptography (Ed25519, TLS certificates).</li>
                 </ul>
               </div>
             </div>

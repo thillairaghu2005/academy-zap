@@ -102,13 +102,13 @@ function CellOutput({ state }: { state: CellExecutionState | undefined }) {
     return (
       <div className="border-t border-border bg-zinc-950">
         {state.stdout ? (
-          <pre className="overflow-x-auto px-4 py-3 font-mono text-xs leading-relaxed text-emerald-100">{state.stdout}</pre>
+          <pre className="overflow-x-auto px-4 py-3 font-mono text-xs leading-relaxed text-zinc-200">{state.stdout}</pre>
         ) : (
           <p className="px-4 py-3 text-xs text-muted-foreground">No output.</p>
         )}
         <div className="flex items-center gap-3 border-t border-white/5 px-4 py-1.5 text-[11px] text-muted-foreground">
-          <span className="flex items-center gap-1 text-emerald-500">
-            <CheckCircle2 className="size-3" /> exit 0
+          <span className="flex items-center gap-1 text-foreground">
+            <CheckCircle2 className="size-3 text-primary" /> exit 0
           </span>
           {typeof state.runtime_ms === "number" ? <span>{formatRuntime(state.runtime_ms)}</span> : null}
           {typeof state.memory_kb === "number" ? <span>{formatBytes(state.memory_kb)}</span> : null}
@@ -160,15 +160,10 @@ function CodeCell({
   onEdit: (value: string) => void;
   onRun: () => void;
 }) {
-  const done = state?.status === "succeeded";
   return (
     <Card className="overflow-hidden border-border/80 shadow-none">
       <div className="flex items-center justify-between gap-2 border-b border-border bg-muted/40 px-3 py-2">
         <div className="flex items-center gap-2">
-          <span className={cn(
-            "size-1.5 rounded-full",
-            done ? "bg-success" : state && state.status !== "not_run" ? "bg-warning" : "bg-muted-foreground/40",
-          )} />
           <span className="font-mono text-[11px] text-muted-foreground">cell · code</span>
         </div>
         <Button
@@ -385,9 +380,9 @@ export function NotebookClient({
 
   /* ---------- Completion banner ---------- */
   const completedView = isCompleted ? (
-    <div className="mb-6 flex flex-col items-start gap-3 rounded-xl border border-success/30 bg-success/5 p-5">
+    <div className="mb-6 flex flex-col items-start gap-3 rounded-xl border border-border bg-card p-5">
       <div className="flex items-center gap-2">
-        <CheckCircle2 className="size-5 text-success-strong" />
+        <CheckCircle2 className="size-5 text-primary" />
         <h2 className="font-display text-h2">Lab completed</h2>
       </div>
       <p className="text-sm leading-relaxed text-muted-foreground">
@@ -397,11 +392,11 @@ export function NotebookClient({
       {completeResult ? (
         <div className="flex flex-wrap gap-4 text-xs text-muted-foreground">
           <span className="flex items-center gap-1.5">
-            <Flag className="size-3.5 text-success-strong" />
+            <Flag className="size-3.5 text-primary" />
             {completeResult.objectives_completed.length} objectives
           </span>
           <span className="flex items-center gap-1.5">
-            <Sparkles className="size-3.5 text-success-strong" />
+            <Sparkles className="size-3.5 text-primary" />
             {Math.floor(completeResult.time_taken_seconds / 60)}m {completeResult.time_taken_seconds % 60}s
           </span>
         </div>
@@ -432,7 +427,7 @@ export function NotebookClient({
 
         <div className="flex items-center gap-2">
           {progress ? (
-            <Badge variant={isCompleted ? "secondary" : "outline"} className={cn("gap-1.5 text-caption", isCompleted && "border-success/40 bg-success/10 text-success-strong")}>
+            <Badge variant="outline" className={cn("gap-1.5 text-caption", isCompleted && "border-primary/40 bg-primary/10 text-primary")}>
               {isCompleted ? <CheckCircle2 className="size-3" /> : anyRunning ? <LoaderCircle className="size-3 animate-spin" /> : <Circle className="size-3" />}
               {isCompleted ? "completed" : anyRunning ? "running…" : "in progress"}
             </Badge>
@@ -492,7 +487,7 @@ export function NotebookClient({
             </div>
             <div className="flex h-1.5 w-full overflow-hidden rounded-full bg-muted">
               <div
-                className={cn("h-full rounded-full bg-success transition-all", succeededCount === codeCells.length && codeCells.length > 0 && "bg-success-strong")}
+                className="h-full rounded-full bg-primary transition-all"
                 style={{ width: codeCells.length > 0 ? `${(succeededCount / codeCells.length) * 100}%` : "0%" }}
               />
             </div>
@@ -549,7 +544,7 @@ export function NotebookClient({
               {checkpointMutation.isPending ? "Snapshoting…" : "Create checkpoint"}
             </Button>
             {checkpointResult ? (
-              <p className="text-caption text-success-strong">
+              <p className="text-caption text-primary">
                 Checkpoint saved at {formatTimestamp(checkpointResult.created_at)}.
               </p>
             ) : null}

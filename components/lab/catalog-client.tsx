@@ -65,15 +65,15 @@ const DIFFICULTY_STYLES: Record<
 > = {
   beginner: {
     label: "Beginner",
-    className: "border-primary/20 bg-primary/5 text-primary",
+    className: "border-border bg-secondary text-muted-foreground",
   },
   intermediate: {
     label: "Intermediate",
-    className: "border-warning/25 bg-warning/10 text-warning-strong",
+    className: "border-border bg-secondary text-foreground",
   },
   advanced: {
     label: "Advanced",
-    className: "border-danger/20 bg-danger/10 text-danger-strong",
+    className: "border-primary/30 bg-primary/10 text-primary font-semibold",
   },
 };
 
@@ -104,7 +104,6 @@ function LabCard({
         {/* Accreditation header */}
         <div className="border-b border-border/40 bg-surface-1/60 px-4 py-2 flex items-center justify-between">
           <span className="text-[10px] font-mono font-semibold uppercase tracking-wider text-primary flex items-center gap-1.5">
-            <span className="size-1.5 rounded-full bg-primary animate-pulse" />
             Interactive Cloud Sandbox
           </span>
           <span className="text-[10px] text-muted-foreground font-mono">

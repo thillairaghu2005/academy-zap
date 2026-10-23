@@ -113,16 +113,11 @@ function AttemptSummary({
       animate={{ opacity: 1, y: 0 }}
       className="mx-auto flex max-w-lg flex-col items-center gap-5 py-10 text-center"
     >
-      <div
-        className={cn(
-          "grid size-16 place-items-center rounded-2xl border",
-          passed
-            ? "border-success/40 bg-success/10 text-success-strong"
-            : "border-warning/40 bg-warning/10 text-warning-strong",
-        )}
-      >
-        {passed ? <CheckCircle2 className="size-8" /> : <RotateCcw className="size-8" />}
-      </div>
+      {passed ? (
+        <CheckCircle2 className="size-12 text-primary" />
+      ) : (
+        <RotateCcw className="size-12 text-muted-foreground" />
+      )}
       <div>
          <h2 className="font-display text-h2">
           {passed ? "Assessment passed" : "Keep at it"}
@@ -145,7 +140,7 @@ function AttemptSummary({
 
       {event.integrity_flags.length > 0 ? (
         <p className="flex items-center gap-1.5 text-xs text-muted-foreground">
-          <ShieldAlert className="size-3.5 text-warning-strong" />
+          <ShieldAlert className="size-3.5 text-primary" />
           {event.integrity_flags.length} anti-cheat{" "}
           {event.integrity_flags.length === 1 ? "event" : "events"} captured this
           attempt (reviewed by the Integrity Gate in prod).
@@ -410,9 +405,7 @@ export function AssessmentAttemptClient({
           animate={{ opacity: 1, y: 0 }}
           className="mx-auto flex max-w-md flex-col items-center gap-4 py-12 text-center"
         >
-          <div className="grid size-14 place-items-center rounded-2xl border border-warning/40 bg-warning/10 text-warning-strong">
-            <TimerReset className="size-7" />
-          </div>
+          <TimerReset className="size-12 text-primary" />
           <div>
          <h2 className="font-display text-h2">Time&apos;s up</h2>
             <p className="mt-1.5 text-sm text-muted-foreground">
@@ -496,7 +489,7 @@ export function AssessmentAttemptClient({
             className={cn(
               "flex items-center gap-1.5 rounded-full border px-3 py-1 font-mono text-sm font-semibold tabular-nums",
               low
-                ? "border-warning/40 bg-warning/10 text-warning-strong"
+                ? "border-primary/40 bg-primary/10 text-primary"
                 : "border-border bg-muted/50",
             )}
             title="Time remaining"
@@ -529,12 +522,9 @@ export function AssessmentAttemptClient({
               <span
                 className={cn(
                   "rounded-full border px-2 py-0.5 font-mono text-[10px]",
-                  question.difficulty === "easy" &&
-                    "border-success/40 bg-success/10 text-success-strong",
-                  question.difficulty === "medium" &&
-                    "border-warning/40 bg-warning/10 text-warning-strong",
-                  question.difficulty === "hard" &&
-                     "border-primary-border bg-primary-light text-primary",
+                  question.difficulty === "hard"
+                    ? "border-primary/40 bg-primary/10 text-primary font-semibold"
+                    : "border-border bg-secondary text-foreground",
                 )}
               >
                  {question.difficulty}
@@ -696,12 +686,12 @@ export function AssessmentAttemptClient({
                   className={cn(
                     "mt-4 flex items-start gap-3 rounded-lg border p-4",
                     lastResult.correct
-                      ? "border-success/30 bg-success/5"
+                      ? "border-primary/30 bg-primary/5"
                        : "border-primary-border bg-primary-muted",
                   )}
                 >
                   {lastResult.correct ? (
-                    <CheckCircle2 className="mt-0.5 size-5 shrink-0 text-success-strong" />
+                    <CheckCircle2 className="mt-0.5 size-5 shrink-0 text-primary" />
                   ) : (
                     <XCircle className="mt-0.5 size-5 shrink-0 text-primary" />
                   )}
@@ -710,7 +700,7 @@ export function AssessmentAttemptClient({
                       className={cn(
                         "text-sm font-semibold",
                         lastResult.correct
-                          ? "text-success-strong"
+                          ? "text-foreground"
                            : "text-primary",
                       )}
                     >
@@ -786,7 +776,7 @@ export function AssessmentAttemptClient({
                     className={cn(
                       "size-6 rounded-md border font-mono text-[10px] transition-colors",
                        isAnswered
-                         ? "border-success/40 bg-success/10 text-success-strong"
+                         ? "border-primary/40 bg-primary/10 text-primary font-semibold"
                          : "border-border bg-card text-muted-foreground hover:border-primary/40",
                        isCurrent && "ring-2 ring-primary/30",
                        flaggedQuestionIds.has(q.id) && "border-primary/50 bg-primary/10 text-primary",

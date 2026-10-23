@@ -17,6 +17,7 @@ import {
   Settings2,
   Sparkles,
   Trophy,
+  Wifi,
   WifiOff,
   Upload,
 } from "lucide-react";
@@ -169,7 +170,7 @@ export function DemoSettings({ onOpenChange }: { onOpenChange?: (open: boolean) 
       resetDemoStorage();
       queryClient.clear();
       announce("Demo data has been reset");
-      toast.success("Demo data reset — reloading with fresh fixtures ⚡");
+      toast.success("Demo data reset — reloading with fresh fixtures.");
       window.location.reload();
     }, 250);
   };
@@ -205,12 +206,12 @@ export function DemoSettings({ onOpenChange }: { onOpenChange?: (open: boolean) 
           <div className="flex items-center justify-between gap-3 rounded-xl border border-border bg-surface-1 px-4 py-3">
             <span className="flex items-center gap-2.5 text-sm">
               {online ? (
-                <span className="flex items-center gap-1.5 font-medium text-success-strong">
-                  <span className="size-2 rounded-full bg-success" />
+                <span className="flex items-center gap-1.5 font-medium text-foreground">
+                  <Wifi className="size-4 text-primary" />
                   Online
                 </span>
               ) : (
-                <span className="flex items-center gap-1.5 font-medium text-warning-strong">
+                <span className="flex items-center gap-1.5 font-medium text-muted-foreground">
                   <WifiOff className="size-4" />
                   Offline — saved courses remain readable
                 </span>
@@ -296,12 +297,10 @@ export function DemoSettings({ onOpenChange }: { onOpenChange?: (open: boolean) 
                 to a judge problem and it will appear here.
               </p>
             ) : (
-              <ul className="flex flex-col divide-y divide-border rounded-xl border border-border bg-card">
+              <ul className="flex flex-col gap-1.5 rounded-xl border border-border bg-card p-2">
                 {activity.map((entry) => (
-                  <li key={`${entry.created_at}-${entry.label}`} className="flex items-center gap-3 px-4 py-2.5">
-                    <span className="grid size-7 shrink-0 place-items-center rounded-full bg-primary/10 text-primary">
-                      <Activity className="size-3.5" />
-                    </span>
+                  <li key={`${entry.created_at}-${entry.label}`} className="flex items-center gap-3 rounded-lg px-3 py-2 transition-colors hover:bg-muted/40">
+                    <Activity className="size-4 shrink-0 text-muted-foreground" />
                     <span className="min-w-0 flex-1 truncate text-xs font-medium">
                       {entry.label}
                     </span>

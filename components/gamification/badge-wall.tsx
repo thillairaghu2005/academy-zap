@@ -30,16 +30,16 @@ import { cn } from "@/lib/utils";
 
 const STATUS_STYLE: Record<string, { badge: string; icon: React.ReactNode }> = {
   verified: {
-    badge: "border-success/40 bg-success/10 text-success-strong",
-    icon: <BadgeCheck className="size-3.5" />,
+    badge: "border-border bg-secondary text-foreground",
+    icon: <BadgeCheck className="size-3.5 text-primary" />,
   },
   flagged: {
-    badge: "border-warning/40 bg-warning/10 text-warning-strong",
-    icon: <ShieldQuestion className="size-3.5" />,
+    badge: "border-primary/40 bg-primary/10 text-primary font-semibold",
+    icon: <ShieldQuestion className="size-3.5 text-primary" />,
   },
   revoked: {
-    badge: "border-primary-border bg-primary-light text-primary",
-    icon: <BadgeX className="size-3.5" />,
+    badge: "border-border bg-secondary text-muted-foreground",
+    icon: <BadgeX className="size-3.5 text-muted-foreground" />,
   },
 };
 
@@ -107,45 +107,34 @@ export function BadgeWall() {
                 className={cn(
                   "relative flex flex-col rounded-xl border bg-card p-5 transition-colors",
                   b.status === "revoked"
-                        ? "border-primary-border opacity-75"
+                    ? "border-primary-border opacity-75"
                     : b.status === "flagged"
-                      ? "border-warning/25"
-                      : "border-border hover:border-success/30",
+                      ? "border-primary/30"
+                      : "border-border hover:border-border-strong",
                 )}
               >
                 {isNewest ? (
                   <>
                     <motion.span
                       aria-hidden="true"
-                      className="pointer-events-none absolute inset-0 rounded-xl ring-2 ring-success/40"
+                      className="pointer-events-none absolute inset-0 rounded-xl ring-2 ring-primary/30"
                       initial={{ opacity: 0 }}
                       animate={{ opacity: [0, 1, 0.6] }}
                       transition={{ duration: 2.2, times: [0, 0.4, 1] }}
                     />
-                    <span className="absolute -top-2 right-3 rounded-full bg-success px-2 py-0.5 text-[9px] font-bold uppercase tracking-widest text-white shadow-sm">
+                    <span className="absolute -top-2 right-3 rounded-full bg-primary px-2 py-0.5 text-[9px] font-semibold uppercase tracking-wider text-primary-foreground shadow-sm">
                       Newest
                     </span>
                   </>
                 ) : null}
                 <div className="flex items-start justify-between">
-                  <span
-                    className={cn(
-                      "grid size-11 place-items-center rounded-xl",
-                      b.status === "revoked"
-                        ? "bg-primary-light text-primary"
-                        : b.status === "flagged"
-                          ? "bg-warning/10 text-warning-strong"
-                          : "bg-success/10 text-success-strong",
-                    )}
-                  >
-                    {b.status === "revoked" ? (
-                      <BadgeX className="size-5" />
-                    ) : b.status === "flagged" ? (
-                      <Clock3 className="size-5" />
-                    ) : (
-                      <Award className="size-5" />
-                    )}
-                  </span>
+                  {b.status === "revoked" ? (
+                    <BadgeX className="size-5 text-muted-foreground" />
+                  ) : b.status === "flagged" ? (
+                    <Clock3 className="size-5 text-muted-foreground" />
+                  ) : (
+                    <Award className="size-5 text-primary" />
+                  )}
                   <Badge className={cn("text-caption", style.badge)}>
                     {style.icon}
                     {b.status}

@@ -25,7 +25,6 @@ import { useSession } from "@/components/providers/session-provider";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { cn } from "@/lib/utils";
 
 type MoveIcon = typeof BookOpen;
 
@@ -201,7 +200,6 @@ function NextMoveSkeleton() {
   return (
     <Card className="mt-7 overflow-hidden rounded-3xl border-primary-border bg-primary-muted p-5 sm:p-7">
       <div className="flex gap-4">
-        <div className="size-11 shrink-0 rounded-2xl bg-primary/10" />
         <div className="min-w-0 flex-1 space-y-3">
           <div className="h-3 w-36 rounded bg-primary/10" />
           <div className="h-6 w-3/4 rounded bg-primary/10" />
@@ -269,9 +267,7 @@ export function NextMove() {
       <div className="pointer-events-none absolute inset-y-0 right-0 hidden w-2/5 bg-grid opacity-35 [mask-image:linear-gradient(to_left,black,transparent)] lg:block" />
       <div className="relative grid gap-6 p-5 sm:p-7 lg:grid-cols-[minmax(0,1fr)_minmax(220px,0.45fr)] lg:items-center lg:p-8">
         <div className="flex min-w-0 gap-4 sm:gap-5">
-          <div className={cn("grid size-11 shrink-0 place-items-center rounded-2xl", move.iconClassName)}>
-            <Icon className="size-5" aria-hidden="true" />
-          </div>
+          <Icon className="size-6 shrink-0 text-primary mt-1" aria-hidden="true" />
           <div className="min-w-0">
             <div className="flex flex-wrap items-center gap-2">
               <Badge className="rounded-full border-primary/15 bg-primary/10 text-[10px] font-semibold uppercase tracking-[0.12em] text-primary">
@@ -279,8 +275,7 @@ export function NextMove() {
               </Badge>
               <span className="text-xs font-medium text-muted-foreground">{move.eyebrow}</span>
             </div>
-            <p className="mt-3 flex items-center gap-1.5 truncate text-xs text-muted-foreground">
-              <span className="size-1.5 shrink-0 rounded-full bg-primary" aria-hidden="true" />
+            <p className="mt-3 truncate text-xs text-muted-foreground">
               {move.context}
             </p>
             <h2 id="next-move-title" className="mt-2 max-w-2xl font-display text-2xl font-semibold leading-tight tracking-[-0.035em] sm:text-3xl">
@@ -345,7 +340,6 @@ export function NextMove() {
             </div>
           ) : null}
           <div className="mt-4 flex items-center gap-2 border-t border-primary/10 pt-3 text-xs text-muted-foreground">
-            <span className="size-2 rounded-full bg-success" aria-hidden="true" />
             {courseQuery.isLoading || problemQuery.isLoading ? "Preparing your context..." : "Context is ready"}
           </div>
         </div>

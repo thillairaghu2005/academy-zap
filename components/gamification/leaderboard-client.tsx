@@ -28,9 +28,9 @@ import { cn } from "@/lib/utils";
 const PAGE_SIZE = 10;
 
 const RANK_STYLE: Record<number, string> = {
-  1: "bg-amber-400 text-amber-950",
-  2: "bg-slate-300 text-slate-900",
-  3: "bg-orange-400 text-orange-950",
+  1: "bg-primary text-primary-foreground",
+  2: "border border-border bg-secondary text-foreground",
+  3: "border border-border bg-secondary text-foreground",
 };
 
 export function LeaderboardClient() {
@@ -171,7 +171,7 @@ export function LeaderboardClient() {
                         </Badge>
                       ) : null}
                       {e.rank === 1 ? (
-                        <Crown className="size-3.5 text-warning-strong" />
+                        <Crown className="size-3.5 text-primary" />
                       ) : null}
                     </p>
                     <p className="text-caption text-muted-foreground">

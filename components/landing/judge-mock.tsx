@@ -18,9 +18,9 @@ const CODE = [
 type Phase = "idle" | "running" | "accepted";
 
 const RESULTS = [
-  { line: "✓ 3 candidate beacons flagged", className: "text-white/80" },
-  { line: "✓ rule passed in 0.4s", className: "text-white/80" },
-  { line: "✓ all sample cases accepted", className: "text-white/80" },
+  { line: "[ok] 3 candidate beacons flagged", className: "text-white/80" },
+  { line: "[ok] rule passed in 0.4s", className: "text-white/80" },
+  { line: "[ok] all sample cases accepted", className: "text-white/80" },
 ] as const;
 
 /** Browser-framed Judge mock (UI §2.1): type a submission, watch the verdict. */
@@ -68,10 +68,7 @@ export function JudgeMock() {
     >
       {/* Browser chrome */}
       <div className="flex items-center gap-2 border-b border-border bg-surface-2 px-4 py-2.5">
-        <span className="size-2.5 rounded-full bg-border-strong" aria-hidden="true" />
-        <span className="size-2.5 rounded-full bg-border-strong" aria-hidden="true" />
-        <span className="size-2.5 rounded-full bg-border-strong" aria-hidden="true" />
-        <div className="ml-3 flex-1 truncate rounded-md bg-surface-1 px-3 py-1 font-mono text-[11px] text-muted-foreground">
+        <div className="flex-1 truncate rounded-md bg-surface-1 px-3 py-1 font-mono text-[11px] text-muted-foreground">
           app.zapsters.io/judge/beaconing-detect
         </div>
       </div>
@@ -146,7 +143,7 @@ export function JudgeMock() {
             initial={reducedMotion ? false : { scale: 0.9, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             transition={motionSprings.momentum}
-            className="mt-2 inline-flex items-center gap-2 rounded-full bg-success/20 px-3 py-1.5 text-[11px] font-bold text-white"
+            className="mt-2 inline-flex items-center gap-2 rounded-md border border-white/20 bg-white/10 px-3 py-1.5 text-[11px] font-medium text-white"
           >
             <CheckCircle2 className="size-3.5" /> Accepted — rank tick +1
           </motion.div>

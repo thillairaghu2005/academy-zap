@@ -9,17 +9,17 @@ import type {
 /** Shared support badges — used by both the learner and admin surfaces. */
 
 const STATUS_STYLES: Record<TicketStatus, string> = {
-  open: "border-primary-border bg-primary-light text-primary",
-  pending: "border-warning/40 bg-warning/10 text-warning-strong",
-  resolved: "border-success/40 bg-success/10 text-success-strong",
-  closed: "border-slate-400/40 bg-slate-500/10 text-slate-500",
+  open: "border-border bg-secondary text-foreground",
+  pending: "border-border bg-secondary text-muted-foreground",
+  resolved: "border-border bg-secondary text-muted-foreground",
+  closed: "border-border bg-secondary text-muted-foreground",
 };
 
 const PRIORITY_STYLES: Record<TicketPriority, string> = {
   low: "border-border bg-secondary text-muted-foreground",
-  medium: "border-primary-border bg-primary-light text-primary",
-  high: "border-warning/40 bg-warning/10 text-warning-strong",
-  urgent: "border-primary-border bg-primary-light text-primary",
+  medium: "border-border bg-secondary text-muted-foreground",
+  high: "border-border bg-secondary text-foreground font-semibold",
+  urgent: "border-primary/40 bg-primary/10 text-primary font-semibold",
 };
 
 function badgeClass(styles: string): string {

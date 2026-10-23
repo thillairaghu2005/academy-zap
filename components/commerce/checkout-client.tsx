@@ -83,10 +83,7 @@ function Countdown({ expiresAt }: { expiresAt: string }) {
   const s = total % 60;
   return (
     <span className="inline-flex items-center gap-1.5 font-mono">
-      <span className="relative flex size-2">
-        <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-destructive opacity-75"></span>
-        <span className="relative inline-flex size-2 rounded-full bg-destructive"></span>
-      </span>
+      <Clock className="size-3 text-muted-foreground" />
       {m}:{s.toString().padStart(2, "0")}
     </span>
   );
@@ -118,9 +115,7 @@ function HostedEmbed({
     <div className="overflow-hidden rounded-2xl border border-border bg-card shadow-lg">
       {/* Provider frame chrome */}
       <div className="flex items-center gap-3 border-b border-border bg-muted/30 px-4 py-3">
-        <div className="grid size-8 place-items-center rounded-lg bg-primary text-primary-foreground">
-          <CreditCard className="size-4" />
-        </div>
+        <CreditCard className="size-5 text-primary shrink-0" />
         <div className="flex-1">
           <p className="text-sm font-semibold tracking-tight">{PROVIDER_LABEL} Checkout</p>
           <p className="text-caption text-muted-foreground/80">
@@ -156,13 +151,9 @@ function HostedEmbed({
             >
               <span className="flex min-w-0 items-center gap-2.5">
                 {item.kind === "lab" ? (
-                  <div className="grid size-7 shrink-0 place-items-center rounded-md bg-success/10 text-success-strong group-hover:bg-success/20 transition-colors">
-                    <FlaskConical className="size-3.5" />
-                  </div>
+                  <FlaskConical className="size-4 shrink-0 text-primary" />
                 ) : (
-                  <div className="grid size-7 shrink-0 place-items-center rounded-md bg-primary/10 text-primary group-hover:bg-primary/20 transition-colors">
-                    <BookOpen className="size-3.5" />
-                  </div>
+                  <BookOpen className="size-4 shrink-0 text-primary" />
                 )}
                 <span className="truncate font-medium text-foreground/90 group-hover:text-foreground transition-colors">{item.title}</span>
                 {item.quantity > 1 ? (
@@ -208,7 +199,7 @@ function HostedEmbed({
         </Button>
 
         <div className="flex items-center justify-center gap-2 pt-1 text-caption text-muted-foreground/70">
-          <ShieldCheck className="size-3.5 text-success/80" />
+          <ShieldCheck className="size-3.5 text-primary" />
           <span>
             PCI-DSS scope stays with {PROVIDER_LABEL} · 3-D Secure applies in test mode
           </span>
@@ -251,16 +242,9 @@ function PaidPanel({
       initial={{ opacity: 0, y: 10, scale: 0.98 }}
       animate={{ opacity: 1, y: 0, scale: 1 }}
       transition={{ type: "spring", stiffness: 300, damping: 25 }}
-      className="flex flex-col items-center rounded-2xl border border-success/30 bg-success/5 px-6 py-12 text-center"
+      className="flex flex-col items-center rounded-2xl border border-border bg-card px-6 py-12 text-center"
     >
-      <motion.div 
-        initial={{ scale: 0 }}
-        animate={{ scale: 1 }}
-        transition={{ type: "spring", stiffness: 400, damping: 20, delay: 0.1 }}
-        className="mb-5 grid size-16 place-items-center rounded-full border-2 border-success/30 bg-success/10 text-success"
-      >
-        <CheckCircle2 className="size-8" />
-      </motion.div>
+      <CheckCircle2 className="mb-5 size-12 text-primary" />
       <h2 className="font-display text-4xl font-bold tracking-tight text-foreground">
         Payment succeeded
       </h2>
@@ -303,7 +287,7 @@ function PaidPanel({
           <ul className="mt-2 flex flex-col gap-1.5 text-sm">
             {granted.map((g) => (
               <li key={g.product_id} className="flex items-center gap-2">
-                <BadgeCheck className="size-4 shrink-0 text-success-strong" />
+                <BadgeCheck className="size-4 shrink-0 text-primary" />
                 <span className="truncate">
                   {session.cart.items.find((i) => i.product_id === g.product_id)
                     ?.title ?? g.product_id}
@@ -349,8 +333,8 @@ function PaidPanel({
       </div>
 
       {replayResult ? (
-        <p className="mt-3 flex items-center gap-1.5 rounded-md border border-success/30 bg-success/10 px-3 py-1.5 text-xs text-success-strong">
-          <BadgeCheck className="size-3.5" />
+        <p className="mt-3 flex items-center gap-1.5 rounded-md border border-border bg-secondary px-3 py-1.5 text-xs text-foreground">
+          <BadgeCheck className="size-3.5 text-primary" />
           Replayed — same idempotency_key, no double charge, no duplicate
           fulfillment.
         </p>
@@ -365,16 +349,9 @@ function DeclinedPanel() {
       initial={{ opacity: 0, y: 10, scale: 0.98 }}
       animate={{ opacity: 1, y: 0, scale: 1 }}
       transition={{ type: "spring", stiffness: 300, damping: 25 }}
-      className="flex flex-col items-center rounded-2xl border border-destructive/30 bg-destructive/5 px-6 py-12 text-center"
+      className="flex flex-col items-center rounded-2xl border border-border bg-card px-6 py-12 text-center"
     >
-      <motion.div 
-        initial={{ scale: 0 }}
-        animate={{ scale: 1 }}
-        transition={{ type: "spring", stiffness: 400, damping: 20, delay: 0.1 }}
-        className="mb-5 grid size-16 place-items-center rounded-full border-2 border-destructive/30 bg-destructive/10 text-destructive"
-      >
-        <TriangleAlert className="size-8" />
-      </motion.div>
+      <TriangleAlert className="mb-5 size-12 text-destructive" />
       <h2 className="font-display text-4xl font-bold tracking-tight text-foreground">
         Payment declined
       </h2>
@@ -399,16 +376,9 @@ function ExpiredPanel() {
       initial={{ opacity: 0, y: 10, scale: 0.98 }}
       animate={{ opacity: 1, y: 0, scale: 1 }}
       transition={{ type: "spring", stiffness: 300, damping: 25 }}
-      className="flex flex-col items-center rounded-2xl border border-warning/30 bg-warning/5 px-6 py-12 text-center"
+      className="flex flex-col items-center rounded-2xl border border-border bg-card px-6 py-12 text-center"
     >
-      <motion.div 
-        initial={{ scale: 0, rotate: -45 }}
-        animate={{ scale: 1, rotate: 0 }}
-        transition={{ type: "spring", stiffness: 400, damping: 20, delay: 0.1 }}
-        className="mb-5 grid size-16 place-items-center rounded-full border-2 border-warning/30 bg-warning/10 text-warning-strong"
-      >
-        <Hourglass className="size-8" />
-      </motion.div>
+      <Hourglass className="mb-5 size-12 text-muted-foreground" />
       <h2 className="font-display text-4xl font-bold tracking-tight text-foreground">
         Checkout expired
       </h2>

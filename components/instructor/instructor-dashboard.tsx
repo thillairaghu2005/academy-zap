@@ -21,7 +21,7 @@ export function InstructorDashboard() {
             <Users className="size-4" />
           </div>
           <p className="text-2xl font-bold">12,450</p>
-          <span className="text-xs text-success flex items-center gap-1"><ArrowUpRight className="size-3" /> 14% this month</span>
+          <span className="text-xs text-muted-foreground flex items-center gap-1"><ArrowUpRight className="size-3 text-primary" /> 14% this month</span>
         </Card>
         
         <Card className="p-5 flex flex-col gap-2">
@@ -30,7 +30,7 @@ export function InstructorDashboard() {
             <Star className="size-4" />
           </div>
           <p className="text-2xl font-bold">4.8</p>
-          <span className="text-xs text-success flex items-center gap-1"><ArrowUpRight className="size-3" /> +0.2 this month</span>
+          <span className="text-xs text-muted-foreground flex items-center gap-1"><ArrowUpRight className="size-3 text-primary" /> +0.2 this month</span>
         </Card>
 
         <Card className="p-5 flex flex-col gap-2">
@@ -39,7 +39,7 @@ export function InstructorDashboard() {
             <DollarSign className="size-4" />
           </div>
           <p className="text-2xl font-bold">$45,231</p>
-          <span className="text-xs text-success flex items-center gap-1"><ArrowUpRight className="size-3" /> 8% this month</span>
+          <span className="text-xs text-muted-foreground flex items-center gap-1"><ArrowUpRight className="size-3 text-primary" /> 8% this month</span>
         </Card>
 
         <Card className="p-5 flex flex-col gap-2 bg-primary text-primary-foreground">
@@ -87,9 +87,7 @@ export function InstructorDashboard() {
           ))}
           
           <Card className="p-5 flex flex-col items-center justify-center text-center gap-3 border-dashed hover:border-primary/50 hover:bg-accent/30 transition-colors cursor-pointer group">
-            <div className="rounded-full bg-primary/10 p-4 text-primary group-hover:bg-primary group-hover:text-white transition-colors">
-              <BookOpen className="size-6" />
-            </div>
+            <BookOpen className="size-8 text-primary transition-transform group-hover:scale-105" />
             <div>
               <p className="font-medium">Create New Course</p>
               <p className="text-xs text-muted-foreground mt-1">Start building your next hit course</p>

@@ -67,7 +67,7 @@ export function GuildClient() {
                   Guild System
                 </Badge>
                 <h1 className="font-display text-3xl tracking-tight text-foreground sm:text-4xl md:text-5xl">
-                  Collaborate and <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-primary/60">Conquer</span>
+                  Collaborate and Conquer
                 </h1>
                 <p className="text-base leading-relaxed text-muted-foreground/90 sm:text-lg max-w-2xl">
                   Join a guild to combine XP, compete against rival factions, and unlock exclusive skill tree projections.
@@ -86,9 +86,7 @@ export function GuildClient() {
                    Global Rank #{board.guild_rank_global}
                  </Badge>
                  <h1 className="font-display text-3xl tracking-tight text-foreground sm:text-4xl md:text-5xl flex items-center gap-3">
-                   <div className="p-2 sm:p-3 bg-primary/10 rounded-xl border border-primary/20 text-primary shadow-lg shadow-primary/5">
-                     <Shield className="size-8 sm:size-10" />
-                   </div>
+                   <Shield className="size-8 sm:size-10 text-primary shrink-0" />
                    {board.name}
                  </h1>
                </motion.div>
@@ -106,7 +104,6 @@ export function GuildClient() {
                      {board.combined_xp_this_week.toLocaleString()}
                    </span>
                  </div>
-                 <div className="w-px bg-border/50" />
                  <div className="flex flex-col gap-1.5">
                    <span className="text-xs font-semibold text-muted-foreground uppercase tracking-widest">Members</span>
                    <span className="font-mono text-2xl sm:text-3xl font-bold tracking-tighter text-foreground flex items-center gap-2">
@@ -184,10 +181,10 @@ export function GuildClient() {
                     <div className="space-y-2.5">
                       <div className="flex justify-between text-xs font-semibold">
                         <span>In Progress</span>
-                        <span className="text-amber-500 flex items-center gap-1"><Target className="size-3"/> Active</span>
+                        <span className="text-primary flex items-center gap-1"><Target className="size-3"/> Active</span>
                       </div>
                       <div className="h-2 rounded-full bg-secondary overflow-hidden">
-                        <div className="h-full bg-amber-500 w-[65%] transition-all duration-1000 shadow-[0_0_10px_rgba(245,158,11,0.5)]" />
+                        <div className="h-full bg-primary w-[65%] transition-all duration-1000" />
                       </div>
                     </div>
                   </Card>
@@ -206,7 +203,7 @@ export function GuildClient() {
                   </Badge>
                 </div>
                 
-                <Card className="overflow-hidden border border-border/50 bg-background/50 backdrop-blur-xl divide-y divide-border/40 shadow-sm">
+                <Card className="overflow-hidden border border-border/50 bg-background/50 backdrop-blur-xl p-2 space-y-1 shadow-sm">
                   {board.members.map((m, i) => (
                     <motion.div
                       key={m.user_id}
@@ -245,7 +242,7 @@ export function GuildClient() {
                           </p>
                           <div className="flex items-center gap-2 mt-1 text-xs text-muted-foreground font-medium">
                             <span className="text-foreground/70">{m.rank_name}</span>
-                            <span className="size-1 rounded-full bg-border" />
+                            <span className="text-muted-foreground/60">·</span>
                             <span>Level {m.level}</span>
                           </div>
                         </div>
@@ -355,13 +352,9 @@ function VsRow({
       <div className="flex items-end justify-between text-sm mb-2.5">
         <span className={cn("flex items-center gap-2.5 font-semibold text-sm", ours ? "text-primary" : "text-foreground/90")}>
           {ours ? (
-            <div className="p-1.5 rounded-lg bg-primary/10 shadow-sm">
-              <Crown className="size-3.5 text-primary" />
-            </div>
+            <Crown className="size-4 text-primary shrink-0" />
           ) : (
-            <div className="p-1.5 rounded-lg bg-surface-1 shadow-sm border border-border/50">
-              <Shield className="size-3.5 text-muted-foreground" />
-            </div>
+            <Shield className="size-4 text-muted-foreground shrink-0" />
           )}
           {name}
         </span>
@@ -373,7 +366,7 @@ function VsRow({
             <span
               className={cn(
                 "flex items-center gap-0.5 text-[9px] font-bold uppercase tracking-wider",
-                delta >= 0 ? "text-primary" : "text-emerald-500",
+                delta >= 0 ? "text-primary" : "text-foreground",
               )}
             >
               <ArrowUpRight

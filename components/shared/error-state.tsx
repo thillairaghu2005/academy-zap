@@ -36,9 +36,7 @@ export function ErrorState({
         className,
       )}
     >
-      <div className="mb-4 grid size-12 place-items-center rounded-full border border-destructive/25 bg-destructive/10 text-destructive">
-        <TriangleAlert className="size-5" />
-      </div>
+      <TriangleAlert className="mb-4 size-8 text-destructive" aria-hidden="true" />
       <h3 className="font-display text-h3">
         {title}
       </h3>

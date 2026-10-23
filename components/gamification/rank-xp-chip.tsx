@@ -38,9 +38,7 @@ export function RankXpChip({ className }: { className?: string }) {
         className,
       )}
     >
-      <span className="grid size-5 shrink-0 place-items-center rounded-full bg-primary/10 text-primary">
-        <Trophy className="size-3" />
-      </span>
+      <Trophy className="size-3.5 shrink-0 text-primary" />
       {query.isLoading ? (
         <Skeleton className="hidden h-3 w-16 sm:block" />
       ) : context ? (
@@ -49,7 +47,6 @@ export function RankXpChip({ className }: { className?: string }) {
           <Progress
             value={context.rank.rank_progress_pct}
             className="h-1.5 w-12 bg-secondary"
-            indicatorClassName="bg-xp-mastery"
             aria-label={`${context.rank.rank_name} rank progress`}
           />
         </span>

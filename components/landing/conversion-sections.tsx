@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import Link from "next/link";
-import { m as motion, useInView, useReducedMotion } from "framer-motion";
+import { m as motion } from "framer-motion";
 import {
   ArrowRight,
   BadgeCheck,
@@ -12,48 +12,36 @@ import {
   X,
 } from "lucide-react";
 
-import { AnimatedNumber } from "@/components/motion/animated-number";
-import { Marquee } from "@/components/motion/marquee";
 import { SectionTitle } from "@/components/landing/section-title";
 import { AmbientSection } from "@/components/ui/ambient-section";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
 
 /* ------------------------------------------------------------------ */
-/* 2.2 — Logo trust bar                                                */
+/* 2.2 — Technical capabilities bar                                   */
 /* ------------------------------------------------------------------ */
 
-const TRUST_MARKS = [
-  "Northbridge Labs",
-  "Hexwave",
-  "Cipher Co-op",
-  "Stackline",
-  "Monolith Works",
-  "Paperplane",
-  "Darkmatter",
-  "Kite & Co",
+const TECHNICAL_PILLARS = [
+  "Hands-on Cloud Sandboxes",
+  "Deterministic Code Judge",
+  "Architecture Topologies",
+  "Verifiable Skill Credentials",
+  "Applied Incident Scenarios",
+  "Dual XP Gamification",
 ] as const;
 
 export function TrustBar() {
   return (
-    <section aria-label="Teams that use Zapsters" className="border-y border-border bg-surface-1 py-6">
-      <p className="text-center text-xs font-medium uppercase tracking-[0.18em] text-muted-foreground">
-        Trusted by security and engineering teams
-      </p>
-      <Marquee speed={32} className="mt-5 [mask-image:linear-gradient(to_right,transparent,black_12%,black_88%,transparent)]">
-        <span aria-hidden="true" className="flex">
-          {TRUST_MARKS.map((mark) => (
-            <span
-              key={mark}
-              className="mx-5 inline-flex items-center gap-2 font-display text-lg font-semibold tracking-[-0.02em] text-muted-foreground/70"
-            >
-              <span className="size-2 rounded-full bg-primary/30" aria-hidden="true" />
-              {mark}
+    <section aria-label="Zapsters technical learning pillars" className="bg-surface-1 py-4">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div className="flex flex-wrap items-center justify-center gap-x-8 gap-y-2 text-xs font-medium text-muted-foreground">
+          {TECHNICAL_PILLARS.map((pillar) => (
+            <span key={pillar} className="inline-flex items-center">
+              <span>{pillar}</span>
             </span>
           ))}
-        </span>
-      </Marquee>
+        </div>
+      </div>
     </section>
   );
 }
@@ -84,11 +72,11 @@ export function ComparisonSection() {
           title="Hands-On Execution, No Passive Theory"
           description="A standard tutorial provides a video. Zapsters provides an isolated lab environment, automated validation, and verifiable credentials."
         />
-        <div className="mt-8 overflow-hidden rounded-2xl border border-border bg-card">
-          <div className="grid grid-cols-3 border-b border-border bg-surface-2 text-xs font-semibold uppercase tracking-[0.1em] text-muted-foreground">
+        <div className="mt-8 overflow-hidden rounded-xl border border-border bg-card">
+          <div className="grid grid-cols-3 bg-surface-2 text-xs font-semibold uppercase tracking-[0.1em] text-muted-foreground">
             <div className="px-4 py-3 sm:px-6" />
             <div className="px-4 py-3 text-center sm:px-6">Generic Platforms</div>
-            <div className="px-4 py-3 text-center text-primary sm:px-6">Zapsters</div>
+            <div className="px-4 py-3 text-center text-foreground sm:px-6">Zapsters</div>
           </div>
           {COMPARISON_ROWS.map((row, index) => (
             <motion.div
@@ -101,12 +89,12 @@ export function ComparisonSection() {
             >
               <div className="px-4 py-3 text-xs font-medium sm:px-6 sm:text-sm">{row.label}</div>
               <div className="flex items-center justify-center gap-1.5 px-4 py-3 text-center text-xs text-muted-foreground sm:text-sm">
-                <X className="size-3.5 shrink-0 text-border-strong" aria-hidden="true" />
+                <X className="size-3.5 shrink-0 text-muted-foreground" aria-hidden="true" />
                 <span className="hidden sm:inline">{row.generic}</span>
                 <span className="sm:hidden">No</span>
               </div>
               <div className="flex items-center justify-center gap-1.5 px-4 py-3 text-center text-xs font-medium text-foreground sm:text-sm">
-                <Check className={cn("size-3.5 shrink-0 text-success-strong")} aria-hidden="true" />
+                <Check className="size-3.5 shrink-0 text-foreground" aria-hidden="true" />
                 <span>{row.zapsters}</span>
               </div>
             </motion.div>
@@ -126,42 +114,35 @@ export function ComparisonSection() {
 }
 
 function cnRow(index: number): string {
-  return `grid grid-cols-3 items-center border-b border-border last:border-0 ${index % 2 === 0 ? "bg-card" : "bg-surface-1/60"}`;
+  return `grid grid-cols-3 items-center ${index % 2 === 0 ? "bg-card" : "bg-surface-1/60"}`;
 }
 
 /* ------------------------------------------------------------------ */
 /* 2.4 — Outcome stats band                                            */
 /* ------------------------------------------------------------------ */
 
-const STATS = [
-  { label: "Learners online", value: 1204, suffix: "+" },
-  { label: "Judge submissions verified", value: 14208, suffix: "+" },
-  { label: "Lab objectives completed", value: 3180, suffix: "+" },
-  { label: "Verified credentials issued", value: 640, suffix: "+" },
+const PLATFORM_FACTS = [
+  { label: "Core Technical Tracks", value: "6 Tracks", subtext: "Cloud, Security, AI & Systems" },
+  { label: "Deterministic Code Judge", value: "100%", subtext: "Automated test-case verification" },
+  { label: "Isolated Lab Sessions", value: "Zero Local Risk", subtext: "Browser-based sandbox environments" },
+  { label: "Cryptographic Credentials", value: "Verifiable", subtext: "Publicly shareable achievement ledger" },
 ] as const;
-
-function StatValue({ value, suffix }: { value: number; suffix: string }) {
-  const ref = React.useRef<HTMLSpanElement>(null);
-  const inView = useInView(ref, { once: true, amount: 0.5 });
-  const reducedMotion = useReducedMotion() ?? false;
-  return (
-    <span ref={ref} className="font-display text-4xl font-semibold tabular-nums tracking-[-0.05em] sm:text-5xl">
-      {inView && !reducedMotion ? <AnimatedNumber value={value} countUpOnMount /> : value.toLocaleString()}
-      {suffix}
-    </span>
-  );
-}
 
 export function StatsBand() {
   return (
     <section className="bg-background">
-      <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
-        <div className="grid gap-8 rounded-3xl border border-border bg-surface-2 px-6 py-10 sm:grid-cols-2 lg:grid-cols-4 lg:px-10">
-          {STATS.map((stat) => (
-            <div key={stat.label} className="text-center">
-              <StatValue value={stat.value} suffix={stat.suffix} />
-              <p className="mt-2 text-xs font-medium uppercase tracking-[0.14em] text-muted-foreground">
-                {stat.label}
+      <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
+        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+          {PLATFORM_FACTS.map((fact) => (
+            <div key={fact.label} className="flex flex-col rounded-xl border border-border bg-surface-1 p-5">
+              <span className="font-display text-2xl sm:text-3xl font-bold tracking-tight text-foreground">
+                {fact.value}
+              </span>
+              <p className="mt-1 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                {fact.label}
+              </p>
+              <p className="mt-1 text-xs text-muted-foreground">
+                {fact.subtext}
               </p>
             </div>
           ))}
@@ -176,10 +157,10 @@ export function StatsBand() {
 /* ------------------------------------------------------------------ */
 
 const CASE_TIMELINE = [
-  { icon: BadgeCheck, title: "Foundation", body: "Completed the detection fundamentals course in two weeks." },
-  { icon: FlaskConical, title: "Applied in a lab", body: "Turned a detection rule into a verified lab objective." },
-  { icon: ShieldCheck, title: "Earned the credential", body: "Graduated to a verifiable rank credential she can share." },
-  { icon: ArrowRight, title: "Now", body: "Hunting in the Judge on weekends, ranked top-50 on the board." },
+  { icon: BadgeCheck, title: "Foundation", body: "Completed the detection fundamentals course with hands-on practice." },
+  { icon: FlaskConical, title: "Applied in a lab", body: "Turned a detection rule into a verified, passing lab objective." },
+  { icon: ShieldCheck, title: "Earned the credential", body: "Earned a verifiable rank credential recorded on the platform ledger." },
+  { icon: ArrowRight, title: "Continuous practice", body: "Solves problems in the Judge engine and climbs the global ladder." },
 ] as const;
 
 export function CaseStudySection() {
@@ -190,76 +171,29 @@ export function CaseStudySection() {
           <div>
             <SectionTitle
               title="Verified engineering progression"
-              description="Priya transformed her detection skills into an applied engineering workflow. Every step is an immutable record in her profile."
+              description="From syntax to applied systems defense. Every completed lab, challenge, and assessment builds an immutable record in your profile."
             />
-            <div className="mt-6 flex items-center gap-4">
-              <div className="grid size-12 place-items-center rounded-full border border-border bg-muted font-display text-lg font-semibold text-foreground">
-                P
-              </div>
-              <div>
-                <p className="text-sm font-semibold">Priya S.</p>
-                <p className="text-xs text-muted-foreground">Detection analyst · ranked #48 this week</p>
-              </div>
+            <div className="mt-6">
+              <p className="text-sm font-semibold text-foreground">Priya S.</p>
+              <p className="text-xs text-muted-foreground">Security Analyst · Active learner</p>
             </div>
           </div>
 
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:ml-3">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             {CASE_TIMELINE.map((step, index) => {
               const Icon = step.icon;
-              const isWide = index >= 2;
-              
               return (
-                <motion.div
-                  key={step.title}
-                  initial={{ opacity: 0, y: 16 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: index * 0.1, duration: 0.5, ease: "easeOut" }}
-                  className={cn("group relative", isWide && "sm:col-span-2")}
-                >
-                  <Card className={cn(
-                    "relative h-full overflow-hidden border-border/50 p-6 transition-all duration-300 hover:-translate-y-1 hover:border-primary/40 hover:shadow-xl hover:shadow-primary/5",
-                    index === 3
-                      ? "bg-gradient-to-br from-muted/60 via-muted/30 to-background"
-                      : "bg-gradient-to-br from-card via-card/80 to-card/30"
-                  )}>
-                    <div className="absolute inset-0 bg-gradient-to-r from-muted/0 via-muted/10 to-muted/0 opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
-                    
-                    {index === 3 && (
-                      <div className="absolute -right-8 -top-8 text-primary/10 transition-transform duration-500 group-hover:scale-110">
-                        <Icon className="size-40" />
-                      </div>
-                    )}
-                    
-                    <div className={cn("relative z-10 flex h-full flex-col", index === 2 ? "sm:flex-row sm:items-center sm:justify-between" : "")}>
-                      <div className="flex-1">
-                        <div className="mb-4 inline-flex size-10 items-center justify-center rounded-xl bg-muted text-muted-foreground">
-                          <Icon className="size-5" />
-                        </div>
-                        <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-primary">{step.title}</p>
-                        <p className={cn(
-                          "mt-2 leading-relaxed text-muted-foreground",
-                          index === 3 ? "max-w-sm text-lg font-medium text-foreground" : "text-sm",
-                          index === 2 && "max-w-sm"
-                        )}>
-                          {step.body}
-                        </p>
-                      </div>
-                      
-                      {index === 2 && (
-                        <div className="mt-6 flex shrink-0 sm:mt-0 sm:justify-end">
-                          <div className="flex -space-x-3">
-                            <div className="size-12 rounded-full border-4 border-background bg-muted" />
-                            <div className="size-12 rounded-full border-4 border-background bg-muted-foreground/30" />
-                            <div className="flex size-12 items-center justify-center rounded-full border-4 border-background bg-primary font-display text-sm font-bold text-primary-foreground shadow-sm">
-                              <ShieldCheck className="size-5" />
-                            </div>
-                          </div>
-                        </div>
-                      )}
-                    </div>
+                <div key={step.title} className="h-full">
+                  <Card className="h-full border border-border bg-card p-5">
+                    <Icon className="mb-3 size-5 text-foreground" />
+                    <p className="text-xs font-bold uppercase tracking-wider text-foreground">
+                      {index + 1}. {step.title}
+                    </p>
+                    <p className="mt-2 text-xs sm:text-sm leading-relaxed text-muted-foreground">
+                      {step.body}
+                    </p>
                   </Card>
-                </motion.div>
+                </div>
               );
             })}
           </div>

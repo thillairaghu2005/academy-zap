@@ -141,9 +141,7 @@ export function MyTicketsClient() {
               >
                 <Card className="transition-[transform,border-color,box-shadow] group-hover:-translate-y-0.5 group-hover:border-primary/40 group-hover:shadow-lg">
                   <CardContent className="flex items-center gap-4 p-4">
-                    <div className="grid size-10 shrink-0 place-items-center rounded-lg bg-primary/10 text-primary">
-                      <MessageSquare className="size-4.5" />
-                    </div>
+                    <MessageSquare className="size-5 shrink-0 text-muted-foreground" />
                     <div className="min-w-0 flex-1">
                       <div className="flex flex-wrap items-center gap-2">
                         <span className="font-mono text-xs text-muted-foreground">

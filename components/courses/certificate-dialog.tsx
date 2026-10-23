@@ -106,9 +106,7 @@ export function CertificateDialog({
           <div className="pointer-events-none absolute -bottom-16 -left-16 size-48 rounded-full bg-primary/10 blur-2xl" />
 
           <div className="relative z-10">
-            <div className="mx-auto grid size-12 place-items-center rounded-full border border-primary/25 bg-primary/10 text-primary">
-              <BadgeCheck className="size-6" />
-            </div>
+            <BadgeCheck className="mx-auto size-9 text-primary" />
             {/* Animated seal — the ring + check line-draw on open (UI §4.5). */}
             <svg
               viewBox="0 0 96 96"

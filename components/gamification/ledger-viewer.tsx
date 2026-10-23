@@ -80,24 +80,17 @@ export function LedgerViewer({
               className={cn(
                 "flex items-start gap-3 rounded-xl border p-4",
                 data.chain.valid
-                  ? "border-success/30 bg-success/5"
+                  ? "border-border bg-card"
                   : "border-primary-border bg-primary-light",
               )}
             >
               {data.chain.valid ? (
-                <CheckCircle2 className="mt-0.5 size-5 shrink-0 text-success-strong" />
+                <CheckCircle2 className="mt-0.5 size-5 shrink-0 text-primary" />
               ) : (
                 <TriangleAlert className="mt-0.5 size-5 shrink-0 text-primary" />
               )}
               <div>
-                <p
-                  className={cn(
-                    "font-display text-small font-semibold",
-                    data.chain.valid
-                      ? "text-success-strong"
-                      : "text-primary",
-                  )}
-                >
+                <p className="font-display text-small font-semibold text-foreground">
                   {data.chain.valid
                     ? "Hash chain verified"
                     : "Chain integrity BROKEN"}
@@ -146,7 +139,7 @@ export function LedgerViewer({
 
             <div className="mt-3 flex items-center justify-between">
               <p className="flex items-center gap-1.5 text-caption text-muted-foreground">
-                <ShieldCheck className="size-3.5 text-success-strong" />
+                <ShieldCheck className="size-3.5 text-primary" />
                 Append-only — nothing is ever mutated or deleted
               </p>
               <Button variant="outline" size="sm" onClick={() => onOpenChange(false)}>
@@ -165,16 +158,16 @@ export function LedgerViewer({
 /* ------------------------------------------------------------------ */
 
 const XP_TYPE_STYLE: Record<string, string> = {
-  completion: "border-primary-border bg-primary-light text-primary",
-  mastery: "border-primary-border bg-primary-muted text-primary",
-  bonus: "border-success/40 bg-success/10 text-success-strong",
-  adjustment: "border-primary-border bg-primary-light text-primary",
+  completion: "border-border bg-secondary text-foreground",
+  mastery: "border-border bg-secondary text-foreground",
+  bonus: "border-border bg-secondary text-foreground",
+  adjustment: "border-border bg-secondary text-muted-foreground",
 };
 
 const INTEGRITY_STYLE: Record<string, string> = {
-  verified: "text-success-strong",
-  flagged: "text-warning-strong",
-  reversed: "text-primary",
+  verified: "text-foreground",
+  flagged: "text-primary font-semibold",
+  reversed: "text-muted-foreground",
 };
 
 function LedgerEntriesTable({ entries }: { entries: LedgerAuditView["entries"] }) {
@@ -189,7 +182,7 @@ function LedgerEntriesTable({ entries }: { entries: LedgerAuditView["entries"] }
           <th className="px-3 py-2 font-medium">Hash</th>
         </tr>
       </thead>
-      <tbody className="divide-y divide-border">
+      <tbody>
         {entries.map((e, i) => (
           <motion.tr
             key={e.id}
@@ -199,7 +192,7 @@ function LedgerEntriesTable({ entries }: { entries: LedgerAuditView["entries"] }
             className={cn(
               "align-top",
                 e.integrity_status === "reversed" && "bg-primary-muted",
-              e.integrity_status === "flagged" && "bg-warning/5",
+              e.integrity_status === "flagged" && "bg-primary/5",
             )}
           >
             <td className="whitespace-nowrap px-3 py-2 font-mono text-muted-foreground">
@@ -221,7 +214,7 @@ function LedgerEntriesTable({ entries }: { entries: LedgerAuditView["entries"] }
             <td
               className={cn(
                 "whitespace-nowrap px-3 py-2 font-mono font-semibold tabular-nums",
-                  e.xp_delta < 0 ? "text-primary" : "text-success-strong",
+                e.xp_delta < 0 ? "text-primary" : "text-foreground",
               )}
             >
               {e.xp_delta > 0 ? "+" : ""}
@@ -246,7 +239,7 @@ function LedgerEntriesTable({ entries }: { entries: LedgerAuditView["entries"] }
             </td>
             <td className="px-3 py-2">
               <div className="font-mono text-[9px] text-muted-foreground">
-                <p className="truncate text-success-strong/70" title={e.prev_hash}>
+                <p className="truncate text-muted-foreground" title={e.prev_hash}>
                   prev {e.prev_hash.slice(0, 8)}…
                 </p>
                 <p className="truncate" title={e.entry_hash}>
@@ -273,15 +266,15 @@ function VersionsView({
   diffs: LedgerAuditView["diffs"];
 }) {
   return (
-    <div className="divide-y divide-border">
+    <div className="space-y-1 p-2">
       {diffs.map((d) => (
-        <div key={`${d.from_version}-${d.to_version}`} className="px-4 py-3">
+        <div key={`${d.from_version}-${d.to_version}`} className="rounded-lg p-2.5 hover:bg-surface-1/40 transition-colors">
           <div className="flex flex-wrap items-center gap-2">
             <span className="font-mono text-[10px] text-muted-foreground">
               v{d.from_version} → v{d.to_version}
             </span>
             {d.rank_changed ? (
-              <Badge className="border-primary-border bg-primary-light text-caption text-primary">
+              <Badge className="border-border bg-secondary text-caption text-foreground font-semibold">
                 rank change: {d.from_rank} → {d.to_rank}
               </Badge>
             ) : null}
@@ -299,8 +292,8 @@ function VersionsView({
         </div>
       ))}
       {snapshots.map((s) => (
-        <div key={s.context_version} className="flex items-center gap-3 px-4 py-2.5">
-          <span className="grid size-7 shrink-0 place-items-center rounded-lg bg-secondary font-mono text-[10px] font-bold text-muted-foreground">
+        <div key={s.context_version} className="flex items-center gap-3 rounded-lg px-2.5 py-2 hover:bg-surface-1/40 transition-colors">
+          <span className="font-mono text-xs font-bold text-muted-foreground shrink-0">
             v{s.context_version}
           </span>
           <div className="min-w-0 flex-1">

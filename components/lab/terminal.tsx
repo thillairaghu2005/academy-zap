@@ -56,7 +56,8 @@ export function LabTerminal({
       cursorBlink: true,
       fontSize: 13,
       lineHeight: 1.25,
-      fontFamily: "var(--font-body)",
+      fontFamily:
+        'var(--font-mono, ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace)',
       theme: {
         background: "#18181B",
         foreground: "#d4dbe6",
@@ -213,7 +214,6 @@ export function LabTerminal({
           role="status"
           className="pointer-events-none absolute inset-0 z-10 flex items-center justify-center gap-2 bg-zinc-950 text-sm text-muted-foreground"
         >
-          <span className="size-2 rounded-full bg-emerald-400" />
           Establishing encrypted session…
         </div>
       ) : null}

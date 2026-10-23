@@ -113,7 +113,7 @@ export function SessionProvider({ children }: { children: React.ReactNode }) {
         const result = await backendLogin(input);
         const user = toSessionUser(result.user);
         setSession({ status: "authenticated", user });
-        toast.success(`Welcome back, ${user.display_name} ⚡`);
+        toast.success(`Welcome back, ${user.display_name}.`);
         return;
       }
 
@@ -126,7 +126,7 @@ export function SessionProvider({ children }: { children: React.ReactNode }) {
       persistSession(account.user);
       setSession({ status: "authenticated", user: account.user });
       toast.success(
-        `Welcome back, ${account.user.display_name} ⚡`,
+        `Welcome back, ${account.user.display_name}.`,
       );
     },
     [],
@@ -138,7 +138,7 @@ export function SessionProvider({ children }: { children: React.ReactNode }) {
         const result = await backendRegister(input);
         const user = toSessionUser(result.user);
         setSession({ status: "authenticated", user });
-        toast.success("Account created — welcome to Zapsters ⚡");
+        toast.success("Account created — welcome to Zapsters.");
         return;
       }
 
@@ -150,7 +150,7 @@ export function SessionProvider({ children }: { children: React.ReactNode }) {
       writeDemoStorage(DEMO_STORAGE_KEYS.authAccounts, [...accounts(), { user, password: input.password }]);
       persistSession(user);
       setSession({ status: "authenticated", user });
-      toast.success("Account created — welcome to Zapsters ⚡");
+      toast.success("Account created — welcome to Zapsters.");
     },
     [],
   );

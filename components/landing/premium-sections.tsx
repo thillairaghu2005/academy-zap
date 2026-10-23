@@ -3,7 +3,7 @@
 import * as React from "react";
 import Link from "next/link";
 import { m as motion } from "framer-motion";
-import { Check, ChevronDown, Play, ShieldCheck, Star, Users, MonitorPlay, Lightbulb, Award, ArrowRight, BadgeCheck, CreditCard, Info, Lock } from "lucide-react";
+import { Check, ChevronDown, Play, ShieldCheck, Star, Users, ArrowRight, BadgeCheck, CreditCard, Info, Lock } from "lucide-react";
 
 import { MARKETING_FAQ, MARKETING_TESTIMONIALS, MARKETING_PLANS } from "@/lib/mocks/marketing";
 import { Button } from "@/components/ui/button";
@@ -17,144 +17,8 @@ import { cn } from "@/lib/utils";
 
 
 
-function useLiveLearners() {
-  const [learners, setLearners] = React.useState(1204);
-  const [recent, setRecent] = React.useState(318);
-
-  React.useEffect(() => {
-    const stored = window.sessionStorage.getItem("zapsters-live-learners");
-    if (stored) {
-      try {
-      const value = JSON.parse(stored) as { learners: number; recent: number };
-        if (Number.isFinite(value.learners) && Number.isFinite(value.recent)) {
-          React.startTransition(() => {
-            setLearners(value.learners);
-            setRecent(value.recent);
-          });
-        }
-      } catch {
-        // A stale session value should never block the marketing page.
-      }
-    }
-    const timer = window.setInterval(() => {
-      setLearners((value) => Math.max(1120, value + Math.floor(Math.random() * 15) - 7));
-      setRecent((current) => Math.max(280, current + Math.floor(Math.random() * 9) - 4));
-    }, 4500);
-    return () => window.clearInterval(timer);
-  }, []);
-
-  React.useEffect(() => {
-    window.sessionStorage.setItem("zapsters-live-learners", JSON.stringify({ learners, recent }));
-  }, [learners, recent]);
-
-  return { learners, recent };
-}
-
-export function LiveLearningTicker() {
-  const { learners, recent } = useLiveLearners();
-
-  return (
-    <div className="mx-auto flex max-w-7xl items-center justify-center gap-2 border-x border-border bg-surface-1 px-4 py-3 text-xs text-muted-foreground sm:gap-4">
-      <span className="flex items-center gap-2 font-medium text-foreground">
-        {learners.toLocaleString()} learners online now
-      </span>
-      <span className="hidden text-border-strong sm:inline">/</span>
-      <span>{recent.toLocaleString()} started a session this hour</span>
-    </div>
-  );
-}
-
-
-
-export function PricingSection({ standalone = false, headingAs: Heading = "h2" }: { standalone?: boolean; headingAs?: "h1" | "h2" }) {
-  return (
-    <section id="pricing" className={cn("bg-surface-1 py-10 sm:py-12", standalone ? "min-h-[calc(100dvh-5rem)] flex items-center" : "")}>
-      <div className="mx-auto max-w-7xl px-5 sm:px-8 lg:px-10 w-full">
-        <div className="relative overflow-hidden rounded-[2rem] bg-card text-card-foreground shadow-xl border border-border">
-          <div className="flex flex-col md:flex-row gap-8 p-6 md:p-8 lg:p-12 md:items-center">
-            {/* Left Column */}
-            <div className="flex-1 flex flex-col gap-5 lg:gap-6 md:pr-4">
-              <div>
-                <Heading className="font-display font-semibold text-2xl md:text-3xl lg:text-4xl xl:text-[2.5rem] tracking-tight text-foreground mb-3 leading-tight">
-                  Build your career with a<br />Personal Plan subscription
-                </Heading>
-                <p className="text-muted-foreground text-sm md:text-base leading-relaxed max-w-xl">
-                  Subscribers save an average of ₹4,000+ in their first month, stop paying per course. Join 5 lakh+ learners, starting at ₹500/month.
-                </p>
-              </div>
-
-              <div className="grid sm:grid-cols-2 gap-x-4 gap-y-4 lg:gap-x-6 lg:gap-y-5">
-                <div className="flex gap-3">
-                  <div className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
-                    <MonitorPlay className="size-3.5" />
-                  </div>
-                  <span className="text-sm font-medium text-muted-foreground">
-                    <strong className="text-foreground">Get access</strong> to 28,000+ top-rated courses
-                  </span>
-                </div>
-                <div className="flex gap-3">
-                  <div className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-success/10 text-success-strong">
-                    <Lightbulb className="size-3.5" />
-                  </div>
-                  <span className="text-sm font-medium text-muted-foreground">
-                    <strong className="text-foreground">Learn</strong> from 9,000+ expert instructors
-                  </span>
-                </div>
-                <div className="flex gap-3">
-                  <div className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-info/10 text-info-strong">
-                    <MonitorPlay className="size-3.5" />
-                  </div>
-                  <span className="text-sm font-medium text-muted-foreground">
-                    Dev, IT, Business, Design and 50+ more topics
-                  </span>
-                </div>
-                <div className="flex gap-3">
-                  <div className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-warning/10 text-warning-strong">
-                    <Award className="size-3.5" />
-                  </div>
-                  <span className="text-sm font-medium text-muted-foreground">
-                    <strong className="text-foreground">Certification</strong> prep for Zapsters Standards, Microsoft, PMI, and more
-                  </span>
-                </div>
-              </div>
-
-              <div className="mt-4 flex flex-col sm:flex-row items-center sm:items-start gap-4">
-                <Button asChild className="w-full sm:w-auto px-8 py-5 text-sm font-semibold rounded-md transition-transform hover:scale-[1.02]">
-                  <Link href="/pricing">Subscribe now</Link>
-                </Button>
-                <Link href="/pricing" className="text-sm font-bold underline underline-offset-4 hover:text-foreground/80 w-full sm:w-auto text-center sm:text-left pt-2 sm:pt-3 text-foreground">
-                  Learn more
-                </Link>
-              </div>
-            </div>
-
-            {/* Right Column */}
-            <div className="w-full md:w-[45%] lg:w-[45%] xl:w-[40%] flex gap-3 h-[280px] md:h-[340px] lg:h-[380px] mt-8 md:mt-0">
-              {/* Main Image Block */}
-              <div className="relative flex-1 rounded-2xl overflow-hidden bg-card flex items-end justify-center">
-                {/* Abstract shapes using theme colors */}
-                <div className="absolute top-10 -left-10 w-48 h-20 bg-muted/60 transform -rotate-12" />
-                <div className="absolute bottom-16 -right-16 w-64 h-24 bg-muted/80 transform -rotate-45" />
-                <div className="absolute top-1/2 right-6 w-24 h-48 bg-muted/60 transform rotate-12" />
-                
-                {/* Placeholder for the person (silhouette) */}
-                <div className="relative z-10 w-[80%] h-[85%] bg-gradient-to-t from-primary-deep/50 to-primary-deep/10 rounded-t-full shadow-2xl border-b-0 border-border border" />
-              </div>
-
-              {/* Side Accent Block */}
-              <div className="relative w-20 md:w-24 rounded-2xl overflow-hidden bg-gradient-to-b from-primary/80 via-primary-deep to-primary-deep">
-                <div className="absolute -left-8 top-1/3 w-20 h-40 bg-white/10 blur-xl rounded-full transform rotate-45" />
-                <div className="absolute -right-6 bottom-8 w-20 h-24 bg-muted/50 blur-xl rounded-full" />
-                
-                {/* Curving swoosh effect */}
-                <div className="absolute -left-8 bottom-0 w-24 h-48 border-r-8 border-white/10 rounded-full transform -rotate-12 blur-[2px]" />
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-  );
+export function PricingSection({ standalone = false, headingAs = "h2" }: { standalone?: boolean; headingAs?: "h1" | "h2" }) {
+  return <DetailedPricingSection standalone={standalone} headingAs={headingAs} />;
 }
 
 export function TestimonialWall() {
@@ -174,7 +38,7 @@ export function TestimonialWall() {
         </div>
       </div>
       <Dialog open={Boolean(active)} onOpenChange={(open) => !open && setActive(null)}>
-        <DialogContent><DialogHeader><DialogTitle>{active?.name}&apos;s Zapsters story</DialogTitle><DialogDescription>{active?.role}</DialogDescription></DialogHeader><div className="grid aspect-video place-items-center rounded-xl bg-primary-deep text-primary-foreground"><div className="grid size-14 place-items-center rounded-full border border-white/30 bg-white/10"><Play className="ml-1 fill-current" /></div><p className="sr-only">Demo testimonial video preview</p></div><p className="text-sm leading-6 text-muted-foreground">This video-style testimonial is a frontend demo preview. The real experience remains the same: focused lessons, practical work, and a record of progress.</p></DialogContent>
+        <DialogContent><DialogHeader><DialogTitle>{active?.name}&apos;s Zapsters story</DialogTitle><DialogDescription>{active?.role}</DialogDescription></DialogHeader><div className="grid aspect-video place-items-center rounded-xl bg-primary-deep text-primary-foreground"><Play className="size-12 fill-current" /><p className="sr-only">Demo testimonial video preview</p></div><p className="text-sm leading-6 text-muted-foreground">This video-style testimonial is a frontend demo preview. The real experience remains the same: focused lessons, practical work, and a record of progress.</p></DialogContent>
       </Dialog>
     </section>
   );
@@ -192,8 +56,8 @@ export function FaqSection() {
             <p className="text-xs font-semibold uppercase tracking-[0.16em] text-muted-foreground">Questions, answered</p>
             <h2 className="mt-3 font-display font-light text-3xl tracking-[-0.045em]">A clear start, without the fine print.</h2>
           </div>
-          <div className="divide-y divide-border rounded-xl border border-border bg-card">
-            {MARKETING_FAQ.map((item, index) => { const expanded = open === index; return <div key={item.question}><button type="button" aria-expanded={expanded} onClick={() => setOpen(expanded ? -1 : index)} className="flex min-h-16 w-full items-center justify-between gap-4 px-6 py-5 text-left text-sm font-semibold outline-none transition-colors hover:text-primary focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring sm:px-8 sm:py-6"><span>{item.question}</span><ChevronDown className={cn("size-4 shrink-0 text-muted-foreground transition-transform", expanded && "rotate-180 text-primary")} /></button>{expanded ? <div className="px-6 pb-6 text-sm leading-6 text-muted-foreground sm:px-8 sm:pb-8">{item.answer}</div> : null}</div>; })}
+          <div className="space-y-2 rounded-xl border border-border bg-card p-2">
+            {MARKETING_FAQ.map((item, index) => { const expanded = open === index; return <div key={item.question} className="rounded-lg overflow-hidden"><button type="button" aria-expanded={expanded} onClick={() => setOpen(expanded ? -1 : index)} className="flex min-h-14 w-full items-center justify-between gap-4 rounded-lg px-5 py-4 text-left text-sm font-semibold outline-none transition-colors hover:bg-surface-1 hover:text-primary focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring sm:px-6"><span className="leading-snug">{item.question}</span><ChevronDown className={cn("size-4 shrink-0 text-muted-foreground transition-transform", expanded && "rotate-180 text-primary")} /></button>{expanded ? <div className="px-5 pb-5 text-sm leading-6 text-muted-foreground sm:px-6 sm:pb-6">{item.answer}</div> : null}</div>; })}
           </div>
         </div>
       </div>
@@ -230,7 +94,7 @@ export function FinalCta() {
 }
 
 export function MarketingProofBar() {
-  return <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-xs text-muted-foreground"><span className="flex items-center gap-2"><Users className="size-4 text-primary" /> 12,000+ learners</span><span className="flex items-center gap-2"><ShieldCheck className="size-4 text-success" /> Demo-safe by design</span><span className="flex items-center gap-2"><Check className="size-4 text-primary" /> No credit card required</span></div>;
+  return <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-xs text-muted-foreground"><span className="flex items-center gap-2"><Users className="size-4 text-primary" /> 12,000+ learners</span><span className="flex items-center gap-2"><ShieldCheck className="size-4 text-primary" /> Demo-safe by design</span><span className="flex items-center gap-2"><Check className="size-4 text-primary" /> No credit card required</span></div>;
 }
 
 export function DetailedPricingSection({ standalone = false, headingAs: Heading = "h2" }: { standalone?: boolean; headingAs?: "h1" | "h2" }) {
@@ -313,13 +177,12 @@ export function DetailedPricingSection({ standalone = false, headingAs: Heading 
           })}
         </div>
         <div className="mt-6 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-xs text-muted-foreground">
-          <span className="flex items-center gap-1.5"><ShieldCheck className="size-4 text-success" /> 30-day money-back guarantee</span>
-          <span className="flex items-center gap-1.5"><Check className="size-4 text-success" /> Cancel anytime</span>
+          <span className="flex items-center gap-1.5"><ShieldCheck className="size-4 text-primary" /> 30-day money-back guarantee</span>
+          <span className="flex items-center gap-1.5"><Check className="size-4 text-primary" /> Cancel anytime</span>
           <span className="flex items-center gap-1.5"><CreditCard className="size-4 text-muted-foreground" /> USD · taxes added at checkout</span>
           <span className="flex items-center gap-1.5"><BadgeCheck className="size-4 text-muted-foreground" /> Group plans for teams</span>
         </div>
         <div className="mx-auto mt-8 flex max-w-md items-center justify-center gap-3">
-          <span className="h-px flex-1 bg-border" aria-hidden="true" />
           <Tooltip>
             <TooltipTrigger asChild>
               <span
@@ -336,7 +199,6 @@ export function DetailedPricingSection({ standalone = false, headingAs: Heading 
               Card details are handled by our PCI-DSS compliant payment provider. Zapsters never sees or stores them.
             </TooltipContent>
           </Tooltip>
-          <span className="h-px flex-1 bg-border" aria-hidden="true" />
         </div>
       </div>
     </section>

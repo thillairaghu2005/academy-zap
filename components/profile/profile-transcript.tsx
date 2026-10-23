@@ -129,7 +129,7 @@ export function ProfileTranscript({ learnerName: _learnerName }: { learnerName: 
               <th className="px-4 py-3">Integrity Verification</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-border/30">
+          <tbody>
             {TRANSCRIPT_RECORDS.map((record) => (
               <tr key={record.id} className="hover:bg-surface-1/40 transition-colors">
                 <td className="px-4 py-3.5">
@@ -155,8 +155,8 @@ export function ProfileTranscript({ learnerName: _learnerName }: { learnerName: 
                   {record.ceus.toFixed(1)}
                 </td>
                 <td className="px-4 py-3.5">
-                  <div className="flex items-center gap-1.5 text-success-strong font-mono text-[11px]">
-                    <ShieldCheck className="size-3.5 text-success-strong shrink-0" />
+                  <div className="flex items-center gap-1.5 text-muted-foreground font-mono text-[11px]">
+                    <ShieldCheck className="size-3.5 text-primary shrink-0" />
                     <span className="truncate max-w-[120px]">{record.verificationHash}</span>
                   </div>
                 </td>

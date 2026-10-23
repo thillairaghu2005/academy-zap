@@ -22,8 +22,11 @@ import { useSession } from "@/components/providers/session-provider";
 import { cn } from "@/lib/utils";
 
 const links = [
-  { href: "/courses", label: "Explore" },
-  { href: "/pricing", label: "Subscribe" },
+  { href: "/courses", label: "Courses" },
+  { href: "/judge", label: "Challenges" },
+  { href: "/labs", label: "Virtual Labs" },
+  { href: "/leaderboards", label: "Rankings" },
+  { href: "/pricing", label: "Pricing" },
 ] as const;
 
 /** Public navigation keeps the landing page distinct from the learner shell. */
@@ -44,7 +47,7 @@ export function MarketingNav() {
     <header
       className={cn(
         "sticky top-0 z-40 px-3 py-3 transition-all duration-200 motion-reduce:transition-none sm:px-5",
-        scrolled ? "bg-background/80 backdrop-blur-md border-b border-border/60 shadow-sm" : "bg-transparent",
+        scrolled ? "bg-background/85 backdrop-blur-md border-b border-border/80 shadow-sm" : "bg-transparent",
       )}
     >
       <div className="mx-auto flex h-14 max-w-7xl items-center gap-4 px-0 sm:px-1 lg:h-16">
@@ -61,9 +64,9 @@ export function MarketingNav() {
           </SheetTrigger>
           <SheetContent side="left" className="w-full max-w-sm p-0">
             <SheetHeader className="border-b border-border px-6 pb-5 pt-6">
-              <SheetTitle className="font-display text-h3 text-left">Surface index</SheetTitle>
+              <SheetTitle className="font-display text-h3 text-left">Navigation</SheetTitle>
               <SheetDescription className="text-left">
-                Courses and Pricing.
+                Explore courses, practice environments, and learning tools.
               </SheetDescription>
             </SheetHeader>
             <nav className="flex flex-col gap-1 p-4" aria-label="Mobile navigation">
@@ -72,7 +75,7 @@ export function MarketingNav() {
                   key={link.href}
                   href={link.href}
                   onClick={() => setMenuOpen(false)}
-                   className="flex min-h-11 items-center rounded-lg px-3 text-base font-medium outline-none transition-all duration-200 hover:bg-primary/5 hover:text-foreground hover:scale-[1.02] active:scale-95 focus-visible:ring-2 focus-visible:ring-ring"
+                   className="flex min-h-11 items-center rounded-lg px-3 text-base font-medium outline-none transition-colors duration-150 hover:bg-muted hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring"
                 >
                   {link.label}
                 </Link>
@@ -89,7 +92,7 @@ export function MarketingNav() {
                         Log In
                       </Link>
                     </Button>
-                    <Button variant="gradient" asChild>
+                    <Button variant="default" asChild>
                       <Link href="/register" onClick={() => setMenuOpen(false)}>
                         Sign up
                       </Link>
@@ -103,7 +106,7 @@ export function MarketingNav() {
 
         <Logo size="lg" eager className="shrink-0" />
 
-        <nav className="ml-2 hidden items-center gap-1 lg:flex shrink-0" aria-label="Primary navigation">
+        <nav className="ml-4 hidden items-center gap-1 lg:flex shrink-0" aria-label="Primary navigation">
            {links.map((link) => {
              const isActive = pathname === link.href || pathname.startsWith(`${link.href}/`);
              return (
@@ -112,8 +115,8 @@ export function MarketingNav() {
                  href={link.href}
                  aria-current={isActive ? "page" : undefined}
                  className={cn(
-                   "on-glass relative rounded-lg px-3 py-2 text-sm font-medium outline-none transition-all duration-200 hover:bg-primary/5 hover:text-foreground hover:scale-[1.02] active:scale-95 focus-visible:ring-2 focus-visible:ring-ring",
-                   isActive ? "text-foreground" : "text-muted-foreground",
+                   "relative rounded-md px-3.5 py-2 text-sm font-medium outline-none transition-colors duration-150 hover:bg-muted/60 hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring",
+                   isActive ? "text-foreground font-semibold" : "text-muted-foreground",
                  )}
                >
                  {link.label}
@@ -136,10 +139,10 @@ export function MarketingNav() {
             <UserMenu />
           ) : (
             <>
-              <Button variant="outline" className="hidden sm:inline-flex rounded-sm font-bold bg-transparent border-primary/20 hover:bg-primary/5 h-10 px-5" asChild>
+              <Button variant="ghost" className="hidden sm:inline-flex text-sm font-medium" asChild>
                 <Link href="/login">Log In</Link>
               </Button>
-              <Button variant="default" className="rounded-sm font-bold h-10 px-5" asChild>
+              <Button variant="default" size="sm" className="font-medium" asChild>
                 <Link href="/register">Sign up</Link>
               </Button>
             </>

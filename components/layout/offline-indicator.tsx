@@ -32,7 +32,7 @@ export function OfflineIndicator() {
   return (
     <span
       role="status"
-      className="inline-flex items-center gap-1.5 rounded-full border border-warning/25 bg-warning/10 px-2.5 py-1 text-caption font-medium text-warning-strong"
+      className="inline-flex items-center gap-1.5 rounded-full border border-border bg-secondary px-2.5 py-1 text-caption font-medium text-foreground"
     >
       <WifiOff className="size-3.5" />
       Offline

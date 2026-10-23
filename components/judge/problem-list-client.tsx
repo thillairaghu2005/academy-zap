@@ -81,9 +81,9 @@ const PROBLEM_META: Record<string, { companies: string[]; solves: number; xp: nu
 };
 
 const DIFFICULTY_STYLES: Record<ProblemDifficulty, { badge: string; dot: string }> = {
-  easy: { badge: "border-success/30 bg-success/15 text-success-strong", dot: "bg-success" },
-  medium: { badge: "border-warning/35 bg-warning/15 text-warning-strong", dot: "bg-warning" },
-  hard: { badge: "border-danger/30 bg-danger/15 text-danger-strong", dot: "bg-danger" },
+  easy: { badge: "border-border bg-secondary text-muted-foreground", dot: "" },
+  medium: { badge: "border-border bg-secondary text-foreground", dot: "" },
+  hard: { badge: "border-primary/40 bg-primary/10 text-primary font-semibold", dot: "" },
 };
 
 const CATEGORY_BY_TOPIC: Record<string, { icon: LucideIcon; label: string }> = {
@@ -138,22 +138,19 @@ function ProblemCard({ problem, index, solved }: { problem: Problem; index: numb
         <Card className="flex h-full flex-col justify-between overflow-hidden rounded-2xl border-border bg-card p-5 shadow-[0_8px_30px_rgb(17_24_39_/_4%)] transition-all duration-200 group-hover:-translate-y-1 group-hover:border-primary/30 group-hover:shadow-[0_16px_40px_rgb(17_24_39_/_9%)]">
           <div>
             <div className="flex items-start justify-between gap-3">
-              <div className="flex items-start gap-4 min-w-0">
-                <div className="grid size-11 shrink-0 place-items-center rounded-xl border border-border bg-surface-1 text-muted-foreground transition-transform duration-200 group-hover:scale-[1.03]" aria-label={`${category.label} category`}>
-                  <CategoryIcon className="size-5" aria-hidden="true" />
-                </div>
+              <div className="flex items-start gap-3 min-w-0">
+                <CategoryIcon className="size-5 shrink-0 text-muted-foreground mt-1" aria-label={`${category.label} category`} />
                 <div className="min-w-0">
                   <h3 className="truncate font-display text-[18px] font-semibold tracking-tight text-foreground transition-colors duration-200 group-hover:text-primary" title={problem.title}>
                     {problem.title}
                   </h3>
                   <div className="mt-1.5 flex flex-wrap items-center gap-2.5 text-[13px]">
                     {solved ? (
-                      <span className="flex items-center gap-1 font-semibold text-success-strong">
+                      <span className="flex items-center gap-1 font-semibold text-primary">
                         <Check className="size-3.5" /> Solved
                       </span>
                     ) : null}
                     <span className={cn("flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-xs font-semibold border", difficultyStyle.badge)}>
-                      <span className={cn("size-1.5 rounded-full", difficultyStyle.dot)} aria-hidden="true" />
                       {problem.difficulty}
                     </span>
                     <span className="text-muted-foreground font-medium truncate">{visibleTopics.join(", ")}{hiddenTopicCount > 0 && `, +${hiddenTopicCount}`}</span>
@@ -310,7 +307,6 @@ export function ProblemListClient() {
                 <>
                   <div className="mt-4 flex flex-wrap items-center gap-3.5 text-sm">
                     <span className={cn("inline-flex items-center gap-1.5 rounded-full px-3 py-1 font-semibold border", DIFFICULTY_STYLES[nextProblem.difficulty].badge)}>
-                      <span className={cn("size-2 rounded-full", DIFFICULTY_STYLES[nextProblem.difficulty].dot)} />
                       {nextProblem.difficulty}
                     </span>
                     <span className="text-muted-foreground font-medium">{nextProblem.topics.slice(0, 2).join(", ")}</span>
@@ -377,8 +373,8 @@ export function ProblemListClient() {
                 <div className="inline-flex items-center gap-1.5 rounded-md bg-primary/10 px-2.5 py-1 text-[11px] font-bold uppercase tracking-wider text-primary">
                   Weekly Contest
                 </div>
-                <div className="flex items-center gap-1.5 text-sm font-semibold text-danger bg-danger/10 px-2.5 py-1 rounded-md">
-                  <Timer className="size-4" /> 2d 14h
+                <div className="flex items-center gap-1.5 text-sm font-semibold text-foreground bg-secondary px-2.5 py-1 rounded-md">
+                  <Timer className="size-4 text-primary" /> 2d 14h
                 </div>
               </div>
               <h4 className="font-display text-xl font-semibold mb-2">Zapster Weekly 142</h4>
@@ -426,7 +422,7 @@ export function ProblemListClient() {
           <Card className="relative overflow-hidden group border-border bg-gradient-to-br from-surface-1 to-surface-2 shadow-sm hover:shadow-md transition-all hidden lg:flex flex-col">
             <div className="p-6 relative z-10 flex flex-col h-full">
               <div className="flex justify-between items-start mb-4">
-                <div className="inline-flex items-center gap-1.5 rounded-md bg-success/10 px-2.5 py-1 text-[11px] font-bold uppercase tracking-wider text-success">
+                <div className="inline-flex items-center gap-1.5 rounded-md border border-primary/40 bg-primary/10 px-2.5 py-1 text-[11px] font-bold uppercase tracking-wider text-primary">
                   Hackathon
                 </div>
                 <div className="flex items-center gap-1.5 text-sm font-semibold text-muted-foreground bg-surface-3/50 px-2.5 py-1 rounded-md">
@@ -441,7 +437,7 @@ export function ProblemListClient() {
                 <div className="flex items-center gap-2 text-sm text-muted-foreground font-medium">
                   <CalendarDays className="size-4" /> Sep 15 - Sep 17
                 </div>
-                <Button variant="outline" size="sm" className="font-semibold h-8 rounded-lg hover:bg-success hover:text-success-foreground hover:border-success transition-colors">
+                <Button variant="outline" size="sm" className="font-semibold h-8 rounded-lg">
                   Explore
                 </Button>
               </div>
@@ -549,7 +545,7 @@ export function ProblemListClient() {
               {activeFilters.map(filter => (
                 <div key={filter.label} className="flex items-center gap-2 rounded-full border border-border bg-surface-1 px-3.5 py-1.5 text-[13px] font-medium text-foreground shadow-sm">
                   {filter.label}
-                  <button onClick={filter.clear} className="text-muted-foreground hover:text-danger p-0.5 rounded-full transition-colors">
+                  <button onClick={filter.clear} className="text-muted-foreground hover:text-foreground p-0.5 rounded transition-colors">
                     <X className="size-4" />
                   </button>
                 </div>

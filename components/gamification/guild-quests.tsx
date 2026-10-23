@@ -70,7 +70,7 @@ export function GuildQuests() {
                 <div className="flex-1">
                   <div className="flex items-center gap-2">
                     <h3 className="font-bold text-lg">{quest.title}</h3>
-                    {isContributed && <Badge className="bg-success text-success-foreground hover:bg-success">Contributed</Badge>}
+                    {isContributed && <Badge variant="secondary">Contributed</Badge>}
                   </div>
                   <p className="text-sm text-muted-foreground mt-1 leading-relaxed pr-4">{quest.description}</p>
                 </div>
@@ -87,7 +87,7 @@ export function GuildQuests() {
                   <span className="flex items-center gap-1 text-muted-foreground">
                     <Target className="size-4" /> {quest.progress} / {quest.target} completed
                   </span>
-                  <span className="flex items-center gap-1 text-warning">
+                  <span className="flex items-center gap-1 text-muted-foreground">
                     <Clock className="size-4" /> {quest.timeLeft}
                   </span>
                 </div>

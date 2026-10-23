@@ -35,6 +35,7 @@ export default async function OpengraphImage() {
       >
         <div style={{ display: "flex", height: 120, alignItems: "center" }}>
           {logo ? (
+            /* eslint-disable-next-line @next/next/no-img-element */
             <img src={logo} alt="" width={180} height={120} style={{ objectFit: "contain" }} />
           ) : (
             <div style={{ display: "flex", fontSize: 64, fontWeight: 700, color: "#171717" }}>Zapsters</div>

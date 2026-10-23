@@ -43,13 +43,7 @@ function SurfaceCard({ surface }: { surface: SurfaceMeta }) {
       <Card className="relative h-full overflow-hidden transition-[transform,border-color,box-shadow] duration-200 group-hover:-translate-y-0.5 group-hover:border-primary/40 group-hover:shadow-xl">
         <div className={cn("absolute inset-x-0 top-0 h-0.5", surface.status === "shipped" ? "bg-primary" : "bg-border-strong")} />
         <CardHeader className="flex-row items-start gap-3 space-y-0">
-          <div
-            className={cn(
-              "grid size-11 shrink-0 place-items-center rounded-2xl bg-primary/10 text-primary shadow-sm transition-transform duration-300 group-hover:scale-105",
-            )}
-          >
-            <Icon className="size-5" />
-          </div>
+          <Icon className="size-5 shrink-0 text-foreground mt-0.5" />
           <div className="min-w-0 flex-1">
             <div className="flex items-start justify-between gap-2">
               <div className="min-w-0">
@@ -66,8 +60,8 @@ function SurfaceCard({ surface }: { surface: SurfaceMeta }) {
           <p className="text-sm leading-relaxed text-muted-foreground">
             {surface.tagline}
           </p>
-          <div className="mt-5 flex items-center justify-between gap-3 border-t border-border pt-4">
-            <span className={cn("text-[11px] font-semibold", surface.status === "shipped" ? "text-success-strong" : "text-muted-foreground")}>
+          <div className="mt-4 flex items-center justify-between gap-3 pt-2">
+            <span className="text-[11px] font-medium text-muted-foreground">
               {statusLabel}
             </span>
             <span className="flex items-center gap-1.5 text-xs font-medium text-primary sm:opacity-0 sm:transition-opacity sm:duration-200 sm:group-hover:opacity-100">
@@ -89,7 +83,7 @@ function MomentumPanel({ userId }: { userId: string }) {
   });
 
   return (
-    <div className="rounded-2xl border border-border bg-white/75 p-4 backdrop-blur-sm">
+    <div className="rounded-xl border border-border bg-card p-4 shadow-sm">
       <div className="flex items-center justify-between gap-3">
         <p className="text-xs font-semibold uppercase tracking-[0.12em] text-primary">Momentum</p>
         <Trophy className="size-4 text-primary" />
@@ -99,7 +93,7 @@ function MomentumPanel({ userId }: { userId: string }) {
       ) : data ? (
         <>
           {data.freeze_status === "frozen_pending_review" ? (
-            <p className="mt-3 flex items-center gap-1.5 rounded-lg border border-warning/40 bg-warning/10 px-2.5 py-1.5 text-[11px] font-medium text-warning-strong">
+            <p className="mt-3 flex items-center gap-1.5 rounded-lg border border-primary/40 bg-primary/10 px-2.5 py-1.5 text-[11px] font-medium text-primary">
               <ShieldAlert className="size-3.5 shrink-0" />
               Progress frozen pending review
             </p>
@@ -109,9 +103,9 @@ function MomentumPanel({ userId }: { userId: string }) {
               <p className="font-display text-xl font-semibold tracking-[-0.03em]">{data.rank.rank_name}</p>
               <p className="mt-1 text-[11px] text-muted-foreground">Level {data.rank.level} rank</p>
             </div>
-            <div className="border-l border-border pl-3">
+            <div>
               <div className="flex items-center gap-1.5">
-                <Flame className="size-3.5 text-warning-strong" />
+                <Flame className="size-3.5 text-foreground" />
                 <p className="font-display text-xl font-semibold tabular-nums">
                   <AnimatedNumber value={data.streak.current_streak_days} countUpOnMount />
                 </p>
@@ -176,7 +170,7 @@ export function Dashboard() {
         initial={reducedMotion ? false : { opacity: 0, y: 16 }}
         animate={reducedMotion ? undefined : { opacity: 1, y: 0 }}
         transition={reducedMotion ? undefined : { duration: 0.5, ease: "easeOut" }}
-        className="relative overflow-hidden rounded-3xl border border-border/80 bg-card"
+        className="relative overflow-hidden rounded-xl border border-border/80 bg-card"
       >
         {/* Removed decorative background elements for a cleaner workspace feel */}
 
@@ -201,8 +195,8 @@ export function Dashboard() {
             </div>
           </div>
           <div className="grid min-w-[230px] gap-3 sm:grid-cols-2 lg:grid-cols-1">
-            <div className="rounded-2xl border border-border bg-white/75 p-4 backdrop-blur-sm">
-              <div className="flex items-center gap-2 text-xs font-medium text-muted-foreground"><span className="size-2 rounded-full bg-success" /> Current focus</div>
+            <div className="rounded-xl border border-border bg-card p-4 shadow-sm">
+              <div className="text-xs font-medium text-muted-foreground">Current focus</div>
               <p className="mt-3 font-display text-xl font-semibold tracking-[-0.03em]">One lesson at a time</p>
               <p className="mt-1 text-xs leading-relaxed text-muted-foreground">Short sessions beat perfect plans.</p>
             </div>
@@ -258,10 +252,8 @@ export function Dashboard() {
               transition={reducedMotion ? undefined : { delay: 0.05 * i, duration: 0.4, ease: "easeOut" }}
             >
               <div className="flex h-full flex-col gap-3 p-2">
-                <div className="flex items-center gap-3">
-                  <div className="grid size-9 shrink-0 place-items-center rounded-lg bg-primary/10 text-primary">
-                    <item.icon className="size-4" />
-                  </div>
+                <div className="flex items-center gap-2.5">
+                  <item.icon className="size-5 shrink-0 text-foreground" />
                   <h3 className="font-semibold text-foreground text-sm">{item.title}</h3>
                 </div>
                 <p className="text-sm leading-relaxed text-muted-foreground">

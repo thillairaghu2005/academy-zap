@@ -74,18 +74,12 @@ function StatsRow({ items }: { items: MyLearningItem[] }) {
 
   return (
     <div className="grid grid-cols-2 overflow-hidden rounded-2xl border border-border bg-card sm:grid-cols-4">
-      {stats.map((stat, index) => (
+      {stats.map((stat) => (
         <div
           key={stat.label}
-          className={cn(
-            "flex items-center gap-3 px-4 py-4 sm:px-5 sm:py-5",
-            index > 0 && "border-l-0 border-border sm:border-l",
-            index > 1 && "border-t sm:border-t-0",
-          )}
+          className="flex items-center gap-3 px-4 py-4 sm:px-5 sm:py-5"
         >
-          <div className="grid size-9 shrink-0 place-items-center rounded-xl bg-secondary text-muted-foreground">
-            <stat.icon className="size-4" />
-          </div>
+          <stat.icon className="size-5 shrink-0 text-muted-foreground" />
           <div className="min-w-0">
             <p className="font-display text-xl font-semibold tracking-tight tabular-nums">
               {stat.value}
@@ -108,17 +102,17 @@ function ContinueLearning({ item }: { item: MyLearningItem }) {
   const ctaLabel = progress > 0 ? "Resume course" : "Start course";
 
   return (
-    <Card variant="glow" className="group relative overflow-hidden rounded-3xl border-primary-border bg-primary-muted shadow-[0_4px_12px_rgb(16_24_40_/_6%)] transition-[transform,border-color,box-shadow] duration-300 hover:-translate-y-0.5 hover:border-primary/30 hover:shadow-[0_8px_24px_rgb(16_24_40_/_8%)]">
+    <Card variant="glow" className="group relative overflow-hidden rounded-xl border-primary-border bg-primary-muted shadow-sm transition-[border-color,box-shadow] duration-200 hover:border-primary/30 hover:shadow-md">
       <div className="pointer-events-none absolute -right-24 -top-28 size-72 rounded-full bg-primary/10 blur-3xl transition-opacity duration-300 group-hover:opacity-80" />
       <div className="pointer-events-none absolute inset-y-0 right-0 hidden w-1/3 bg-primary-muted/60 lg:block" />
 
       <div className="relative grid gap-7 p-5 sm:p-7 lg:grid-cols-[minmax(0,1fr)_minmax(250px,0.72fr)] lg:items-center lg:gap-12 lg:p-9">
         <div>
           <div className="flex flex-wrap items-center gap-2">
-            <Badge className="rounded-full border-primary/10 bg-primary/10 px-2.5 py-1 text-[11px] font-semibold uppercase tracking-[0.08em] text-primary">
+            <Badge className="rounded-md border-border bg-secondary px-2.5 py-1 text-[11px] font-semibold uppercase tracking-[0.08em] text-foreground">
               Continue learning
             </Badge>
-            <Badge variant="outline" className="rounded-full px-2.5 py-1 text-[11px] font-medium">
+            <Badge variant="outline" className="rounded-md px-2.5 py-1 text-[11px] font-medium">
               {course.category}
             </Badge>
             <span className="text-xs text-muted-foreground">Up next in your journey</span>
@@ -167,7 +161,7 @@ function ContinueLearning({ item }: { item: MyLearningItem }) {
 
         <div className="relative flex min-h-[180px] items-end overflow-hidden rounded-xl border border-primary/10 p-5 shadow-inner lg:min-h-[220px] lg:p-6" style={{ background: coverGradient(hueForId(course.id)) }}>
           <div className="absolute inset-0 bg-primary-light/50" />
-          <div className="absolute right-5 top-5 rounded-full border border-primary/15 bg-white/75 px-3 py-1.5 text-xs font-medium text-foreground backdrop-blur-sm">
+          <div className="absolute right-5 top-5 rounded-md border border-primary/20 bg-card/90 px-2.5 py-1 text-xs font-medium text-foreground backdrop-blur-sm">
             {course.level} level
           </div>
           <div className="relative z-10">
@@ -219,7 +213,7 @@ function LearningJourney({ items }: { items: MyLearningItem[] }) {
   ];
 
   return (
-    <Card variant="glass" className="mt-8 overflow-hidden rounded-3xl p-5 sm:p-7">
+    <Card variant="glass" className="mt-8 overflow-hidden rounded-xl p-5 sm:p-7">
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
           <p className="text-xs font-semibold uppercase tracking-[0.14em] text-primary">Learning journey</p>
@@ -232,20 +226,16 @@ function LearningJourney({ items }: { items: MyLearningItem[] }) {
         </div>
       </div>
 
-      <div className="relative mt-8 grid gap-5 sm:grid-cols-4 sm:gap-3">
-        <div className="pointer-events-none absolute left-[12.5%] right-[12.5%] top-5 hidden h-px bg-border sm:block" aria-hidden="true" />
-        {milestones.map((milestone, index) => {
+      <div className="relative mt-8 grid gap-5 sm:grid-cols-4 sm:gap-4">
+        {milestones.map((milestone) => {
           const Icon = milestone.icon;
           return (
-            <div key={milestone.label} className="relative flex items-start gap-3 sm:block sm:text-center">
-              <span className={cn("relative z-10 grid size-10 shrink-0 place-items-center rounded-full border-4 border-card text-sm transition-colors", milestone.complete ? "bg-primary text-primary-foreground shadow-sm" : "bg-surface-1 text-muted-foreground")}>
-                {milestone.complete ? <Check className="size-4" /> : <Icon className="size-4" />}
-              </span>
-              <div className="min-w-0 sm:mt-3 sm:px-2">
+            <div key={milestone.label} className="relative flex items-start gap-3 sm:block sm:text-left">
+              <Icon className={cn("size-5 shrink-0", milestone.complete ? "text-primary" : "text-muted-foreground")} />
+              <div className="min-w-0 sm:mt-2">
                 <p className={cn("text-sm font-semibold", milestone.complete ? "text-foreground" : "text-muted-foreground")}>{milestone.label}</p>
                 <p className="mt-1 text-xs leading-relaxed text-muted-foreground">{milestone.detail}</p>
               </div>
-              {index < milestones.length - 1 ? <span className="absolute bottom-[-1.25rem] left-5 top-10 w-px bg-border sm:hidden" aria-hidden="true" /> : null}
             </div>
           );
         })}

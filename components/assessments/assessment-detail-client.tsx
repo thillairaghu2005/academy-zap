@@ -153,9 +153,9 @@ export function AssessmentDetailClient({
               </Badge>
               <Badge
                 variant="secondary"
-                className="gap-1 text-caption text-success-strong"
+                className="gap-1 text-caption text-foreground"
               >
-                <Flame className="size-3" />
+                <Flame className="size-3 text-primary" />
                 combo meter active
               </Badge>
             </div>
@@ -250,12 +250,9 @@ export function AssessmentDetailClient({
                         <span
                           className={cn(
                             "rounded-full border px-1.5 py-px font-mono text-[10px]",
-                            q.difficulty === "easy" &&
-                              "border-success/40 bg-success/10 text-success-strong",
-                            q.difficulty === "medium" &&
-                              "border-warning/40 bg-warning/10 text-warning-strong",
-                            q.difficulty === "hard" &&
-                              "border-primary-border bg-primary-light text-primary",
+                            q.difficulty === "hard"
+                              ? "border-primary/40 bg-primary/10 text-primary font-semibold"
+                              : "border-border bg-secondary text-foreground",
                           )}
                         >
                           {q.difficulty}
@@ -277,7 +274,7 @@ export function AssessmentDetailClient({
           <Card className="flex flex-col gap-4 p-5">
             <div className="flex items-center justify-between">
               <span className="text-sm font-semibold">Start the assessment</span>
-              <Gauge className="size-4 text-warning-strong" />
+              <Gauge className="size-4 text-primary" />
             </div>
             <p className="text-xs leading-relaxed text-muted-foreground">
               The timer starts when you begin. Answer flow is one question at a
@@ -285,15 +282,15 @@ export function AssessmentDetailClient({
             </p>
             <ul className="flex flex-col gap-1.5 text-xs text-muted-foreground">
               <li className="flex items-center gap-1.5">
-                <ListChecks className="size-3.5 text-warning-strong" />
+                <ListChecks className="size-3.5 text-primary" />
                 Deterministic grading — never AI
               </li>
               <li className="flex items-center gap-1.5">
-                <Flame className="size-3.5 text-warning-strong" />
+                <Flame className="size-3.5 text-primary" />
                 Combo preview ×3.0 max
               </li>
               <li className="flex items-center gap-1.5">
-                <ShieldAlert className="size-3.5 text-warning-strong" />
+                <ShieldAlert className="size-3.5 text-primary" />
                 Anti-cheat telemetry is captured
               </li>
             </ul>
@@ -322,7 +319,7 @@ export function AssessmentDetailClient({
                 animate={{ opacity: 1 }}
                 className="flex items-center gap-2 rounded-lg border border-border bg-muted/40 p-3 text-xs"
               >
-                <LoaderCircle className="size-3.5 animate-spin text-warning-strong" />
+                <LoaderCircle className="size-3.5 animate-spin text-primary" />
                 <span>Reserving attempt slot…</span>
               </motion.div>
             ) : null}

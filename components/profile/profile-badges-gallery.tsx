@@ -179,7 +179,7 @@ export function ProfileBadgesGallery() {
                   variant="secondary"
                   size="sm"
                   onClick={() => handleShareLinkedIn(badge)}
-                  className="h-8 text-xs font-semibold gap-1.5 text-blue-400 hover:text-blue-300"
+                  className="h-8 text-xs font-semibold gap-1.5"
                 >
                   <Share2 className="size-3" />
                   Share

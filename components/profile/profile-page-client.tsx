@@ -279,17 +279,13 @@ function GamifiedBadges({ achievements, certificates }: { achievements: string[]
         <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
           {certificates.map((cert) => (
             <div key={cert} className="group flex flex-col items-center justify-center gap-3 rounded-xl border border-border bg-surface-1 p-4 transition-all hover:border-primary/30 hover:bg-accent hover:shadow-sm">
-              <div className="flex size-12 items-center justify-center rounded-full bg-primary/10 text-primary transition-colors group-hover:bg-primary group-hover:text-primary-foreground">
-                <Medal className="size-6" />
-              </div>
+              <Medal className="size-8 text-primary transition-transform group-hover:scale-105" />
               <p className="text-center text-xs font-medium capitalize text-foreground">{cert.replace(/-/g, " ")}</p>
             </div>
           ))}
           {achievements.map((ach) => (
             <div key={ach} className="group flex flex-col items-center justify-center gap-3 rounded-xl border border-border bg-surface-1 p-4 transition-all hover:border-primary/30 hover:bg-accent hover:shadow-sm">
-              <div className="flex size-12 items-center justify-center rounded-full bg-primary/10 text-primary transition-colors group-hover:bg-primary group-hover:text-primary-foreground">
-                <Trophy className="size-6" />
-              </div>
+              <Trophy className="size-8 text-primary transition-transform group-hover:scale-105" />
               <p className="text-center text-xs font-medium capitalize text-foreground">{ach.replace(/-/g, " ")}</p>
             </div>
           ))}

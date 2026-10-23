@@ -111,9 +111,7 @@ export function EvidenceTrail({ items }: { items: MyLearningItem[] }) {
           return (
             <Card key={item.stage} className="relative rounded-2xl p-4 shadow-none md:rounded-none md:border-r-0 md:first:rounded-l-2xl md:last:rounded-r-2xl md:last:border-r">
               <div className="flex items-start gap-3">
-                <span className={cn("relative z-10 grid size-9 shrink-0 place-items-center rounded-xl border bg-card", item.complete ? "border-primary/25 text-primary" : "border-border text-muted-foreground")}>
-                  <Icon className="size-4" aria-hidden="true" />
-                </span>
+                <Icon className={cn("mt-0.5 size-5 shrink-0", item.complete ? "text-primary" : "text-muted-foreground")} aria-hidden="true" />
                 <div className="min-w-0">
                   <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">{stageLabel(item.stage)}</p>
                   <p className="mt-1 line-clamp-2 text-sm font-semibold leading-snug">{item.label}</p>

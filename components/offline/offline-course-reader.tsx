@@ -106,8 +106,8 @@ export function OfflineCourseReader({ courseId }: { courseId: string }) {
     <PageContainer className="pb-16">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div className="min-w-0">
-          <p className="flex items-center gap-1.5 text-xs font-medium text-warning-strong">
-            <WifiOff className="size-3.5" />
+          <p className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground">
+            <WifiOff className="size-3.5 text-primary" />
             Offline copy · cached {formatLocalDateTime(cachedAt)}
           </p>
           <h1 className="mt-2 font-display text-h1">{course.title}</h1>
@@ -232,8 +232,8 @@ This lesson is available offline as part of your saved course. Review the idea, 
       <div className="prose prose-slate mt-5 max-w-none text-sm leading-7 text-muted-foreground [&_h3]:mt-6 [&_h3]:font-display [&_h3]:text-lg [&_h3]:font-semibold [&_h3]:text-foreground [&_li]:my-1 [&_strong]:text-foreground">
         <ReactMarkdown remarkPlugins={[remarkGfm]} rehypePlugins={[rehypeSanitize]}>{body}</ReactMarkdown>
       </div>
-      <div className="mt-6 flex items-center gap-2 rounded-xl border border-success/20 bg-success/5 px-4 py-3 text-xs text-success-strong">
-        <Check className="size-4" />
+      <div className="mt-6 flex items-center gap-2 rounded-xl border border-border bg-secondary/50 px-4 py-3 text-xs text-foreground">
+        <Check className="size-4 text-primary" />
         Readable without a connection — no network was used to render this
         page.
       </div>

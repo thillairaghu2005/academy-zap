@@ -53,19 +53,17 @@ export function OrderHistory() {
             onRetry={() => ordersQuery.refetch()}
           />
         ) : ordersQuery.data && ordersQuery.data.length > 0 ? (
-          <ul className="flex flex-col divide-y divide-border">
+          <ul className="flex flex-col gap-2.5">
             {ordersQuery.data.map((order) => (
               <li
                 key={order.order_id}
-                className="flex items-center gap-3 py-3 first:pt-0 last:pb-0"
+                className="flex items-center gap-3 rounded-xl border border-border bg-card p-3.5"
               >
-                <span className="grid size-9 shrink-0 place-items-center rounded-lg bg-primary/10 text-primary">
-                  {order.items.some((item) => item.kind === "lab") ? (
-                    <FlaskConical className="size-4" />
-                  ) : (
-                    <BookOpen className="size-4" />
-                  )}
-                </span>
+                {order.items.some((item) => item.kind === "lab") ? (
+                  <FlaskConical className="size-5 shrink-0 text-primary" />
+                ) : (
+                  <BookOpen className="size-5 shrink-0 text-primary" />
+                )}
                 <span className="min-w-0 flex-1">
                   <span className="block truncate text-sm font-medium">
                     {order.items.map((item) => item.title).join(", ")}

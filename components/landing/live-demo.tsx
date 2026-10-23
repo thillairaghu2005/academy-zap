@@ -8,11 +8,11 @@ import { cn } from "@/lib/utils";
 
 const LINES = [
   "academy-zap $ parse events from traffic.json",
-  "✓ 14,208 events parsed in 0.4s",
+  "[ok] 14,208 events parsed in 0.4s",
   "academy-zap $ run rule: detect-beaconing",
-  "✓ rule passed — 3 candidate beacons flagged",
+  "[ok] rule passed — 3 candidate beacons flagged",
   "academy-zap $ verify objective: beaconing-detect",
-  "✓ objective verified → rank tick +1",
+  "[ok] objective verified → rank tick +1",
 ];
 
 /** Embedded live terminal demo for the marketing page. Types out a real-looking lab session. */
@@ -33,10 +33,7 @@ export function TerminalMock() {
       aria-label="Demo of a Zapsters lab session: parsing events, running a detection rule, and verifying an objective"
     >
       <div className="flex items-center gap-1.5 border-b border-white/10 bg-white/5 px-4 py-3">
-        <span className="size-2.5 rounded-full bg-white/20" aria-hidden="true" />
-        <span className="size-2.5 rounded-full bg-white/20" aria-hidden="true" />
-        <span className="size-2.5 rounded-full bg-white/20" aria-hidden="true" />
-        <span className="ml-2 inline-flex items-center gap-1.5 text-xs text-white/60">
+        <span className="inline-flex items-center gap-1.5 text-xs text-white/60">
           <TerminalSquare className="size-3.5" /> zapsters — live lab session
         </span>
       </div>
@@ -51,7 +48,7 @@ export function TerminalMock() {
             <span className="inline-block h-3.5 w-2 animate-pulse bg-white/80 align-middle" aria-hidden="true" />
           </p>
         ) : (
-          <p className="mt-2 inline-flex items-center gap-2 rounded-full bg-success/20 px-3 py-1 text-[11px] font-semibold text-white">
+          <p className="mt-2 inline-flex items-center gap-2 rounded-md border border-white/20 bg-white/10 px-3 py-1 text-[11px] font-medium text-white">
             <CheckCircle2 className="size-3.5" /> Session verified — objective complete
           </p>
         )}

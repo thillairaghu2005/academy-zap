@@ -70,9 +70,7 @@ export function AdminWalkthrough({
       <DialogContent className="max-w-md">
         <DialogHeader>
           <div className="flex items-center gap-2.5">
-            <div className="grid size-9 place-items-center rounded-lg bg-primary/10 text-primary">
-              <Compass className="size-4.5" />
-            </div>
+            <Compass className="size-6 text-primary shrink-0" />
             <div>
               <DialogTitle className="font-display text-small">
                 Tour the admin console

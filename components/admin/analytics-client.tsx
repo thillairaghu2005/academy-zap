@@ -8,7 +8,6 @@ import { AreaChart } from "@/components/viz/area-chart";
 import { ActivityHeatmap } from "@/components/dashboard/progress-pulse";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { PageContainer } from "@/components/shared/page-container";
-import { cn } from "@/lib/utils";
 
 const WEEKS_COUNT = 12;
 
@@ -130,7 +129,7 @@ export function AnalyticsClient() {
                   </div>
                   <div className="h-2 overflow-hidden rounded-full bg-muted">
                     <div
-                      className={cn("h-full rounded-full", index === funnel.length - 1 ? "bg-success" : "bg-primary")}
+                      className="h-full rounded-full bg-primary"
                       style={{ width: `${pct}%`, opacity: 1 - index * 0.14 }}
                     />
                   </div>

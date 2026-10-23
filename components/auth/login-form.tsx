@@ -143,7 +143,7 @@ export function LoginForm({ next }: { next?: string }) {
             />
             <div className="rounded-lg border border-border bg-surface-2 p-3.5">
               <p className="flex items-start gap-2 text-xs leading-relaxed text-muted-foreground">
-                <Sparkles className="mt-0.5 size-3.5 shrink-0 text-warning-strong" />
+                <Sparkles className="mt-0.5 size-3.5 shrink-0 text-primary" />
                 <span>
                   <span className="font-medium text-foreground">Secure session</span>
                   <br />

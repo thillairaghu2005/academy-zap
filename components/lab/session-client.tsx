@@ -114,7 +114,7 @@ function ObjectivesPanel({
           variant={allDone ? "secondary" : "outline"}
           className={cn(
             "text-caption",
-            allDone && "border-success/40 bg-success/10 text-success-strong",
+            allDone && "border-primary/40 bg-primary/10 text-primary font-semibold",
           )}
         >
           {session.objectives_completed.length}/{lab.objectives.length}
@@ -130,22 +130,17 @@ function ObjectivesPanel({
               className={cn(
                 "flex items-start gap-2.5 rounded-lg border px-3 py-2.5 transition-colors",
                 completed
-                  ? "border-success/30 bg-success/5"
+                  ? "border-primary/20 bg-primary/5"
                   : "border-border bg-card",
               )}
             >
               {completed ? (
-                <CheckCircle2 className="mt-0.5 size-4 shrink-0 text-success-strong" />
+                <CheckCircle2 className="mt-0.5 size-4 shrink-0 text-primary" />
               ) : (
                 <Circle className="mt-0.5 size-4 shrink-0 text-muted-foreground/50" />
               )}
               <div className="min-w-0 flex-1">
-                <p
-                  className={cn(
-                    "text-sm font-medium",
-                    completed && "text-success-strong",
-                  )}
-                >
+                <p className={cn("text-sm font-medium", completed && "text-foreground font-semibold")}>
                   {objective.title}
                 </p>
                 <p className="text-xs leading-relaxed text-muted-foreground">
@@ -212,24 +207,13 @@ function SessionEnded({
       animate={{ opacity: 1, y: 0 }}
       className="flex flex-col items-center gap-4 py-10 text-center"
     >
-      <div
-        className={cn(
-          "grid size-16 place-items-center rounded-2xl border",
-          isCompleted
-            ? "border-success/40 bg-success/10 text-success-strong"
-            : kind === "timed_out"
-              ? "border-warning/40 bg-warning/10 text-warning-strong"
-              : "border-muted-foreground/30 bg-secondary text-muted-foreground",
-        )}
-      >
-        {isCompleted ? (
-          <CheckCircle2 className="size-8" />
-        ) : kind === "timed_out" ? (
-          <TimerReset className="size-8" />
-        ) : (
-          <Power className="size-8" />
-        )}
-      </div>
+      {isCompleted ? (
+        <CheckCircle2 className="size-12 text-primary" />
+      ) : kind === "timed_out" ? (
+        <TimerReset className="size-12 text-muted-foreground" />
+      ) : (
+        <Power className="size-12 text-muted-foreground" />
+      )}
 
       <div>
         <h2 className="font-display text-h2">
@@ -270,7 +254,7 @@ function SessionEnded({
               Submit Writeup
             </Button>
           ) : (
-            <Badge variant="outline" className="h-9 px-3 border-success/40 bg-success/10 text-success-strong">
+            <Badge variant="outline" className="h-9 px-3 border-primary/40 bg-primary/10 text-primary font-semibold">
               Writeup Submitted (Pending Review)
             </Badge>
           )}
@@ -516,9 +500,7 @@ export function LabSessionClient({
             >
               {session.status === "provisioning" ? (
                 <LoaderCircle className="size-3 animate-spin" />
-              ) : (
-                <span className="size-1.5 rounded-full bg-success" />
-              )}
+              ) : null}
               {session.status}
             </Badge>
           ) : (
@@ -532,8 +514,8 @@ export function LabSessionClient({
               className={cn(
                 "flex items-center gap-1.5 rounded-full border px-3 py-1 font-mono text-sm font-semibold tabular-nums",
                 low
-                  ? "border-warning/40 bg-warning/10 text-warning-strong"
-                  : "border-border bg-muted/50",
+                  ? "border-primary/40 bg-primary/10 text-primary font-bold"
+                  : "border-border bg-secondary text-muted-foreground",
               )}
               title="Hard timeout countdown"
             >
@@ -576,14 +558,14 @@ export function LabSessionClient({
               <div className="flex items-center justify-between border-b border-white/5 bg-zinc-900 px-3.5 py-2">
                 <span className="flex items-center gap-2 text-xs font-medium text-muted-foreground">
                   {lab?.requires_gui ? (
-                    <Monitor className="size-3.5 text-success-on-dark" />
+                    <Monitor className="size-3.5 text-primary" />
                   ) : (
-                    <Terminal className="size-3.5 text-success-on-dark" />
+                    <Terminal className="size-3.5 text-primary" />
                   )}
                   {lab?.requires_gui ? "Guacamole GUI viewer" : "shell — ttyd over WebSocket"}
                 </span>
                 <div className="flex items-center gap-2">
-                  <span className="flex items-center gap-1 text-caption text-success-on-dark/80">
+                  <span className="flex items-center gap-1 text-caption text-muted-foreground">
                     <Lock className="size-3" />
                     encrypted
                   </span>
@@ -643,7 +625,7 @@ export function LabSessionClient({
                     className={cn(
                       "animate-fade-up rounded-lg border px-3.5 py-2.5 text-xs",
                       result.completed
-                        ? "border-success/25 bg-success/5 text-success-strong"
+                        ? "border-primary/30 bg-primary/5 text-foreground"
                         : "border-border bg-muted/30 text-muted-foreground",
                     )}
                   >
