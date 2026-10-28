@@ -23,6 +23,14 @@
   --font-serif: var(--font-heading), ui-sans-serif, system-ui, sans-serif;
   --font-mono: var(--font-body), ui-sans-serif, system-ui, sans-serif;
 
+  /* Calibrated lighter weights across entire site */
+  --font-weight-normal: 400;
+  --font-weight-medium: 450;
+  --font-weight-semibold: 550;
+  --font-weight-bold: 600;
+  --font-weight-extrabold: 700;
+  --font-weight-black: 800;
+
   /* ------------------------------------------------------------ */
   /* Surfaces (3-step elevation). AA for small text verified on   */
   /* every surface: muted-foreground = 4.98:1 on white, 4.77:1 on */
@@ -235,7 +243,7 @@
 /* Vibrancy on glass (SKILL §12): heavier weight + a small
    letter-spacing bump instead of flat gray over frosted surfaces. */
 @utility on-glass {
-  font-weight: 500;
+  font-weight: 450;
   letter-spacing: 0.01em;
 }
 
@@ -302,6 +310,8 @@
   html {
     scroll-behavior: smooth;
     color-scheme: light;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
 
   body {

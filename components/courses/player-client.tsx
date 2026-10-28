@@ -14,12 +14,15 @@ import {
   Award,
   BookOpen,
   Check,
+  CheckCheck,
   CheckCircle2,
   ChevronDown,
+  Copy,
   Download,
   FileText,
   FlaskConical,
   HelpCircle,
+  Info,
   Layers,
   Lightbulb,
   LoaderCircle,
@@ -51,6 +54,8 @@ import {
   getLabScenario,
   getKnowledgeCheckQuestions,
 } from "@/lib/courses/skillbuild-helpers";
+import { getLessonContent } from "@/lib/courses/lesson-content";
+import { CourseInfoPanel } from "@/components/courses/course-info-panel";
 import { DigitalBadgeDialog } from "@/components/courses/digital-badge-dialog";
 
 function PlayerSkeleton() {
@@ -103,48 +108,52 @@ function getLessonActivityDetails(lesson: CourseLesson) {
   };
 }
 
-/** Zapsters Enterprise Article Lesson Viewer with Architecture Callouts */
-function SkillBuildArticleBody({ lesson, course }: { lesson: CourseLesson; course: Course }) {
-  const body =
-    lesson.preview_body?.trim() ||
-    `## ${lesson.title}
+function CodeBlock({ className, children }: { className?: string; children?: React.ReactNode }) {
+  const [copied, setCopied] = React.useState(false);
+  const match = /language-(\w+)/.exec(className || "");
+  const lang = match ? match[1] : "";
+  const codeText = String(children).replace(/\n$/, "");
 
-Welcome to this technical learning module. In this topic, we examine the production design patterns, operational guardrails, and compliance principles essential for enterprise-grade deployments.
-
-### 1. Architectural Overview & Design Patterns
-
-Enterprise workloads require strict boundary isolation, least-privilege role delegation, and verifiable audit logging. When designing scalable systems:
-
-- **Decouple compute from state:** Leverage stateless processing nodes backed by durable, managed object storage.
-- **Enforce cryptographic boundary enforcement:** Encrypt data both in-transit (TLS 1.3) and at-rest with customer-managed keys (KMS / HSM).
-- **Automate continuous telemetry:** Ingest access logs and event streams directly into real-time analysis pipelines.
-
-\`\`\`python
-import boto3
-from botocore.exceptions import ClientError
-
-def verify_bucket_encryption(bucket_name: str) -> bool:
-    """Audit S3 bucket default encryption settings against CIS benchmarks."""
-    s3_client = boto3.client("s3")
-    try:
-        response = s3_client.get_bucket_encryption(Bucket=bucket_name)
-        rules = response["ServerSideEncryptionConfiguration"]["Rules"]
-        return any(rule["ApplyServerSideEncryptionByDefault"]["SSEAlgorithm"] in ("aws:kms", "AES256") for rule in rules)
-    except ClientError as exc:
-        print(f"[SECURITY ALERT] Bucket {bucket_name} encryption check failed: {exc}")
-        return False
-\`\`\`
-
-### 2. Operational Tradeoffs & Security Pillars
-
-1. **Principle of Least Privilege:** Never assign wildcard permissions (\`*\`) to production service accounts or execution roles.
-2. **Blast Radius Containment:** Separate administrative, application, and database subnets using strictly scoped network access control lists.
-3. **Automated Drift Detection:** Continuously compare current resource configurations against approved infrastructure-as-code manifests.
-
-Proceed to the **Hands-on Builder Lab** or **Knowledge Check** tabs above to test your understanding against realistic enterprise scenarios.`;
+  const onCopy = () => {
+    navigator.clipboard.writeText(codeText);
+    setCopied(true);
+    toast.success("Code copied to clipboard", { position: "top-center" });
+    setTimeout(() => setCopied(false), 2000);
+  };
 
   return (
-    <div className="rounded-2xl border border-border bg-card p-6 sm:p-10 shadow-sm space-y-6">
+    <div className="my-5 overflow-hidden rounded-xl border border-border bg-[#0d1117] text-xs shadow-xs">
+      <div className="flex items-center justify-between px-4 py-2 border-b border-border/40 bg-[#161b22] text-[11px]">
+        <span className="font-semibold uppercase tracking-wider font-mono text-slate-300">
+          {lang || "CODE"}
+        </span>
+        <button
+          type="button"
+          onClick={onCopy}
+          className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded text-[11px] font-sans font-medium text-slate-300 hover:text-white hover:bg-slate-800 transition-colors"
+          aria-label="Copy code snippet"
+        >
+          {copied ? <CheckCheck className="size-3.5 text-emerald-400" /> : <Copy className="size-3.5" />}
+          <span>{copied ? "Copied" : "Copy"}</span>
+        </button>
+      </div>
+      <div className="p-4 overflow-x-auto bg-[#0d1117] text-[#e6edf3] font-mono text-xs leading-relaxed whitespace-pre select-text selection:bg-primary/35 selection:text-white">
+        {codeText}
+      </div>
+    </div>
+  );
+}
+
+/** Zapsters Enterprise Article Lesson Viewer with Architecture Callouts & Key Takeaways */
+function SkillBuildArticleBody({ lesson, course }: { lesson: CourseLesson; course: Course }) {
+  const content = React.useMemo(() => {
+    return getLessonContent(course.title, course.category, lesson.title, lesson.id);
+  }, [course.title, course.category, lesson.title, lesson.id]);
+
+  const body = content.body || lesson.preview_body?.trim();
+
+  return (
+    <div className="rounded-2xl border border-border bg-card p-6 sm:p-10 shadow-xs space-y-6">
       {/* Enterprise Lesson Callout Bar */}
       <div className="flex flex-wrap items-center justify-between gap-3 p-3.5 rounded-xl bg-surface-1 border border-border text-xs">
         <div className="flex items-center gap-2">
@@ -156,7 +165,7 @@ Proceed to the **Hands-on Builder Lab** or **Knowledge Check** tabs above to tes
         </div>
         <div className="flex items-center gap-2">
           <Badge variant="outline" className="text-[11px] font-mono">
-            {lesson.duration_seconds ? `${Math.max(3, Math.round(lesson.duration_seconds / 60))} min read` : "15 min read"}
+            {lesson.duration_seconds ? `${Math.max(3, Math.round(lesson.duration_seconds / 60))} min read` : "10 min read"}
           </Badge>
         </div>
       </div>
@@ -172,8 +181,27 @@ Proceed to the **Hands-on Builder Lab** or **Knowledge Check** tabs above to tes
       </div>
 
       {/* Markdown Body */}
-      <div className="prose prose-slate dark:prose-invert max-w-none text-sm leading-7 text-muted-foreground [&_code]:rounded-md [&_code]:bg-surface-2 [&_code]:px-1.5 [&_code]:py-0.5 [&_code]:font-mono [&_code]:text-xs [&_h3]:mt-7 [&_h3]:font-display [&_h3]:text-lg [&_h3]:font-semibold [&_h3]:text-foreground [&_li]:my-1.5 [&_pre]:my-5 [&_pre]:overflow-x-auto [&_pre]:rounded-xl [&_pre]:border [&_pre]:border-border [&_pre]:bg-slate-950 [&_pre]:p-4 [&_pre]:font-mono [&_pre]:text-xs [&_pre]:leading-6 [&_strong]:text-foreground">
-        <ReactMarkdown remarkPlugins={[remarkGfm]} rehypePlugins={[rehypeSanitize]}>
+      <div className="max-w-none text-sm leading-7 text-muted-foreground [&_h2]:mt-8 [&_h2]:mb-3 [&_h2]:font-display [&_h2]:text-xl [&_h2]:font-bold [&_h2]:text-foreground [&_h3]:mt-6 [&_h3]:mb-2 [&_h3]:font-display [&_h3]:text-lg [&_h3]:font-semibold [&_h3]:text-foreground [&_p]:my-3 [&_li]:my-1.5 [&_ul]:my-3 [&_ul]:list-disc [&_ul]:pl-5 [&_strong]:text-foreground [&_hr]:my-6 [&_hr]:border-border">
+        <ReactMarkdown
+          remarkPlugins={[remarkGfm]}
+          rehypePlugins={[rehypeSanitize]}
+          components={{
+            pre({ children }) {
+              return <>{children}</>;
+            },
+            code({ className, children, ...props }) {
+              const isInline = !className && !String(children).includes("\n");
+              if (isInline) {
+                return (
+                  <code className="rounded-md bg-surface-2 px-1.5 py-0.5 font-mono text-xs text-foreground border border-border/50" {...props}>
+                    {children}
+                  </code>
+                );
+              }
+              return <CodeBlock className={className}>{children}</CodeBlock>;
+            },
+          }}
+        >
           {body}
         </ReactMarkdown>
       </div>
@@ -182,12 +210,30 @@ Proceed to the **Hands-on Builder Lab** or **Knowledge Check** tabs above to tes
       <div className="rounded-xl border border-primary/25 bg-primary/5 p-4 sm:p-5 text-sm space-y-2">
         <div className="flex items-center gap-2 text-primary font-bold text-xs uppercase tracking-wider">
           <Lightbulb className="size-4" />
-          <span>Architecture Best Practice</span>
+          <span>{content.bestPractice.title}</span>
         </div>
         <p className="text-xs sm:text-sm text-foreground leading-relaxed">
-          Always decouple configuration from application binaries. Store secrets in a dedicated Secrets Vault or Key Management Service, and programmatically rotate keys at minimum 90-day intervals.
+          {content.bestPractice.description}
         </p>
       </div>
+
+      {/* Key Takeaways Card */}
+      {content.keyTakeaways && content.keyTakeaways.length > 0 && (
+        <div className="rounded-xl border border-border bg-surface-1 p-4 sm:p-5 space-y-3">
+          <div className="flex items-center gap-2 text-foreground font-semibold text-xs uppercase tracking-wider">
+            <CheckCircle2 className="size-4 text-primary" />
+            <span>Key Takeaways</span>
+          </div>
+          <ul className="space-y-1.5 text-xs sm:text-sm text-muted-foreground">
+            {content.keyTakeaways.map((takeaway, idx) => (
+              <li key={idx} className="flex items-start gap-2">
+                <Check className="size-3.5 text-primary shrink-0 mt-0.5" />
+                <span>{takeaway}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
     </div>
   );
 }
@@ -706,7 +752,7 @@ export function PlayerClient({ course }: { course: Course }) {
   const [collapsedSections, setCollapsedSections] = React.useState<Record<string, boolean>>({});
   const [lessonSearch, setLessonSearch] = React.useState("");
   const [sidebarOpen, setSidebarOpen] = React.useState(true);
-  const [activeTab, setActiveTab] = React.useState<"content" | "lab" | "quiz" | "resources" | "notes">("content");
+  const [activeTab, setActiveTab] = React.useState<"content" | "overview" | "lab" | "quiz" | "resources" | "notes">("content");
   const [digitalBadgeOpen, setDigitalBadgeOpen] = React.useState(false);
 
   const meta = React.useMemo(() => getCourseSkillBuildMeta(course), [course]);
@@ -989,7 +1035,7 @@ export function PlayerClient({ course }: { course: Course }) {
   };
 
   return (
-    <div className="flex min-h-screen flex-col bg-background text-foreground">
+    <div className="flex h-full flex-col bg-background text-foreground overflow-hidden">
       {/* Digital Badge Modal */}
       <DigitalBadgeDialog
         open={digitalBadgeOpen}
@@ -998,8 +1044,8 @@ export function PlayerClient({ course }: { course: Course }) {
         learnerName={user?.display_name ?? "Zapster Learner"}
       />
 
-      {/* Enterprise LMS Header Bar (Zapsters Enterprise standard) */}
-      <header className="sticky top-0 z-30 flex h-14 items-center justify-between border-b border-border bg-card/95 px-4 backdrop-blur sm:px-6">
+      {/* Enterprise LMS Header Bar (AWS Skill Builder & IBM SkillsBuild standard) */}
+      <header className="shrink-0 flex h-14 items-center justify-between border-b border-border bg-card/95 px-4 backdrop-blur sm:px-6 relative z-20">
         {/* Left: Breadcrumbs & Back link */}
         <div className="flex items-center gap-3 min-w-0">
           <Link
@@ -1007,13 +1053,13 @@ export function PlayerClient({ course }: { course: Course }) {
             className="inline-flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground font-medium shrink-0"
           >
             <ArrowLeft className="size-3.5" />
-            <span className="hidden md:inline">Course Overview</span>
+            <span className="hidden md:inline font-semibold">Course Overview</span>
           </Link>
           <span className="text-border">/</span>
           <div className="flex items-center gap-2 truncate text-xs">
-            <span className="font-mono text-primary font-semibold hidden sm:inline">
+            <Badge variant="outline" className="font-mono text-primary font-semibold text-[10px] border-primary/30 bg-primary/5 hidden sm:inline-flex">
               {meta.courseCode}
-            </span>
+            </Badge>
             <span className="text-muted-foreground truncate hidden lg:inline">
               {currentSection?.title ?? course.title}
             </span>
@@ -1024,16 +1070,26 @@ export function PlayerClient({ course }: { course: Course }) {
           </div>
         </div>
 
-        {/* Right: Progress Bar & Credential Trigger */}
-        <div className="flex items-center gap-4 shrink-0">
+        {/* Right: Progress Bar & Actions */}
+        <div className="flex items-center gap-3 shrink-0">
           {enrollment && (
             <div className="hidden sm:flex items-center gap-2.5">
               <span className="text-xs font-medium text-muted-foreground">
                 {completedSet.size}/{allLessons.length} Topics ({enrollment.progress_pct}%)
               </span>
-              <Progress value={enrollment.progress_pct} className="w-24 h-1.5 bg-muted" indicatorClassName="bg-primary" />
+              <Progress value={enrollment.progress_pct} className="w-20 h-1.5 bg-muted" indicatorClassName="bg-primary" />
             </div>
           )}
+
+          <Button
+            size="sm"
+            variant={activeTab === "overview" ? "default" : "outline"}
+            onClick={() => setActiveTab(activeTab === "overview" ? "content" : "overview")}
+            className="text-xs gap-1.5"
+          >
+            <Info className="size-3.5" />
+            <span className="hidden md:inline">Course Info</span>
+          </Button>
 
           <Button
             size="sm"
@@ -1050,12 +1106,13 @@ export function PlayerClient({ course }: { course: Course }) {
             variant="ghost"
             onClick={() => setSidebarOpen((prev) => !prev)}
             className="text-xs lg:hidden"
+            aria-label="Toggle curriculum navigation"
           >
             {sidebarOpen ? <X className="size-4" /> : <Layers className="size-4" />}
           </Button>
         </div>
 
-        {/* Scroll-based Reading Progress Line directly attached to header */}
+        {/* Scroll-based Reading Progress Line */}
         <div className="absolute inset-x-0 bottom-0 h-0.5 bg-border/40 overflow-hidden">
           <div
             className="h-full transition-[width] duration-150 ease-out bg-primary"
@@ -1065,38 +1122,45 @@ export function PlayerClient({ course }: { course: Course }) {
       </header>
 
       {/* Main LMS Layout: Left Drawer (Curriculum) + Right Learning Canvas */}
-      <div className="flex flex-1 items-stretch overflow-hidden">
-        {/* Left Drawer / Table of Contents (Zapsters Enterprise navigation) */}
+      <div className="flex flex-1 min-h-0 items-stretch overflow-hidden relative">
+        {/* Mobile backdrop */}
+        {sidebarOpen && (
+          <div
+            className="fixed inset-0 z-30 bg-black/50 backdrop-blur-xs lg:hidden"
+            onClick={() => setSidebarOpen(false)}
+            aria-hidden="true"
+          />
+        )}
+
+        {/* Left Drawer / Table of Contents (Pinned Sidebar) */}
         <aside
           className={cn(
-            "fixed inset-y-14 left-0 z-20 flex w-80 flex-col border-r border-border bg-card transition-transform duration-200 lg:static lg:w-[340px] lg:translate-x-0 shrink-0",
+            "fixed inset-y-0 left-0 z-40 flex w-80 flex-col border-r border-border bg-card transition-transform duration-200 lg:static lg:w-[340px] lg:h-full lg:translate-x-0 shrink-0",
             sidebarOpen ? "translate-x-0" : "-translate-x-full",
           )}
         >
           {/* Drawer Header with Course Code & Progress */}
-          <div className="bg-neutral-900 p-5 text-white border-b border-neutral-800">
+          <div className="shrink-0 bg-card p-4 border-b border-border space-y-2.5">
             <div className="flex items-center justify-between">
-              <span className="text-[10px] font-bold uppercase tracking-widest text-neutral-300 font-mono">
+              <span className="text-[10px] font-bold uppercase tracking-widest text-primary font-mono px-2 py-0.5 rounded bg-primary/10 border border-primary/20">
                 {meta.courseCode}
               </span>
-              <span className="text-[11px] font-bold text-neutral-300">
+              <span className="text-[11px] font-bold text-muted-foreground font-mono">
                 {enrollment?.progress_pct ?? 0}% COMPLETED
               </span>
             </div>
-            <h2 className="font-display text-base font-bold text-white mt-1 line-clamp-1">
+            <h2 className="font-display text-sm font-bold text-foreground line-clamp-1">
               {course.title}
             </h2>
-            <div className="mt-3">
-              <Progress
-                value={enrollment?.progress_pct ?? 0}
-                className="h-1 bg-slate-800"
-                indicatorClassName="bg-primary"
-              />
-            </div>
+            <Progress
+              value={enrollment?.progress_pct ?? 0}
+              className="h-1.5 bg-muted"
+              indicatorClassName="bg-primary"
+            />
           </div>
 
           {/* Search Box */}
-          <div className="p-3 border-b border-border bg-surface-1">
+          <div className="shrink-0 p-3 border-b border-border bg-surface-1">
             <div className="relative">
               <Search className="absolute left-2.5 top-2.5 size-3.5 text-muted-foreground" />
               <input
@@ -1110,7 +1174,7 @@ export function PlayerClient({ course }: { course: Course }) {
           </div>
 
           {/* Curriculum Module Accordion */}
-          <div className="flex-1 overflow-y-auto space-y-1.5 p-2">
+          <div className="flex-1 min-h-0 overflow-y-auto space-y-1.5 p-2">
             {course.syllabus.map((section, si) => {
               const isCollapsed = collapsedSections[section.id] === true;
               const sectionCompleted = section.lessons.filter((l) => completedSet.has(l.id)).length;
@@ -1201,7 +1265,7 @@ export function PlayerClient({ course }: { course: Course }) {
         </aside>
 
         {/* Center Learning Canvas */}
-        <main ref={mainRef} className="flex flex-1 flex-col overflow-y-auto">
+        <main ref={mainRef} className="flex flex-1 min-h-0 flex-col overflow-y-auto">
           {activeLesson && (
             <div ref={contentContainerRef} className="p-4 sm:p-8 lg:p-10 max-w-5xl mx-auto w-full space-y-6">
               {/* Activity Banner Strip */}
@@ -1229,30 +1293,43 @@ export function PlayerClient({ course }: { course: Course }) {
                   )}
                 </div>
 
-                {/* Sub-Tabs: ONLY for regular reading/lab topics. Quizzes and final assessments render directly on the course page */}
+                {/* Sub-Tabs: Guide, Course Info & Objectives, Cloud Lab, Resources, Notes */}
                 {!isQuizOrAssessment && (
-                  <div className="flex items-center gap-1 bg-surface-1 p-1 rounded-xl border border-border text-xs">
+                  <div className="flex items-center gap-1 bg-surface-1 p-1 rounded-xl border border-border text-xs overflow-x-auto">
                     <button
                       type="button"
                       onClick={() => setActiveTab("content")}
                       className={cn(
-                        "px-3 py-1.5 rounded-lg font-medium transition-colors flex items-center gap-1.5",
+                        "px-3 py-1.5 rounded-lg font-medium transition-colors flex items-center gap-1.5 shrink-0",
                         activeTab === "content"
-                          ? "bg-card text-foreground font-semibold shadow-sm"
+                          ? "bg-card text-foreground font-semibold shadow-xs"
                           : "text-muted-foreground hover:text-foreground",
                       )}
                     >
                       <BookOpen className="size-3.5" />
                       <span>Guide</span>
                     </button>
+                    <button
+                      type="button"
+                      onClick={() => setActiveTab("overview")}
+                      className={cn(
+                        "px-3 py-1.5 rounded-lg font-medium transition-colors flex items-center gap-1.5 shrink-0",
+                        activeTab === "overview"
+                          ? "bg-card text-primary font-semibold shadow-xs"
+                          : "text-muted-foreground hover:text-foreground",
+                      )}
+                    >
+                      <Info className="size-3.5" />
+                      <span>Course Info & Objectives</span>
+                    </button>
                     {activityDetails?.type === "lab" && (
                       <button
                         type="button"
                         onClick={() => setActiveTab("lab")}
                         className={cn(
-                          "px-3 py-1.5 rounded-lg font-medium transition-colors flex items-center gap-1.5",
+                          "px-3 py-1.5 rounded-lg font-medium transition-colors flex items-center gap-1.5 shrink-0",
                           activeTab === "lab"
-                            ? "bg-card text-primary font-semibold shadow-sm"
+                            ? "bg-card text-primary font-semibold shadow-xs"
                             : "text-muted-foreground hover:text-foreground",
                         )}
                       >
@@ -1264,9 +1341,9 @@ export function PlayerClient({ course }: { course: Course }) {
                       type="button"
                       onClick={() => setActiveTab("resources")}
                       className={cn(
-                        "px-3 py-1.5 rounded-lg font-medium transition-colors flex items-center gap-1.5",
+                        "px-3 py-1.5 rounded-lg font-medium transition-colors flex items-center gap-1.5 shrink-0",
                         activeTab === "resources"
-                          ? "bg-card text-foreground font-semibold shadow-sm"
+                          ? "bg-card text-foreground font-semibold shadow-xs"
                           : "text-muted-foreground hover:text-foreground",
                       )}
                     >
@@ -1277,9 +1354,9 @@ export function PlayerClient({ course }: { course: Course }) {
                       type="button"
                       onClick={() => setActiveTab("notes")}
                       className={cn(
-                        "px-3 py-1.5 rounded-lg font-medium transition-colors flex items-center gap-1.5",
+                        "px-3 py-1.5 rounded-lg font-medium transition-colors flex items-center gap-1.5 shrink-0",
                         activeTab === "notes"
-                          ? "bg-card text-foreground font-semibold shadow-sm"
+                          ? "bg-card text-foreground font-semibold shadow-xs"
                           : "text-muted-foreground hover:text-foreground",
                       )}
                     >
@@ -1357,6 +1434,23 @@ export function PlayerClient({ course }: { course: Course }) {
               ) : (
                 /* REGULAR LEARNING TOPIC VIEW (Guide / Cloud Lab / Resources / Notes) */
                 <>
+                  {activeTab === "overview" && (
+                    <div className="space-y-6">
+                      <CourseInfoPanel
+                        course={course}
+                        onStartTopic={(lessonId) => {
+                          setPickedLessonId(lessonId);
+                          setActiveTab("content");
+                          if (typeof window !== "undefined") {
+                            window.scrollTo({ top: 0, behavior: "smooth" });
+                          }
+                          mainRef.current?.scrollTo({ top: 0, behavior: "smooth" });
+                        }}
+                        onOpenBadgeModal={() => setDigitalBadgeOpen(true)}
+                      />
+                    </div>
+                  )}
+
                   {activeTab === "content" && (
                     <div className="space-y-6">
                       <SkillBuildArticleBody lesson={activeLesson} course={course} />

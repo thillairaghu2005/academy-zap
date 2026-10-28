@@ -115,7 +115,7 @@ export function SkillTree() {
       .attr("dy", (d) => (d.depth === 0 ? -RADIUS - 8 : d.children ? -RADIUS - 8 : RADIUS + 14))
       .attr("text-anchor", "middle")
       .style("font-size", (d) => (d.depth === 0 ? "11px" : d.depth === 1 ? "10px" : "9px"))
-      .style("font-weight", (d) => (d.depth <= 1 ? 600 : 400))
+      .style("font-weight", (d) => (d.depth <= 1 ? 500 : 400))
       .style("fill", "var(--color-foreground)")
       .text((d) => {
         if (d.depth === 0) return d.data.name;

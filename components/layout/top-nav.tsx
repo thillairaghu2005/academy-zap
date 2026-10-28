@@ -52,9 +52,10 @@ function TopNavBreadcrumbs({ pathname }: { pathname: string }) {
     >
       {segments.map((segment, index) => {
         const href = `/${segments.slice(0, index + 1).join("/")}`;
+        const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(segment);
         const label =
           BREADCRUMB_LABELS[segment] ??
-          decodeURIComponent(segment).replace(/[-_]/g, " ");
+          (isUuid ? (segments[index - 1] === "courses" ? "Course Details" : "Details") : decodeURIComponent(segment).replace(/[-_]/g, " "));
         const current = index === segments.length - 1;
 
         return (

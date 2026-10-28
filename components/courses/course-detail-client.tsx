@@ -330,57 +330,57 @@ export function CourseDetailClient({
       {/* Main Grid: Enterprise Content (Left) + Sticky Enrollment Card (Right) */}
       <div className="mt-6 grid gap-8 lg:grid-cols-[minmax(0,1fr)_390px] lg:items-start">
         <div className="flex flex-col gap-6">
-          {/* Zapsters Enterprise Hero Banner */}
-          <div className="relative overflow-hidden rounded-xl border border-neutral-800 bg-neutral-900 p-6 sm:p-8 shadow-sm">
+          {/* Zapsters Enterprise Hero Banner (Minimalist AWS Skill Builder & IBM SkillsBuild style) */}
+          <div className="relative overflow-hidden rounded-2xl border border-border bg-card p-6 sm:p-8 shadow-xs">
             <div className="relative z-10 flex flex-col gap-4">
               {/* Partner Badges */}
               <div className="flex flex-wrap items-center gap-2">
-                <span className="inline-flex items-center gap-1.5 rounded-md bg-neutral-800 border border-neutral-700 px-2.5 py-1 text-[11px] font-semibold text-neutral-200">
-                  <ShieldCheck className="size-3.5 text-primary" />
-                  Zapsters Enterprise Standard
+                <span className="inline-flex items-center gap-1.5 rounded-md bg-primary/10 border border-primary/20 px-2.5 py-1 text-[11px] font-semibold text-primary font-mono">
+                  <ShieldCheck className="size-3.5" />
+                  {meta.courseCode} · Enterprise Standard
                 </span>
-                <Badge variant="outline" className="uppercase tracking-wider text-[11px] border-neutral-700 bg-neutral-800 text-neutral-300">
+                <Badge variant="outline" className="uppercase tracking-wider text-[11px]">
                   {course.category}
                 </Badge>
-                <Badge variant="outline" className="uppercase tracking-wider text-[11px] border-neutral-700 bg-neutral-800 text-neutral-300">
+                <Badge variant="outline" className="uppercase tracking-wider text-[11px]">
                   {course.level} Level
                 </Badge>
-                <span className="inline-flex items-center gap-1 text-[11px] text-neutral-400 ml-auto">
+                <span className="inline-flex items-center gap-1 text-[11px] text-muted-foreground ml-auto">
                   <Globe className="size-3" />
                   {course.language}
                 </span>
               </div>
 
               {/* Title & Subtitle */}
-              <h1 className="font-display text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight text-white leading-tight">
+              <h1 className="font-display text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight text-foreground leading-tight">
                 {course.title}
               </h1>
-              <p className="text-sm sm:text-base text-neutral-300 leading-relaxed max-w-3xl">
+              <p className="text-sm sm:text-base text-muted-foreground leading-relaxed max-w-3xl">
                 {course.subtitle}
               </p>
 
               {/* Metadata KPI Strip */}
-              <div className="flex flex-wrap items-center gap-x-6 gap-y-2 py-2 text-xs text-neutral-300">
+              <div className="flex flex-wrap items-center gap-x-6 gap-y-2 py-3 border-y border-border/60 text-xs text-muted-foreground">
                 <span className="flex items-center gap-1.5">
                   <Star className="size-3.5 fill-primary text-primary" />
-                  <span className="font-semibold text-white">
+                  <span className="font-semibold text-foreground">
                     {course.rating > 0 ? course.rating.toFixed(1) : "4.9"}
                   </span>
-                  <span className="text-neutral-400">
+                  <span>
                     ({(course.review_count || 184).toLocaleString()} reviews)
                   </span>
                 </span>
                 <span className="flex items-center gap-1.5">
-                  <Users className="size-3.5 text-neutral-400" />
+                  <Users className="size-3.5 text-muted-foreground" />
                   <span>{(course.enrolled_count || 12450).toLocaleString()} enrolled learners</span>
                 </span>
                 <span className="flex items-center gap-1.5">
-                  <Clock className="size-3.5 text-neutral-400" />
+                  <Clock className="size-3.5 text-muted-foreground" />
                   <span>{course.estimated_hours} Hours total</span>
                 </span>
                 <span className="flex items-center gap-1.5">
-                  <Award className="size-3.5 text-neutral-300" />
-                  <span className="text-neutral-200 font-medium">{meta.badgeInfo.ceuCredits} CEU Credits</span>
+                  <Award className="size-3.5 text-primary" />
+                  <span className="text-foreground font-medium">{meta.badgeInfo.ceuCredits} CEU Credits</span>
                 </span>
                 <span className="flex items-center gap-1.5">
                   <CheckCircle2 className="size-3.5 text-primary" />
@@ -389,16 +389,16 @@ export function CourseDetailClient({
               </div>
 
               {/* Instructor Tag */}
-              <div className="flex items-center gap-3 mt-1 border-t border-neutral-800 pt-3">
-                <div className="grid size-9 shrink-0 place-items-center rounded-lg bg-neutral-800 border border-neutral-700 font-bold text-white text-sm">
+              <div className="flex items-center gap-3 mt-1 pt-1">
+                <div className="grid size-9 shrink-0 place-items-center rounded-lg bg-surface-2 border border-border font-bold text-foreground text-sm">
                   {course.instructor.display_name.charAt(0)}
                 </div>
                 <div>
                   <div className="flex items-center gap-1.5">
-                    <p className="text-sm font-semibold text-white">{course.instructor.display_name}</p>
+                    <p className="text-sm font-semibold text-foreground">{course.instructor.display_name}</p>
                     <ShieldCheck className="size-3.5 text-primary" />
                   </div>
-                  <p className="text-xs text-neutral-400">
+                  <p className="text-xs text-muted-foreground">
                     {course.instructor.title} · Certified Enterprise Instructor
                   </p>
                 </div>

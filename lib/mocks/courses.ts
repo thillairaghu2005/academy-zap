@@ -5,6 +5,7 @@ import type {
   CourseSummary,
 } from "@/lib/contracts/content";
 import { hueForId } from "@/lib/visual";
+import { getLessonContent } from "@/lib/courses/lesson-content";
 
 /**
  * Content Engine fixtures.
@@ -137,15 +138,18 @@ const s = (id: string, title: string, lessons: ReturnType<typeof l>[]) => {
     id,
     title,
     position: 0,
-    lessons: allLessons.map((lesson, i) => ({
-      ...lesson,
-      position: i + 1,
-      isPreview: true,
-      preview_body:
-        lesson.title.startsWith("Quiz:") || lesson.title.includes("Assessment")
+    lessons: allLessons.map((lesson, i) => {
+      const isQuizOrAssessment =
+        lesson.title.startsWith("Quiz:") || lesson.title.includes("Assessment");
+      return {
+        ...lesson,
+        position: i + 1,
+        isPreview: true,
+        preview_body: isQuizOrAssessment
           ? null
-          : '\n\n## ' + lesson.title + '\n\nWelcome to this comprehensive module. In this section, we will dive deep into the fundamental concepts and practical applications of this topic. This material has been carefully curated to ensure you build a strong foundation.\n\n### Introduction to the Core Concepts\n\nBefore we explore the advanced mechanisms, it is critical to understand the underlying architecture. Modern systems rely on robust design patterns that ensure scalability and security. By mastering these principles, you will be able to architect solutions that stand the test of time.\n\nHere is a practical example of how this looks in a real-world scenario:\n\n```python\ndef analyze_security_event(event):\n    # Analyze the incoming event for potential threats\n    if event.severity > 7:\n        alert_admin(event)\n    else:\n        log_event(event)\n```\n\n### Key Methodologies\n\nWe utilize several key methodologies in this domain:\n\n1. **Continuous Monitoring:** Always keep an eye on the system state.\n2. **Proactive Defense:** Implement safeguards before vulnerabilities are exploited.\n3. **Rapid Incident Response:** Minimize the blast radius by acting quickly.\n\n### Practical Application and Labs\n\nApplying what you have learned is the most important part of this journey. The theories discussed here translate directly into the interactive labs provided later in this course. You are encouraged to follow along with the provided code snippets and experiment in your own workspace.\n\n> **Note:** Always ensure you have the proper permissions before running diagnostics on production systems.\n\n### Summary and Next Steps\n\nIn summary, the strategies outlined above form the backbone of our methodology. As you proceed to the next section, keep these principles in mind. They will be heavily referenced when we tackle more complex scenarios and case studies.\n\nEnjoy the rest of the course material and proceed to the knowledge check when you are ready.',
-    })),
+          : getLessonContent("", "", lesson.title, lesson.id).body,
+      };
+    }),
   };
 };
 

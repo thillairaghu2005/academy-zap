@@ -36,29 +36,34 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
   return (
     <AuthGuard>
-      <div className="relative flex min-h-dvh flex-col overflow-x-clip bg-background">
+      <div
+        className={cn(
+          "relative flex flex-col bg-background",
+          isLearningCourse ? "h-dvh overflow-hidden" : "min-h-dvh overflow-x-clip",
+        )}
+      >
         <a
           href="#main-content"
           className="sr-only z-50 rounded-md bg-primary px-4 py-2 text-primary-foreground focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
         >
           Skip to content
         </a>
-        <TopNav />
-        <DemoModeBadge />
-        <div className="flex min-h-0 flex-1">
+        {!isLearningCourse && <TopNav />}
+        {!isLearningCourse && <DemoModeBadge />}
+        <div className={cn("flex min-h-0 flex-1", isLearningCourse && "h-full overflow-hidden")}>
           <SideNav />
           <main
             id="main-content"
             tabIndex={-1}
             className={cn(
               "min-w-0 flex-1 outline-none",
-              isLearningCourse ? "pb-0" : "pb-20 lg:pb-0"
+              isLearningCourse ? "h-full overflow-hidden flex flex-col pb-0" : "pb-20 lg:pb-0",
             )}
           >
             {children}
           </main>
         </div>
-        <BottomNavigation />
+        {!isLearningCourse && <BottomNavigation />}
         <React.Suspense fallback={null}>
           <NavigationTour />
         </React.Suspense>

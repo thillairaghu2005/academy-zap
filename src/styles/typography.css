@@ -44,13 +44,14 @@
   /* ------------------------------------------------------------------ */
   /* Weight — build hierarchy from weight + size + leading, not size     */
   /* alone. Geist's variable axis lets us step smoothly from 300–800.   */
+  /* Calibrated lighter weights for a cleaner, less heavy visual feel.  */
   /* ------------------------------------------------------------------ */
-  --fw-heading-strong: 800; /* hero, h1, h2 */
-  --fw-heading: 700;        /* h3, sub-headings */
-  --fw-body: 500;
-  --fw-ui: 600;             /* labels, nav items, buttons */
-  --fw-emphasis: 700;       /* inline bold within body copy */
-  --fw-bold: 800;
+  --fw-heading-strong: 650; /* hero, h1, h2 (was 800) */
+  --fw-heading: 600;        /* h3, sub-headings (was 700) */
+  --fw-body: 400;           /* body copy (was 500) */
+  --fw-ui: 500;             /* labels, nav items, buttons (was 600) */
+  --fw-emphasis: 600;       /* inline bold within body copy (was 700) */
+  --fw-bold: 650;           /* strong emphasis (was 800) */
 
   /* ------------------------------------------------------------------ */
   /* Leading tracks size inversely: tight on large display, looser on    */
@@ -86,6 +87,14 @@
   --font-display: var(--font-heading);
   --font-serif: var(--font-heading);
   --font-mono: var(--font-body);
+
+  /* Calibrated lighter weights across entire site */
+  --font-weight-normal: 400;
+  --font-weight-medium: 450;
+  --font-weight-semibold: 550;
+  --font-weight-bold: 600;
+  --font-weight-extrabold: 700;
+  --font-weight-black: 800;
 
   /* Text utilities: each size carries its own line-height, weight, and
      letter-spacing so a single class sets the complete type role.       */
@@ -136,6 +145,8 @@
 body,
 h1, h2, h3, h4, h5, h6,
 p,
+strong,
+b,
 .font-sans,
 .font-display {
   font-optical-sizing: auto;
@@ -144,6 +155,11 @@ p,
 h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-heading);
   font-weight: var(--fw-heading);
+}
+
+strong,
+b {
+  font-weight: var(--fw-emphasis);
 }
 
 .font-display {
@@ -161,7 +177,7 @@ h1, h2, h3, h4, h5, h6 {
 /* explicitly when these utilities co-occur.                            */
 /* ------------------------------------------------------------------ */
 @layer utilities {
-  .font-display.font-semibold { font-weight: 600; }
-  .font-display.font-bold     { font-weight: 700; }
-  .font-display.font-extrabold { font-weight: 800; }
+  .font-display.font-semibold { font-weight: 550; }
+  .font-display.font-bold     { font-weight: 600; }
+  .font-display.font-extrabold { font-weight: 700; }
 }
