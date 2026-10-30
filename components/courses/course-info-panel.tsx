@@ -1,7 +1,6 @@
 "use client";
 
 import * as React from "react";
-import Link from "next/link";
 import {
   Award,
   BookOpen,
@@ -12,13 +11,12 @@ import {
   FlaskConical,
   Globe,
   Lightbulb,
-  PlayCircle,
   ShieldCheck,
   Star,
   Users,
 } from "lucide-react";
 
-import type { Course, CourseLesson } from "@/lib/contracts/content";
+import type { Course } from "@/lib/contracts/content";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { getCourseSkillBuildMeta } from "@/lib/courses/skillbuild-helpers";
@@ -26,13 +24,11 @@ import { getCourseSkillBuildMeta } from "@/lib/courses/skillbuild-helpers";
 interface CourseInfoPanelProps {
   course: Course;
   onStartTopic?: (lessonId: string) => void;
-  onOpenBadgeModal?: () => void;
 }
 
 export function CourseInfoPanel({
   course,
   onStartTopic,
-  onOpenBadgeModal,
 }: CourseInfoPanelProps) {
   const meta = React.useMemo(() => getCourseSkillBuildMeta(course), [course]);
   const allLessons = React.useMemo(

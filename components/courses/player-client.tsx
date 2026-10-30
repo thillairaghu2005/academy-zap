@@ -12,7 +12,6 @@ import {
   ArrowLeft,
   ArrowRight,
   Award,
-  BookOpen,
   Check,
   CheckCheck,
   CheckCircle2,

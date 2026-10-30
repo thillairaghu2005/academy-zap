@@ -1,7 +1,6 @@
 "use client";
 
 import * as React from "react";
-import { Sparkles } from "lucide-react";
 
 import { Card } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";

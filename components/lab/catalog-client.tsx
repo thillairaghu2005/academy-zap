@@ -13,7 +13,6 @@ import {
   Monitor,
   Search,
   ShieldCheck,
-  Sparkles,
   X,
 } from "lucide-react";
 

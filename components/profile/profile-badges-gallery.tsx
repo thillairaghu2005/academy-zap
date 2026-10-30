@@ -6,7 +6,6 @@ import {
   Copy,
   ExternalLink,
   Share2,
-  Sparkles,
 } from "lucide-react";
 import { toast } from "sonner";
 

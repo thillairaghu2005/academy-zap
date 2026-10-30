@@ -5,7 +5,6 @@ import {
   Download,
   Printer,
   ShieldCheck,
-  Sparkles,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";

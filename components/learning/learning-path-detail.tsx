@@ -14,7 +14,6 @@ import {
   GraduationCap,
   Layers,
   Lock,
-  Sparkles,
   Star,
 } from "lucide-react";
 import Link from "next/link";

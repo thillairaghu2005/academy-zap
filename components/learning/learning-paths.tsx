@@ -11,7 +11,6 @@ import {
   FlaskConical,
   GraduationCap,
   Search,
-  Sparkles,
 } from "lucide-react";
 
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";

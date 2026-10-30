@@ -2,7 +2,7 @@
 
 import { m as motion, useReducedMotion } from "framer-motion";
 import Link from "next/link";
-import { ArrowRight, CodeXml, Trophy, Flame, Play, ChartColumn, CheckCircle2 } from "lucide-react";
+import { ArrowRight, CodeXml, Trophy, Play, ChartColumn, CheckCircle2 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { PageContainer } from "@/components/shared/page-container";
