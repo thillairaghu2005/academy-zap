@@ -26,7 +26,6 @@ import { MobileCtaBar } from "@/components/shared/mobile-cta-bar";
 import {
   FaqSection,
   FinalCta,
-  PricingSection,
   TestimonialWall,
 } from "@/components/landing/premium-sections";
 
@@ -127,7 +126,6 @@ export function LandingPage({ courses, catalogUnavailable = false }: LandingPage
         <ComparisonSection />
         <SocialProof />
         <CaseStudySection />
-        <PricingSection />
         <TestimonialWall />
         <FaqSection />
         <FinalCta />

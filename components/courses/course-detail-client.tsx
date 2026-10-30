@@ -50,9 +50,6 @@ import { PageContainer } from "@/components/shared/page-container";
 import { ErrorState } from "@/components/shared/error-state";
 import { cn } from "@/lib/utils";
 import { getCourseSkillBuildMeta } from "@/lib/courses/skillbuild-helpers";
-import { DigitalBadgeDialog } from "@/components/courses/digital-badge-dialog";
-import { DigitalBadgeMedallion } from "@/components/courses/digital-badge-medallion";
-import { CourseReviews } from "@/components/courses/course-reviews";
 
 function formatDuration(seconds: number): string {
   const mins = Math.round(seconds / 60);
@@ -171,9 +168,8 @@ export function CourseDetailClient({
   const isPreview = previewMode || !isPublished;
 
   const [activeTab, setActiveTab] = React.useState<
-    "overview" | "syllabus" | "badge" | "instructor" | "reviews"
+    "overview" | "syllabus" | "instructor"
   >("overview");
-  const [badgeModalOpen, setBadgeModalOpen] = React.useState(false);
   const [collapsedSections, setCollapsedSections] = React.useState<Record<string, boolean>>({});
 
   const toggleSection = React.useCallback((sectionId: string) => {
@@ -280,14 +276,6 @@ export function CourseDetailClient({
 
   return (
     <PageContainer className="max-w-7xl pb-16">
-      {/* Digital Credential Dialog */}
-      <DigitalBadgeDialog
-        open={badgeModalOpen}
-        onOpenChange={setBadgeModalOpen}
-        course={course}
-        learnerName={user?.display_name ?? "Zapster Learner"}
-      />
-
       {/* Breadcrumb / Catalog Back Link */}
       <div className="flex items-center justify-between gap-4">
         <Link
@@ -406,7 +394,7 @@ export function CourseDetailClient({
             </div>
           </div>
 
-          {/* Enterprise Navigation Tabs (Overview / Syllabus / Digital Badge / Instructor / Reviews) */}
+          {/* Enterprise Navigation Tabs (Overview / Syllabus / Instructor) */}
           <div className="border-b border-border">
             <nav className="flex space-x-2 sm:space-x-6 overflow-x-auto pb-1 text-sm font-medium">
               <button
@@ -435,19 +423,6 @@ export function CourseDetailClient({
               </button>
               <button
                 type="button"
-                onClick={() => setActiveTab("badge")}
-                className={cn(
-                  "py-3 px-1 border-b-2 whitespace-nowrap transition-colors flex items-center gap-1.5",
-                  activeTab === "badge"
-                    ? "border-primary text-foreground font-semibold"
-                    : "border-transparent text-muted-foreground hover:text-foreground",
-                )}
-              >
-                <Award className="size-4 text-primary" />
-                Digital Credential & Badge
-              </button>
-              <button
-                type="button"
                 onClick={() => setActiveTab("instructor")}
                 className={cn(
                   "py-3 px-1 border-b-2 whitespace-nowrap transition-colors",
@@ -456,19 +431,7 @@ export function CourseDetailClient({
                     : "border-transparent text-muted-foreground hover:text-foreground",
                 )}
               >
-                Instructor & Accreditation
-              </button>
-              <button
-                type="button"
-                onClick={() => setActiveTab("reviews")}
-                className={cn(
-                  "py-3 px-1 border-b-2 whitespace-nowrap transition-colors",
-                  activeTab === "reviews"
-                    ? "border-primary text-foreground font-semibold"
-                    : "border-transparent text-muted-foreground hover:text-foreground",
-                )}
-              >
-                Learner Reviews ({course.review_count || 184})
+                Instructor & Faculty
               </button>
             </nav>
           </div>
@@ -719,87 +682,7 @@ export function CourseDetailClient({
             </div>
           )}
 
-          {/* TAB CONTENT 3: DIGITAL BADGE & CREDENTIAL */}
-          {activeTab === "badge" && (
-            <div className="space-y-6 animate-in fade-in duration-200">
-              <div className="rounded-xl border border-neutral-800 bg-neutral-900 p-6 sm:p-8 text-white relative overflow-hidden">
-                <div className="relative z-10 grid md:grid-cols-[220px_1fr] gap-6 items-center">
-                  {/* Hexagon Graphic Preview */}
-                  <div className="flex flex-col items-center justify-center p-4 rounded-xl bg-neutral-950 border border-neutral-800">
-                    <div className="w-36 h-40 flex items-center justify-center">
-                      <DigitalBadgeMedallion
-                        category={course.category}
-                        level={meta.badgeInfo.level}
-                        issuer="Zapsters"
-                        className="w-full h-full"
-                      />
-                    </div>
-                    <Badge variant="outline" className="border-primary/30 bg-primary/10 text-primary-light text-[10px] mt-2">
-                      Credly-Compatible Badge
-                    </Badge>
-                  </div>
-
-                  {/* Badge Explanation */}
-                  <div className="space-y-3">
-                    <span className="text-xs uppercase tracking-widest text-primary-light font-bold">
-                      Official Verifiable Digital Credential
-                    </span>
-                    <h3 className="text-2xl font-bold font-display text-white">
-                      {meta.badgeInfo.name}
-                    </h3>
-                    <p className="text-sm text-slate-300 leading-relaxed">
-                      {meta.badgeInfo.tagline}
-                    </p>
-
-                    <div className="flex flex-wrap gap-4 pt-2 text-xs text-slate-300">
-                      <div>
-                        <span className="text-slate-400 block text-[10px] uppercase">Issuer</span>
-                        <span className="font-semibold text-white">{meta.badgeInfo.issuer}</span>
-                      </div>
-                      <div>
-                        <span className="text-slate-400 block text-[10px] uppercase">CEU Credits</span>
-                        <span className="font-semibold text-primary-light">{meta.badgeInfo.ceuCredits} Credits</span>
-                      </div>
-                      <div>
-                        <span className="text-slate-400 block text-[10px] uppercase">Passing Threshold</span>
-                        <span className="font-semibold text-foreground">80% on Assessment</span>
-                      </div>
-                    </div>
-
-                    <div className="pt-2">
-                      <Button
-                        size="sm"
-                        onClick={() => setBadgeModalOpen(true)}
-                        className="font-bold text-xs gap-1.5"
-                      >
-                        <Award className="size-4" />
-                        Preview Digital Badge & Certificate
-                      </Button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Criteria details */}
-              <div className="rounded-xl border border-border bg-card p-6 space-y-4">
-                <h4 className="text-sm font-bold text-foreground">
-                  How to earn and verify this credential
-                </h4>
-                <div className="space-y-2.5">
-                  {meta.badgeInfo.criteria.map((crit, i) => (
-                    <div key={i} className="flex items-start gap-3 text-xs sm:text-sm text-muted-foreground">
-                      <span className="grid size-5 shrink-0 place-items-center rounded-full bg-primary/10 text-primary font-bold text-[11px] mt-0.5">
-                        {i + 1}
-                      </span>
-                      <span>{crit}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* TAB CONTENT 4: INSTRUCTOR & ACCREDITATION */}
+          {/* TAB CONTENT 3: INSTRUCTOR & FACULTY */}
           {activeTab === "instructor" && (
             <div className="space-y-6 animate-in fade-in duration-200">
               <div className="rounded-xl border border-border bg-card p-6 sm:p-8 space-y-4">
@@ -842,17 +725,6 @@ export function CourseDetailClient({
               </div>
             </div>
           )}
-
-          {/* TAB CONTENT 5: REVIEWS */}
-          {activeTab === "reviews" && (
-            <div className="space-y-6 animate-in fade-in duration-200">
-              <CourseReviews
-                courseId={course.id}
-                rating={course.rating}
-                reviewCount={course.review_count}
-              />
-            </div>
-          )}
         </div>
 
         {/* Sticky Enterprise Enrollment Box (Right Column) */}
@@ -890,9 +762,6 @@ export function CourseDetailClient({
                   {isFree ? "Free Access" : `$${(course.price_cents / 100).toFixed(0)}`}
                 </span>
               </div>
-              <Badge variant="outline" className="border-primary/20 bg-primary/10 text-primary text-xs">
-                Digital Badge Included
-              </Badge>
             </div>
 
             {/* Main Action Button */}
@@ -953,31 +822,31 @@ export function CourseDetailClient({
               )}
             </div>
 
-            {/* Included Curriculum Features */}
+            {/* Course Curriculum Summary */}
             <div className="space-y-3 pt-2 border-t border-border/60 text-xs text-muted-foreground">
               <span className="font-semibold text-foreground block text-[11px] uppercase tracking-wider">
-                This course includes:
+                Course Details:
               </span>
               <div className="space-y-2">
                 <div className="flex items-center gap-2">
-                  <FlaskConical className="size-4 text-primary shrink-0" />
-                  <span>Hands-on Cloud Sandbox Labs (isolated cloud runtime included)</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Award className="size-4 text-primary shrink-0" />
-                  <span>Verifiable Digital Skill Badge (Credly-compatible)</span>
+                  <Clock className="size-4 text-primary shrink-0" />
+                  <span>{course.estimated_hours} Hours self-paced learning</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <BookOpen className="size-4 text-primary shrink-0" />
-                  <span>{meta.badgeInfo.ceuCredits} Continuing Education Units (CEU)</span>
+                  <span>{allLessons.length} technical lessons & exercises</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <FlaskConical className="size-4 text-primary shrink-0" />
+                  <span>Interactive cloud sandboxes & lab tasks</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <Lightbulb className="size-4 text-primary shrink-0" />
-                  <span>Scenario-based Knowledge Checks (80% passing threshold)</span>
+                  <span>Knowledge check quizzes & module reviews</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <Check className="size-4 text-primary shrink-0" />
-                  <span>Permanent 100% Free Lifetime Access</span>
+                  <span>Full lifetime access to course content</span>
                 </div>
               </div>
             </div>

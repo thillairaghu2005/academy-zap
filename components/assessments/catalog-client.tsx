@@ -179,16 +179,6 @@ export function AssessmentCatalogClient() {
       <div className="border-b border-border/40 bg-surface-1/30 py-10 sm:py-14">
         <PageContainer>
           <div className="max-w-3xl space-y-4">
-            <div className="flex flex-wrap items-center gap-2">
-              <span className="flex items-center gap-1.5 rounded-full border border-primary/30 bg-primary/10 px-3 py-1 text-xs font-semibold text-primary">
-                <Sparkles className="size-3.5" />
-                Zapsters Practice Exam &amp; Skill Assessment Framework
-              </span>
-              <span className="text-xs text-muted-foreground font-mono">
-                Deterministic Scoring &amp; Blueprint Weighting
-              </span>
-            </div>
-
             <h1 className="font-display text-3xl font-bold tracking-tight sm:text-5xl text-foreground">
               Skill Assessments &amp; Practice Exams
             </h1>

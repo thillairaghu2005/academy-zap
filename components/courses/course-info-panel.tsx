@@ -21,7 +21,6 @@ import {
 import type { Course, CourseLesson } from "@/lib/contracts/content";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { DigitalBadgeMedallion } from "@/components/courses/digital-badge-medallion";
 import { getCourseSkillBuildMeta } from "@/lib/courses/skillbuild-helpers";
 
 interface CourseInfoPanelProps {
@@ -197,50 +196,6 @@ export function CourseInfoPanel({
                 <span>{prereq}</span>
               </div>
             ))}
-          </div>
-        </div>
-      </div>
-
-      {/* Verified Digital Credential & Badge Card */}
-      <div className="rounded-2xl border border-primary/20 bg-primary/5 p-6 sm:p-8 space-y-6">
-        <div className="flex flex-col sm:flex-row items-center sm:items-start gap-6">
-          <div className="shrink-0">
-            <DigitalBadgeMedallion
-              category={course.category}
-              level={meta.badgeInfo.level}
-              credentialId={meta.badgeInfo.badgeCode}
-              issuer="Zapsters"
-              className="w-32 h-36"
-            />
-          </div>
-          <div className="space-y-2 text-center sm:text-left flex-1">
-            <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2">
-              <Badge variant="outline" className="border-primary/40 bg-primary/10 text-primary text-[11px] font-semibold">
-                Official Credly-Standard Credential
-              </Badge>
-              <span className="text-[11px] font-mono text-muted-foreground">
-                {meta.badgeInfo.badgeCode}
-              </span>
-            </div>
-            <h3 className="font-display text-xl font-bold text-foreground">
-              {meta.badgeInfo.name}
-            </h3>
-            <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">
-              {meta.badgeInfo.tagline}
-            </p>
-            <div className="pt-2 flex flex-wrap items-center justify-center sm:justify-start gap-4 text-xs text-muted-foreground">
-              <span>Issuer: <strong className="text-foreground">{meta.badgeInfo.issuer}</strong></span>
-              <span>Credits: <strong className="text-foreground">{meta.badgeInfo.ceuCredits} CEUs</strong></span>
-              <span>Validity: <strong className="text-foreground">Indefinite (No expiration)</strong></span>
-            </div>
-            {onOpenBadgeModal && (
-              <div className="pt-3">
-                <Button size="sm" variant="outline" onClick={onOpenBadgeModal} className="text-xs gap-1.5 border-primary/30 text-primary">
-                  <Award className="size-3.5" />
-                  View Badge Details & Verification
-                </Button>
-              </div>
-            )}
           </div>
         </div>
       </div>

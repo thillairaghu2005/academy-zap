@@ -56,7 +56,6 @@ import {
 } from "@/lib/courses/skillbuild-helpers";
 import { getLessonContent } from "@/lib/courses/lesson-content";
 import { CourseInfoPanel } from "@/components/courses/course-info-panel";
-import { DigitalBadgeDialog } from "@/components/courses/digital-badge-dialog";
 
 function PlayerSkeleton() {
   return (
@@ -154,22 +153,6 @@ function SkillBuildArticleBody({ lesson, course }: { lesson: CourseLesson; cours
 
   return (
     <div className="rounded-2xl border border-border bg-card p-6 sm:p-10 shadow-xs space-y-6">
-      {/* Enterprise Lesson Callout Bar */}
-      <div className="flex flex-wrap items-center justify-between gap-3 p-3.5 rounded-xl bg-surface-1 border border-border text-xs">
-        <div className="flex items-center gap-2">
-          <ShieldCheck className="size-4 text-primary" />
-          <span className="font-semibold text-foreground">
-            Zapsters Enterprise Standard
-          </span>
-          <span className="text-muted-foreground hidden sm:inline">· Self-Paced Digital Training</span>
-        </div>
-        <div className="flex items-center gap-2">
-          <Badge variant="outline" className="text-[11px] font-mono">
-            {lesson.duration_seconds ? `${Math.max(3, Math.round(lesson.duration_seconds / 60))} min read` : "10 min read"}
-          </Badge>
-        </div>
-      </div>
-
       {/* Lesson Header */}
       <div>
         <h2 className="font-display text-2xl sm:text-3xl font-bold text-foreground">
@@ -753,7 +736,6 @@ export function PlayerClient({ course }: { course: Course }) {
   const [lessonSearch, setLessonSearch] = React.useState("");
   const [sidebarOpen, setSidebarOpen] = React.useState(true);
   const [activeTab, setActiveTab] = React.useState<"content" | "overview" | "lab" | "quiz" | "resources" | "notes">("content");
-  const [digitalBadgeOpen, setDigitalBadgeOpen] = React.useState(false);
 
   const meta = React.useMemo(() => getCourseSkillBuildMeta(course), [course]);
 
@@ -1036,14 +1018,6 @@ export function PlayerClient({ course }: { course: Course }) {
 
   return (
     <div className="flex h-full flex-col bg-background text-foreground overflow-hidden">
-      {/* Digital Badge Modal */}
-      <DigitalBadgeDialog
-        open={digitalBadgeOpen}
-        onOpenChange={setDigitalBadgeOpen}
-        course={course}
-        learnerName={user?.display_name ?? "Zapster Learner"}
-      />
-
       {/* Enterprise LMS Header Bar (AWS Skill Builder & IBM SkillsBuild standard) */}
       <header className="shrink-0 flex h-14 items-center justify-between border-b border-border bg-card/95 px-4 backdrop-blur sm:px-6 relative z-20">
         {/* Left: Breadcrumbs & Back link */}
@@ -1337,7 +1311,6 @@ export function PlayerClient({ course }: { course: Course }) {
                           }
                           mainRef.current?.scrollTo({ top: 0, behavior: "smooth" });
                         }}
-                        onOpenBadgeModal={() => setDigitalBadgeOpen(true)}
                       />
                     </div>
                   )}
@@ -1459,15 +1432,8 @@ export function PlayerClient({ course }: { course: Course }) {
                   </div>
 
                   <div className="flex flex-wrap items-center gap-3 pt-2">
-                    <Button
-                      onClick={() => setDigitalBadgeOpen(true)}
-                      className="font-bold text-xs gap-1.5"
-                    >
-                      <Award className="size-4" />
-                      Claim Digital Credential & Badge
-                    </Button>
-                    <Button variant="outline" asChild className="text-xs">
-                      <Link href="/courses">Explore Next Pathway <ArrowRight className="size-3.5 ml-1" /></Link>
+                    <Button variant="default" asChild className="text-xs">
+                      <Link href="/courses">Explore More Courses <ArrowRight className="size-3.5 ml-1" /></Link>
                     </Button>
                   </div>
                 </div>
@@ -1537,11 +1503,14 @@ export function PlayerClient({ course }: { course: Course }) {
                   ) : isCourseComplete ? (
                     <Button
                       size="sm"
-                      onClick={() => setDigitalBadgeOpen(true)}
+                      variant="outline"
+                      asChild
                       className="font-bold text-xs gap-1.5"
                     >
-                      <Award className="size-3.5" />
-                      <span>Claim Credential</span>
+                      <Link href="/courses">
+                        <span>Browse Courses</span>
+                        <ArrowRight className="size-3.5" />
+                      </Link>
                     </Button>
                   ) : null}
                 </div>

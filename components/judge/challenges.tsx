@@ -60,15 +60,6 @@ export function Challenges() {
       <div className="relative overflow-hidden rounded-xl border border-border bg-card p-6 sm:p-8 mb-8 shadow-xs">
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
           <div className="max-w-2xl space-y-3">
-            <div className="flex flex-wrap items-center gap-2">
-              <span className="flex items-center gap-1.5 rounded-full border border-primary/30 bg-primary/10 px-3 py-1 text-xs font-semibold text-primary">
-                <Flame className="size-3.5" />
-                Zapsters Cyber Jam &amp; Competitive Arena
-              </span>
-              <span className="text-xs text-muted-foreground font-mono">
-                Season 4 Live
-              </span>
-            </div>
             <h1 className="font-display text-2xl font-bold tracking-tight sm:text-4xl text-foreground">
               Hands-on Coding &amp; Architecture Arena
             </h1>

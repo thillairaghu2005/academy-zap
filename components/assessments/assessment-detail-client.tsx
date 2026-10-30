@@ -141,10 +141,6 @@ export function AssessmentDetailClient({
         <div className="flex flex-col gap-6">
           <div>
             <div className="flex flex-wrap items-center gap-2 mb-2">
-              <span className="flex items-center gap-1 rounded-full border border-primary/30 bg-primary/10 px-2.5 py-0.5 text-[10px] font-mono font-semibold uppercase tracking-wider text-primary">
-                <Sparkles className="size-3" />
-                Accredited Exam Blueprint
-              </span>
               <span className="text-xs font-mono uppercase tracking-wide text-muted-foreground/80">
                 {assessment.category}
               </span>

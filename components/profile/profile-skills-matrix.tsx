@@ -58,12 +58,6 @@ export function ProfileSkillsMatrix() {
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 rounded-2xl border border-border/70 bg-card/60 p-5">
         <div className="space-y-1">
-          <div className="flex items-center gap-2">
-            <span className="flex items-center gap-1.5 rounded-full border border-primary/30 bg-primary/10 px-2.5 py-0.5 text-[10px] font-mono font-semibold uppercase tracking-wider text-primary">
-              <Sparkles className="size-3" />
-              Competency Radar &amp; Mastery Index
-            </span>
-          </div>
           <h3 className="font-display text-base font-bold text-foreground">
             Enterprise Skill Competency Matrix
           </h3>

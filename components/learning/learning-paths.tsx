@@ -173,16 +173,6 @@ export function LearningPaths() {
       {/* Enterprise Header Banner */}
       <div className="relative overflow-hidden rounded-xl border border-border bg-card p-6 sm:p-8 mb-8 shadow-xs">
         <div className="relative z-10 max-w-3xl">
-          <div className="flex flex-wrap items-center gap-2 mb-3">
-            <span className="flex items-center gap-1.5 rounded-full border border-primary/30 bg-primary/10 px-3 py-1 text-xs font-semibold text-primary">
-              <Sparkles className="size-3.5" />
-              Zapsters Enterprise Standard
-            </span>
-            <span className="text-xs text-muted-foreground font-mono">
-              Accredited Role-Based Curricula
-            </span>
-          </div>
-
           <h1 className="font-display text-3xl font-bold tracking-tight sm:text-4xl text-foreground">
             Role-Based Learning Pathways
           </h1>
