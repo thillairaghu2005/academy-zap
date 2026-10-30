@@ -451,58 +451,45 @@ export function MarketplaceClient() {
         )}
 
         {/* B. Course Discovery Controls & Catalog Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-[260px_1fr] gap-8 items-start">
-          {/* Desktop Filter Sidebar */}
-          <div className="sticky top-20 hidden lg:block">
-            <EnterpriseFilterRail
-              filters={filterState}
-              onFilterChange={handleFilterChange}
-              onClearFilters={clearFilters}
-              totalResults={courses.length}
-              categoryCounts={categoryCounts}
-            />
-          </div>
-
-          {/* Catalog Main Content */}
-          <div className="flex flex-col gap-5 min-w-0">
-            {/* Discovery Control Toolbar */}
-            <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border/60 pb-3">
-              {/* Mobile Filter Sheet Trigger */}
-              <div className="lg:hidden">
-                <Sheet open={mobileFilterOpen} onOpenChange={setMobileFilterOpen}>
-                  <SheetTrigger asChild>
-                    <Button variant="outline" size="sm" className="gap-2 text-xs font-medium">
-                      <Filter className="size-3.5" />
-                      Filter Courses
-                      {hasActiveFilters && (
-                        <span className="size-2 rounded-full bg-primary" />
-                      )}
-                    </Button>
-                  </SheetTrigger>
-                  <SheetContent side="left" className="w-full max-w-xs p-5 overflow-y-auto">
-                    <SheetHeader className="mb-4 text-left">
-                      <SheetTitle className="font-display text-base">Filter Courses</SheetTitle>
-                      <SheetDescription className="text-xs">
-                        Refine results by domain, level, format, and duration.
-                      </SheetDescription>
-                    </SheetHeader>
-                    <EnterpriseFilterRail
-                      filters={filterState}
-                      onFilterChange={(k, v) => {
-                        handleFilterChange(k, v);
-                        setMobileFilterOpen(false);
-                      }}
-                      onClearFilters={() => {
-                        clearFilters();
-                        setMobileFilterOpen(false);
-                      }}
-                      totalResults={courses.length}
-                      categoryCounts={categoryCounts}
-                      className="border-0 p-0 shadow-none bg-transparent"
-                    />
-                  </SheetContent>
-                </Sheet>
-              </div>
+        <div className="flex flex-col gap-5 min-w-0">
+          {/* Discovery Control Toolbar */}
+          <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border/60 pb-3">
+            {/* Filter Sheet Trigger */}
+            <div>
+              <Sheet open={mobileFilterOpen} onOpenChange={setMobileFilterOpen}>
+                <SheetTrigger asChild>
+                  <Button variant="outline" size="sm" className="gap-2 text-xs font-medium">
+                    <Filter className="size-3.5" />
+                    Filter Courses
+                    {hasActiveFilters && (
+                      <span className="size-2 rounded-full bg-primary" />
+                    )}
+                  </Button>
+                </SheetTrigger>
+                <SheetContent side="left" className="w-full max-w-xs p-5 overflow-y-auto">
+                  <SheetHeader className="mb-4 text-left">
+                    <SheetTitle className="font-display text-base">Filter Courses</SheetTitle>
+                    <SheetDescription className="text-xs">
+                      Refine results by domain, level, format, and duration.
+                    </SheetDescription>
+                  </SheetHeader>
+                  <EnterpriseFilterRail
+                    filters={filterState}
+                    onFilterChange={(k, v) => {
+                      handleFilterChange(k, v);
+                      setMobileFilterOpen(false);
+                    }}
+                    onClearFilters={() => {
+                      clearFilters();
+                      setMobileFilterOpen(false);
+                    }}
+                    totalResults={courses.length}
+                    categoryCounts={categoryCounts}
+                    className="border-0 p-0 shadow-none bg-transparent"
+                  />
+                </SheetContent>
+              </Sheet>
+            </div>
 
               {/* Course match count */}
               <div className="text-xs text-muted-foreground" aria-live="polite">
@@ -671,7 +658,7 @@ export function MarketplaceClient() {
               </div>
             ) : (
               <>
-                <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-3">
+                <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                   {pagedCourses.map((course) => (
                     <CourseCard key={course.id} course={course} />
                   ))}
@@ -731,7 +718,6 @@ export function MarketplaceClient() {
               </>
             )}
           </div>
-        </div>
       </div>
     </MarketplaceStateProvider>
   );

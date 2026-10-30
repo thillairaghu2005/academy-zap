@@ -922,15 +922,6 @@ export function CourseDetailClient({
                       <ArrowRight className="size-4 ml-2" />
                     </Link>
                   </Button>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => setBadgeModalOpen(true)}
-                    className="w-full text-xs gap-1.5"
-                  >
-                    <Award className="size-3.5 text-primary" />
-                    View Skill Badge & Certificate
-                  </Button>
                 </div>
               ) : isPreview ? (
                 <Button disabled className="w-full h-12 text-sm font-semibold">

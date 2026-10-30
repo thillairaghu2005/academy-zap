@@ -1093,16 +1093,6 @@ export function PlayerClient({ course }: { course: Course }) {
 
           <Button
             size="sm"
-            variant="outline"
-            onClick={() => setDigitalBadgeOpen(true)}
-            className="text-xs gap-1.5 border-primary/30 text-primary hover:bg-primary/10"
-          >
-            <Award className="size-3.5" />
-            <span className="hidden md:inline">{isCourseComplete ? "Claim Badge" : "Credential Status"}</span>
-          </Button>
-
-          <Button
-            size="sm"
             variant="ghost"
             onClick={() => setSidebarOpen((prev) => !prev)}
             className="text-xs lg:hidden"
@@ -1268,105 +1258,6 @@ export function PlayerClient({ course }: { course: Course }) {
         <main ref={mainRef} className="flex flex-1 min-h-0 flex-col overflow-y-auto">
           {activeLesson && (
             <div ref={contentContainerRef} className="p-4 sm:p-8 lg:p-10 max-w-5xl mx-auto w-full space-y-6">
-              {/* Activity Banner Strip */}
-              <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border pb-4">
-                <div className="flex items-center gap-2.5">
-                  <Badge variant="outline" className={cn("text-xs uppercase tracking-wider font-semibold", activityDetails?.badgeClass)}>
-                    {activityDetails?.label}
-                  </Badge>
-                  <span className="text-xs text-muted-foreground">
-                    Topic {activeLessonIndex + 1} of {allLessons.length}
-                  </span>
-                  {isActiveCompleted ? (
-                    <Badge variant="outline" className="border-primary/30 bg-primary/10 text-primary text-[11px] font-semibold gap-1">
-                      <CheckCircle2 className="size-3" />
-                      <span>{isQuizOrAssessment ? "Passed" : "Completed"}</span>
-                    </Badge>
-                  ) : isQuizOrAssessment ? (
-                    <Badge variant="outline" className="border-primary/30 text-primary font-mono text-[11px] gap-1">
-                      <span>10 Questions · 80% to Pass</span>
-                    </Badge>
-                  ) : (
-                    <Badge variant="outline" className="border-primary/30 text-primary font-mono text-[11px] gap-1">
-                      <span>Scroll Progress: {readingProgress}%</span>
-                    </Badge>
-                  )}
-                </div>
-
-                {/* Sub-Tabs: Guide, Course Info & Objectives, Cloud Lab, Resources, Notes */}
-                {!isQuizOrAssessment && (
-                  <div className="flex items-center gap-1 bg-surface-1 p-1 rounded-xl border border-border text-xs overflow-x-auto">
-                    <button
-                      type="button"
-                      onClick={() => setActiveTab("content")}
-                      className={cn(
-                        "px-3 py-1.5 rounded-lg font-medium transition-colors flex items-center gap-1.5 shrink-0",
-                        activeTab === "content"
-                          ? "bg-card text-foreground font-semibold shadow-xs"
-                          : "text-muted-foreground hover:text-foreground",
-                      )}
-                    >
-                      <BookOpen className="size-3.5" />
-                      <span>Guide</span>
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setActiveTab("overview")}
-                      className={cn(
-                        "px-3 py-1.5 rounded-lg font-medium transition-colors flex items-center gap-1.5 shrink-0",
-                        activeTab === "overview"
-                          ? "bg-card text-primary font-semibold shadow-xs"
-                          : "text-muted-foreground hover:text-foreground",
-                      )}
-                    >
-                      <Info className="size-3.5" />
-                      <span>Course Info & Objectives</span>
-                    </button>
-                    {activityDetails?.type === "lab" && (
-                      <button
-                        type="button"
-                        onClick={() => setActiveTab("lab")}
-                        className={cn(
-                          "px-3 py-1.5 rounded-lg font-medium transition-colors flex items-center gap-1.5 shrink-0",
-                          activeTab === "lab"
-                            ? "bg-card text-primary font-semibold shadow-xs"
-                            : "text-muted-foreground hover:text-foreground",
-                        )}
-                      >
-                        <FlaskConical className="size-3.5" />
-                        <span>Cloud Lab</span>
-                      </button>
-                    )}
-                    <button
-                      type="button"
-                      onClick={() => setActiveTab("resources")}
-                      className={cn(
-                        "px-3 py-1.5 rounded-lg font-medium transition-colors flex items-center gap-1.5 shrink-0",
-                        activeTab === "resources"
-                          ? "bg-card text-foreground font-semibold shadow-xs"
-                          : "text-muted-foreground hover:text-foreground",
-                      )}
-                    >
-                      <Download className="size-3.5" />
-                      <span className="hidden sm:inline">Resources</span>
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setActiveTab("notes")}
-                      className={cn(
-                        "px-3 py-1.5 rounded-lg font-medium transition-colors flex items-center gap-1.5 shrink-0",
-                        activeTab === "notes"
-                          ? "bg-card text-foreground font-semibold shadow-xs"
-                          : "text-muted-foreground hover:text-foreground",
-                      )}
-                    >
-                      <FileText className="size-3.5" />
-                      <span className="hidden sm:inline">Notes</span>
-                    </button>
-                  </div>
-                )}
-              </div>
-
               {/* MAIN CONTENT REGION */}
               {isQuizOrAssessment ? (
                 /* QUIZ / FINAL ASSESSMENT VIEW */
@@ -1453,7 +1344,15 @@ export function PlayerClient({ course }: { course: Course }) {
 
                   {activeTab === "content" && (
                     <div className="space-y-6">
-                      <SkillBuildArticleBody lesson={activeLesson} course={course} />
+                      {activityDetails?.type === "lab" ? (
+                        <SkillBuildLabSandbox
+                          course={course}
+                          lesson={activeLesson}
+                          onCompleteLab={completeCurrentLesson}
+                        />
+                      ) : (
+                        <SkillBuildArticleBody lesson={activeLesson} course={course} />
+                      )}
                     </div>
                   )}
 
