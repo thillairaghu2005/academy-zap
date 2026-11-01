@@ -1098,7 +1098,7 @@ export function PlayerClient({ course }: { course: Course }) {
         {/* Left Drawer / Table of Contents (Pinned Sidebar) */}
         <aside
           className={cn(
-            "fixed inset-y-0 left-0 z-40 flex w-80 flex-col border-r border-border bg-card transition-transform duration-200 lg:static lg:w-[340px] lg:h-full lg:translate-x-0 shrink-0",
+            "fixed inset-y-0 left-0 z-40 flex w-[calc(100vw-2.5rem)] max-w-80 flex-col border-r border-border bg-card transition-transform duration-200 lg:static lg:w-[340px] lg:max-w-none lg:h-full lg:translate-x-0 shrink-0",
             sidebarOpen ? "translate-x-0" : "-translate-x-full",
           )}
         >

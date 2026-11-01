@@ -129,7 +129,7 @@ export function LedgerViewer({
               </button>
             </div>
 
-            <div className="mt-3 max-h-72 overflow-y-auto rounded-xl border border-border">
+            <div className="mt-3 max-h-72 overflow-auto rounded-xl border border-border">
               {tab === "entries" ? (
                 <LedgerEntriesTable entries={data.entries} />
               ) : (

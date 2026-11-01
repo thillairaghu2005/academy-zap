@@ -80,7 +80,7 @@ export function CourseReviewDiffCard({ courseId }: { courseId: string }) {
             version (syllabus/lesson edits aren&apos;t tracked yet).
           </p>
         ) : (
-          <div className="overflow-hidden rounded-lg border border-border">
+          <div className="overflow-x-auto rounded-lg border border-border">
             <table className="w-full text-left text-sm">
               <thead>
                 <tr className="border-b border-border bg-muted/40 text-caption uppercase tracking-widest text-muted-foreground/70">

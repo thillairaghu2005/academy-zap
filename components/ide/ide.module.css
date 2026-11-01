@@ -418,7 +418,7 @@
 }
 
 @media (max-width: 639px) {
-  :global(.ide-workspace).workspace { border-left: 0; border-radius: 0; border-right: 0; height: 100dvh; min-height: 540px; }
+  :global(.ide-workspace).workspace { border-left: 0; border-radius: 0; border-right: 0; height: calc(100dvh - 8.5rem); min-height: 500px; }
   .toolbar { align-items: flex-start; flex: 0 0 auto; flex-wrap: wrap; gap: 5px 8px; min-height: 76px; padding: 8px 9px; }
   .toolbarProblem { flex: 1 1 100%; gap: 6px; }
   .toolbarEyebrow { display: none; }

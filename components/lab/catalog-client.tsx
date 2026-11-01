@@ -281,7 +281,7 @@ export function LabCatalogClient({ initialData }: { initialData?: Lab[] }) {
           value={difficulty}
           onValueChange={(v) => applyDifficulty(v as LabDifficulty | "all")}
         >
-          <SelectTrigger className="w-fit min-w-[150px]">
+          <SelectTrigger className="w-full sm:w-fit sm:min-w-[150px]">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>

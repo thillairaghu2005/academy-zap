@@ -89,7 +89,7 @@ export function AiTutor() {
   };
 
   return (
-    <div className="fixed bottom-24 right-4 z-40 sm:bottom-6 sm:right-6">
+    <div className="fixed bottom-20 right-4 z-40 sm:bottom-6 sm:right-6">
       {open ? <section className="mb-3 flex h-[min(600px,calc(100dvh-9rem))] w-[min(390px,calc(100vw-2rem))] flex-col overflow-hidden rounded-2xl border border-border bg-card shadow-[0_20px_60px_rgb(23_23_23_/_16%)]" aria-label="AI Tutor">
         <header className="flex items-center gap-3 border-b border-border bg-primary-deep px-4 py-3 text-primary-foreground"><Bot className="size-5 shrink-0" /><div className="min-w-0 flex-1"><p className="text-sm font-semibold">Zapsters Tutor</p><p className="text-[11px] text-white/65">Deterministic help from your learning context</p></div><Button variant="ghost" size="icon-sm" onClick={() => setOpen(false)} className="text-white/75 hover:bg-white/10 hover:text-white" aria-label="Close AI Tutor"><X /></Button></header>
         <div className="flex-1 overflow-y-auto p-4" aria-live="polite">

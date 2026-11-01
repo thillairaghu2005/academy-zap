@@ -341,7 +341,7 @@ export function NotificationCenter() {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -8, scale: 0.98 }}
             transition={{ type: "spring", bounce: 0, duration: 0.3 }}
-            className="absolute right-0 top-[calc(100%+0.75rem)] z-50 origin-top-right"
+            className="fixed right-3 sm:right-auto sm:absolute sm:right-0 top-[4.25rem] sm:top-[calc(100%+0.75rem)] z-50 origin-top-right"
             onKeyDown={trapFocus}
           >
             <div
@@ -349,7 +349,7 @@ export function NotificationCenter() {
               aria-labelledby="notification-panel-title"
               role="dialog"
               aria-modal="true"
-              className="frosted-heavy flex max-h-[min(640px,calc(100dvh-5rem))] w-[min(360px,calc(100vw-1rem))] flex-col overflow-hidden rounded-2xl border border-border/70 text-foreground shadow-[0_14px_36px_rgb(23_23_23_/_11%)]"
+              className="frosted-heavy flex max-h-[min(640px,calc(100dvh-5rem))] w-[calc(100vw-1.5rem)] max-w-sm sm:w-[360px] flex-col overflow-hidden rounded-2xl border border-border/70 text-foreground shadow-[0_14px_36px_rgb(23_23_23_/_11%)]"
             >
               <div className="shrink-0 border-b border-border px-4 pb-3 pt-3.5">
                 <div className="flex items-center justify-between gap-3">

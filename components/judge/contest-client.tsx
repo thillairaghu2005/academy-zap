@@ -148,7 +148,7 @@ export function ContestClient({
   return (
     <PageContainer>
       <div className="flex flex-col gap-6">
-        <div className="flex items-center justify-between rounded-xl border border-border bg-card p-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 rounded-xl border border-border bg-card p-4">
           <div className="flex items-center gap-3">
             <Trophy className="size-6 text-primary" />
             <div>
@@ -157,7 +157,7 @@ export function ContestClient({
             </div>
           </div>
           
-          <div className="flex items-center gap-6">
+          <div className="flex items-center justify-between sm:justify-end gap-4 sm:gap-6">
             <ComboMeter combo={{ count: combo, multiplier: comboMultiplier, best: combo }} />
             <div className="flex flex-col items-end">
               <div className="flex items-center gap-1.5 text-xl font-mono font-bold">

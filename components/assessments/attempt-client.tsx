@@ -774,7 +774,7 @@ export function AssessmentAttemptClient({
                     }}
                     aria-label={`Go to question ${i + 1}`}
                     className={cn(
-                      "size-6 rounded-md border font-mono text-[10px] transition-colors",
+                      "size-9 sm:size-7 md:size-6 rounded-md border font-mono text-xs sm:text-[11px] md:text-[10px] font-medium transition-colors",
                        isAnswered
                          ? "border-primary/40 bg-primary/10 text-primary font-semibold"
                          : "border-border bg-card text-muted-foreground hover:border-primary/40",

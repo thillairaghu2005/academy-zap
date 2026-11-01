@@ -57,7 +57,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             tabIndex={-1}
             className={cn(
               "min-w-0 flex-1 outline-none",
-              isLearningCourse ? "h-full overflow-hidden flex flex-col pb-0" : "pb-20 lg:pb-0",
+              isLearningCourse ? "h-full overflow-hidden flex flex-col pb-0" : "pb-[calc(5.5rem+env(safe-area-inset-bottom,0px))] lg:pb-0",
             )}
           >
             {children}

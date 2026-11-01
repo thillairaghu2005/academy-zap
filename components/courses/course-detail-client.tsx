@@ -728,7 +728,7 @@ export function CourseDetailClient({
         </div>
 
         {/* Sticky Enterprise Enrollment Box (Right Column) */}
-        <div className="sticky top-20 z-20 self-start lg:top-24">
+        <div className="static lg:sticky lg:top-24 z-20 self-start">
           <div className="flex flex-col gap-6 rounded-2xl border border-border bg-card p-6 shadow-md">
             {/* Enrollment progress banner if already enrolled */}
             {enrollment ? (
