@@ -319,11 +319,11 @@ export function CourseDetailClient({
       <div className="mt-6 grid gap-8 lg:grid-cols-[minmax(0,1fr)_390px] lg:items-start">
         <div className="flex flex-col gap-6">
           {/* Zapsters Enterprise Hero Banner (Minimalist AWS Skill Builder & IBM SkillsBuild style) */}
-          <div className="relative overflow-hidden rounded-2xl border border-border bg-card p-6 sm:p-8 shadow-xs">
+          <div className="relative overflow-hidden rounded-2xl border border-border bg-card p-4 sm:p-8 shadow-xs">
             <div className="relative z-10 flex flex-col gap-4">
               {/* Partner Badges */}
               <div className="flex flex-wrap items-center gap-2">
-                <span className="inline-flex items-center gap-1.5 rounded-md bg-primary/10 border border-primary/20 px-2.5 py-1 text-[11px] font-semibold text-primary font-mono">
+                <span className="inline-flex w-fit max-w-full basis-full flex-wrap items-center gap-1.5 rounded-md bg-primary/10 border border-primary/20 px-2.5 py-1 text-[11px] font-semibold text-primary font-mono break-words sm:basis-auto">
                   <ShieldCheck className="size-3.5" />
                   {meta.courseCode} · Enterprise Standard
                 </span>
@@ -333,7 +333,7 @@ export function CourseDetailClient({
                 <Badge variant="outline" className="uppercase tracking-wider text-[11px]">
                   {course.level} Level
                 </Badge>
-                <span className="inline-flex items-center gap-1 text-[11px] text-muted-foreground ml-auto">
+                <span className="inline-flex min-w-0 items-center gap-1 text-[11px] text-muted-foreground sm:ml-auto">
                   <Globe className="size-3" />
                   {course.language}
                 </span>
@@ -348,8 +348,8 @@ export function CourseDetailClient({
               </p>
 
               {/* Metadata KPI Strip */}
-              <div className="flex flex-wrap items-center gap-x-6 gap-y-2 py-3 border-y border-border/60 text-xs text-muted-foreground">
-                <span className="flex items-center gap-1.5">
+              <div className="grid grid-cols-2 gap-x-3 gap-y-2 py-3 border-y border-border/60 text-xs text-muted-foreground sm:flex sm:flex-wrap sm:gap-x-6">
+                <span className="flex min-w-0 items-center gap-1.5">
                   <Star className="size-3.5 fill-primary text-primary" />
                   <span className="font-semibold text-foreground">
                     {course.rating > 0 ? course.rating.toFixed(1) : "4.9"}
@@ -358,30 +358,30 @@ export function CourseDetailClient({
                     ({(course.review_count || 184).toLocaleString()} reviews)
                   </span>
                 </span>
-                <span className="flex items-center gap-1.5">
+                <span className="flex min-w-0 items-center gap-1.5">
                   <Users className="size-3.5 text-muted-foreground" />
-                  <span>{(course.enrolled_count || 12450).toLocaleString()} enrolled learners</span>
+                  <span className="break-words">{(course.enrolled_count || 12450).toLocaleString()} enrolled learners</span>
                 </span>
-                <span className="flex items-center gap-1.5">
+                <span className="flex min-w-0 items-center gap-1.5">
                   <Clock className="size-3.5 text-muted-foreground" />
                   <span>{course.estimated_hours} Hours total</span>
                 </span>
-                <span className="flex items-center gap-1.5">
+                <span className="flex min-w-0 items-center gap-1.5">
                   <Award className="size-3.5 text-primary" />
                   <span className="text-foreground font-medium">{meta.badgeInfo.ceuCredits} CEU Credits</span>
                 </span>
-                <span className="flex items-center gap-1.5">
+                <span className="flex min-w-0 items-center gap-1.5">
                   <CheckCircle2 className="size-3.5 text-primary" />
                   <span>80% Passing Threshold</span>
                 </span>
               </div>
 
               {/* Instructor Tag */}
-              <div className="flex items-center gap-3 mt-1 pt-1">
+              <div className="mt-1 flex min-w-0 items-center gap-3 pt-1">
                 <div className="grid size-9 shrink-0 place-items-center rounded-lg bg-surface-2 border border-border font-bold text-foreground text-sm">
                   {course.instructor.display_name.charAt(0)}
                 </div>
-                <div>
+                <div className="min-w-0">
                   <div className="flex items-center gap-1.5">
                     <p className="text-sm font-semibold text-foreground">{course.instructor.display_name}</p>
                     <ShieldCheck className="size-3.5 text-primary" />

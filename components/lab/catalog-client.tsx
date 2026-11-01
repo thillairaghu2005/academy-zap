@@ -219,7 +219,9 @@ export function LabCatalogClient({ initialData }: { initialData?: Lab[] }) {
   };
 
   const { data, isLoading, isError, error, refetch } = useQuery({
-    queryKey: ["labs", debouncedQuery, difficulty],
+    // Difficulty is filtered from this catalog below, so it must not trigger
+    // another identical request to the backend.
+    queryKey: ["labs", debouncedQuery],
     queryFn: () => searchLabs(debouncedQuery),
     initialData: difficulty === "all" && !debouncedQuery ? initialData : undefined,
   });

@@ -110,7 +110,7 @@ export function AiTutor() {
           className={cn(
             "fixed z-40 transition-all duration-200",
             hasBottomNav
-              ? "bottom-[calc(5rem+env(safe-area-inset-bottom,0px))] right-[calc(1rem+env(safe-area-inset-right,0px))] lg:bottom-6 lg:right-6"
+              ? "bottom-[calc(6.5rem+env(safe-area-inset-bottom,0px))] right-[calc(1rem+env(safe-area-inset-right,0px))] lg:bottom-6 lg:right-6"
               : "bottom-[calc(1.25rem+env(safe-area-inset-bottom,0px))] right-[calc(1rem+env(safe-area-inset-right,0px))] sm:bottom-6 sm:right-6",
           )}
         >

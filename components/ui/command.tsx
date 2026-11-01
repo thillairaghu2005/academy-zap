@@ -32,14 +32,17 @@ const CommandDialog = ({
   ...props
 }: React.ComponentProps<typeof Dialog>) => (
   <Dialog {...props}>
-    <DialogContent className="overflow-hidden p-0 sm:max-w-2xl" showCloseButton={false}>
+    <DialogContent
+      className="flex max-h-[calc(100dvh-1rem-env(safe-area-inset-top,0px)-env(safe-area-inset-bottom,0px))] flex-col gap-0 overflow-hidden p-0 sm:max-w-2xl"
+      showCloseButton={false}
+    >
       <DialogHeader className="sr-only">
         <DialogTitle>Search Zapsters</DialogTitle>
         <DialogDescription>
           Find courses, coding problems, and virtual labs.
         </DialogDescription>
       </DialogHeader>
-      <Command>{children}</Command>
+      <Command className="min-h-0 flex-1">{children}</Command>
     </DialogContent>
   </Dialog>
 );
@@ -67,7 +70,7 @@ const CommandList = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <CommandPrimitive.List
     ref={ref}
-    className={cn("max-h-[min(55vh,28rem)] overflow-y-auto overflow-x-hidden p-2", className)}
+    className={cn("min-h-0 max-h-[min(55vh,28rem)] overflow-y-auto overflow-x-hidden overscroll-contain p-2", className)}
     {...props}
   />
 ));

@@ -22,7 +22,7 @@ import {
 } from "lucide-react";
 
 import type { UnifiedSearchHit } from "@/lib/contracts/search";
-import { searchAll } from "@/lib/data/demo/search";
+import { searchAll } from "@/lib/data/search";
 import { useDebouncedValue } from "@/lib/hooks/use-debounced-value";
 import { Button } from "@/components/ui/button";
 import {
@@ -190,7 +190,7 @@ export function GlobalSearch({ className }: { className?: string }) {
             : ""}
         </span>
         <CommandSeparator />
-        <div className="flex items-center justify-between bg-surface-2 px-5 py-3 text-caption text-muted-foreground">
+        <div className="flex shrink-0 items-center justify-between gap-3 bg-surface-2 px-4 py-3 text-caption text-muted-foreground sm:px-5">
           <span>Search across courses, problems, labs, assessments, and mentors</span>
           <span className="font-mono">
             {search.data?.estimatedTotalHits ?? 0} results

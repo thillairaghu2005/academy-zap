@@ -161,14 +161,14 @@ function ProblemCard({ problem, index, solved }: { problem: Problem; index: numb
             <p className="mt-4 line-clamp-2 text-sm leading-relaxed text-muted-foreground" title={description}>{description}</p>
           </div>
 
-          <div className="mt-5 flex items-center justify-between border-t border-border/80 pt-4">
-            <div className="flex items-center gap-4 text-xs font-medium text-muted-foreground">
+          <div className="mt-5 flex flex-wrap items-center justify-between gap-x-3 gap-y-2 border-t border-border/80 pt-4">
+            <div className="flex flex-wrap items-center gap-x-3 gap-y-2 text-xs font-medium text-muted-foreground">
               <div className="flex items-center gap-1.5" title="Acceptance Rate"><CheckCircle2 className="size-4" /> {problem.success_rate_pct}%</div>
               <div className="flex items-center gap-1.5" title="Estimated Time"><Timer className="size-4" /> ~{problem.estimated_minutes}m</div>
               <div className="flex items-center gap-1.5 text-xp-mastery font-semibold" title="XP Reward"><Zap className="size-4" /> +{meta.xp}</div>
             </div>
             
-            <div className="flex items-center gap-3">
+            <div className="ml-auto flex items-center gap-3">
               <div className="hidden items-center gap-4 pr-3 text-xs font-medium text-muted-foreground opacity-0 transition-opacity duration-200 group-hover:opacity-100 sm:flex">
                  <span className="flex items-center gap-1.5"><BarChart3 className="size-3.5" />{problem.time_limit_ms}ms</span>
                  <span className="flex items-center gap-1.5"><Database className="size-3.5" />{(problem.memory_limit_kb/1024).toFixed(0)}MB</span>

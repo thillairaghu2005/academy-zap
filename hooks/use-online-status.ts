@@ -24,13 +24,11 @@ export function subscribeOnlineStatus(listener: (online: boolean) => void): () =
  * the demo settings surface. SSR-safe (defaults to online while hydrating).
  */
 export function useOnlineStatus(): boolean {
-  // Initialize from the real browser state on the first client render so an
-  // offline user never sees a wrong "online" flash before the effect syncs.
-  const [online, setOnline] = React.useState<boolean>(() => getOnlineStatus());
-
-  React.useEffect(() => {
-    return subscribeOnlineStatus(setOnline);
-  }, []);
-
-  return online;
+  // Keep SSR and the hydration render consistent. React applies the live
+  // browser snapshot immediately after hydration when it differs.
+  return React.useSyncExternalStore(
+    subscribeOnlineStatus,
+    getOnlineStatus,
+    () => true,
+  );
 }
