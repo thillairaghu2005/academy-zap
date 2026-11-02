@@ -14,10 +14,22 @@ export function QueryProvider({ children }: { children: React.ReactNode }) {
       new QueryClient({
         defaultOptions: {
           queries: {
-            staleTime: 60_000,
-            gcTime: 10 * 60_000,
-            retry: 1,
+            staleTime: 3 * 60_000, // Fresh for 3 minutes to eliminate skeleton flashing across tabs
+            gcTime: 15 * 60_000, // Retain in memory for 15 minutes
+            retry: (failureCount, error) => {
+              if (failureCount >= 1) return false;
+              if (
+                error &&
+                typeof error === "object" &&
+                "status" in error &&
+                [401, 403, 404].includes((error as { status: number }).status)
+              ) {
+                return false;
+              }
+              return true;
+            },
             refetchOnWindowFocus: false,
+            refetchOnReconnect: "always",
           },
         },
       }),

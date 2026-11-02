@@ -61,7 +61,10 @@ self.addEventListener("fetch", (event) => {
   if (
     url.pathname.startsWith("/vs/") ||
     url.pathname.startsWith("/icons/") ||
-    url.pathname === "/manifest.json"
+    url.pathname.startsWith("/_next/static/") ||
+    url.pathname === "/manifest.json" ||
+    url.pathname === "/favicon.svg" ||
+    url.pathname === "/favicon.ico"
   ) {
     event.respondWith(
       caches.match(request).then((cached) => {
