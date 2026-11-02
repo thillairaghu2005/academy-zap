@@ -1,10 +1,8 @@
 import type { LucideIcon } from "lucide-react";
 import {
   BookOpen,
-  ChartColumn,
   ClipboardList,
   CodeXml,
-  CreditCard,
   FlaskConical,
   LayoutDashboard,
   Bookmark,
@@ -55,7 +53,6 @@ export const sideNavGroups: NavGroup[] = [
     label: "Personal",
     items: [
       { href: "/saved", label: "Saved", icon: Bookmark },
-      { href: "/mentors", label: "Mentors", icon: UserRound },
     ],
   },
   {
@@ -66,7 +63,6 @@ export const sideNavGroups: NavGroup[] = [
     label: "Commerce",
     items: [
       { href: "/cart", label: "Cart", icon: ShoppingCart },
-      { href: "/checkout/billing", label: "Billing & seats", icon: CreditCard },
     ],
   },
 ];

@@ -4,7 +4,7 @@ import * as React from "react";
 import Link from "next/link";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
-import { History, MessageCircle, ShieldQuestion, WandSparkles } from "lucide-react";
+import { History, ShieldQuestion, WandSparkles } from "lucide-react";
 
 import type { JudgeLanguage, Problem, Verdict } from "@/lib/contracts/judge";
 import { getProblem, getResult, listSubmissions, submit, subscribeToJudgeResult } from "@/lib/data/judge-facade";
@@ -185,7 +185,6 @@ export function ProblemDetailClient({
       <div className="flex flex-col gap-8">
         <IDE initialFiles={ideFiles} storageKey={`ide:judge:${problemId}`} problem={problem} problemTitle={problem.title} resetKey={resetKey} resetContent={problem.starter_code} onActiveContentChange={handleIDEContentChange} onReset={resetCode} execution={ideExecution} primaryAction={{ label: submitMutation.isPending ? "Submitting..." : userId ? "Submit" : "Sign in to submit", onClick: handleSubmit, disabled: !canSubmit }} />
         <div className="flex flex-col gap-6">
-          <Card className="border-border bg-muted/40"><div className="flex items-start gap-3 p-4"><MessageCircle className="mt-0.5 size-4 shrink-0 text-foreground" /><div className="min-w-0 flex-1"><p className="text-sm font-semibold">Stuck? Talk to a mentor</p><p className="mt-1 text-xs leading-relaxed text-muted-foreground">Get a second pair of eyes on your approach before you submit.</p><Button variant="link" size="sm" className="mt-2 h-auto px-0" asChild><Link href="/mentors">Browse mentors</Link></Button></div></div></Card>
           {DEMO_MODE ? <div className="rounded-lg border border-dashed border-border bg-muted/30 px-4 py-3"><p className="flex items-center gap-1.5 text-xs font-semibold text-foreground"><WandSparkles className="size-3.5" />Verdict demo markers</p><p className="mt-1 text-xs leading-relaxed text-muted-foreground">Markers, in precedence order: <code className="rounded bg-muted px-1">compile_error</code> → compile error · <code className="rounded bg-muted px-1">sleep(</code> → time limit exceeded · <code className="rounded bg-muted px-1">raise </code> → runtime error · <code className="rounded bg-muted px-1">wrong_answer</code> → wrong answer · <code className="rounded bg-muted px-1">queue_hang</code> → queue timeout.</p></div> : null}
           <SubmissionHistory problemId={problemId} userId={userId ?? "demo-user"} />
         </div>

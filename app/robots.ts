@@ -6,7 +6,7 @@ export default function robots(): MetadataRoute.Robots {
   return {
     rules: {
       userAgent: "*",
-      allow: ["/", "/courses", "/judge", "/labs", "/mentors", "/rank/verify/"],
+      allow: ["/", "/courses", "/judge", "/labs", "/rank/verify/"],
       disallow: [
         "/admin/",
         "/cart",
@@ -18,6 +18,7 @@ export default function robots(): MetadataRoute.Robots {
         "/rank",
         "/leaderboards",
         "/guilds",
+        "/mentors",
         "/courses/*/learn",
         "/labs/*/session/",
         "/offline",

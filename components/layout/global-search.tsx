@@ -126,7 +126,7 @@ export function GlobalSearch({ className }: { className?: string }) {
         size="sm"
         className={cn("text-muted-foreground", className)}
         onClick={() => setOpen(true)}
-        aria-label="Search courses, problems, labs, assessments, and mentors"
+        aria-label="Search courses, problems, labs, and assessments"
       >
         <Search />
         <span className="hidden sm:inline">Search</span>
@@ -137,7 +137,7 @@ export function GlobalSearch({ className }: { className?: string }) {
           autoFocus
           value={query}
           onValueChange={setQuery}
-          placeholder="Search courses, coding problems, labs, assessments, and mentors..."
+          placeholder="Search courses, coding problems, labs, and assessments..."
         />
         <CommandList>
           {!query.trim() && !search.isLoading ? (
@@ -179,7 +179,7 @@ export function GlobalSearch({ className }: { className?: string }) {
             <CommandEmpty>
               <p>No matches found</p>
               <p className="mt-1 text-xs text-muted-foreground">
-                Try a course topic, problem title, lab skill, assessment, or mentor.
+                Try a course topic, problem title, lab skill, or assessment.
               </p>
             </CommandEmpty>
           )}
@@ -191,7 +191,7 @@ export function GlobalSearch({ className }: { className?: string }) {
         </span>
         <CommandSeparator />
         <div className="flex shrink-0 items-center justify-between gap-3 bg-surface-2 px-4 py-3 text-caption text-muted-foreground sm:px-5">
-          <span>Search across courses, problems, labs, assessments, and mentors</span>
+          <span>Search across courses, problems, labs, and assessments</span>
           <span className="font-mono">
             {search.data?.estimatedTotalHits ?? 0} results
           </span>

@@ -42,9 +42,8 @@ export function InstructorCard({ instructorId, initialInstructor }: { instructor
           <span className="flex items-center gap-1.5"><Clock3 className="size-3.5" /> {instructor.response_time}</span>
         </div>
         <p className="text-xs text-muted-foreground">Office hours: <span className="font-medium text-foreground">{instructor.office_hours}</span></p>
-        <div className="grid gap-2 sm:grid-cols-3">
+        <div className="grid gap-2 sm:grid-cols-2">
           <Button size="sm" asChild><Link href={`/support/new?mentor=${encodeURIComponent(instructor.name)}`}><MessageCircle /> Ask Instructor</Link></Button>
-          <Button size="sm" variant="outline" asChild><Link href={`/mentors/${instructor.id}`}>View Profile</Link></Button>
           <Button size="sm" variant="outline" asChild><Link href={`/courses?q=${encodeURIComponent(instructor.name)}`}>More Courses</Link></Button>
         </div>
         <div className="flex gap-3 text-xs text-muted-foreground"><span>{instructor.courses_taught} courses taught</span></div>

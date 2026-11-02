@@ -136,9 +136,7 @@ export function MobileNav({ variant = "top" }: { variant?: "top" | "bottom" }) {
   const moreActive = [
     "/rank",
     "/guilds",
-    "/mentors",
     "/cart",
-    "/checkout/billing",
     "/profile",
   ].some((href) => pathname === href || pathname.startsWith(`${href}/`));
 

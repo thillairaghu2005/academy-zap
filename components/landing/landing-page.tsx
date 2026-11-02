@@ -20,7 +20,6 @@ import {
   ComparisonSection,
   StatsBand,
 } from "@/components/landing/conversion-sections";
-import { SocialProof } from "@/components/landing/social-proof";
 import { ErrorState } from "@/components/shared/error-state";
 import { MobileCtaBar } from "@/components/shared/mobile-cta-bar";
 import {
@@ -124,7 +123,6 @@ export function LandingPage({ courses, catalogUnavailable = false }: LandingPage
         <LandingSections courses={courses} catalogUnavailable={catalogUnavailable} />
         <StatsBand />
         <ComparisonSection />
-        <SocialProof />
         <CaseStudySection />
         <TestimonialWall />
         <FaqSection />
