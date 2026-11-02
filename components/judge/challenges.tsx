@@ -2,7 +2,7 @@
 
 import { m as motion, useReducedMotion } from "framer-motion";
 import Link from "next/link";
-import { ArrowRight, CodeXml, Trophy, Play, ChartColumn, CheckCircle2 } from "lucide-react";
+import { ArrowRight, CodeXml, Trophy, Play, CheckCircle2 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { PageContainer } from "@/components/shared/page-container";
@@ -69,12 +69,6 @@ export function Challenges() {
           </div>
           
           <div className="flex items-center gap-3 shrink-0">
-            <Button variant="outline" size="sm" className="gap-2 text-xs font-semibold h-9" asChild>
-              <Link href="/leaderboards">
-                <ChartColumn className="size-4 text-primary" />
-                Leaderboards
-              </Link>
-            </Button>
             <Button size="sm" className="gap-2 text-xs font-semibold h-9 bg-primary text-primary-foreground hover:bg-primary/90" asChild>
               <Link href="/judge/p-two-sum">
                 <Play className="size-4" />

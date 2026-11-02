@@ -4,7 +4,6 @@ import * as React from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
-  ChartColumn,
   ChevronDown,
   LifeBuoy,
   LogOut,
@@ -78,12 +77,6 @@ export function UserMenu() {
           <Link href="/rank">
             <Trophy />
             Rank ladder
-          </Link>
-        </DropdownMenuItem>
-        <DropdownMenuItem asChild>
-          <Link href="/leaderboards">
-            <ChartColumn />
-            Leaderboards
           </Link>
         </DropdownMenuItem>
         <DropdownMenuItem asChild>

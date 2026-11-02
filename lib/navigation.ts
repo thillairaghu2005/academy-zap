@@ -49,7 +49,6 @@ export const sideNavGroups: NavGroup[] = [
     items: [
       { href: "/assessments", label: "Assessments", icon: ClipboardList },
       { href: "/interviews", label: "Mock Interviews", icon: Users },
-      { href: "/leaderboards", label: "Leaderboards", icon: ChartColumn },
     ],
   },
   {

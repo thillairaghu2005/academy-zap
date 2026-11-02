@@ -92,10 +92,10 @@ export function SocialProof() {
                 </p>
               </div>
               <Link
-                href="/leaderboards"
+                href="/rank"
                 className="inline-flex items-center gap-1 text-xs font-semibold text-primary outline-none hover:underline focus-visible:ring-2 focus-visible:ring-ring"
               >
-                See full leaderboard <ArrowRight className="size-3.5" />
+                View rank system <ArrowRight className="size-3.5" />
               </Link>
             </div>
             {entries.length > 0 ? (

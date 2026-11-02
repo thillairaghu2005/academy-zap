@@ -286,13 +286,7 @@ export function RankHubClient() {
           </div>
 
           {/* Quick links */}
-          <div className="mt-8 grid gap-3 sm:grid-cols-3">
-            <QuickLink
-              icon={TrendingUp}
-              title="Leaderboards"
-              subtitle="Global & guild, ZRANGE-shaped"
-              onClick={() => router.push("/leaderboards")}
-            />
+          <div className="mt-8 grid gap-3 sm:grid-cols-2">
             <QuickLink
               icon={Medal}
               title="Badge wall"

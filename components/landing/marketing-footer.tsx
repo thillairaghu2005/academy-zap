@@ -18,7 +18,6 @@ const columns = [
     title: "Track the climb",
     links: [
       ["Rank ladder", "/rank"],
-      ["Global leaderboard", "/leaderboards"],
       ["Guild boards", "/guilds"],
     ],
   },

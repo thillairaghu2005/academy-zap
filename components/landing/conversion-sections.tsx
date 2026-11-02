@@ -59,7 +59,7 @@ const COMPARISON_ROWS: Array<{
   { label: "Hands-on environment", generic: "Watch-and-repeat", zapsters: "Live, isolated lab per session", positive: true },
   { label: "Practice feedback", generic: "Usually no judge", zapsters: "Automated judge with verdicts", positive: true },
   { label: "Progress proof", generic: "Checkmarks only", zapsters: "Verifiable credentials + rank", positive: true },
-  { label: "Community signal", generic: "Comments", zapsters: "Guilds and public leaderboards", positive: true },
+  { label: "Community signal", generic: "Comments", zapsters: "Guilds and verified ranks", positive: true },
   { label: "Offline access", generic: "Sometimes", zapsters: "Built-in offline course reader", positive: true },
   { label: "Guaranteed pace", generic: "Self-motivation", zapsters: "Momentum streaks + next-move", positive: true },
 ];

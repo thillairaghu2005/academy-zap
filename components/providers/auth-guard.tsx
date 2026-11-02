@@ -20,8 +20,6 @@ function isPublicRoute(pathname: string): boolean {
   // Mentor directory and individual mentor profiles are fully public.
   if (pathname === "/mentors") return true;
   if (/^\/mentors\/[^/]+$/.test(pathname)) return true;
-  // Leaderboards show community aggregate rankings — no personal private data.
-  if (pathname === "/leaderboards") return true;
   // Public credential verification — anyone with the link can verify a certificate.
   if (/^\/rank\/verify\/.+$/.test(pathname)) return true;
   // Dedicated FAQ page lives in (marketing) but guard defensively here too.

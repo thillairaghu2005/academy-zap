@@ -29,7 +29,6 @@ const BREADCRUMB_LABELS: Record<string, string> = {
   labs: "Labs",
   assessments: "Assessments",
   rank: "Rank",
-  leaderboards: "Leaderboards",
   guilds: "Guilds",
   mentors: "Mentors",
   cart: "Cart",

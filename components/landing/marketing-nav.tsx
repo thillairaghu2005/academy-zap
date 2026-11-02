@@ -25,7 +25,6 @@ const links = [
   { href: "/courses", label: "Courses" },
   { href: "/judge", label: "Challenges" },
   { href: "/labs", label: "Virtual Labs" },
-  { href: "/leaderboards", label: "Rankings" },
   { href: "/pricing", label: "Pricing" },
 ] as const;
 

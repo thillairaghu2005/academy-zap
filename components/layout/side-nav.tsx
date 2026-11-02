@@ -135,7 +135,6 @@ export function MobileNav({ variant = "top" }: { variant?: "top" | "bottom" }) {
   const pathname = usePathname();
   const moreActive = [
     "/rank",
-    "/leaderboards",
     "/guilds",
     "/mentors",
     "/cart",
