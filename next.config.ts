@@ -52,7 +52,8 @@ if (isProduction) {
 const nextConfig: NextConfig = {
   devIndicators: false,
   images: {
-    qualities: [75, 90],
+    formats: ["image/avif", "image/webp"],
+    qualities: [75, 80, 90],
   },
   async headers() {
     return [

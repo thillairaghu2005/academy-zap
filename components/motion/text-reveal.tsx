@@ -19,6 +19,7 @@ export function TextReveal({ text, className, mode = "words", delay = 0 }: TextR
 
   return (
     <motion.span
+      role="text"
       aria-label={text}
       className={className}
       initial={reducedMotion ? false : "hidden"}

@@ -1,7 +1,6 @@
 "use client";
 
 import * as React from "react";
-import Link from "next/link";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { History, ShieldQuestion, WandSparkles } from "lucide-react";
@@ -14,7 +13,6 @@ import { useSession } from "@/components/providers/session-provider";
 import { IDE, type IDEExecution } from "@/components/ide/IDE";
 import { createIDEFile } from "@/hooks/useFiles";
 import { VerdictBadge } from "@/components/judge/verdict-badge";
-import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { PageContainer } from "@/components/shared/page-container";
 import { EmptyState } from "@/components/shared/empty-state";

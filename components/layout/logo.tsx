@@ -36,6 +36,7 @@ export function Logo({
       width={logoSource.width}
       height={logoSource.height}
       alt="Zapsters Logo"
+      sizes="(max-width: 768px) 120px, 160px"
       loading={eager ? "eager" : "lazy"}
       priority={eager}
       decoding="async"

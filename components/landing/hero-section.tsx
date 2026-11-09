@@ -5,7 +5,6 @@ import Image from "next/image";
 import { m as motion, useReducedMotion, type Variants } from "framer-motion";
 import { Check } from "lucide-react";
 
-import { Parallax } from "@/components/motion/parallax";
 import { TextReveal } from "@/components/motion/text-reveal";
 import { motionDurations, motionEasings, motionSprings } from "@/components/motion/motion-tokens";
 import { Button } from "@/components/ui/button";
@@ -50,7 +49,6 @@ export function HeroSection() {
             {" "}
             <span className="inline-block overflow-hidden align-bottom">
               <motion.span
-                aria-label="in real environments."
                 initial={reducedMotion ? false : { opacity: 0, y: "100%" }}
                 animate={reducedMotion ? undefined : { opacity: 1, y: 0 }}
                 transition={{ duration: motionDurations.slow, ease: motionEasings.out, delay: 0.5 }}
@@ -78,26 +76,19 @@ export function HeroSection() {
           </motion.div>
         </motion.div>
 
-        <motion.div
-          initial={reducedMotion ? false : { opacity: 0, y: 24, scale: 0.98 }}
-          animate={reducedMotion ? undefined : { opacity: 1, y: 0, scale: 1 }}
-          transition={
-            reducedMotion
-              ? undefined
-              : { ...motionSprings.default, delay: 0.1 }
-          }
-          className="relative z-10 flex items-center justify-center w-full"
-        >
-          <Parallax from={14} to={-14} className="w-full max-w-[500px] mx-auto flex justify-center">
+        <div className="relative z-10 flex items-center justify-center w-full">
+          <div className="w-full max-w-[500px] mx-auto flex justify-center">
             <Image 
               src={heroImage} 
               alt="Interactive learning environment" 
               priority 
-              quality={90}
+              fetchPriority="high"
+              sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 500px"
+              quality={80}
               className="w-full h-auto object-contain drop-shadow-2xl" 
             />
-          </Parallax>
-        </motion.div>
+          </div>
+        </div>
       </div>
     </section>
   );

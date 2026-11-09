@@ -16,6 +16,13 @@
     "test:e2e": "playwright test",
     "knip": "knip"
   },
+  "browserslist": [
+    "last 2 Chrome versions",
+    "last 2 Firefox versions",
+    "last 2 Safari versions",
+    "last 2 Edge versions",
+    "not dead"
+  ],
   "dependencies": {
     "@base-ui/react": "^1.7.0",
     "@fontsource-variable/geist": "^5.3.0",

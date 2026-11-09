@@ -6,6 +6,7 @@ import rehypeKatex from "rehype-katex";
 import rehypeSanitize from "rehype-sanitize";
 import remarkGfm from "remark-gfm";
 import remarkMath from "remark-math";
+import "katex/dist/katex.min.css";
 
 import styles from "../ide.module.css";
 import { countMatches, highlightText } from "./markdown-utils";

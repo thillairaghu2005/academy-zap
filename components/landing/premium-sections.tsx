@@ -30,7 +30,7 @@ export function TestimonialWall() {
         <div className="mt-9 grid gap-4 lg:grid-cols-3">
           {MARKETING_TESTIMONIALS.map((testimonial) => (
             <Card key={testimonial.name} className={cn("p-6", testimonial.featured && "border-border bg-surface-2")}>
-              <div className="flex items-center gap-1 text-primary" aria-label={`${testimonial.rating} out of 5 stars`}>{Array.from({ length: testimonial.rating }).map((_, index) => <Star key={index} className="size-3.5 fill-current" />)}</div>
+              <div role="img" className="flex items-center gap-1 text-primary" aria-label={`${testimonial.rating} out of 5 stars`}>{Array.from({ length: testimonial.rating }).map((_, index) => <Star key={index} className="size-3.5 fill-current" />)}</div>
               <p className="mt-5 font-display text-xl font-medium leading-8 tracking-[-0.025em]">&ldquo;{testimonial.quote}&rdquo;</p>
               <div className="mt-7 flex items-center gap-3"><span className="grid size-9 place-items-center rounded-full bg-primary text-xs font-semibold text-primary-foreground">{testimonial.initials}</span><div><p className="text-sm font-semibold">{testimonial.name}</p><p className="text-xs text-muted-foreground">{testimonial.role}</p></div><button type="button" onClick={() => setActive(testimonial)} className="ml-auto inline-flex size-8 items-center justify-center rounded-full border border-border text-muted-foreground transition-colors hover:border-primary hover:text-primary" aria-label={`Play video testimonial from ${testimonial.name}`}><Play className="size-3.5 fill-current" /></button></div>
             </Card>

@@ -59,7 +59,7 @@ export function MarketingFooter() {
               {CONTACT_EMAIL}
             </a>
           ) : null}
-          <p className="mt-8 font-mono text-xs text-muted-foreground/70">© 2026 Zapsters / learn-build-climb</p>
+          <p className="mt-8 font-mono text-xs text-muted-foreground">© 2026 Zapsters / learn-build-climb</p>
         </div>
         <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
           {columns.map((column) => (

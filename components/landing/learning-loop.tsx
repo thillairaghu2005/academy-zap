@@ -98,9 +98,10 @@ export function LearningLoop() {
                       <Image
                         src={step.image}
                         alt={step.imageAlt}
-                        quality={90}
+                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 33vw, 360px"
+                        quality={80}
                         className="h-40 w-auto object-contain sm:h-44"
-                        priority={index === 0}
+                        loading="lazy"
                       />
                     </motion.div>
 

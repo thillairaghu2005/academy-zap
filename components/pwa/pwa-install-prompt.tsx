@@ -6,7 +6,6 @@ import { m as motion, AnimatePresence } from "framer-motion";
 import { Download, Share2, Smartphone, X } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
-import { Logo } from "@/components/layout/logo";
 import { cn } from "@/lib/utils";
 
 interface BeforeInstallPromptEvent extends Event {
@@ -24,48 +23,41 @@ const DISMISSAL_COOLDOWN_MS = 7 * 24 * 60 * 60 * 1000; // 7 days
 export function PwaInstallPrompt() {
   const pathname = usePathname();
   const [deferredPrompt, setDeferredPrompt] = React.useState<BeforeInstallPromptEvent | null>(null);
-  const [isIos, setIsIos] = React.useState(false);
+  const [isIos] = React.useState(() => {
+    if (typeof window === "undefined") return false;
+    const ua = window.navigator.userAgent.toLowerCase();
+    const isIosDevice = /iphone|ipad|ipod/.test(ua) && !(window as unknown as { MSStream?: unknown }).MSStream;
+    const isSafari = /safari/.test(ua) && !/chrome|crios|fxios/.test(ua);
+    return Boolean(isIosDevice && isSafari);
+  });
   const [showIosGuide, setShowIosGuide] = React.useState(false);
-  const [dismissed, setDismissed] = React.useState(true); // default true until verified on client
-  const [isStandalone, setIsStandalone] = React.useState(true);
-
-  React.useEffect(() => {
-    // 1. Verify if running in standalone mode (already installed PWA)
-    const checkStandalone = () => {
-      const isStandaloneMode =
-        window.matchMedia("(display-mode: standalone)").matches ||
-        (navigator as unknown as { standalone?: boolean }).standalone === true;
-      setIsStandalone(isStandaloneMode);
-      return isStandaloneMode;
-    };
-
-    if (checkStandalone()) return;
-
-    // 2. Check dismissal cooldown in localStorage
+  const [dismissed, setDismissed] = React.useState(() => {
+    if (typeof window === "undefined") return true;
     try {
       const stored = localStorage.getItem(STORAGE_KEY);
       if (stored) {
         const timestamp = parseInt(stored, 10);
         if (!isNaN(timestamp) && Date.now() - timestamp < DISMISSAL_COOLDOWN_MS) {
-          setDismissed(true);
-          return;
+          return true;
         }
       }
     } catch {
       // Ignore localStorage read errors
     }
+    return false;
+  });
+  const [isStandalone] = React.useState(() => {
+    if (typeof window === "undefined") return true;
+    return (
+      window.matchMedia("(display-mode: standalone)").matches ||
+      (navigator as unknown as { standalone?: boolean }).standalone === true
+    );
+  });
 
-    setDismissed(false);
+  React.useEffect(() => {
+    if (isStandalone) return;
 
-    // 3. Detect iOS Safari
-    const ua = window.navigator.userAgent.toLowerCase();
-    const isIosDevice = /iphone|ipad|ipod/.test(ua) && !(window as unknown as { MSStream?: unknown }).MSStream;
-    const isSafari = /safari/.test(ua) && !/chrome|crios|fxios/.test(ua);
-    if (isIosDevice && isSafari) {
-      setIsIos(true);
-    }
-
-    // 4. Capture Chromium beforeinstallprompt
+    // Capture Chromium beforeinstallprompt
     const handleBeforeInstallPrompt = (e: Event) => {
       e.preventDefault();
       setDeferredPrompt(e as BeforeInstallPromptEvent);
@@ -75,7 +67,7 @@ export function PwaInstallPrompt() {
     return () => {
       window.removeEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
     };
-  }, []);
+  }, [isStandalone]);
 
   const handleDismiss = () => {
     setDismissed(true);

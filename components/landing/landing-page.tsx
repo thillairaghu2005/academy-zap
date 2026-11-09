@@ -135,7 +135,7 @@ export function LandingPage({ courses, catalogUnavailable = false }: LandingPage
 }
 
 function HomeHero() {
-  const { user, isLoading } = useSession();
-  if (isLoading) return <PersonalizedHero />;
-  return user ? <PersonalizedHero /> : <HeroSection />;
+  const { user } = useSession();
+  if (user) return <PersonalizedHero />;
+  return <HeroSection />;
 }
