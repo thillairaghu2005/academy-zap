@@ -17,7 +17,6 @@ import { Toaster } from "@/components/ui/sonner";
 import { getSiteUrl } from "@/lib/seo";
 import { CookieBanner } from "@/components/shared/cookie-banner";
 import { BackToTop } from "@/components/shared/back-to-top";
-import { PwaInstallPrompt } from "@/components/pwa/pwa-install-prompt";
 import { UtmTracker } from "@/hooks/use-utm";
 
 export const metadata: Metadata = {
@@ -105,7 +104,6 @@ export default function RootLayout({
             <AnalyticsInit />
             <Toaster />
             <CookieBanner />
-            <PwaInstallPrompt />
             <BackToTop />
             <Suspense fallback={null}>
               <UtmTracker />

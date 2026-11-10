@@ -52,7 +52,7 @@ export function HeroSection() {
                 initial={reducedMotion ? false : { opacity: 0, y: "100%" }}
                 animate={reducedMotion ? undefined : { opacity: 1, y: 0 }}
                 transition={{ duration: motionDurations.slow, ease: motionEasings.out, delay: 0.5 }}
-                className="inline-block font-semibold text-primary"
+                className="inline-block text-foreground"
               >
                 in real environments.
               </motion.span>
